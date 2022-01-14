@@ -55,7 +55,7 @@ Le site web peut être déployé sur la plateforme GitLab Pages et accessible su
 Ce déploiement est fait à travers le système d'Intégration Continue dans GitLab. Avant de pouvoir déployer le site web, il faut configurer une variable de chemin de base. Pour faire ceci, vous devez suivre les étapes suivantes :
 
 -   Naviguer sur le menu de variables disponible dans `Settings > CI/CD > Variables` de votre projet.
--   Ajouter une nouvelle variable avec `Add variable` dont le nom est `BASE_HREF` et la valeur est `/log2990/20213/equipe-XYZ/log2990-XYZ/` avec `XYZ` étant votre numéro d'équipe.
+-   Ajouter une nouvelle variable avec `Add variable` dont le nom est `BASE_HREF` et la valeur est `/log2990/20221/equipe-XYZ/log2990-XYZ/` avec `XYZ` étant votre numéro d'équipe.
 -   Assurez-vous que la variable n'est pas protégée ou masquée (décochez les 2 flags en bas) et cliquez sur `Add variable`. La variable sera maintenant disponible lors de la phase de déploielment.
 
 ### Déploiement
