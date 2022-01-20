@@ -37,8 +37,13 @@
     color: blue;
 }
 
-.server-message {
+.container-buttons {
+    display: flex;
     justify-content: center;
-    width: 20%;
+    flex-direction: column;
     min-width: min-content;
+}
+
+.button-icon {
+    margin-left: 5%;
 }
