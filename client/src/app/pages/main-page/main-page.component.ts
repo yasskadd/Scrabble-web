@@ -8,12 +8,14 @@ import { DialogBoxComponent } from '@app/components/dialog-box/dialog-box.compon
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
-    readonly title: string = 'LOG2990';
+    readonly title: string = "Bienvenue au jeu Scrabble de l'équipe 107";
 
     constructor(public dialog: MatDialog) {}
 
     openDialog(): void {
-        const dialogReference = this.dialog.open(DialogBoxComponent, {});
+        const dialogReference = this.dialog.open(DialogBoxComponent, {
+            width: '300px',
+        });
 
         dialogReference.afterClosed().subscribe();
     }
