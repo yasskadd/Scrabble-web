@@ -9,12 +9,13 @@ import { DialogBoxComponent } from '@app/components/dialog-box/dialog-box.compon
 })
 export class MainPageComponent {
     readonly title: string = "Bienvenue au jeu Scrabble de l'équipe 107";
-
+    readonly width: string = '25%';
     constructor(public dialog: MatDialog) {}
 
-    openDialog(): void {
+    openDialog(gameModeValue: string): void {
         const dialogReference = this.dialog.open(DialogBoxComponent, {
-            width: '300px',
+            width: this.width,
+            data: gameModeValue,
         });
 
         dialogReference.afterClosed().subscribe();

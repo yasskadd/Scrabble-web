@@ -1,14 +1,19 @@
 <div class="container justified">
     <img src="https://bit.ly/3m206ss" width="400" height="80" alt="Logo Scrabble" />
-    <h1 mat-card-title class="header-item">{{ title }}</h1>
-    <div class="container-buttons">
-        <button mat-raised-button color="primary" class="button-game" (click)="openDialog()">
-            Scrabble Classique <mat-icon class="button-icon">grid_view</mat-icon>
-        </button>
-        <button mat-raised-button color="primary" class="button-game">Scrabble LOG2990 <mat-icon class="button-icon">checklist</mat-icon></button>
-        <button mat-raised-button color="accent" class="button-score">Meilleur scores <mat-icon class="button-icon">emoji_events</mat-icon></button>
-    </div>
-
+    <mat-card>
+        <mat-card-title class="header-item">{{ title }}</mat-card-title>
+        <mat-card-content class="container-buttons">
+            <button mat-raised-button color="primary" class="button" (click)="openDialog('Classique')">
+                Scrabble Classique <mat-icon class="button-icon">grid_view</mat-icon>
+            </button>
+            <button mat-raised-button color="primary" class="button" (click)="openDialog('LOG2990')">
+                Scrabble LOG2990 <mat-icon class="button-icon">checklist</mat-icon>
+            </button>
+            <button mat-raised-button color="accent" class="button score">
+                Meilleur scores <mat-icon class="button-icon">emoji_events</mat-icon>
+            </button>
+        </mat-card-content>
+    </mat-card>
     <div class="footer-item">
         <h4 class="team-name">Équipe Poly</h4>
         <p>
