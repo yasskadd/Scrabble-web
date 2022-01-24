@@ -1,0 +1,28 @@
+/* eslint-disable prettier/prettier */
+import { Coordinate } from './gameboard-coordinate.class';
+
+export class Box {
+    private position: Coordinate;
+    private pointsMultiplier: number;
+    private isWordMultiplier: boolean;
+    private isOccupied: boolean;
+
+    constructor(position: Coordinate, multiplier: number = 1, isWordMultiplier: boolean = false) {
+        this.position = position;
+        this.pointsMultiplier = multiplier;
+        this.isWordMultiplier = isWordMultiplier;
+    }
+
+    setOccupy(occupied: boolean) {
+        this.isOccupied = occupied;
+    }
+
+    getOccupy() {
+        return this.isOccupied;
+    }
+
+    setMultiplier(multiplier: number, isWordMultiplier: boolean) {
+        this.isWordMultiplier = isWordMultiplier;
+        this.pointsMultiplier = multiplier;
+    }
+}
