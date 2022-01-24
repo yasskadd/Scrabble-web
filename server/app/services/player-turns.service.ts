@@ -15,17 +15,17 @@ export class PlayerTurnsService {
 
     endTurn(Player) {
         this.player1.turn = false
-    }
-    
+    }    
 }
 
 
 class Player {
     const id = 0;
     const name: String | undefined;
-    let lettersInHolder = 7;
+    //let lettersInHolder = 7;
     let score = 0;
     let turn = false;
+    let rack = [];
 
     constructor (name: String) { this.name = name;}
 }

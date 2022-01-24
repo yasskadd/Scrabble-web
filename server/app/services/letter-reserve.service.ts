@@ -5,7 +5,7 @@ import letter-reserve.json from
 
 export class LetterReserveService {
     lettersReserve: [];
-    rack: [];
+    playerRack: [];
     constructor() {}
 
 
