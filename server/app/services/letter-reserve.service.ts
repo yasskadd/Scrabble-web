@@ -1,46 +1,54 @@
-//import { HttpClient } from '@angular/common/http';
-//import { Injectable, OnInit } from '@angular/core';
-import letter-reserve.json from 
+// import { HttpClient } from '@angular/common/http';
+import letterJSON from '../app/assets/letter-reserve.json';
 
+interface LetterScheme {
+    letter: string;
+    quantity: number;
+    weight: number;
+}
 
 export class LetterReserveService {
     lettersReserve: [];
     playerRack: [];
-    constructor() {}
-
-
-    getLetterReserve(): void { 
-        get(letter-reserve.json);
+    constructor() {
+        this.lettersReserve = this.getLetterReserve();
     }
 
-    updateReserve(): void {
+    getLetterReserve(): [] {
+        return JSON.parse(letterJSON).letters;
+    }
+
+    updateReserve(letter: LetterScheme): void {
         // modify json file with new quantities
-        //{  "title": jdhfjgfd, letters; letterReserve}
-        //post(lettersReserve);
+        // this.lettersReserve['letters'][0].quantity -= 1;
+        // this.lettersReserve.find( obj => obj.letter === letter;  ).quantity--;
+        letter.quantity -= 1;
     }
 
-    addLetter(): void {
-        const max = 27; //lettersReserve.length
+    addLetter(): LetterScheme {
+        const max = 27; // lettersReserve.length
         const random = Math.floor(Math.random() * max);
         const letter = this.lettersReserve[random];
-        //this.lettersReserve.quantity--;
-        this.rack.push(letter);
+        this.updateReserve(letter);
+        this.playerRack.push(letter);
+        return letter;
     }
 
     generateLetters(): void {
         // start of the game
-        for (let i = 0; i < 7; i++) {
-            this.addLetter();
+        const initializeLetters = 7;
+        for (let i = 0; i < initializeLetters; i++) {
+            const letter: LetterScheme = this.addLetter();
+            this.updateReserve(letter);
         }
-        this.updateReserve();
     }
 
     ngOnInit(): void {
-        //this.lettersReserve = this.getLetterReserve().letters;
+        // this.lettersReserve = this.getLetterReserve().letters;
         this.generateLetters();
     }
 }
-// GENERATE RANDOM ID
+// GENERATE RANDOM LETTER
 const letters = [
     'A',
     'B',
