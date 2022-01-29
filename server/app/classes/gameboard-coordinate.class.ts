@@ -14,4 +14,12 @@ export class Coordinate {
     getY() {
         return this.y;
     }
+
+    setY(value: number) {
+        this.y = value;
+    }
+
+    setX(value: number) {
+        this.x = value;
+    }
 }
