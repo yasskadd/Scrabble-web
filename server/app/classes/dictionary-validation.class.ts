@@ -1,4 +1,3 @@
-import dictionnaryData from '../app/assets/dictionary.json';
 import { Word } from './word';
 
 // TODO : import dictionary
