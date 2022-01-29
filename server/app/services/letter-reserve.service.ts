@@ -1,5 +1,5 @@
 // import { HttpClient } from '@angular/common/http';
-import letterJSON from '../app/assets/letter-reserve.json';
+import letterJSON from '@app/assets/letter-reserve.json';
 
 // Temporary place
 interface Letter {
@@ -10,7 +10,6 @@ interface Letter {
 
 export class LetterReserveService {
     lettersReserve: Letter[];
-    playerRack: Letter[] = [];
     constructor() {
         this.lettersReserve = this.getLetterReserve();
     }
@@ -18,11 +17,11 @@ export class LetterReserveService {
     /**
      * Get the default letter reserve.
      *
-     * @return Letter[] : Return a list of letters.
+     * @return Letter[] : Return the default list of letters.
      */
     getLetterReserve(): Letter[] {
-        return JSON.parse(letterJSON).letters;
-        // return letterJSON.letters;
+        // return JSON.parse(letterJSON).letters;
+        return letterJSON.letters;
     }
 
     /**
@@ -37,26 +36,30 @@ export class LetterReserveService {
 
     /**
      * The reserve gives a random letter from the letter reserve to a player.
+     *
+     * @param rack : The rack of the player.
      */
-    addLetter(): void {
+    addLetter(rack: Letter[]): void {
         const nLetters = this.lettersReserve.length;
         const random = Math.floor(Math.random() * nLetters);
         const letter = this.lettersReserve[random];
         this.updateReserve(letter);
-        this.playerRack.push(letter);
+        rack.push(letter);
     }
 
     /**
      * Exchange letters
      *
      * @param letters : The letters that the player wants to exchange.
+     * @param rack : The rack of the player.
+     * @returns : The new updated rack.
      */
-    exchangeLetter(letters: Letter[]) {
+    exchangeLetter(letters: Letter[], rack: Letter[]): Letter[] {
         // Remove the letters from the rack of the player
-        this.playerRack = this.playerRack.filter((letter) => !letters.includes(letter));
+        rack = rack.filter((letter) => !letters.includes(letter));
 
         // Exchange X quantity of letters
-        this.generateLetters(letters.length);
+        this.generateLetters(letters.length, rack);
 
         // Put back the letters exchanged into the reserve
         letters.forEach((letter) => {
@@ -72,51 +75,19 @@ export class LetterReserveService {
                 }
             }
         }
+
+        return rack;
     }
 
     /**
      * The letter reserve gives X quantity of random letter to a player.
      *
      * @param quantity : The number of letter to be given from the letter reserve to a player.
+     * @param rack : The rack of the player.
      */
-    generateLetters(quantity: number): void {
+    generateLetters(quantity: number, rack: Letter[]): void {
         for (let i = 0; i < quantity; i++) {
-            this.addLetter();
+            this.addLetter(rack);
         }
     }
-
-    // ngOnInit(): void {
-    //     // this.lettersReserve = this.getLetterReserve().letters;
-    //     this.generateLetters();
-    // }
 }
-// GENERATE RANDOM LETTER
-const letters = [
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-    '*',
-];
