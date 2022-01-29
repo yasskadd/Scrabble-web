@@ -32,13 +32,13 @@ export class GameBoard {
         return this.letterArray;
     }
 
-    findArrayIndex(position: Coordinate) {
+    findGameBoardIndex(position: Coordinate) {
         return position.getX() * 14 + position.getY() + 1;
     }
 
     placeLetter(letter: Letter, position: Coordinate) {
         // Verify if box is occupied.
-        const index: number = this.findArrayIndex(position);
+        const index: number = this.findGameBoardIndex(position);
         if (this.gameBoard[index].getOccupy()) {
             return;
         } else {
@@ -49,7 +49,7 @@ export class GameBoard {
 
     // removeLetter(position: Coordinate) {
     //     // Verify if box is occupied
-    //     const index: number = this.findArrayIndex(position);
+    //     const index: number = this.findGameBoardIndex(position);
     //     if (this.gameBoard[index].getOccupy()) {
     //         return;
     //     } else {
@@ -70,8 +70,8 @@ export class GameBoard {
             new Coordinate(14, 14),
         ];
         word3PosList.forEach((position) => {
-            const index = this.findArrayIndex(position);
-            this.gameBoard[index].setWordMultiplier(3, true);
+            const index = this.findGameBoardIndex(position);
+            this.gameBoard[index].setMultiplier(3, true);
         });
         const word2PosList: Coordinate[] = [
             new Coordinate(1, 1),
@@ -88,8 +88,8 @@ export class GameBoard {
             new Coordinate(4, 10),
         ];
         word2PosList.forEach((position) => {
-            const index = this.findArrayIndex(position);
-            this.gameBoard[index].setWordMultiplier(2, true);
+            const index = this.findGameBoardIndex(position);
+            this.gameBoard[index].setMultiplier(2, true);
         });
         const letter2List: Coordinate[] = [
             new Coordinate(3, 0),
@@ -118,8 +118,8 @@ export class GameBoard {
             new Coordinate(11, 14),
         ];
         letter2List.forEach((position) => {
-            const index = this.findArrayIndex(position);
-            this.gameBoard[index].setLetterMultiplier(2, true);
+            const index = this.findGameBoardIndex(position);
+            this.gameBoard[index].setMultiplier(2, false);
         });
         const letter3List: Coordinate[] = [
             new Coordinate(5, 1),
@@ -136,8 +136,8 @@ export class GameBoard {
             new Coordinate(9, 13),
         ];
         letter3List.forEach((position) => {
-            const index = this.findArrayIndex(position);
-            this.gameBoard[index].setLetterMultiplier(3, true);
+            const index = this.findGameBoardIndex(position);
+            this.gameBoard[index].setMultiplier(3, false);
         });
     }
 
@@ -146,23 +146,23 @@ export class GameBoard {
         if (directions.includes(direction)) {
             if (direction === 'UP') {
                 coord.setY(coord.getY() + 1);
-                this.findArrayIndex(coord);
+                this.findGameBoardIndex(coord);
             }
             if (direction === 'DOWN') {
                 coord.setY(coord.getY() - 1);
-                return this.findArrayIndex(coord);
+                return this.findGameBoardIndex(coord);
             }
             if (direction === 'DOWN') {
                 coord.setY(coord.getY() - 1);
-                return this.findArrayIndex(coord);
+                return this.findGameBoardIndex(coord);
             }
             if (direction === 'RIGHT') {
                 coord.setX(coord.getX() + 1);
-                return this.findArrayIndex(coord);
+                return this.findGameBoardIndex(coord);
             }
             if (direction === 'LEFT') {
                 coord.setX(coord.getX() - 1);
-                return this.findArrayIndex(coord);
+                return this.findGameBoardIndex(coord);
             }
         } else {
             throw new Error("It's not a valid direction");

@@ -4,7 +4,7 @@ import { Letter } from './letter';
 export class Word {
     stringFormat: string;
     lettersInOrder: Letter[];
-    firstLetterCoordinate: Coordinate;
+    coordsInOrder: Coordinate[];
     isHorizontal: boolean;
     isValid: boolean;
     score: number;

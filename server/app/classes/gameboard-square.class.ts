@@ -3,9 +3,10 @@ import { Coordinate } from './gameboard-coordinate.class';
 import { Letter } from './letter';
 
 export class Box {
+    isWordMultiplier: boolean;
+    isLetterMultiplier: boolean;
     private position: Coordinate;
     private pointsMultiplier: number;
-    private isWordMultiplier: boolean;
     private isOccupied: boolean;
     private letter: Letter;
 
@@ -23,8 +24,17 @@ export class Box {
         return this.isOccupied;
     }
 
-    setMultiplier(multiplier: number, isWordMultiplier: boolean) {
+    setWordMultiplier(multiplier: number, isWordMultiplier: boolean) {
         this.isWordMultiplier = isWordMultiplier;
         this.pointsMultiplier = multiplier;
+    }
+
+    setLetterMultiplier(multiplier: number, isLetterMultiplier: boolean) {
+        this.isLetterMultiplier = isLetterMultiplier;
+        this.pointsMultiplier = multiplier;
+    }
+
+    getPointsMultiplier() {
+        return this.pointsMultiplier;
     }
 }
