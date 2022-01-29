@@ -1,8 +1,11 @@
+// eslint-disable-next-line no-restricted-imports
 import * as dictionnaryJson from '../../assets/dictionary.json';
+// eslint-disable-next-line no-restricted-imports
 import { Word } from '../classes/word';
 
 const dictionary = new Set<string>();
 // IS ANY LEGIT?
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 (<unknown>dictionnaryJson).words.forEach((word: string) => {
     dictionary.add(word);
 });
