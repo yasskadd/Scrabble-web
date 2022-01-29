@@ -1,16 +1,12 @@
-import dictionnaryData from '../app/assets/dictionary.json';
-import { Word } from './word';
+import * as dictionnaryJson from '../../assets/dictionary.json';
+import { Word } from '../classes/word';
 
-// TODO : import dictionary
 let dictionary = new Set<string>();
-
-dictionnaryData.words.forEach((word: string) => {
+// IS ANY LEGIT?
+(<any>dictionnaryJson).words.forEach((word: string) => {
     dictionary.add(word);
 });
 
-// TODO : detect words (once placement validation is done)
-
-// TODO : validate detected words
 function validateWords(enteredWords: Array<Word>) {
     // vérifier que les mots sont valides
     enteredWords.forEach((enteredWord) => {
@@ -22,8 +18,14 @@ function validateWords(enteredWords: Array<Word>) {
             console.log(enteredWord + 'is not valid');
         }
     });
-    // TODO : if at least one word is not valid.
-    // (in client) flash invalid words red +
-    // envoyer requete pour enlever lettres du grid.
-    // TODO : else, envoyer requete pour compter les points.
+
+    const invalidWords = enteredWords.filter((word) => {
+        word.isValid = false;
+    });
+
+    if (!invalidWords) {
+        // TODO : calculatePoints() + endTurn()
+    } else {
+        // TODO : flash invalideWords red and removeLetters();
+    }
 }

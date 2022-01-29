@@ -1,8 +1,15 @@
+import { Coordinate } from './gameboard-coordinate.class';
 import { Letter } from './letter';
 
-export interface Word extends Letter {
+export class Word {
     stringFormat: string;
     lettersInOrder: Array<Letter>;
+    firstLetterCoordinate: Coordinate;
+    isHorizontal: boolean;
     isValid: boolean;
     score: number;
+
+    constructor(stringFormat: string) {}
+
+    calculatePoints() {}
 }
