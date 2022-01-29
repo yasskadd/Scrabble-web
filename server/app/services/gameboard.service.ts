@@ -1,12 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { Coordinate } from '@app/classes/gameboard-coordinate.class';
 import { Box } from '@app/classes/gameboard-square.class';
+import { Letter } from '@app/classes/letter';
 import { Service } from 'typedi';
 
 @Service()
 export class GameBoard {
     private gameBoard: Box[] = new Array();
-    private occupiedBoxes: boolean[] = new Array();
+    private letterArray: Letter[] = new Array();
 
     // GameBoard creation
     constructor() {
@@ -27,6 +28,10 @@ export class GameBoard {
         return this.gameBoard;
     }
 
+    getLetterArray() {
+        return this.letterArray;
+    }
+
     findArrayIndex(position: Coordinate) {
         return position.getX() * 14 + position.getY() + 1;
     }
@@ -38,18 +43,19 @@ export class GameBoard {
             return;
         } else {
             this.gameBoard[index].setOccupy(true);
+            this.letterArray[index] = letter;
         }
     }
 
-    removeLetter(position: Coordinate) {
-        // Verify if box is occupied
-        const index: number = this.findArrayIndex(position);
-        if (this.gameBoard[index].getOccupy()) {
-            return;
-        } else {
-            this.gameBoard[index].setOccupy(false);
-        }
-    }
+    // removeLetter(position: Coordinate) {
+    //     // Verify if box is occupied
+    //     const index: number = this.findArrayIndex(position);
+    //     if (this.gameBoard[index].getOccupy()) {
+    //         return;
+    //     } else {
+    //         this.gameBoard[index].setOccupy(false);
+    //     }
+    // }
 
     applyBoxMultipliers() {
         const word3PosList: Coordinate[] = [
@@ -135,7 +141,7 @@ export class GameBoard {
         });
     }
 
-    getAdjacentBox(coord: Coordinate, direction: string) {
+    getAdjacentBoxIndex(coord: Coordinate, direction: string) {
         const directions: string[] = ['UP', 'DOWN', 'RIGHT', 'LEFT'];
         if (directions.includes(direction)) {
             if (direction === 'UP') {
