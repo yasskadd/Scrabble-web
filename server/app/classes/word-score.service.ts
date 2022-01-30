@@ -12,7 +12,7 @@ export class ScoreService {
         // Run through each box and verify if there is a multiplier. If there is, verify that it corresponds to lettersEntered coord
         const index = 0;
         let totalScore = 0;
-        let wordMultiplier = 1;
+        const wordMultiplierList: number[] = new Array();
         word.coordsInOrder.forEach((coordinate: Coordinate) => {
             const letter: Letter = word.lettersInOrder[index];
             const squareIndex: number = gameBoard.findArrayIndex(coordinate);
@@ -23,12 +23,14 @@ export class ScoreService {
             }
 
             if (gameBoard.getGameBoard()[squareIndex].isWordMultiplier && lettersEntered.includes(coordinate)) {
-                if (gameBoard.getGameBoard()[squareIndex].getPointsMultiplier() > wordMultiplier) {
-                    wordMultiplier = gameBoard.getGameBoard()[squareIndex].getPointsMultiplier();
-                }
+                wordMultiplierList.push(gameBoard.getGameBoard()[squareIndex].getPointsMultiplier());
             }
         });
-        totalScore *= wordMultiplier;
+        if (wordMultiplierList.length !== 0) {
+            wordMultiplierList.forEach((multiplier) => {
+                totalScore *= multiplier;
+            });
+        }
         return totalScore;
     }
 }

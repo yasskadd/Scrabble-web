@@ -26,14 +26,14 @@ export class WordFinderService {
                 }
                 return newWordsArray;
             }
-            const isHorizontal: boolean = this.checkDirectionWord(coordList) as boolean;
-            if (isHorizontal) {
+            const direction: string = Coordinate.checkDirectionWord(coordList) as string;
+            if (direction === 'Horizontal') {
                 const newWord: string = this.buildVerticalWord(gameBoard, mostUpIndex);
                 // Construct word from the letterArray and add it to newWords array
                 if (newWord !== '') {
                     newWordsArray.push(newWord);
                 }
-            } else {
+            } else if (direction === 'Vertical') {
                 const newWord: string = this.buildHorizontal(gameBoard, mostLeftIndex);
                 // Construct word from the letterArray and add it to newWords array
                 if (newWord !== '') {
@@ -80,25 +80,5 @@ export class WordFinderService {
         } else {
             return '';
         }
-    }
-
-    private checkDirectionWord(coordList: Coordinate[]) {
-        let isHorizontal: boolean;
-        const allEqual = (arr: number[]) => arr.every((v) => v === arr[0]);
-        const tempHorizontalCoords: number[] = [];
-        const tempVerticalCoord: number[] = [];
-        coordList.forEach((coord) => {
-            tempHorizontalCoords.push(coord.getX());
-            tempVerticalCoord.push(coord.getY());
-        });
-        if (tempHorizontalCoords.length > 1 && allEqual(tempHorizontalCoords)) {
-            isHorizontal = true;
-            return isHorizontal;
-        } else if (tempVerticalCoord.length > 1 && allEqual(tempVerticalCoord)) {
-            isHorizontal = false;
-            return isHorizontal;
-        } else {
-            return undefined;
-        } // fix this problem
     }
 }
