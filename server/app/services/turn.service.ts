@@ -48,13 +48,13 @@ export class TurnService {
      *
      * @param player : The player who is playing next.
      */
-    end(player: Player = this.inactivePlayer): void {
+    end(player: Player | undefined = this.inactivePlayer): void {
         clearInterval(this.timeOut);
         const tempInactivePlayer: Player = player;
         this.inactivePlayer = this.activePlayer;
         this.activePlayer = tempInactivePlayer;
 
-        if (this.activePlayer !== null) {
+        if (this.activePlayer !== undefined) {
             this.start();
         }
     }
