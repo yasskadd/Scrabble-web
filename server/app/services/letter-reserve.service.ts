@@ -1,4 +1,10 @@
 // import { HttpClient } from '@angular/common/http';
+<<<<<<< Updated upstream
+=======
+// eslint-disable-next-line no-restricted-imports
+import { Letter } from '../../app/services/letter';
+import * as lettersJSON from '../../assets/letter-reserve.json';
+>>>>>>> Stashed changes
 import letterJSON from '@app/assets/letter-reserve.json';
 
 // Temporary place
@@ -39,11 +45,30 @@ export class LetterReserveService {
      *
      * @param rack : The rack of the player.
      */
+<<<<<<< Updated upstream
+=======
+    distributeLetter(): Letter {
+>>>>>>> Stashed changes
     addLetter(rack: Letter[]): void {
         const nLetters = this.lettersReserve.length;
         const random = Math.floor(Math.random() * nLetters);
         const letter = this.lettersReserve[random];
         this.updateReserve(letter);
+<<<<<<< Updated upstream
+=======
+        return letter;
+    }
+
+    /**
+     * Remove a letter from player's rack
+     * Function to be called for letter exchanges
+     *
+     * @param letter : The letter that has to be updated in the reserve.
+     */
+    removeLettersFromRack(toBeRemoved: Letter[]): Letter[] {
+        this.playerRack = this.playerRack.filter((letter) => !toBeRemoved.includes(letter));
+        return this.playerRack;
+>>>>>>> Stashed changes
         rack.push(letter);
     }
 
@@ -56,6 +81,10 @@ export class LetterReserveService {
      */
     exchangeLetter(letters: Letter[], rack: Letter[]): Letter[] {
         // Remove the letters from the rack of the player
+<<<<<<< Updated upstream
+=======
+        this.playerRack = this.removeLettersFromRack(letters);
+>>>>>>> Stashed changes
         rack = rack.filter((letter) => !letters.includes(letter));
 
         // Exchange X quantity of letters
@@ -87,6 +116,13 @@ export class LetterReserveService {
      */
     generateLetters(quantity: number, rack: Letter[]): void {
         for (let i = 0; i < quantity; i++) {
+<<<<<<< Updated upstream
+=======
+            this.distributeLetter();
+            generatedQuantity++;
+    generateLetters(quantity: number, rack: Letter[]): void {
+        for (let i = 0; i < quantity; i++) {
+>>>>>>> Stashed changes
             this.addLetter(rack);
         }
     }
