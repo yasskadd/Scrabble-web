@@ -1,16 +1,9 @@
-// import { HttpClient } from '@angular/common/http';
+// eslint-disable-next-line no-restricted-imports
+import * as letterJSON from '../../assets/letter-reserve.json';
 // eslint-disable-next-line no-restricted-imports
 import { Letter } from '../../app/services/letter';
-import * as lettersJSON from '../../assets/letter-reserve.json';
-import letterJSON from '@app/assets/letter-reserve.json';
 
 // Temporary place
-interface Letter {
-    letter: string;
-    quantity: number;
-    weight: number;
-}
-
 export class LetterReserveService {
     lettersReserve: Letter[];
     constructor() {
@@ -42,13 +35,13 @@ export class LetterReserveService {
      *
      * @param rack : The rack of the player.
      */
-    distributeLetter(): Letter {
-    addLetter(rack: Letter[]): void {
+
+    distributeLetter(rack: Letter[]): void {
         const nLetters = this.lettersReserve.length;
         const random = Math.floor(Math.random() * nLetters);
         const letter = this.lettersReserve[random];
         this.updateReserve(letter);
-        return letter;
+        rack.push(letter);
     }
 
     /**
@@ -57,10 +50,9 @@ export class LetterReserveService {
      *
      * @param letter : The letter that has to be updated in the reserve.
      */
-    removeLettersFromRack(toBeRemoved: Letter[]): Letter[] {
-        this.playerRack = this.playerRack.filter((letter) => !toBeRemoved.includes(letter));
-        return this.playerRack;
-        rack.push(letter);
+    removeLettersFromRack(toBeRemoved: Letter[], rack: Letter[]): Letter[] {
+        rack = rack.filter((letter) => !toBeRemoved.includes(letter));
+        return rack;
     }
 
     /**
@@ -72,8 +64,7 @@ export class LetterReserveService {
      */
     exchangeLetter(letters: Letter[], rack: Letter[]): Letter[] {
         // Remove the letters from the rack of the player
-        this.playerRack = this.removeLettersFromRack(letters);
-        rack = rack.filter((letter) => !letters.includes(letter));
+        rack = this.removeLettersFromRack(letters, rack);
 
         // Exchange X quantity of letters
         this.generateLetters(letters.length, rack);
@@ -92,7 +83,6 @@ export class LetterReserveService {
                 }
             }
         }
-
         return rack;
     }
 
@@ -102,13 +92,12 @@ export class LetterReserveService {
      * @param quantity : The number of letter to be given from the letter reserve to a player.
      * @param rack : The rack of the player.
      */
-    generateLetters(quantity: number, rack: Letter[]): void {
+    generateLetters(quantity: number, rack: Letter[]): number {
+        let generatedQuantity = 0;
         for (let i = 0; i < quantity; i++) {
-            this.distributeLetter();
+            this.distributeLetter(rack);
             generatedQuantity++;
-    generateLetters(quantity: number, rack: Letter[]): void {
-        for (let i = 0; i < quantity; i++) {
-            this.addLetter(rack);
         }
+        return generatedQuantity;
     }
 }
