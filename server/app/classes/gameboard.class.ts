@@ -1,12 +1,11 @@
 /* eslint-disable prettier/prettier */
-import { Coordinate } from '@app/classes/gameboard-coordinate.class';
-import { Box } from '@app/classes/gameboard-square.class';
-import { Letter } from '@app/classes/letter';
 import { Service } from 'typedi';
+import { Coordinate } from '../classes/coordinate.class';
+import { Letter } from '../classes/letter.class';
 
 @Service()
 export class GameBoard {
-    private gameBoard: Box[] = new Array();
+    private gameboardCoords: Coordinate[] = new Array();
     private letterArray: Letter[] = new Array();
 
     // GameBoard creation
@@ -16,33 +15,36 @@ export class GameBoard {
         const columnNumbers = 15;
         for (let i = 0; i < rowNumbers; i++) {
             for (let j = 0; j < columnNumbers; j++) {
-                const boxCoords: Coordinate = new Coordinate(i, j);
-                const box: Box = new Box(boxCoords);
-                this.gameBoard.push(box);
+                const coord: Coordinate = new Coordinate(i, j, null);
+                this.gameboardCoords.push(coord);
             }
         }
         this.applyBoxMultipliers();
     }
 
     getGameBoard() {
-        return this.gameBoard;
+        return this.gameboardCoords;
+    }
+
+    getGameBoardCoord(wantedCoord: Coordinate) {
+        return this.gameboardCoords.filter((coord) => coord == wantedCoord)[0];
     }
 
     getLetterArray() {
         return this.letterArray;
     }
 
-    findArrayIndex(position: Coordinate) {
-        return position.getX() * 14 + position.getY() + 1;
+    findGameboardIndex(position: Coordinate) {
+        return (position.getX() % 14) + position.getY() + 1;
     }
 
     placeLetter(letter: Letter, position: Coordinate) {
         // Verify if box is occupied.
         const index: number = this.findArrayIndex(position);
-        if (this.gameBoard[index].getOccupy()) {
+        if (this.gameboardCoords[index].getOccupy()) {
             return;
         } else {
-            this.gameBoard[index].setOccupy(true);
+            this.gameboardCoords[index].setOccupy(true);
             this.letterArray[index] = letter;
         }
     }
@@ -59,63 +61,63 @@ export class GameBoard {
 
     applyBoxMultipliers() {
         const word3PosList: Coordinate[] = [
-            new Coordinate(0, 0),
-            new Coordinate(7, 0),
-            new Coordinate(14, 0),
-            new Coordinate(0, 7),
-            new Coordinate(7, 7),
-            new Coordinate(14, 7),
-            new Coordinate(0, 14),
-            new Coordinate(7, 14),
-            new Coordinate(14, 14),
+            new Coordinate(0, 0, <Letter>{}),
+            new Coordinate(7, 0, <Letter>{}),
+            new Coordinate(14, 0, <Letter>{}),
+            new Coordinate(0, 7, <Letter>{}),
+            new Coordinate(7, 7, <Letter>{}),
+            new Coordinate(14, 7, <Letter>{}),
+            new Coordinate(0, 14, <Letter>{}),
+            new Coordinate(7, 14, <Letter>{}),
+            new Coordinate(14, 14, <Letter>{}),
         ];
         word3PosList.forEach((position) => {
             const index = this.findArrayIndex(position);
             this.gameBoard[index].setWordMultiplier(3, true);
         });
         const word2PosList: Coordinate[] = [
-            new Coordinate(1, 1),
-            new Coordinate(2, 2),
-            new Coordinate(3, 3),
-            new Coordinate(4, 4),
-            new Coordinate(10, 4),
-            new Coordinate(11, 3),
-            new Coordinate(12, 2),
-            new Coordinate(13, 1),
-            new Coordinate(1, 13),
-            new Coordinate(2, 12),
-            new Coordinate(3, 11),
-            new Coordinate(4, 10),
+            new Coordinate(1, 1, <Letter>{}),
+            new Coordinate(2, 2, <Letter>{}),
+            new Coordinate(3, 3, <Letter>{}),
+            new Coordinate(4, 4, <Letter>{}),
+            new Coordinate(10, 4, <Letter>{}),
+            new Coordinate(11, 3, <Letter>{}),
+            new Coordinate(12, 2, <Letter>{}),
+            new Coordinate(13, 1, <Letter>{}),
+            new Coordinate(1, 13, <Letter>{}),
+            new Coordinate(2, 12, <Letter>{}),
+            new Coordinate(3, 11, <Letter>{}),
+            new Coordinate(4, 10, <Letter>{}),
         ];
         word2PosList.forEach((position) => {
             const index = this.findArrayIndex(position);
             this.gameBoard[index].setWordMultiplier(2, true);
         });
         const letter2List: Coordinate[] = [
-            new Coordinate(3, 0),
-            new Coordinate(11, 0),
-            new Coordinate(6, 2),
-            new Coordinate(8, 2),
-            new Coordinate(0, 3),
-            new Coordinate(7, 3),
-            new Coordinate(14, 3),
-            new Coordinate(2, 6),
-            new Coordinate(6, 6),
-            new Coordinate(8, 6),
-            new Coordinate(12, 6),
-            new Coordinate(3, 7),
-            new Coordinate(11, 7),
-            new Coordinate(2, 8),
-            new Coordinate(6, 8),
-            new Coordinate(8, 8),
-            new Coordinate(12, 8),
-            new Coordinate(0, 11),
-            new Coordinate(7, 11),
-            new Coordinate(14, 11),
-            new Coordinate(6, 12),
-            new Coordinate(8, 12),
-            new Coordinate(3, 14),
-            new Coordinate(11, 14),
+            new Coordinate(3, 0, <Letter>{}),
+            new Coordinate(11, 0, <Letter>{}),
+            new Coordinate(6, 2, <Letter>{}),
+            new Coordinate(8, 2, <Letter>{}),
+            new Coordinate(0, 3, <Letter>{}),
+            new Coordinate(7, 3, <Letter>{}),
+            new Coordinate(14, 3, <Letter>{}),
+            new Coordinate(2, 6, <Letter>{}),
+            new Coordinate(6, 6, <Letter>{}),
+            new Coordinate(8, 6, <Letter>{}),
+            new Coordinate(12, 6, <Letter>{}),
+            new Coordinate(3, 7, <Letter>{}),
+            new Coordinate(11, 7, <Letter>{}),
+            new Coordinate(2, 8, <Letter>{}),
+            new Coordinate(6, 8, <Letter>{}),
+            new Coordinate(8, 8, <Letter>{}),
+            new Coordinate(12, 8, <Letter>{}),
+            new Coordinate(0, 11, <Letter>{}),
+            new Coordinate(7, 11, <Letter>{}),
+            new Coordinate(14, 11, <Letter>{}),
+            new Coordinate(6, 12, <Letter>{}),
+            new Coordinate(8, 12, <Letter>{}),
+            new Coordinate(3, 14, <Letter>{}),
+            new Coordinate(11, 14, <Letter>{}),
         ];
         letter2List.forEach((position) => {
             const index = this.findArrayIndex(position);

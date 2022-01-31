@@ -1,5 +1,5 @@
-import { Message } from '@app/message';
 import { Service } from 'typedi';
+import { Message } from '../message';
 
 @Service()
 export class DateService {
