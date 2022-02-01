@@ -14,13 +14,15 @@ export class DictionaryValidationService {
         });
     }
 
+    // TODO: find entered words à partir de newlyPlacedLetters
+
     validateWords(enteredWords: Array<Word>): void {
         this.checkWordInDictionary(enteredWords);
         const invalidWords = this.isolateInvalidWords(enteredWords);
+        let newPoints: number = 0;
 
         if (!invalidWords) {
             // TODO : calculatePoints() + endTurn()
-            let newPoints: number = 0;
             enteredWords.forEach((word: Word) => {
                 newPoints += word.calculatePoints(word, this.gameboard);
                 // end turn
