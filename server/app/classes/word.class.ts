@@ -7,6 +7,7 @@ export class Word {
     points: number;
     isFirstWord: boolean;
     coords: Coordinate[];
+    stringFormat: string;
 
     constructor(isHorizontal: boolean, isFirstWord: boolean, firstCoord: Coordinate, stringFormat: string, gameboard: GameBoard) {
         this.isHorizontal = isHorizontal;
@@ -25,6 +26,8 @@ export class Word {
             }
             this.incrementCoord(currentCoord);
         }
+
+        this.coords.forEach((coord) => (stringFormat += coord.letter.stringChar));
     }
 
     /**
@@ -52,6 +55,8 @@ export class Word {
     incrementCoord(currentCoord: Coordinate) {
         this.isHorizontal ? currentCoord.x++ : currentCoord.y++;
     }
+
+    // TODO: find adjacent words à partir de this.coords and return array of string words
 
     calculatePoints(word: Word, gameboard: GameBoard) {
         const letterCoords: Array<Coordinate> = word.coords;
