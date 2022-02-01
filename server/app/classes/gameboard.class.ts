@@ -50,31 +50,31 @@ export class GameBoard {
         }
     }
 
-    getAdjacentCoordinate(coord: Coordinate, direction: string) {
-        const directions: string[] = ['UP', 'DOWN', 'RIGHT', 'LEFT'];
-        if (directions.includes(direction)) {
-            if (direction === 'UP') {
-                coord.setY(coord.getY() + 1);
-                this.findArrayIndex(coord);
-            }
-            if (direction === 'DOWN') {
-                coord.setY(coord.getY() - 1);
-                return this.findArrayIndex(coord);
-            }
-            if (direction === 'DOWN') {
-                coord.setY(coord.getY() - 1);
-                return this.findArrayIndex(coord);
-            }
-            if (direction === 'RIGHT') {
-                coord.setX(coord.getX() + 1);
-                return this.findArrayIndex(coord);
-            }
-            if (direction === 'LEFT') {
-                coord.setX(coord.getX() - 1);
-                return this.findArrayIndex(coord);
-            }
-        } else {
-            throw new Error("It's not a valid direction");
-        }
-    }
+    // getAdjacentCoordinate(coord: Coordinate, direction: string) {
+    //     const directions: string[] = ['UP', 'DOWN', 'RIGHT', 'LEFT'];
+    //     if (directions.includes(direction)) {
+    //         if (direction === 'UP') {
+    //             coord.setY(coord.getY() + 1);
+    //             this.findArrayIndex(coord);
+    //         }
+    //         if (direction === 'DOWN') {
+    //             coord.setY(coord.getY() - 1);
+    //             return this.findArrayIndex(coord);
+    //         }
+    //         if (direction === 'DOWN') {
+    //             coord.setY(coord.getY() - 1);
+    //             return this.findArrayIndex(coord);
+    //         }
+    //         if (direction === 'RIGHT') {
+    //             coord.setX(coord.getX() + 1);
+    //             return this.findArrayIndex(coord);
+    //         }
+    //         if (direction === 'LEFT') {
+    //             coord.setX(coord.getX() - 1);
+    //             return this.findArrayIndex(coord);
+    //         }
+    //     } else {
+    //         throw new Error("It's not a valid direction");
+    //     }
+    // }
 }
