@@ -1,6 +1,6 @@
+import { GameBoard } from 'app/classes/gameboard.class';
 import { Service } from 'typedi';
 import * as jsonDictionnary from '../../assets/dictionary.json';
-import { GameBoard } from '../classes/gameboard.class';
 import { Word } from '../classes/word.class';
 
 @Service()
@@ -9,7 +9,7 @@ export class DictionaryValidationService {
     gameboard: GameBoard; // not sure if this is good
 
     constructor() {
-        (<any>jsonDictionnary).words.forEach((word: string) => {
+        (<unknown>jsonDictionnary).words.forEach((word: string) => {
             this.dictionary.add(word);
         });
     }
@@ -17,12 +17,13 @@ export class DictionaryValidationService {
     validateWords(enteredWords: Word[]): void {
         this.checkWordInDictionary(enteredWords);
         const invalidWords = this.isolateInvalidWords(enteredWords);
-        let newPoints: number = 0;
 
         if (!invalidWords) {
+            // TODO : calculatePoints() + endTurn()
+            let newPoints = 0;
             enteredWords.forEach((word: Word) => {
                 newPoints += word.calculatePoints(word, this.gameboard);
-                // TODO: end turn
+                // end turn
             });
         } else {
             // TODO : flash invalideWords red and removeLetters();
@@ -41,7 +42,7 @@ export class DictionaryValidationService {
         });
     }
 
-    isolateInvalidWords(enteredWords: Array<Word>) {
+    isolateInvalidWords(enteredWords: Word[]) {
         return enteredWords.filter((word) => {
             word.isValid = false;
         });

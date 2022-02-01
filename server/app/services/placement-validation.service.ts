@@ -19,10 +19,10 @@ export class PlacementValidationService {
         if (direction === 'Horizontal') {
             // Filter coordList to make them in order from left to right
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            letterCoordList.sort((a, b) => (a.x < b.x ? -1 : 1));
+            const sortedCoordList = this.sortCoordinates(letterCoordList, 'Horizontal');
             // Verify for each coord if there is an adjacent box from left or right
             // First letter
-            let rightSquareIndex: number = gameBoard.getAdjacentBoxIndex(letterCoordList[0], 'Right');
+            let rightSquareIndex: number = gameBoard.getAdjacentBoxIndex(sortedCoordList[0], 'Right');
             if (!gameBoard[rightSquareIndex].getOccupy()) {
                 return isValidPlacement;
             }
@@ -45,7 +45,23 @@ export class PlacementValidationService {
             });
         } else if (direction === 'Vertical') {
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            letterCoordList.sort((a, b) => (a.y < b.y ? -1 : 1));
+            letterCoordList.sort((a, b) => (a.getY() < b.getY() ? -1 : 1));
         }
     }
+
+    private sortCoordinates(coordList: Coordinate[], direction: string) {
+        if (direction === 'Horizontal') {
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            coordList.sort((a, b) => (a.getX() < b.getX() ? -1 : 1));
+            return coordList;
+        } else if (direction === 'Vertical') {
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            coordList.sort((a, b) => (a.getX() > b.getX() ? -1 : 1));
+            return coordList;
+        } else {
+            throw new Error('This is not a valid direction');
+        }
+    }
+
+    verifyLettersBetween();
 }
