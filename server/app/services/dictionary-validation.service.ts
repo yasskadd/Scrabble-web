@@ -14,25 +14,22 @@ export class DictionaryValidationService {
         });
     }
 
-    // TODO: find entered words à partir de newlyPlacedLetters
-
-    validateWords(enteredWords: Array<Word>): void {
+    validateWords(enteredWords: Word[]): void {
         this.checkWordInDictionary(enteredWords);
         const invalidWords = this.isolateInvalidWords(enteredWords);
         let newPoints: number = 0;
 
         if (!invalidWords) {
-            // TODO : calculatePoints() + endTurn()
             enteredWords.forEach((word: Word) => {
                 newPoints += word.calculatePoints(word, this.gameboard);
-                // end turn
+                // TODO: end turn
             });
         } else {
             // TODO : flash invalideWords red and removeLetters();
         }
     }
 
-    checkWordInDictionary(enteredWords: Array<Word>): void {
+    checkWordInDictionary(enteredWords: Word[]): void {
         enteredWords.forEach((enteredWord) => {
             if (!this.dictionary.has(enteredWord.stringFormat)) {
                 enteredWord.isValid = false;
