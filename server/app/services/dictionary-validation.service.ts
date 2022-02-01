@@ -1,6 +1,6 @@
-import { GameBoard } from 'app/classes/gameboard.class';
 import { Service } from 'typedi';
 import * as jsonDictionnary from '../../assets/dictionary.json';
+import { GameBoard } from '../classes/gameboard.class';
 import { Word } from '../classes/word.class';
 
 @Service()
