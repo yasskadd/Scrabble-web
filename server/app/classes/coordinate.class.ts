@@ -1,6 +1,7 @@
 import { Letter } from './letter.class';
 
 /* eslint-disable prettier/prettier */
+
 export class Coordinate {
     x: number;
     y: number;

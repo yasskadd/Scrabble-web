@@ -1,15 +1,14 @@
 /* eslint-disable prettier/prettier */
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { Coordinate } from '../classes/coordinate.class';
-import { Letter } from '../letter';
+import { Letter } from './letter.class';
 
 export class GameBoard {
-    private gameboardCoords: Coordinate[];
-    private boxMultiplierService: BoxMultiplier;
+    gameboardCoords: Coordinate[] = new Array();
 
-    constructor() {
+    constructor(private boxMultiplierService: BoxMultiplier) {
         this.createCoordinates();
-        this.boxMultiplierService.applyBoxMultipliers();
+        this.boxMultiplierService.applyBoxMultipliers(this);
     }
 
     createCoordinates() {
@@ -17,7 +16,8 @@ export class GameBoard {
         const columnNumbers = 15;
         for (let i = 0; i < rowNumbers; i++) {
             for (let j = 0; j < columnNumbers; j++) {
-                const coord: Coordinate = new Coordinate(i, j, <Letter>{});
+                const letter: Letter = new Letter();
+                const coord: Coordinate = new Coordinate(i, j, letter);
                 this.gameboardCoords.push(coord);
             }
         }
@@ -31,12 +31,13 @@ export class GameBoard {
     placeLetter(letterCoord: Coordinate) {
         const gameboardCoord = this.getCoord(letterCoord);
         if (gameboardCoord.isOccupied === true) {
-            return;
+            return false;
         } else {
             gameboardCoord.letter = letterCoord.letter;
             gameboardCoord.isOccupied = true;
             // removeLetterFromChevalet(gameboardCoord.letter);
             // this.newlyPlacedLetters.push(gameboardCoord);
+            return true;
         }
     }
 
@@ -44,7 +45,8 @@ export class GameBoard {
         const gameboardCoord = this.getCoord(letterCoord);
         if (gameboardCoord.isOccupied) {
             // returnLetterToChevalet(gameboardCoord.letter);
-            gameboardCoord.letter = <Letter>{};
+            gameboardCoord.letter = {} as Letter;
+            gameboardCoord.isOccupied = false;
         } else {
             return;
         }

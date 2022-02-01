@@ -5,7 +5,7 @@ import { Letter } from './letter.class';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
 
-describe.only('Coordinate', () => {
+describe('Coordinate', () => {
     let coordinateClass: Coordinate;
 
     beforeEach(async () => {
