@@ -1,0 +1,166 @@
+{
+    "title": "Default Letter Reserve",
+    "letters": [
+        {
+            "letterChar": "A",
+            "quantity": 9,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "B",
+            "quantity": 2,
+            "weight": 3
+        },
+
+        {
+            "letterChar": "C",
+            "quantity": 2,
+            "weight": 3
+        },
+
+        {
+            "letterChar": "D",
+            "quantity": 3,
+            "weight": 2
+        },
+
+        {
+            "letterChar": "E",
+            "quantity": 15,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "F",
+            "quantity": 2,
+            "weight": 4
+        },
+
+        {
+            "letterChar": "G",
+            "quantity": 2,
+            "weight": 2
+        },
+
+        {
+            "letterChar": "H",
+            "quantity": 2,
+            "weight": 4
+        },
+
+        {
+            "letterChar": "I",
+            "quantity": 8,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "J",
+            "quantity": 1,
+            "weight": 8
+        },
+
+        {
+            "letterChar": "K",
+            "quantity": 1,
+            "weight": 10
+        },
+
+        {
+            "letterChar": "L",
+            "quantity": 5,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "M",
+            "quantity": 3,
+            "weight": 2
+        },
+
+        {
+            "letterChar": "N",
+            "quantity": 6,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "O",
+            "quantity": 6,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "P",
+            "quantity": 2,
+            "weight": 3
+        },
+
+        {
+            "letterChar": "Q",
+            "quantity": 1,
+            "weight": 8
+        },
+
+        {
+            "letterChar": "R",
+            "quantity": 6,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "S",
+            "quantity": 6,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "T",
+            "quantity": 6,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "U",
+            "quantity": 6,
+            "weight": 1
+        },
+
+        {
+            "letterChar": "V",
+            "quantity": 2,
+            "weight": 4
+        },
+
+        {
+            "letterChar": "W",
+            "quantity": 1,
+            "weight": 10
+        },
+
+        {
+            "letterChar": "X",
+            "quantity": 1,
+            "weight": 10
+        },
+
+        {
+            "letterChar": "Y",
+            "quantity": 1,
+            "weight": 10
+        },
+
+        {
+            "letterChar": "Z",
+            "quantity": 1,
+            "weight": 10
+        },
+
+        {
+            "letterChar": "*",
+            "quantity": 2,
+            "weight": 0
+        }
+    ]
+}

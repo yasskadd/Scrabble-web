@@ -19,7 +19,7 @@ export class PlacementValidationService {
         if (direction === 'Horizontal') {
             // Filter coordList to make them in order from left to right
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            letterCoordList.sort((a, b) => (a.getX() < b.getX() ? -1 : 1));
+            letterCoordList.sort((a, b) => (a.x < b.x ? -1 : 1));
             // Verify for each coord if there is an adjacent box from left or right
             // First letter
             let rightSquareIndex: number = gameBoard.getAdjacentBoxIndex(letterCoordList[0], 'Right');
@@ -45,7 +45,7 @@ export class PlacementValidationService {
             });
         } else if (direction === 'Vertical') {
             // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-            letterCoordList.sort((a, b) => (a.getY() < b.getY() ? -1 : 1));
+            letterCoordList.sort((a, b) => (a.y < b.y ? -1 : 1));
         }
     }
 }

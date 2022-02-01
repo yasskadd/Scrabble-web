@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 export class Coordinate {
-    private x: number;
-    private y: number;
+    x: number;
+    y: number;
 
     constructor(posX: number, posY: number) {
         this.x = posX;
@@ -19,8 +19,8 @@ export class Coordinate {
         const tempHorizontalCoords: number[] = [];
         const tempVerticalCoord: number[] = [];
         coordList.forEach((coord) => {
-            tempHorizontalCoords.push(coord.getX());
-            tempVerticalCoord.push(coord.getY());
+            tempHorizontalCoords.push(coord.x);
+            tempVerticalCoord.push(coord.x);
         });
         if (tempHorizontalCoords.length > 1 && allEqual(tempHorizontalCoords)) {
             direction = DIRECTIONS.horizontal;
@@ -31,20 +31,5 @@ export class Coordinate {
         } else {
             return direction;
         } // fix this problem
-    }
-
-    getX() {
-        return this.x;
-    }
-    getY() {
-        return this.y;
-    }
-
-    setY(value: number) {
-        this.y = value;
-    }
-
-    setX(value: number) {
-        this.x = value;
     }
 }
