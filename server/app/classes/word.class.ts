@@ -16,7 +16,7 @@ export class Word {
         this.points = 0;
 
         const lettersInOrder = stringFormat.split('');
-        let currentCoord = firstCoord;
+        const currentCoord = firstCoord;
         while (lettersInOrder.length && gameboard.getCoord(currentCoord).isOccupied) {
             const gameboardCoord = gameboard.getCoord(currentCoord);
             if (!gameboardCoord.isOccupied) {
@@ -59,13 +59,13 @@ export class Word {
     // TODO: find adjacent words à partir de this.coords and return array of string words
 
     calculatePoints(word: Word, gameboard: GameBoard) {
-        const letterCoords: Array<Coordinate> = word.coords;
+        const letterCoords: Coordinate[] = word.coords;
         this.addLetterPoints(letterCoords, gameboard);
-        this.addWordMultiplyerPoints(letterCoords, gameboard);
+        this.i(letterCoords, gameboard);
         return this.points;
     }
 
-    addLetterPoints(letterCoords: Array<Coordinate>, gameboard: GameBoard) {
+    addLetterPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
         letterCoords.forEach((letterCoord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(letterCoord);
             if (gameboardCoord.letterMultiplier > 1) {
@@ -77,7 +77,7 @@ export class Word {
         });
     }
 
-    addWordMultiplyerPoints(letterCoords: Array<Coordinate>, gameboard: GameBoard) {
+    addWordMultiplierPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
         letterCoords.forEach((letterCoord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(letterCoord);
             if (gameboardCoord.wordMultiplier > 1) {

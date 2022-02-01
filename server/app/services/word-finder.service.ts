@@ -14,8 +14,8 @@ export class WordFinderService {
         let newWordsArray: string[];
         // Verify if word is vertical or horizontal if coordList is > 1
         coordList.forEach((coord) => {
-            const mostLeftIndex: number = gameBoard.findArrayIndex(coord);
-            const mostUpIndex: number = gameBoard.findArrayIndex(coord);
+            const mostLeftCoord: Coordinate = gameBoard.getCoord(coord);
+            const mostUpCoord: Coordinate = gameBoard.getCoord(coord);
             if (coordList.length === 1) {
                 const verticalWord: string = this.buildVerticalWord(gameBoard, mostLeftIndex);
                 const horizontalWord: string = this.buildHorizontal(gameBoard, mostUpIndex);
@@ -44,8 +44,9 @@ export class WordFinderService {
         });
     }
 
-    private buildVerticalWord(gameBoard: GameBoard, mostUpIndex: number) {
-        while (gameBoard.getGameBoard()[mostUpIndex + 15].getOccupy() && gameBoard.getGameBoard()[mostUpIndex + 15] !== undefined) {
+    private buildVerticalWord(gameBoard: GameBoard, mostUpCoord: Coordinate) {
+        while (gameBoard.getCoord(mostUpCoord).isOccupied && gameBoard.getGameBoard()[mostUpIndex + 15] !== undefined) {
+            // Need method to get adjacentCoordinate in the board
             mostUpIndex += 15;
         }
         const letterArray: Letter[] = new Array();
@@ -54,7 +55,7 @@ export class WordFinderService {
             mostUpIndex -= 15;
             letterArray.push(gameBoard.getLetterArray()[mostUpIndex - 15]);
         }
-        // Construct word from the letterArray and add it to newWords array
+        // Construct word from the letterArray
         if (letterArray.length > 1) {
             const newWord: string = letterArray.join('');
             return newWord;

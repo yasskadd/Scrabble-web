@@ -24,18 +24,19 @@ export class GameBoard {
     }
 
     getCoord(coord: Coordinate) {
-        return this.gameboardCoords.filter((gameboardCoord) => (coord = gameboardCoord))[0];
+        // eslint-disable-next-line no-unused-vars
+        return this.gameboardCoords.filter((gameboardCoord) => (gameboardCoord = coord))[0];
     }
 
     placeLetter(letterCoord: Coordinate) {
         const gameboardCoord = this.getCoord(letterCoord);
-        if (gameboardCoord.isOccupied == true) {
+        if (gameboardCoord.isOccupied === true) {
             return;
         } else {
             gameboardCoord.letter = letterCoord.letter;
             gameboardCoord.isOccupied = true;
             // removeLetterFromChevalet(gameboardCoord.letter);
-            //this.newlyPlacedLetters.push(gameboardCoord);
+            // this.newlyPlacedLetters.push(gameboardCoord);
         }
     }
 
@@ -49,32 +50,31 @@ export class GameBoard {
         }
     }
 
-    // getAdjacentBoxIndex(coord: Coordinate, direction: string) {
-    //     const directions: string[] = ['UP', 'DOWN', 'RIGHT', 'LEFT'];
-    //     const upDirection =  this.gameboardCoords.
-    //     if (directions.includes(direction)) {
-    //         if (direction === 'UP') {
-    //             coord.setY(coord.getY() + 1);
-    //             this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'DOWN') {
-    //             coord.setY(coord.getY() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'DOWN') {
-    //             coord.setY(coord.getY() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'RIGHT') {
-    //             coord.setX(coord.getX() + 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'LEFT') {
-    //             coord.setX(coord.getX() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //     } else {
-    //         throw new Error("It's not a valid direction");
-    //     }
-    // }
+    getAdjacentCoordinate(coord: Coordinate, direction: string) {
+        const directions: string[] = ['UP', 'DOWN', 'RIGHT', 'LEFT'];
+        if (directions.includes(direction)) {
+            if (direction === 'UP') {
+                coord.setY(coord.getY() + 1);
+                this.findArrayIndex(coord);
+            }
+            if (direction === 'DOWN') {
+                coord.setY(coord.getY() - 1);
+                return this.findArrayIndex(coord);
+            }
+            if (direction === 'DOWN') {
+                coord.setY(coord.getY() - 1);
+                return this.findArrayIndex(coord);
+            }
+            if (direction === 'RIGHT') {
+                coord.setX(coord.getX() + 1);
+                return this.findArrayIndex(coord);
+            }
+            if (direction === 'LEFT') {
+                coord.setX(coord.getX() - 1);
+                return this.findArrayIndex(coord);
+            }
+        } else {
+            throw new Error("It's not a valid direction");
+        }
+    }
 }
