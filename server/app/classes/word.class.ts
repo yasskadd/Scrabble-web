@@ -5,18 +5,18 @@ export class Word {
     isHorizontal: boolean;
     isValid: boolean;
     points: number;
-    isFirstWord: boolean;
     coords: Coordinate[];
     stringFormat: string;
 
-    constructor(isHorizontal: boolean, isFirstWord: boolean, firstCoord: Coordinate, stringFormat: string, gameboard: GameBoard) {
+    constructor(isHorizontal: boolean, firstCoord: Coordinate, stringFormat: string, gameboard: GameBoard) {
         this.isHorizontal = isHorizontal;
-        this.isFirstWord = isFirstWord;
         this.isValid = false;
         this.points = 0;
 
         const lettersInOrder = stringFormat.split('');
+
         const currentCoord = firstCoord;
+        this.setFirstCoord(firstCoord, lettersInOrder, gameboard);
         while (lettersInOrder.length && gameboard.getCoord(currentCoord).isOccupied) {
             const gameboardCoord = gameboard.getCoord(currentCoord);
             if (!gameboardCoord.isOccupied) {
@@ -28,6 +28,17 @@ export class Word {
         }
 
         this.coords.forEach((coord) => (stringFormat += coord.letter.stringChar));
+    }
+
+    /**
+     * We
+     */
+    setFirstCoord(firstCoord: Coordinate, lettersInOrder: string[], gameboard: GameBoard) {
+        if (!gameboard.getCoord(firstCoord).isOccupied) {
+            gameboard.getCoord(firstCoord).letter = lettersInOrder[0];
+            gameboard.getCoord(firstCoord).isOccupied = true;
+            lettersInOrder.shift();
+        }
     }
 
     /**
