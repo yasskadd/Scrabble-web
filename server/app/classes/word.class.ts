@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-restricted-imports */
 import { GameBoard } from '../classes/gameboard.class';
 import { Coordinate } from './coordinate.class';
@@ -8,7 +9,7 @@ export class Word {
     points: number = 0;
     isFirstWord: boolean = false;
     coords: Coordinate[];
-    stringFormat: string;
+    stringFormat: string = '';
 
     constructor(isHorizontal: boolean, coordList: Coordinate[]) {
         this.isHorizontal = isHorizontal;
@@ -46,6 +47,7 @@ export class Word {
             const gameboardCoord = gameboard.getCoord(letterCoord);
             if (gameboardCoord.wordMultiplier > 1) {
                 this.points *= gameboardCoord.wordMultiplier;
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 gameboardCoord.resetWordMultiplier;
             }
         });

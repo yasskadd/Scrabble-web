@@ -34,10 +34,10 @@ export class Coordinate {
             tempVerticalCoord.push(coord.y);
         });
         if (tempHorizontalCoords.length > 1 && allEqual(tempHorizontalCoords)) {
-            direction = DIRECTIONS.horizontal;
+            direction = DIRECTIONS.vertical;
             return direction;
         } else if (tempVerticalCoord.length > 1 && allEqual(tempVerticalCoord)) {
-            direction = DIRECTIONS.vertical;
+            direction = DIRECTIONS.horizontal;
             return direction;
         } else {
             return direction;

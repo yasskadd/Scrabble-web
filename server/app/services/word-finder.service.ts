@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-restricted-imports */
 /* eslint-disable prettier/prettier */
@@ -9,7 +10,6 @@ import { GameBoard } from '../classes/gameboard.class';
 
 @Service()
 export class WordFinderService {
-    // Logic implemented in order to search for newly formed words after Player validates action
     findNewWords(gameBoard: GameBoard, coordList: Coordinate[]) {
         const newWordsArray: Word[] = new Array();
         // Verify if only one letter is placed
@@ -28,16 +28,13 @@ export class WordFinderService {
             newWordsArray.push(firstWord);
             // Build other words
             coordList.forEach((coord) => {
-                const direction: string = Coordinate.findDirection(coordList) as string;
-                if (direction === 'Horizontal') {
+                if (!firstWord.isHorizontal) {
                     const horizontalWord: Word = this.buildVerticalWord(gameBoard, coord);
-                    // Construct word from the letterArray and add it to newWords array
                     if (horizontalWord.coords.length !== 0 && horizontalWord.coords.length !== 1) {
                         newWordsArray.push(horizontalWord);
                     }
-                } else if (direction === 'Vertical') {
+                } else if (firstWord.isHorizontal) {
                     const verticalWord: Word = this.buildHorizontal(gameBoard, coord);
-                    // add it to newWords array
                     if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
                         newWordsArray.push(verticalWord);
                     }
@@ -49,16 +46,19 @@ export class WordFinderService {
 
     buildFirstWord(gameboard: GameBoard, coordList: Coordinate[]) {
         const direction: string = Coordinate.findDirection(coordList) as string;
+        // eslint-disable-next-line no-console
+        console.log(direction);
+        let isHorizontal = true;
         let currentCoord = coordList[0];
         const coordArray: Coordinate[] = new Array();
-        const stringArray: string[] = new Array();
         if (direction === 'Horizontal') {
+            isHorizontal = true;
             while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
                 const x: number = currentCoord.x;
                 const y: number = currentCoord.y;
                 const gameCoord = gameboard.getCoord(currentCoord);
+                console.log(gameCoord);
                 coordArray.push(gameCoord);
-                stringArray.push(gameCoord.letter.stringChar);
                 if (x !== 14) {
                     currentCoord = new Coordinate(x + 1, y, {} as Letter);
                 } else {
@@ -66,12 +66,12 @@ export class WordFinderService {
                 }
             }
         } else if (direction === 'Vertical') {
+            isHorizontal = false;
             while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
                 const x: number = currentCoord.x;
                 const y: number = currentCoord.y;
                 const gameCoord = gameboard.getCoord(currentCoord);
                 coordArray.push(gameCoord);
-                stringArray.push(gameCoord.letter.stringChar);
                 if (y !== 0) {
                     currentCoord = new Coordinate(x, y - 1, {} as Letter);
                 } else {
@@ -79,8 +79,7 @@ export class WordFinderService {
                 }
             }
         }
-        const stringFormat: string = stringArray.join('');
-        const word = new Word(true, false, coordArray[0], stringFormat, gameboard);
+        const word = new Word(isHorizontal, coordArray);
         return word;
     }
 
@@ -89,7 +88,6 @@ export class WordFinderService {
         while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             if (y !== 14) {
                 currentCoord = new Coordinate(x, y + 1, {} as Letter);
             } else {
@@ -97,22 +95,17 @@ export class WordFinderService {
             }
         }
         const coordArray: Coordinate[] = new Array();
-        const stringArray: string[] = new Array();
         coordArray.push(currentCoord);
         while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             const gameCoord: Coordinate = gameBoard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            stringArray.push(gameCoord.letter.stringChar);
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             if (y !== 0) {
                 currentCoord = new Coordinate(x, y - 1, {} as Letter);
             }
         }
-        // TODO: Construct word from the letterArray
-        const stringFormat: string = stringArray.join('');
-        const word = new Word(false, false, coordArray[0], stringFormat, gameBoard);
+        const word = new Word(false, coordArray);
         return word;
     }
 
@@ -128,23 +121,17 @@ export class WordFinderService {
             }
         }
         const coordArray: Coordinate[] = new Array();
-        const stringArray: string[] = new Array();
         coordArray.push(currentCoord);
-        stringArray.push(currentCoord.letter.stringChar);
         while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             const gameCoord: Coordinate = gameBoard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            stringArray.push(gameCoord.letter.stringChar);
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
             if (x !== 14) {
                 currentCoord = new Coordinate(x + 1, y, {} as Letter);
             }
         }
-        // TODO: Construct word from the letterArray and add it to newWords array
-        const stringFormat: string = stringArray.join('');
-        const word = new Word(true, false, coordArray[0], stringFormat, gameBoard);
+        const word = new Word(true, coordArray);
         return word;
     }
 }

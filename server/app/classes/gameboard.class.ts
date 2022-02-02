@@ -25,7 +25,9 @@ export class GameBoard {
 
     getCoord(coord: Coordinate) {
         // eslint-disable-next-line no-unused-vars
-        return this.gameboardCoords.filter((gameboardCoord) => (gameboardCoord = coord))[0];
+        const x: number = coord.x;
+        const y: number = coord.y;
+        return this.gameboardCoords[14 * x + y + 1];
     }
 
     placeLetter(letterCoord: Coordinate) {

@@ -21,12 +21,12 @@ describe.only('WordFinderService', () => {
         boxMultiplierService = Container.get(BoxMultiplier);
         wordFinderService = Container.get(WordFinderService);
         gameboard = new GameBoard(boxMultiplierService);
-        letterA.stringChar = 'A';
-        letterB.stringChar = 'B';
-        letterC.stringChar = 'C';
+        letterA.stringChar = 'a';
+        letterB.stringChar = 'b';
+        letterC.stringChar = 'c';
     });
 
-    it('buildFirstWord should build word with string being abc', () => {
+    it.only('buildFirstWord should build word with string being abc', () => {
         gameboard.placeLetter(new Coordinate(0, 0, letterA));
         gameboard.placeLetter(new Coordinate(1, 0, letterB));
         gameboard.placeLetter(new Coordinate(2, 0, letterC));

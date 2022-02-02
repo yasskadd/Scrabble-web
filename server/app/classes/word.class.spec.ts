@@ -2,32 +2,26 @@
 import { expect } from 'chai';
 import { Coordinate } from './coordinate.class';
 import { Letter } from './letter.class';
+import { Word } from './word.class';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
 
 describe('Coordinate', () => {
-    let coordinateClass: Coordinate;
+    let word: Word;
+    const letterA = new Letter();
+    const letterB = new Letter();
+    const letterC = new Letter();
 
     beforeEach(async () => {
-        coordinateClass = new Coordinate(0, 0, new Letter());
+        letterA.stringChar = 'a';
+        letterB.stringChar = 'b';
+        letterC.stringChar = 'c';
     });
 
-    it('should reset letterMultiplier to 1 if resetLetterMultiplier is called', () => {
-        coordinateClass.letterMultiplier = 5;
-        coordinateClass.resetLetterMultiplier();
-        expect(coordinateClass.letterMultiplier).to.equal(1);
-    });
-
-    it('should reset wordMultiplier if resetWordMultiplier is called', () => {
-        coordinateClass.wordMultiplier = 5;
-        coordinateClass.resetWordMultiplier();
-        expect(coordinateClass.wordMultiplier).to.equal(1);
-    });
-
-    it('should correctly set class attributes when constructor is called', () => {
-        expect(coordinateClass.x && coordinateClass.y).to.equal(0);
-        expect(coordinateClass.letterMultiplier && coordinateClass.wordMultiplier).to.equal(1);
-        expect(coordinateClass.isOccupied).to.equal(false);
-        expect(coordinateClass.letter).to.eql(new Letter());
+    it('stringFormat attribute should be the abc', () => {
+        const coordList: Coordinate[] = [new Coordinate(0, 0, letterA), new Coordinate(1, 0, letterB), new Coordinate(2, 0, letterC)];
+        word = new Word(true, coordList);
+        expect(word.stringFormat).to.eql('abc');
+        expect(word.isHorizontal).to.be.true;
     });
 });

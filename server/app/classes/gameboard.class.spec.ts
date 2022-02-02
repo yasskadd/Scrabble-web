@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable prettier/prettier */
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { expect } from 'chai';
@@ -7,7 +8,7 @@ import { GameBoard } from './gameboard.class';
 import { Letter } from './letter.class';
 import sinon = require('sinon');
 
-describe('gameboard', () => {
+describe.only('gameboard', () => {
     let gameboard: GameBoard;
     let boxMultiplierService: BoxMultiplier;
 
@@ -75,5 +76,16 @@ describe('gameboard', () => {
         expect(gameboardCoord.y).to.eql(coord.y);
         expect(gameboardCoord.isOccupied).to.be.false;
         expect(gameboardCoord.letter).to.eql({} as Letter);
+    });
+
+    it.only('should return correct Coordinate when getCoord is called', () => {
+        const letter = new Letter();
+        letter.stringChar = 'c';
+        const coord = new Coordinate(1, 1, letter);
+        gameboard.placeLetter(coord);
+        const newCoord = new Coordinate(1, 1, {} as Letter);
+        expect(gameboard.getCoord(newCoord).letter.stringChar).to.eql('c');
+        expect(gameboard.getCoord(newCoord).x).to.equal(1);
+        expect(gameboard.getCoord(newCoord).y).to.equal(1);
     });
 });
