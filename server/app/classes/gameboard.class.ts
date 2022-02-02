@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { Coordinate } from '../classes/coordinate.class';
-import { Letter } from './letter.class';
+import { Letter } from '../letter';
 
 export class GameBoard {
     gameboardCoords: Coordinate[] = new Array();
@@ -16,7 +16,7 @@ export class GameBoard {
         const columnNumbers = 15;
         for (let i = 0; i < rowNumbers; i++) {
             for (let j = 0; j < columnNumbers; j++) {
-                const letter: Letter = new Letter();
+                const letter: Letter = {} as Letter;
                 const coord: Coordinate = new Coordinate(i, j, letter);
                 this.gameboardCoords.push(coord);
             }
@@ -51,32 +51,4 @@ export class GameBoard {
             return;
         }
     }
-
-    // getAdjacentCoordinate(coord: Coordinate, direction: string) {
-    //     const directions: string[] = ['UP', 'DOWN', 'RIGHT', 'LEFT'];
-    //     if (directions.includes(direction)) {
-    //         if (direction === 'UP') {
-    //             coord.setY(coord.getY() + 1);
-    //             this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'DOWN') {
-    //             coord.setY(coord.getY() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'DOWN') {
-    //             coord.setY(coord.getY() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'RIGHT') {
-    //             coord.setX(coord.getX() + 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'LEFT') {
-    //             coord.setX(coord.getX() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //     } else {
-    //         throw new Error("It's not a valid direction");
-    //     }
-    // }
 }

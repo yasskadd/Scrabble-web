@@ -1,12 +1,15 @@
 import { GameBoard } from '../classes/gameboard.class';
+import { Letter } from '../letter';
 import { Coordinate } from './coordinate.class';
 
 export class Word {
     isHorizontal: boolean;
     isValid: boolean;
     points: number;
-    coords: Coordinate[];
+    newLetterCoords: Coordinate[];
+    wordCoords: Coordinate[];
     stringFormat: string;
+    adjacentWords: Word[];
 
     constructor(isHorizontal: boolean, firstCoord: Coordinate, stringFormat: string, gameboard: GameBoard) {
         this.isHorizontal = isHorizontal;
@@ -14,10 +17,11 @@ export class Word {
         this.points = 0;
 
         const lettersInOrder = stringFormat.split('');
-
         const currentCoord = firstCoord;
-        this.setFirstCoord(firstCoord, lettersInOrder, gameboard);
-        while (lettersInOrder.length && gameboard.getCoord(currentCoord).isOccupied) {
+
+        // TODO:checker si le string.length = 1, then check both up and down for words
+
+        while (lettersInOrder.length || gameboard.getCoord(currentCoord).isOccupied) {
             const gameboardCoord = gameboard.getCoord(currentCoord);
             if (!gameboardCoord.isOccupied) {
                 this.addNewLetterToWordCoords(lettersInOrder, currentCoord, gameboardCoord);
@@ -26,19 +30,8 @@ export class Word {
             }
             this.incrementCoord(currentCoord);
         }
-
-        this.coords.forEach((coord) => (stringFormat += coord.letter.stringChar));
-    }
-
-    /**
-     * We
-     */
-    setFirstCoord(firstCoord: Coordinate, lettersInOrder: string[], gameboard: GameBoard) {
-        if (!gameboard.getCoord(firstCoord).isOccupied) {
-            gameboard.getCoord(firstCoord).letter = lettersInOrder[0];
-            gameboard.getCoord(firstCoord).isOccupied = true;
-            lettersInOrder.shift();
-        }
+        this.wordCoords.forEach((coord) => (stringFormat += coord.letter.stringChar));
+        this.findAjacentWords(gameboard, this.newLetterCoords);
     }
 
     /**
@@ -51,7 +44,9 @@ export class Word {
             points: 0, // TODO: get points for letter
         };
         gameboardCoord.letter = newLetter;
-        this.coords.push(new Coordinate(currentCoord.x, currentCoord.y, newLetter));
+        const newLetterCoord = new Coordinate(currentCoord.x, currentCoord.y, newLetter);
+        this.wordCoords.push(newLetterCoord);
+        this.newLetterCoords.push(newLetterCoord);
         lettersInOrder.shift();
     }
 
@@ -59,42 +54,84 @@ export class Word {
      * Adds letter from board to word coordinates
      */
     addOldLetterToWordCoords(currentCoord: Coordinate, gameboardCoord: Coordinate) {
-        const oldLetter = gameboardCoord.letter;
-        this.coords.push(new Coordinate(currentCoord.x, currentCoord.y, oldLetter));
+        const oldLetterCoord = gameboardCoord.letter;
+        this.wordCoords.push(new Coordinate(currentCoord.x, currentCoord.y, oldLetterCoord));
     }
 
     incrementCoord(currentCoord: Coordinate) {
         this.isHorizontal ? currentCoord.x++ : currentCoord.y++;
     }
 
-    // TODO: find adjacent words à partir de this.coords and return array of string words
+    findAjacentWords(gameboard: GameBoard, newletterCoords: Coordinate[]) {
+        if (this.isHorizontal) {
+            this.findNewAdjacentVerticalWords(gameboard, newletterCoords);
+        } else {
+            this.findNewAdjacentHorizontalWords(gameboard, newletterCoords);
+        }
+    }
 
-    // calculatePoints(word: Word, gameboard: GameBoard) {
-    //     const letterCoords: Coordinate[] = word.coords;
-    //     this.addLetterPoints(letterCoords, gameboard);
-    //     this.i(letterCoords, gameboard);
-    //     return this.points;
-    // }
+    findNewAdjacentVerticalWords(gameboard: GameBoard, newletterCoords: Coordinate[]) {
+        newletterCoords.forEach((coord) => {
+            let upLetterCoord = new Coordinate(coord.x, coord.y + 1, {} as Letter);
+            if (gameboard.getCoord(upLetterCoord).isOccupied) {
+                while (gameboard.getCoord(upLetterCoord).isOccupied) {
+                    upLetterCoord.y++;
+                }
+                this.buildAdjacentWord(gameboard, upLetterCoord);
+            }
+            const downLetterCoord = new Coordinate(coord.x, coord.y - 1, {} as Letter);
+            if (gameboard.getCoord(downLetterCoord).isOccupied) {
+                this.buildAdjacentWord(gameboard, coord);
+            }
+        });
+    }
 
-    // addLetterPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
-    //     letterCoords.forEach((letterCoord: Coordinate) => {
-    //         const gameboardCoord = gameboard.getCoord(letterCoord);
-    //         if (gameboardCoord.letterMultiplier > 1) {
-    //             this.points += letterCoord.letter.points * gameboardCoord.letterMultiplier;
-    //             gameboardCoord.resetLetterMultiplier();
-    //         } else {
-    //             this.points += letterCoord.letter.points;
-    //         }
-    //     });
-    // }
+    findNewAdjacentHorizontalWords(gameboard: GameBoard, newletterCoords: Coordinate[]) {
+        newletterCoords.forEach((coord) => {
+            let leftLetterCoord = new Coordinate(coord.x - 1, coord.y, {} as Letter);
+            if (gameboard.getCoord(leftLetterCoord).isOccupied) {
+                while (gameboard.getCoord(leftLetterCoord).isOccupied) {
+                    leftLetterCoord.x--;
+                }
+                this.buildAdjacentWord(gameboard, leftLetterCoord);
+            }
+            const rightLetterCoord = new Coordinate(coord.x + 1, coord.y, {} as Letter);
+            if (gameboard.getCoord(rightLetterCoord).isOccupied) {
+                this.buildAdjacentWord(gameboard, coord);
+            }
+        });
+    }
 
-    // addWordMultiplierPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
-    //     letterCoords.forEach((letterCoord: Coordinate) => {
-    //         const gameboardCoord = gameboard.getCoord(letterCoord);
-    //         if (gameboardCoord.wordMultiplier > 1) {
-    //             this.points *= gameboardCoord.wordMultiplier;
-    //             gameboardCoord.resetWordMultiplier;
-    //         }
-    //     });
-    // }
+    buildAdjacentWord(gameboard: GameBoard, firstLetterCoord: Coordinate) {
+        const firstCoordGameboardString: string = gameboard.getCoord(firstLetterCoord).letter.stringChar;
+        const adjacentWord: Word = new Word(!this.isHorizontal, firstLetterCoord, firstCoordGameboardString, gameboard);
+        this.adjacentWords.push(adjacentWord);
+    }
+
+    calculatePoints(gameboard: GameBoard) {
+        this.addLetterPoints(this.wordCoords, gameboard);
+        this.addWordMultiplierPoints(this.wordCoords, gameboard);
+        return this.points;
+    }
+
+    addLetterPoints(wordCoords: Coordinate[], gameboard: GameBoard) {
+        wordCoords.forEach((coord: Coordinate) => {
+            const gameboardCoord = gameboard.getCoord(coord);
+            if (gameboardCoord.letterMultiplier > 1 && this.newLetterCoords.includes(gameboardCoord)) {
+                this.points += coord.letter.points * gameboardCoord.letterMultiplier;
+            } else {
+                this.points += coord.letter.points;
+            }
+        });
+    }
+
+    addWordMultiplierPoints(wordCoords: Coordinate[], gameboard: GameBoard) {
+        wordCoords.forEach((coord: Coordinate) => {
+            const gameboardCoord = gameboard.getCoord(coord);
+            if (gameboardCoord.wordMultiplier > 1 && this.newLetterCoords.includes(gameboardCoord)) {
+                this.points *= gameboardCoord.wordMultiplier;
+                gameboardCoord.resetWordMultiplier;
+            }
+        });
+    }
 }
