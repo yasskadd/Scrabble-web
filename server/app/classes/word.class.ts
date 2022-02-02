@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import { GameBoard } from '../classes/gameboard.class';
 import { Letter } from '../letter';
 import { Coordinate } from './coordinate.class';
@@ -130,7 +131,6 @@ export class Word {
             const gameboardCoord = gameboard.getCoord(coord);
             if (gameboardCoord.wordMultiplier > 1 && this.newLetterCoords.includes(gameboardCoord)) {
                 this.points *= gameboardCoord.wordMultiplier;
-                gameboardCoord.resetWordMultiplier;
             }
         });
     }
