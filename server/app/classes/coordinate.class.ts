@@ -25,4 +25,31 @@ export class Coordinate {
     resetWordMultiplier() {
         this.wordMultiplier = 1;
     }
+
+    static findDirection(coordList: Coordinate[]) {
+        const DIRECTIONS = {
+            horizontal: 'Horizontal',
+            vertical: 'Vertical',
+            none: 'None',
+        };
+        let direction: string = DIRECTIONS.none;
+        const allEqual = (arr: number[]) => arr.every((v) => v === arr[0]);
+        const tempHorizontalCoords: number[] = [];
+        const tempVerticalCoord: number[] = [];
+        coordList.forEach((coord) => {
+            tempHorizontalCoords.push(coord.x);
+            tempVerticalCoord.push(coord.y);
+        });
+        if (tempHorizontalCoords.length > 1 && allEqual(tempHorizontalCoords)) {
+            direction = DIRECTIONS.horizontal;
+            return direction;
+        } else if (tempVerticalCoord.length > 1 && allEqual(tempVerticalCoord)) {
+            direction = DIRECTIONS.vertical;
+            return direction;
+        } else {
+            return direction;
+        } 
+    }
+
+    }
 }
