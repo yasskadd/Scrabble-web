@@ -1,33 +1,37 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable prettier/prettier */
+import { Coordinate } from '@app/classes/coordinate.class';
+import { GameBoard } from '@app/classes/gameboard.class';
+import { Letter } from '@app/classes/letter.class';
+import { Word } from '@app/classes/word.class';
 import { expect } from 'chai';
-import { Coordinate } from './coordinate.class';
-import { Letter } from './letter.class';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-// import sinon = require('sinon');
+import { Container } from 'typedi';
+import { BoxMultiplier } from './box-multiplier.service';
+import { WordFinderService } from './word-finder.service';
 
-describe('WordFinderService', () => {
-    let coordinateClass: Coordinate;
+describe.only('WordFinderService', () => {
+    let gameboard: GameBoard;
+    let boxMultiplierService: BoxMultiplier;
+    let wordFinderService: WordFinderService;
+    const letterA: Letter = new Letter();
+    const letterB: Letter = new Letter();
+    const letterC: Letter = new Letter();
 
-    beforeEach(async () => {
-        coordinateClass = new Coordinate(0, 0, new Letter());
+    beforeEach(() => {
+        boxMultiplierService = Container.get(BoxMultiplier);
+        wordFinderService = Container.get(WordFinderService);
+        gameboard = new GameBoard(boxMultiplierService);
+        letterA.stringChar = 'A';
+        letterB.stringChar = 'B';
+        letterC.stringChar = 'C';
     });
 
-    it('should reset letterMultiplier to 1 if resetLetterMultiplier is called', () => {
-        coordinateClass.letterMultiplier = 5;
-        coordinateClass.resetLetterMultiplier();
-        expect(coordinateClass.letterMultiplier).to.equal(1);
-    });
-
-    it('should reset wordMultiplier if resetWordMultiplier is called', () => {
-        coordinateClass.wordMultiplier = 5;
-        coordinateClass.resetWordMultiplier();
-        expect(coordinateClass.wordMultiplier).to.equal(1);
-    });
-
-    it('should correctly set class attributes when constructor is called', () => {
-        expect(coordinateClass.x && coordinateClass.y).to.equal(0);
-        expect(coordinateClass.letterMultiplier && coordinateClass.wordMultiplier).to.equal(1);
-        expect(coordinateClass.isOccupied).to.equal(false);
-        expect(coordinateClass.letter).to.eql(new Letter());
+    it('buildFirstWord should build word with string being abc', () => {
+        gameboard.placeLetter(new Coordinate(0, 0, letterA));
+        gameboard.placeLetter(new Coordinate(1, 0, letterB));
+        gameboard.placeLetter(new Coordinate(2, 0, letterC));
+        const placedLetters: Coordinate[] = [new Coordinate(0, 0, letterA), new Coordinate(1, 0, letterB), new Coordinate(1, 0, letterC)];
+        const word: Word = wordFinderService.buildFirstWord(gameboard, placedLetters);
+        expect(word.stringFormat).to.eql('abc');
     });
 });

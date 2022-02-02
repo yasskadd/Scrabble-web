@@ -3,5 +3,5 @@ export class Letter {
     points: number;
     quantity: number;
 
-    updateQuantity() {}
+    // updateQuantity() {}
 }

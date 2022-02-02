@@ -24,9 +24,7 @@ export class Server {
     }
     init(): void {
         this.application.app.set('port', Server.appPort);
-
         this.server = http.createServer(this.application.app);
-
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
         this.server.on('listening', () => this.onListening());

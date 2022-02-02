@@ -58,32 +58,32 @@ export class Word {
 
     // TODO: find adjacent words à partir de this.coords and return array of string words
 
-    calculatePoints(word: Word, gameboard: GameBoard) {
-        const letterCoords: Coordinate[] = word.coords;
-        this.addLetterPoints(letterCoords, gameboard);
-        this.i(letterCoords, gameboard);
-        return this.points;
-    }
+    // calculatePoints(word: Word, gameboard: GameBoard) {
+    //     const letterCoords: Coordinate[] = word.coords;
+    //     this.addLetterPoints(letterCoords, gameboard);
+    //     this.i(letterCoords, gameboard);
+    //     return this.points;
+    // }
 
-    addLetterPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
-        letterCoords.forEach((letterCoord: Coordinate) => {
-            const gameboardCoord = gameboard.getCoord(letterCoord);
-            if (gameboardCoord.letterMultiplier > 1) {
-                this.points += letterCoord.letter.points * gameboardCoord.letterMultiplier;
-                gameboardCoord.resetLetterMultiplier();
-            } else {
-                this.points += letterCoord.letter.points;
-            }
-        });
-    }
+    // addLetterPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
+    //     letterCoords.forEach((letterCoord: Coordinate) => {
+    //         const gameboardCoord = gameboard.getCoord(letterCoord);
+    //         if (gameboardCoord.letterMultiplier > 1) {
+    //             this.points += letterCoord.letter.points * gameboardCoord.letterMultiplier;
+    //             gameboardCoord.resetLetterMultiplier();
+    //         } else {
+    //             this.points += letterCoord.letter.points;
+    //         }
+    //     });
+    // }
 
-    addWordMultiplierPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
-        letterCoords.forEach((letterCoord: Coordinate) => {
-            const gameboardCoord = gameboard.getCoord(letterCoord);
-            if (gameboardCoord.wordMultiplier > 1) {
-                this.points *= gameboardCoord.wordMultiplier;
-                gameboardCoord.resetWordMultiplier;
-            }
-        });
-    }
+    // addWordMultiplierPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
+    //     letterCoords.forEach((letterCoord: Coordinate) => {
+    //         const gameboardCoord = gameboard.getCoord(letterCoord);
+    //         if (gameboardCoord.wordMultiplier > 1) {
+    //             this.points *= gameboardCoord.wordMultiplier;
+    //             gameboardCoord.resetWordMultiplier;
+    //         }
+    //     });
+    // }
 }

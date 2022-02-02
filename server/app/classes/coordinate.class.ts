@@ -19,13 +19,6 @@ export class Coordinate {
         this.wordMultiplier = 1;
     }
 
-    resetLetterMultiplier() {
-        this.letterMultiplier = 1;
-    }
-    resetWordMultiplier() {
-        this.wordMultiplier = 1;
-    }
-
     static findDirection(coordList: Coordinate[]) {
         const DIRECTIONS = {
             horizontal: 'Horizontal',
@@ -48,8 +41,13 @@ export class Coordinate {
             return direction;
         } else {
             return direction;
-        } 
+        }
     }
 
+    resetLetterMultiplier() {
+        this.letterMultiplier = 1;
+    }
+    resetWordMultiplier() {
+        this.wordMultiplier = 1;
     }
 }
