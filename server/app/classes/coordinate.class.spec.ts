@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable prettier/prettier */
 import { Letter } from '@app/letter';
 import { expect } from 'chai';

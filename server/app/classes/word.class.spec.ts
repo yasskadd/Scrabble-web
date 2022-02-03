@@ -6,7 +6,7 @@
 import { Letter } from '@app/letter';
 import { BoxMultiplier } from '@app/services/box-multiplier.service';
 import { expect } from 'chai';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Coordinate } from './coordinate.class';
 import { GameBoard } from './gameboard.class';
 import { Word } from './word.class';
@@ -125,7 +125,7 @@ describe('Word', () => {
         expect(gameboardCoord.wordMultiplier).to.equal(1);
     });
 
-    it.only('should reset letter in gameboard after calculating points', () => {
+    it('should reset letter in gameboard after calculating points', () => {
         const coordList: Coordinate[] = [new Coordinate(1, 0, letterA), new Coordinate(2, 0, letterB), new Coordinate(3, 0, letterC)];
         word = new Word(true, coordList);
         word.calculatePoints(gameboard);

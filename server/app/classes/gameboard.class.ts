@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable no-restricted-imports */
 /* eslint-disable prettier/prettier */
 import { Letter } from '@app/letter';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
+import { Inject } from 'typedi';
 import { Coordinate } from '../classes/coordinate.class';
 
 export class GameBoard {
     gameboardCoords: Coordinate[] = new Array();
 
-    constructor(private boxMultiplierService: BoxMultiplier) {
+    constructor(@Inject() private boxMultiplierService: BoxMultiplier) {
         this.createCoordinates();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }

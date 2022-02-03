@@ -5,17 +5,17 @@
 import { Letter } from '@app/letter';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { expect } from 'chai';
-import { Container } from 'typedi';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Coordinate } from './coordinate.class';
 import { GameBoard } from './gameboard.class';
-import sinon = require('sinon');
+import Sinon = require('sinon');
 
 describe('gameboard', () => {
     let gameboard: GameBoard;
-    let boxMultiplierService: BoxMultiplier;
+    let boxMultiplierService: SinonStubbedInstance<BoxMultiplier>;
 
     beforeEach(() => {
-        boxMultiplierService = Container.get(BoxMultiplier);
+        boxMultiplierService = createStubInstance(BoxMultiplier);
         gameboard = new GameBoard(boxMultiplierService);
     });
 
@@ -41,11 +41,10 @@ describe('gameboard', () => {
     });
 
     it('should call createCoordinates and applyBoxMultipliers', () => {
-        const spyCreateCoord = sinon.spy(GameBoard.prototype, 'createCoordinates');
-        const spyApplyBoxMultipliers = sinon.spy(boxMultiplierService, 'applyBoxMultipliers');
+        const spyCreateCoord = Sinon.spy(GameBoard.prototype, 'createCoordinates');
         new GameBoard(boxMultiplierService);
         expect(spyCreateCoord.called).to.be.true;
-        expect(spyApplyBoxMultipliers.called).to.be.true;
+        expect(boxMultiplierService.applyBoxMultipliers.called).to.be.true;
     });
 
     it('should place letter on board if coordinate is not occupied', () => {

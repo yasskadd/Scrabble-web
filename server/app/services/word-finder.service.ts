@@ -14,10 +14,11 @@ export class WordFinderService {
         // Verify if only one letter is placed
         if (coordList.length === 1) {
             const verticalWord: Word = this.buildVerticalWord(gameBoard, coordList[0]);
-            const horizontalWord: Word = this.buildHorizontal(gameBoard, coordList[0]);
-            if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
+            const horizontalWord: Word = this.buildHorizontalWord(gameBoard, coordList[0]);
+            if (verticalWord.coords.length > 1) {
                 newWordsArray.push(verticalWord);
-            } else if (horizontalWord.coords.length !== 0 && horizontalWord.coords.length !== 1) {
+            }
+            if (horizontalWord.coords.length > 1) {
                 newWordsArray.push(horizontalWord);
             }
             return newWordsArray;
@@ -33,7 +34,7 @@ export class WordFinderService {
                         newWordsArray.push(horizontalWord);
                     }
                 } else if (firstWord.isHorizontal) {
-                    const verticalWord: Word = this.buildHorizontal(gameBoard, coord);
+                    const verticalWord: Word = this.buildHorizontalWord(gameBoard, coord);
                     if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
                         newWordsArray.push(verticalWord);
                     }
@@ -48,7 +49,7 @@ export class WordFinderService {
         const currentCoord = coordList[0];
         let word: Word;
         if (direction === 'Horizontal') {
-            word = this.buildHorizontal(gameboard, currentCoord);
+            word = this.buildHorizontalWord(gameboard, currentCoord);
         } else if (direction === 'Vertical') {
             word = this.buildVerticalWord(gameboard, currentCoord);
         } else {
@@ -63,7 +64,12 @@ export class WordFinderService {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             if (y !== 14) {
-                currentCoord = new Coordinate(x, y + 1, {} as Letter);
+                const nextCoord = new Coordinate(x, y + 1, {} as Letter);
+                if (gameBoard.getCoord(nextCoord).isOccupied) {
+                    currentCoord = nextCoord;
+                } else {
+                    break;
+                }
             } else {
                 break;
             }
@@ -76,19 +82,30 @@ export class WordFinderService {
             coordArray.push(gameCoord);
             if (y !== 0) {
                 currentCoord = new Coordinate(x, y - 1, {} as Letter);
+            } else {
+                break;
             }
         }
-        const word = new Word(false, coordArray);
-        return word;
+        if (coordArray.length > 1) {
+            const word = new Word(false, coordArray);
+            return word;
+        } else {
+            return new Word(false, []);
+        }
     }
 
-    private buildHorizontal(gameBoard: GameBoard, coord: Coordinate) {
+    private buildHorizontalWord(gameBoard: GameBoard, coord: Coordinate) {
         let currentCoord: Coordinate = coord;
         while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             if (x !== 0) {
-                currentCoord = new Coordinate(x - 1, y, {} as Letter);
+                const nextCoord = new Coordinate(x - 1, y, {} as Letter);
+                if (gameBoard.getCoord(nextCoord).isOccupied) {
+                    currentCoord = nextCoord;
+                } else {
+                    break;
+                }
             } else {
                 break;
             }
@@ -105,7 +122,11 @@ export class WordFinderService {
                 break;
             }
         }
-        const word = new Word(true, coordArray);
-        return word;
+        if (coordArray.length > 1) {
+            const word = new Word(true, coordArray);
+            return word;
+        } else {
+            return new Word(true, []);
+        }
     }
 }

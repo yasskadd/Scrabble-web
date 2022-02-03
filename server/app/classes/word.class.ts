@@ -21,7 +21,7 @@ export class Word {
         });
     }
 
-    calculatePoints(this: Word, gameboard: GameBoard) {
+    calculatePoints(gameboard: GameBoard) {
         const letterCoords: Coordinate[] = this.coords;
         this.addLetterPoints(letterCoords, gameboard);
         this.addWordMultiplierPoints(letterCoords, gameboard);

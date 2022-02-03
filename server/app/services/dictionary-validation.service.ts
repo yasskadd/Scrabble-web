@@ -1,51 +1,52 @@
+/* eslint-disable no-console */
+/* eslint-disable no-restricted-imports */
+import { Word } from '@app/classes/word.class';
 import { GameBoard } from 'app/classes/gameboard.class';
-import { Service } from 'typedi';
-// eslint-disable-next-line no-restricted-imports
-import * as jsonDictionary from '../../assets/dictionary.json';
-import { Word } from '../classes/word.class';
+import { Container, Service } from 'typedi';
+import * as jsonDictionary from '../../assets/dictionnary.json';
+import { BoxMultiplier } from './box-multiplier.service';
 
 @Service()
 export class DictionaryValidationService {
-    dictionary: Set<string>;
-    gameboard: GameBoard; // not sure if this is good
+    dictionary: Set<string> = new Set();
+    gameboard: GameBoard = new GameBoard(Container.get(BoxMultiplier)); // not sure if this is good
 
     constructor() {
-        (<unknown>jsonDictionary).words.forEach((word: string) => {
+        jsonDictionary.words.forEach((word: string) => {
             this.dictionary.add(word);
         });
     }
 
-    validateWords(enteredWords: Word[]): void {
+    validateWords(enteredWords: Word[]): number {
         this.checkWordInDictionary(enteredWords);
         const invalidWords = this.isolateInvalidWords(enteredWords);
-
-        if (!invalidWords) {
+        let roundPoints = 0;
+        if (invalidWords.length === 0) {
             // TODO : calculatePoints() + endTurn()
-            let newPoints = 0;
             enteredWords.forEach((word: Word) => {
-                newPoints += word.calculatePoints(word, this.gameboard);
+                roundPoints += word.calculatePoints(this.gameboard);
+                // roundPoints += points;
+                // console.log('CALLED');
                 // end turn
             });
+            return roundPoints;
         } else {
             // TODO : flash invalideWords red and removeLetters();
+            return roundPoints;
         }
     }
 
-    checkWordInDictionary(enteredWords: Word[]): void {
-        enteredWords.forEach((enteredWord) => {
-            if (!this.dictionary.has(enteredWord.stringFormat)) {
-                enteredWord.isValid = false;
-                console.log(enteredWord + 'is not valid');
+    private checkWordInDictionary(wordList: Word[]): void {
+        wordList.forEach((word) => {
+            if (!this.dictionary.has(word.stringFormat)) {
+                word.isValid = false;
             } else {
-                enteredWord.isValid = true;
-                console.log(enteredWord + 'is not valid');
+                word.isValid = true;
             }
         });
     }
 
-    isolateInvalidWords(enteredWords: Word[]) {
-        return enteredWords.filter((word) => {
-            word.isValid = false;
-        });
+    private isolateInvalidWords(enteredWords: Word[]) {
+        return enteredWords.filter((word) => word.isValid === false);
     }
 }

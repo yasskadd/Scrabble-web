@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable no-restricted-imports */
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { Letter } from '@app/letter';
 import { Service } from 'typedi';
