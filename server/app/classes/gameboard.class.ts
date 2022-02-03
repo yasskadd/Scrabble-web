@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
+import { Letter } from '@app/letter';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { Coordinate } from '../classes/coordinate.class';
-import { Letter } from './letter.class';
 
 export class GameBoard {
     gameboardCoords: Coordinate[] = new Array();
@@ -14,9 +14,9 @@ export class GameBoard {
     createCoordinates() {
         const rowNumbers = 15;
         const columnNumbers = 15;
-        for (let i = 0; i < rowNumbers; i++) {
-            for (let j = 0; j < columnNumbers; j++) {
-                const letter: Letter = new Letter();
+        for (let j = 0; j < rowNumbers; j++) {
+            for (let i = 0; i < columnNumbers; i++) {
+                const letter: Letter = {} as Letter;
                 const coord: Coordinate = new Coordinate(i, j, letter);
                 this.gameboardCoords.push(coord);
             }
@@ -27,7 +27,7 @@ export class GameBoard {
         // eslint-disable-next-line no-unused-vars
         const x: number = coord.x;
         const y: number = coord.y;
-        return this.gameboardCoords[14 * x + y + 1];
+        return this.gameboardCoords[15 * y + x];
     }
 
     placeLetter(letterCoord: Coordinate) {
@@ -53,32 +53,4 @@ export class GameBoard {
             return;
         }
     }
-
-    // getAdjacentCoordinate(coord: Coordinate, direction: string) {
-    //     const directions: string[] = ['UP', 'DOWN', 'RIGHT', 'LEFT'];
-    //     if (directions.includes(direction)) {
-    //         if (direction === 'UP') {
-    //             coord.setY(coord.getY() + 1);
-    //             this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'DOWN') {
-    //             coord.setY(coord.getY() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'DOWN') {
-    //             coord.setY(coord.getY() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'RIGHT') {
-    //             coord.setX(coord.getX() + 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //         if (direction === 'LEFT') {
-    //             coord.setX(coord.getX() - 1);
-    //             return this.findArrayIndex(coord);
-    //         }
-    //     } else {
-    //         throw new Error("It's not a valid direction");
-    //     }
-    // }
 }

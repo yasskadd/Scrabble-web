@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
+import { Letter } from '@app/letter';
 import { Service } from 'typedi';
 import { Coordinate } from '../classes/coordinate.class';
 import { GameBoard } from '../classes/gameboard.class';
-import { Letter } from '../letter';
 
 @Service()
 export class BoxMultiplier {

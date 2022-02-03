@@ -1,6 +1,6 @@
-import { Letter } from './letter.class';
-
 /* eslint-disable prettier/prettier */
+
+import { Letter } from '@app/letter';
 
 export class Coordinate {
     x: number;

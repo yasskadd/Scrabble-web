@@ -1,14 +1,16 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-console */
 /* eslint-disable prettier/prettier */
+import { Letter } from '@app/letter';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { expect } from 'chai';
 import { Container } from 'typedi';
 import { Coordinate } from './coordinate.class';
 import { GameBoard } from './gameboard.class';
-import { Letter } from './letter.class';
 import sinon = require('sinon');
 
-describe.only('gameboard', () => {
+describe('gameboard', () => {
     let gameboard: GameBoard;
     let boxMultiplierService: BoxMultiplier;
 
@@ -78,7 +80,7 @@ describe.only('gameboard', () => {
         expect(gameboardCoord.letter).to.eql({} as Letter);
     });
 
-    it.only('should return correct Coordinate when getCoord is called', () => {
+    it('should return correct Coordinate when getCoord is called', () => {
         const letter = new Letter();
         letter.stringChar = 'c';
         const coord = new Coordinate(1, 1, letter);

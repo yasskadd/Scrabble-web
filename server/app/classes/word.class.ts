@@ -21,16 +21,14 @@ export class Word {
         });
     }
 
-    // TODO: find adjacent words à partir de this.coords and return array of string words
-
-    calculatePoints(word: Word, gameboard: GameBoard) {
-        const letterCoords: Coordinate[] = word.coords;
+    calculatePoints(this: Word, gameboard: GameBoard) {
+        const letterCoords: Coordinate[] = this.coords;
         this.addLetterPoints(letterCoords, gameboard);
-        this.addLetterPoints(letterCoords, gameboard);
+        this.addWordMultiplierPoints(letterCoords, gameboard);
         return this.points;
     }
 
-    addLetterPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
+    private addLetterPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
         letterCoords.forEach((letterCoord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(letterCoord);
             if (gameboardCoord.letterMultiplier > 1) {
@@ -42,13 +40,12 @@ export class Word {
         });
     }
 
-    addWordMultiplierPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
+    private addWordMultiplierPoints(letterCoords: Coordinate[], gameboard: GameBoard) {
         letterCoords.forEach((letterCoord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(letterCoord);
             if (gameboardCoord.wordMultiplier > 1) {
                 this.points *= gameboardCoord.wordMultiplier;
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                gameboardCoord.resetWordMultiplier;
+                gameboardCoord.resetWordMultiplier();
             }
         });
     }
