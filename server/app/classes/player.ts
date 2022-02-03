@@ -7,8 +7,9 @@ interface Letter {
 
 export class Player {
     rack: Letter[] = [];
-    private score: number = 0;
-    private name: string;
+    score: number = 0;
+    name: string;
+    room: string;
     // private objs[] : Objectif;
 
     constructor(name: string) {

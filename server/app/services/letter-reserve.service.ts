@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-restricted-imports
-import * as letterJSON from '../../assets/letter-reserve.json';
 // eslint-disable-next-line no-restricted-imports
 import { Letter } from '../../app/services/letter';
+import * as letterJSON from '../../assets/letter-reserve.json';
 
 // Temporary place
 export class LetterReserveService {
@@ -67,7 +67,7 @@ export class LetterReserveService {
         rack = this.removeLettersFromRack(letters, rack);
 
         // Exchange X quantity of letters
-        this.generateLetters(letters.length, rack);
+        const newRack = this.generateLetters(letters.length, rack);
 
         // Put back the letters exchanged into the reserve
         letters.forEach((letter) => {
@@ -83,7 +83,7 @@ export class LetterReserveService {
                 }
             }
         }
-        return rack;
+        return newRack;
     }
 
     /**
@@ -92,12 +92,13 @@ export class LetterReserveService {
      * @param quantity : The number of letter to be given from the letter reserve to a player.
      * @param rack : The rack of the player.
      */
-    generateLetters(quantity: number, rack: Letter[]): number {
-        let generatedQuantity = 0;
+    generateLetters(quantity: number, rack: Letter[]): Letter[] {
+        // const generatedQuantity = 0;
         for (let i = 0; i < quantity; i++) {
             this.distributeLetter(rack);
-            generatedQuantity++;
+            // generatedQuantity++;
         }
-        return generatedQuantity;
+        // return generatedQuantity;
+        return rack;
     }
 }

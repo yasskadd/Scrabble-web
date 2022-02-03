@@ -54,47 +54,59 @@ export class GameService {
     /**
      * Skip a turn.
      *
-     * @param player1 : The active player who will skip.
-     * @param player2 : The next active player.
+     * @param playerName : The active player who will skip.
      */
-    skip(player1: Player, player2: Player): void {
-        if (this.turn.validating(player1)) {
-            this.turn.end(player2);
-        } else {
-            // console.log('Not your turn');
+    skip(playerName: string): boolean {
+        if (this.turn.validating(playerName) && this.player1.name === playerName) {
+            this.turn.end();
+            return true;
+        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
+            this.turn.end();
+            return true;
         }
+
+        return false;
     }
 
     /**
      * Play the turn by placing letters.
      *
-     * @param player1 : The active player who will play.
-     * @param player2 : The next active player.
+     * @param playerName : The active player who will play.
      */
-    play(player1: Player, player2: Player): void {
-        if (this.turn.validating(player1)) {
-            // TODO Add place letter logic
-            // console.log('play');
-            this.turn.end(player2);
-        } else {
-            // console.log('Not your turn');
+    play(playerName: string): void {
+        if (this.turn.validating(playerName) && this.player1.name === playerName) {
+            // TODO : Add placement logic
+            this.turn.end();
+            // TODO: return list of letters placed;
+        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
+            // TODO: return list of letters placed;
+            this.turn.end();
+            // TODO: return list of letters placed;
         }
+
+        return undefined;
     }
 
     /**
      * Exchange letters.
      *
      * @param player1 : The active player who will exchange.
-     * @param player2 : The next active player.
      * @param letters : The letters to exchange.
      */
-    exchange(player1: Player, player2: Player, letters: Letter[]): void {
-        if (this.turn.validating(player1)) {
-            player1.rack = this.letterReserve.exchangeLetter(letters, player1.rack);
-            this.turn.end(player2);
-        } else {
-            // console.log('Not your turn');
+    exchange(letters: Letter[], playerName: string): Letter[] {
+        if (this.turn.validating(playerName) && this.player1.name === playerName) {
+            this.player1.rack = this.letterReserve.exchangeLetter(letters, this.player1.rack);
+            this.turn.end();
+
+            return this.player1.rack;
+        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
+            this.player2.rack = this.letterReserve.exchangeLetter(this.player2.rack, this.player2.rack);
+            this.turn.end();
+
+            return this.player2.rack;
         }
+
+        return [];
     }
 
     /**
