@@ -1,7 +1,6 @@
 import { Message } from '@app/message';
 import { DateService } from '@app/services/date.service';
 import { Service } from 'typedi';
-
 @Service()
 export class ExampleService {
     clientMessages: Message[];

@@ -2,7 +2,8 @@ import { Application } from '@app/app';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
-
+import { SocketManager } from './services/socket-manager.service';
+import { SocketSubscribeHandler } from './services/socket-subscribe-handler';
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
@@ -10,7 +11,7 @@ export class Server {
     private static readonly baseDix: number = 10;
     private server: http.Server;
 
-    constructor(private readonly application: Application) {}
+    constructor(private readonly application: Application, private socketManger: SocketManager, private handler: SocketSubscribeHandler) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -26,6 +27,10 @@ export class Server {
         this.application.app.set('port', Server.appPort);
 
         this.server = http.createServer(this.application.app);
+
+        this.handler.initSocketsEvents();
+        this.socketManger.init(this.server);
+        this.socketManger.handleSockets();
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
