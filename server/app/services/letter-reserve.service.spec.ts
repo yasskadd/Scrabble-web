@@ -22,7 +22,7 @@ describe('LetterReserveService', () => {
         ];
     });
 
-    it('default letter reserve should be generated', () => {
+    it('should generate default letter reserve', () => {
         const defaultLetterReserve = service.getDefaultLetterReserve();
         expect(defaultLetterReserve).to.eql(letterReserve);
     });
@@ -60,7 +60,7 @@ describe('LetterReserveService', () => {
         expect(updatedRack.length).to.eql(expectedLength);
     });
 
-    it('properly exchange letter', () => {
+    it('should properly exchange letter', () => {
         const oldRack = sampleRack;
         const newRack = service.exchangeLetter(sampleRack, sampleRack);
         expect(newRack).to.not.eql(oldRack);
