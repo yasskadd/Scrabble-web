@@ -1,10 +1,11 @@
-import { Server } from 'app/server';
 import { expect } from 'chai';
+import { createServer, Server } from 'http';
+import { AddressInfo } from 'net';
 import * as sinon from 'sinon';
 import * as io from 'socket.io';
-// import { Socket } from 'socket.io-client';
+import { io as Client, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { Container } from 'typedi';
+import Container from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
 type SioSignature = SocketManager['sio'];
@@ -16,35 +17,25 @@ const TEST_ROOM = 'EldenRingHype';
 const TEST_MESSAGE = 'RipNoTime';
 
 describe('SocketManager service tests', () => {
+    // let ioServer: io.Server;
     let service: SocketManager;
-    let server: Server;
-    // let clientSocket: Socket;
+    // eslint-disable-next-line no-unused-vars
+    // let serverSocket: io.Socket;
+    let clientSocket: Socket;
+
     let sio: SioSignature;
     let joinCallbackOn: CallbackSignature;
     let emitMessageCallbackOn: CallbackSignature;
     let joinCallbackSio: OnSioCallbackSignature;
     let emitMessageCallbackSio: OnSioCallbackSignature;
-    // let changeBooleanCallbackOn: CallbackSignature;
-    // let changeBooleanCallbackSio: OnSioCallbackSignature;
-    // let testBoolean1: boolean;
-    // let testBoolean2: boolean;
+    let changeBooleanCallbackOn: CallbackSignature;
+    let changeBooleanCallbackSio: OnSioCallbackSignature;
+    let testBoolean1: boolean;
+    let testBoolean2: boolean;
+    let port: number;
+    let httpServer: Server;
 
-    // const urlString = 'http://localhost:5020';
-    beforeEach(async () => {
-        // testBoolean1 = false;
-        // testBoolean2 = false;
-        // Reason : we just need to check if the callBack is called, we don't need socket testing
-        // eslint-disable-next-line no-unused-vars
-        // changeBooleanCallbackOn = (_) => {
-        //     testBoolean1 = true;
-        // };
-
-        // Reason : we just need to check if the callBack is called, we don't need socket testing
-        // eslint-disable-next-line no-unused-vars
-        // changeBooleanCallbackSio = (i, _) => {
-        //     testBoolean2 = true;
-        // };
-
+    beforeEach(() => {
         joinCallbackOn = (socket) => socket.join(TEST_ROOM);
         emitMessageCallbackOn = (socket) => socket.emit(TEST_MESSAGE);
         joinCallbackSio = (o, socket) => {
@@ -55,17 +46,20 @@ describe('SocketManager service tests', () => {
             socket.emit(TEST_ROOM);
             o.to(TEST_ROOM).emit(TEST_MESSAGE);
         };
-        server = Container.get(Server);
-        server.init();
         service = Container.get(SocketManager);
 
+        httpServer = createServer();
+        httpServer.listen();
+        service.init(httpServer);
         // Reason :  to be able to use sio for tests
         // eslint-disable-next-line dot-notation
         sio = service['sio'];
     });
 
     afterEach(() => {
+        // clientSocket.close();
         sio.close();
+
         sinon.restore();
     });
 
@@ -111,23 +105,41 @@ describe('SocketManager service tests', () => {
         expect(callBackEventArray?.pop()).to.be.equal(joinCallbackSio);
     });
 
-    // TODO : finish this last test
+    it('handleSockets() should subscribe all the events to the sockets', (done) => {
+        testBoolean1 = false;
+        testBoolean2 = false;
+        const timeoutWait = 200;
 
-    // it('handleSockets() should subscribe all the events to the sockets', (done) => {
-    //     const EVENT = 'eventTest';
-    //     service.io(EVENT, changeBooleanCallbackSio);
+        // Reason : we just need to check if the callBack is called, we don't need socket testing
+        // eslint-disable-next-line no-unused-vars
+        changeBooleanCallbackOn = (_) => {
+            testBoolean1 = true;
+        };
 
-    //     service.on(EVENT, changeBooleanCallbackOn);
+        // Reason : we just need to check if the callBack is called, we don't need socket testing
+        // eslint-disable-next-line no-unused-vars
+        changeBooleanCallbackSio = (i, _) => {
+            testBoolean2 = true;
+        };
+        const EVENT = 'eventTest';
+        service.io(EVENT, changeBooleanCallbackSio);
 
-    //     service.handleSockets();
+        service.on(EVENT, changeBooleanCallbackOn);
 
-    //     clientSocket = ioClient(urlString);
-    //     clientSocket.emit(EVENT);
-    //     setTimeout(() => {
-    //         expect(testBoolean1).to.be.equal(true);
-    //         expect(testBoolean2).to.be.equal(true);
-    //         done();
-    //     });
-    //     clientSocket.close();
-    // });
+        service.handleSockets();
+        const addr = httpServer.address() as AddressInfo;
+        port = addr.port;
+
+        clientSocket = Client(`http://localhost:${port}`);
+        clientSocket.on('connect', done);
+        setTimeout(() => {
+            clientSocket.open();
+            clientSocket.emit(EVENT);
+            expect(testBoolean1).to.be.equal(true);
+            expect(testBoolean2).to.be.equal(true);
+            clientSocket.close();
+            done();
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        }, timeoutWait);
+    });
 });
