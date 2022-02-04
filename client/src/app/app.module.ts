@@ -3,6 +3,10 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
@@ -15,6 +19,9 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
+import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
+import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
+import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
 
 /**
  * Main module that is used in main.ts.
@@ -30,15 +37,22 @@ import { DialogBoxComponent } from './components/dialog-box/dialog-box.component
         MaterialPageComponent,
         PlayAreaComponent,
         SidebarComponent,
+        MultiplayerJoinPageComponent,
+        MultiplayerCreatePageComponent,
+        WaitingOpponentPageComponent,
         ChatboxComponent,
         DialogBoxComponent,
     ],
     imports: [
         AppMaterialModule,
+        AppRoutingModule,
+        MatSnackBarModule,
+        MatProgressBarModule,
         MatInputModule,
         MatFormFieldModule,
+        MatListModule,
+        MatSelectModule,
         ReactiveFormsModule,
-        AppRoutingModule,
         BrowserAnimationsModule,
         BrowserModule,
         FormsModule,

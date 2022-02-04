@@ -2,6 +2,7 @@ import { Application } from '@app/app';
 import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
+import { GameSessions } from './services/game-sessions.service';
 import { SocketManager } from './services/socket-manager.service';
 import { SocketSubscribeHandler } from './services/socket-subscribe-handler';
 @Service()
@@ -10,8 +11,12 @@ export class Server {
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
     private static readonly baseDix: number = 10;
     private server: http.Server;
-
-    constructor(private readonly application: Application, private socketManger: SocketManager, private handler: SocketSubscribeHandler) {}
+    constructor(
+        private readonly application: Application,
+        private socketManager: SocketManager,
+        private gameSessions: GameSessions,
+        private handler: SocketSubscribeHandler,
+    ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
         const port: number = typeof val === 'string' ? parseInt(val, this.baseDix) : val;
@@ -28,9 +33,10 @@ export class Server {
 
         this.server = http.createServer(this.application.app);
 
+        this.gameSessions.initSocketEvents();
+        this.socketManager.init(this.server);
+        this.socketManager.handleSockets();
         this.handler.initSocketsEvents();
-        this.socketManger.init(this.server);
-        this.socketManger.handleSockets();
 
         this.server.listen(Server.appPort);
         this.server.on('error', (error: NodeJS.ErrnoException) => this.onError(error));
