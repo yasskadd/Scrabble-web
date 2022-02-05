@@ -8,10 +8,10 @@ const SECOND = 1000;
 
 @Service()
 export class TurnService {
-    private activePlayer: string;
-    private inactivePlayer: string;
+    activePlayer: string | undefined;
+    inactivePlayer: string | undefined;
     private time: number;
-    private timeOut: NodeJS.Timer;
+    private timeOut: number;
 
     constructor(time: number) {
         this.time = time;
@@ -24,7 +24,7 @@ export class TurnService {
         let tempTime = this.time;
         this.timeOut = setInterval(() => {
             tempTime = tempTime - 1;
-            if (tempTime === -1) {
+            if (tempTime === 0) {
                 clearInterval(this.timeOut);
                 this.end();
             }
@@ -48,14 +48,16 @@ export class TurnService {
      *
      * @param playerName : The player who is playing next.
      */
-    end(playerName: string | undefined = this.inactivePlayer): void {
+    end(endGame?: boolean): void {
         clearInterval(this.timeOut);
-        const tempInactivePlayer: string = playerName;
-        this.inactivePlayer = this.activePlayer;
-        this.activePlayer = tempInactivePlayer;
 
-        if (this.activePlayer !== undefined) {
+        if (!endGame) {
+            const tempInactivePlayer: string | undefined = this.inactivePlayer;
+            this.inactivePlayer = this.activePlayer;
+            this.activePlayer = tempInactivePlayer;
             this.start();
+        } else {
+            this.activePlayer = undefined;
         }
     }
 
