@@ -12,10 +12,11 @@ describe('LetterReserveService', () => {
         service = new LetterReserveService();
         emptyRack = [];
         sampleRack = [
-            { letter: 'A', quantity: 9, weight: 3 },
-            { letter: 'B', quantity: 2, weight: 4 },
-            { letter: 'C', quantity: 2, weight: 3 },
-            { letter: 'D', quantity: 3, weight: 2 },
+            { letter: 'A', quantity: 8, weight: 3 },
+            { letter: 'B', quantity: 0, weight: 4 },
+            { letter: 'B', quantity: 0, weight: 4 },
+            { letter: 'C', quantity: 1, weight: 3 },
+            { letter: 'D', quantity: 2, weight: 2 },
         ];
     });
 
@@ -43,13 +44,22 @@ describe('LetterReserveService', () => {
     it('should return random letter', () => {
         const expectedLength = sampleRack.length + 1;
         service.distributeLetter(sampleRack);
+
         expect(sampleRack.length).to.equal(expectedLength);
     });
 
     it('should remove one letter from the rack', () => {
         const expectedLength = sampleRack.length - 1;
-        const updatedRack = service.removeLettersFromRack([{ letter: 'A', quantity: 9, weight: 3 }], sampleRack);
+        const updatedRack = service.removeLettersFromRack([{ letter: 'A', quantity: 8, weight: 3 }], sampleRack);
+        expect(updatedRack.length).to.equal(expectedLength);
+    });
 
+    it('should remove one and only one letter B from the rack which contains two B', () => {
+        const expectedLength = sampleRack.length - 1;
+        const letterToRemove = { letter: 'B', quantity: 0, weight: 4 };
+        const updatedRack = service.removeLettersFromRack([letterToRemove], sampleRack);
+
+        expect(updatedRack).to.deep.include(letterToRemove);
         expect(updatedRack.length).to.equal(expectedLength);
     });
 
