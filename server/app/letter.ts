@@ -1,4 +1,4 @@
-import { Word } from './word.class';
+import { Word } from '../app/classes/word.class';
 
 export interface Letter extends Word {
     stringChar: string;
