@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-imports */
-import { GameBoard } from '../classes/gameboard.class';
 import { Letter } from '../letter';
-import { Coordinate } from './coordinate.class';
+import { Coordinate } from './Coordinate.class';
+import { Gameboard } from './Gameboard.class';
 
 export class Word {
     isHorizontal: boolean;
@@ -12,7 +12,7 @@ export class Word {
     stringFormat: string;
     adjacentWords: Word[];
 
-    constructor(isHorizontal: boolean, firstCoord: Coordinate, stringFormat: string, gameboard: GameBoard) {
+    constructor(isHorizontal: boolean, firstCoord: Coordinate, stringFormat: string, gameboard: Gameboard) {
         this.isHorizontal = isHorizontal;
         this.isValid = false;
         this.points = 0;
@@ -64,7 +64,7 @@ export class Word {
         this.isHorizontal ? currentCoord.x++ : currentCoord.y++;
     }
 
-    findAjacentWords(gameboard: GameBoard, newletterCoords: Coordinate[]) {
+    findAjacentWords(gameboard: Gameboard, newletterCoords: Coordinate[]) {
         if (this.isHorizontal) {
             this.findNewAdjacentVerticalWords(gameboard, newletterCoords);
         } else {
@@ -72,7 +72,7 @@ export class Word {
         }
     }
 
-    findNewAdjacentVerticalWords(gameboard: GameBoard, newletterCoords: Coordinate[]) {
+    findNewAdjacentVerticalWords(gameboard: Gameboard, newletterCoords: Coordinate[]) {
         newletterCoords.forEach((coord) => {
             let upLetterCoord = new Coordinate(coord.x, coord.y + 1, {} as Letter);
             if (gameboard.getCoord(upLetterCoord).isOccupied) {
@@ -88,7 +88,7 @@ export class Word {
         });
     }
 
-    findNewAdjacentHorizontalWords(gameboard: GameBoard, newletterCoords: Coordinate[]) {
+    findNewAdjacentHorizontalWords(gameboard: Gameboard, newletterCoords: Coordinate[]) {
         newletterCoords.forEach((coord) => {
             let leftLetterCoord = new Coordinate(coord.x - 1, coord.y, {} as Letter);
             if (gameboard.getCoord(leftLetterCoord).isOccupied) {
@@ -104,19 +104,19 @@ export class Word {
         });
     }
 
-    buildAdjacentWord(gameboard: GameBoard, firstLetterCoord: Coordinate) {
+    buildAdjacentWord(gameboard: Gameboard, firstLetterCoord: Coordinate) {
         const firstCoordGameboardString: string = gameboard.getCoord(firstLetterCoord).letter.stringChar;
         const adjacentWord: Word = new Word(!this.isHorizontal, firstLetterCoord, firstCoordGameboardString, gameboard);
         this.adjacentWords.push(adjacentWord);
     }
 
-    calculatePoints(gameboard: GameBoard) {
+    calculatePoints(gameboard: Gameboard) {
         this.addLetterPoints(this.wordCoords, gameboard);
         this.addWordMultiplierPoints(this.wordCoords, gameboard);
         return this.points;
     }
 
-    addLetterPoints(wordCoords: Coordinate[], gameboard: GameBoard) {
+    addLetterPoints(wordCoords: Coordinate[], gameboard: Gameboard) {
         wordCoords.forEach((coord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(coord);
             if (gameboardCoord.letterMultiplier > 1 && this.newLetterCoords.includes(gameboardCoord)) {
@@ -127,7 +127,7 @@ export class Word {
         });
     }
 
-    addWordMultiplierPoints(wordCoords: Coordinate[], gameboard: GameBoard) {
+    addWordMultiplierPoints(wordCoords: Coordinate[], gameboard: Gameboard) {
         wordCoords.forEach((coord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(coord);
             if (gameboardCoord.wordMultiplier > 1 && this.newLetterCoords.includes(gameboardCoord)) {
