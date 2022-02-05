@@ -1,55 +1,89 @@
-// describe('Example service', () => {
-//     let exampleService: ExampleService;
-//     let dateService: SinonStubbedInstance<DateService>;
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { Player } from '@app/classes/player';
+import { expect } from 'chai';
+import { SinonFakeTimers, spy, useFakeTimers } from 'sinon';
+import { TurnService } from './turn.service';
 
-//     beforeEach(async () => {
-//         return null;
-//     });
+const SECOND = 1000;
 
-//     it('should return a simple message if #about is called', () => {
-//         const expectedTitle = 'Basic Server About Page';
-//         const expectedBody = 'Try calling /api/docs to get the documentation';
-//         const aboutMessage = exampleService.about();
-//         expect(aboutMessage.title).to.equals(expectedTitle);
-//         expect(aboutMessage.body).to.equals(expectedBody);
-//     });
+describe('TurnService', () => {
+    let turnService: TurnService;
+    let clock: SinonFakeTimers;
+    let time: number;
+    let player1: Player;
+    let player2: Player;
 
-//     it('should return Hello World as title', (done: Mocha.Done) => {
-//         exampleService.helloWorld().then((result: Message) => {
-//             expect(result.title).to.equals('Hello world');
-//             done();
-//         });
-//     });
+    beforeEach(() => {
+        time = 30;
+        turnService = new TurnService(time);
+        clock = useFakeTimers();
+        player1 = new Player('player1');
+        player2 = new Player('player2');
+    });
 
-//     it('should have a body that starts with "Time is"', (done: Mocha.Done) => {
-//         exampleService.helloWorld().then((result: Message) => {
-//             expect(result.body)
-//                 .to.be.a('string')
-//                 .and.satisfy((body: string) => body.startsWith('Time is'));
-//             done();
-//         });
-//     });
+    afterEach(() => {
+        clock.restore();
+    });
 
-//     it('should handle an error from DateService', async () => {
-//         dateService.currentTime.returns(Promise.reject(new Error('error in the service')));
-//         const message = await exampleService.helloWorld();
-//         expect(message.title).to.equals('Error');
-//     });
+    it('start() should start the timer and not end it when there is still time left on the clock', () => {
+        turnService.start();
+        const spyEnd = spy(turnService, 'end');
+        clock.tick(SECOND);
+        expect(spyEnd.called).to.be.false;
+    });
 
-//     it('should store a message', (done: Mocha.Done) => {
-//         const newMessage: Message = { title: 'Hello', body: 'World' };
-//         exampleService.storeMessage(newMessage);
-//         expect(exampleService.clientMessages[0]).to.equals(newMessage);
-//         done();
-//     });
+    it('start() should start the timer and  end it when the time up', () => {
+        turnService.start();
+        const spyEnd = spy(turnService, 'end');
+        clock.tick(time * SECOND);
+        expect(spyEnd.called).to.be.true;
+    });
 
-//     it('should get all messages', (done: Mocha.Done) => {
-//         const newMessage: Message = { title: 'Hello', body: 'World' };
-//         const newMessage2: Message = { title: 'Hello', body: 'Again' };
-//         exampleService.clientMessages.push(newMessage);
-//         exampleService.clientMessages.push(newMessage2);
-//         const messages = exampleService.getAllMessages();
-//         expect(messages).to.equals(exampleService.clientMessages);
-//         done();
-//     });
-// });
+    it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other', () => {
+        turnService.determinePlayer(player1, player2);
+        const activePlayer = turnService.activePlayer;
+        const inactivePlayer = turnService.inactivePlayer;
+        expect(activePlayer).to.not.undefined;
+        expect(inactivePlayer).to.not.undefined;
+        expect(activePlayer).to.not.equal(inactivePlayer);
+    });
+
+    it('end() should end the activePlayer turn and start the inactivePlayer turn', () => {
+        turnService.activePlayer = player1.name;
+        turnService.inactivePlayer = player2.name;
+        const spyStart = spy(turnService, 'start');
+        // turnService.start();
+        turnService.end();
+
+        expect(spyStart.called).to.be.true;
+        expect(turnService.activePlayer).to.equal(player2.name);
+        expect(turnService.inactivePlayer).to.equal(player1.name);
+    });
+
+    it('end() should not start anyone turn if true is entered as parameter to signal the ending of the game', () => {
+        turnService.activePlayer = player1.name;
+        turnService.inactivePlayer = player2.name;
+        const spyStart = spy(turnService, 'start');
+        turnService.end(true);
+
+        expect(spyStart.called).to.be.false;
+        expect(turnService.activePlayer).to.equal(undefined);
+    });
+
+    it('validating() should return true if it is the turn of the player entered as the parameter to play', () => {
+        turnService.activePlayer = player1.name;
+        turnService.inactivePlayer = player2.name;
+        const validated = turnService.validating(player1.name);
+
+        expect(validated).to.be.true;
+    });
+
+    it('validating() should return false if it is not the turn of the player entered as the parameter to play', () => {
+        turnService.activePlayer = player2.name;
+        turnService.inactivePlayer = player1.name;
+        const validated = turnService.validating(player1.name);
+
+        expect(validated).to.be.false;
+    });
+});
