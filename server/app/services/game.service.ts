@@ -16,11 +16,11 @@ const MAX_QUANTITY = 7;
 export class GameService {
     player1: Player;
     player2: Player;
-    letterReserve: LetterReserveService;
-    turn: TurnService;
 
-    constructor(player1: Player, player2: Player, time: number) {
-        this.start(player1, player2, time);
+    constructor(player1: Player, player2: Player, private turn: TurnService, private letterReserve: LetterReserveService) {
+        // this.start(player1, player2);
+        this.player1 = player1;
+        this.player2 = player2;
     }
 
     /**
@@ -30,12 +30,7 @@ export class GameService {
      * @param player2 : The second player in the game.
      * @param time    : The maximum time allowed per player's turn.
      */
-    start(player1: Player, player2: Player, time: number): void {
-        this.player1 = player1;
-        this.player2 = player2;
-        this.turn = new TurnService(time);
-        this.letterReserve = new LetterReserveService();
-
+    start(): void {
         this.letterReserve.generateLetters(MAX_QUANTITY, this.player1.rack);
         this.letterReserve.generateLetters(MAX_QUANTITY, this.player2.rack);
         this.turn.determinePlayer(this.player1, this.player2);

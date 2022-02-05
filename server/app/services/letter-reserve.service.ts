@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-restricted-imports
 // eslint-disable-next-line no-restricted-imports
 // import { Letter } from '../../app/letter';
+import { Service } from 'typedi';
 import * as letterJSON from '../../assets/letter-reserve.json';
 
 // Temporary place
@@ -10,6 +11,7 @@ export interface Letter {
     weight: number;
 }
 
+@Service()
 export class LetterReserveService {
     lettersReserve: Letter[];
     constructor() {
