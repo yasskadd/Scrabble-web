@@ -74,16 +74,21 @@ export class LetterReserveService {
             return letter.letter;
         });
 
-        tempRack = tempRack.filter((letter) => tempToBeRemoved.indexOf(letter) < 0);
+        tempRack = tempRack.filter((letter) => {
+            const index = tempToBeRemoved.indexOf(letter);
+            if (index >= 0) {
+                delete tempToBeRemoved[index];
+            }
+            return index < 0;
+        });
 
         const updatedRack: Letter[] = [];
 
         for (const letter of tempRack) {
-            for (const value of rack) {
-                if (value.letter === letter) {
-                    updatedRack.push(value);
-                }
-            }
+            const index = rack.findIndex((element) => {
+                return element.letter === letter;
+            });
+            updatedRack.push(rack[index]);
         }
 
         return updatedRack;
