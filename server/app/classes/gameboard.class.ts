@@ -11,7 +11,7 @@ export class GameBoard {
         this.boxMultiplierService.applyBoxMultipliers(this);
     }
 
-    createCoordinates() {
+    createCoordinates(): void {
         const rowNumbers = 15;
         const columnNumbers = 15;
         for (let i = 0; i < rowNumbers; i++) {
@@ -23,28 +23,28 @@ export class GameBoard {
         }
     }
 
-    getCoord(coord: Coordinate) {
+    getCoord(coord: Coordinate): Coordinate {
         // eslint-disable-next-line no-unused-vars
         return this.gameboardCoords.filter((gameboardCoord) => (gameboardCoord = coord))[0];
     }
 
-    placeLetter(letterCoord: Coordinate) {
+    placeLetter(letterCoord: Coordinate): boolean {
         const gameboardCoord = this.getCoord(letterCoord);
         if (gameboardCoord.isOccupied === true) {
             return false;
         } else {
+            // TODO : removeLetterFromChevalet(gameboardCoord.letter);
             gameboardCoord.letter = letterCoord.letter;
             gameboardCoord.isOccupied = true;
-            // removeLetterFromChevalet(gameboardCoord.letter);
-            // this.newlyPlacedLetters.push(gameboardCoord);
             return true;
         }
     }
 
+    // might not be necessary
     removeLetter(letterCoord: Coordinate) {
         const gameboardCoord = this.getCoord(letterCoord);
         if (gameboardCoord.isOccupied) {
-            // returnLetterToChevalet(gameboardCoord.letter);
+            // TODO : returnLetterToChevalet(gameboardCoord.letter);
             gameboardCoord.letter = {} as Letter;
             gameboardCoord.isOccupied = false;
         } else {

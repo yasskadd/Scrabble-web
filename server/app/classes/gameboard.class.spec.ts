@@ -2,9 +2,9 @@
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { expect } from 'chai';
 import { Container } from 'typedi';
+import { Letter } from '../letter';
 import { Coordinate } from './coordinate.class';
 import { GameBoard } from './gameboard.class';
-import { Letter } from './letter.class';
 import sinon = require('sinon');
 
 describe('gameboard', () => {
@@ -46,8 +46,12 @@ describe('gameboard', () => {
     });
 
     it('should place letter on board if coordinate is not occupied', () => {
-        const letter = new Letter();
-        letter.stringChar = 'a';
+        const letter: Letter = {
+            stringChar: 'a',
+            quantity: 1, // TODO :
+            points: 2,
+        };
+
         const coord = new Coordinate(0, 0, letter);
         const gameboardTestCoord = gameboard.gameboardCoords[0];
         gameboardTestCoord.isOccupied = false;
@@ -59,7 +63,7 @@ describe('gameboard', () => {
     });
 
     it('should not place letter on board if coordinate is occupied', () => {
-        const coord = new Coordinate(0, 0, new Letter());
+        const coord = new Coordinate(0, 0, {} as Letter);
         const gameboardTestCoord = gameboard.gameboardCoords[0];
         gameboardTestCoord.isOccupied = true;
         expect(gameboard.placeLetter(coord)).to.be.false;

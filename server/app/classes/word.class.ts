@@ -26,6 +26,7 @@ export class Word {
             const gameboardCoord = gameboard.getCoord(currentCoord);
             if (!gameboardCoord.isOccupied) {
                 this.addNewLetterToWordCoords(lettersInOrder, currentCoord, gameboardCoord);
+                gameboard.placeLetter(this.newLetterCoords[this.newLetterCoords.length - 1]);
             } else {
                 this.addOldLetterToWordCoords(currentCoord, gameboardCoord);
             }

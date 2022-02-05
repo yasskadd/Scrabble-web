@@ -10,7 +10,7 @@ export class DictionaryValidationService {
     gameboard: GameBoard; // not sure if this is good
 
     constructor() {
-        (<unknown>jsonDictionary).words.forEach((word: string) => {
+        (<any>jsonDictionary).words.forEach((word: string) => {
             this.dictionary.add(word);
         });
     }
@@ -23,7 +23,7 @@ export class DictionaryValidationService {
             // TODO : calculatePoints() + endTurn()
             let newPoints = 0;
             enteredWords.forEach((word: Word) => {
-                newPoints += word.calculatePoints(word, this.gameboard);
+                newPoints += word.calculatePoints(this.gameboard);
                 // end turn
             });
         } else {
