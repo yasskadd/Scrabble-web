@@ -22,8 +22,12 @@ export class LetterReserveService {
      * @return Letter[] : Return the default list of letters.
      */
     getDefaultLetterReserve(): Letter[] {
-        // return JSON.parse(letterJSON).letters;
-        return letterJSON.letters;
+        // const defaultLetterReserve: Letter[] = Object.assign({}, letterJSON).letters;
+        const defaultLetterReserve = letterJSON.letters.map((letter) => {
+            return letter;
+        });
+
+        return defaultLetterReserve;
     }
 
     /**
