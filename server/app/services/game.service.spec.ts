@@ -1,60 +1,43 @@
-// describe('Example service', () => {
-//     let exampleService: ExampleService;
-//     let dateService: SinonStubbedInstance<DateService>;
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { Player } from '@app/classes/player';
+import { expect } from 'chai';
+import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
+import { GameService } from './game.service';
+import { LetterReserveService } from './letter-reserve.service';
+import { TurnService } from './turn.service';
 
-//     beforeEach(async () => {
-//         dateService = createStubInstance(DateService);
-//         dateService.currentTime.resolves({
-//             title: 'Time',
-//             body: new Date().toString(),
-//         });
-//         exampleService = new ExampleService(dateService);
-//     });
+describe('GameService', () => {
+    let gameService: GameService;
+    let player1: Player;
+    let player2: Player;
+    let turnService: SinonStubbedInstance<TurnService> & TurnService;
+    let letterReserveService: SinonStubbedInstance<LetterReserveService>;
 
-//     it('should return a simple message if #about is called', () => {
-//         const expectedTitle = 'Basic Server About Page';
-//         const expectedBody = 'Try calling /api/docs to get the documentation';
-//         const aboutMessage = exampleService.about();
-//         expect(aboutMessage.title).to.equals(expectedTitle);
-//         expect(aboutMessage.body).to.equals(expectedBody);
-//     });
+    beforeEach(() => {
+        player1 = new Player('player1');
+        player2 = new Player('player2');
+        turnService = createStubInstance(TurnService) as SinonStubbedInstance<TurnService> & TurnService;
+        letterReserveService = createStubInstance(LetterReserveService);
+        gameService = new GameService(player1, player2, turnService, letterReserveService);
+    });
 
-//     it('should return Hello World as title', (done: Mocha.Done) => {
-//         exampleService.helloWorld().then((result: Message) => {
-//             expect(result.title).to.equals('Hello world');
-//             done();
-//         });
-//     });
+    it('start() should called generateLetter of letterReserveService two times and called determinePlayer and start of turnService ', () => {
+        gameService.start();
+        expect(letterReserveService.generateLetters.callCount).to.equal(2);
+        expect(turnService.determinePlayer.called).to.be.true;
+        expect(turnService.start.called).to.be.true;
+    });
 
-//     it('should have a body that starts with "Time is"', (done: Mocha.Done) => {
-//         exampleService.helloWorld().then((result: Message) => {
-//             expect(result.body)
-//                 .to.be.a('string')
-//                 .and.satisfy((body: string) => body.startsWith('Time is'));
-//             done();
-//         });
-//     });
+    it('end() should called end of turnService', () => {
+        gameService.end();
+        expect(turnService.end.called).to.be.true;
+    });
 
-//     it('should handle an error from DateService', async () => {
-//         dateService.currentTime.returns(Promise.reject(new Error('error in the service')));
-//         const message = await exampleService.helloWorld();
-//         expect(message.title).to.equals('Error');
-//     });
-
-//     it('should store a message', (done: Mocha.Done) => {
-//         const newMessage: Message = { title: 'Hello', body: 'World' };
-//         exampleService.storeMessage(newMessage);
-//         expect(exampleService.clientMessages[0]).to.equals(newMessage);
-//         done();
-//     });
-
-//     it('should get all messages', (done: Mocha.Done) => {
-//         const newMessage: Message = { title: 'Hello', body: 'World' };
-//         const newMessage2: Message = { title: 'Hello', body: 'Again' };
-//         exampleService.clientMessages.push(newMessage);
-//         exampleService.clientMessages.push(newMessage2);
-//         const messages = exampleService.getAllMessages();
-//         expect(messages).to.equals(exampleService.clientMessages);
-//         done();
-//     });
-// });
+    it('abandon() should called end of gameService', () => {
+        const spyEnd = spy(gameService, 'end');
+        gameService.abandon();
+        expect(spyEnd.called).to.be.true;
+        expect(turnService.end.called).to.be.true;
+    });
+});
