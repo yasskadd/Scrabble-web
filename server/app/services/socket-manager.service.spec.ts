@@ -72,8 +72,8 @@ describe('SocketManager service tests', () => {
     });
 
     it('on() should add a callback in the array if the event array exists in onEvents', () => {
-        service.on(EVENT, joinCallbackOn);
-        service.on(EVENT, emitMessageCallbackOn);
+        service.on('event', joinCallbackOn);
+        service.on('event', emitMessageCallbackOn);
 
         // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
@@ -83,7 +83,7 @@ describe('SocketManager service tests', () => {
     });
 
     it('io() should create a callback array if empty and add a callback in the array in onAndSioEvents', () => {
-        service.io(EVENT, joinCallbackSio);
+        service.io('event', joinCallbackSio);
 
         // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
@@ -93,8 +93,8 @@ describe('SocketManager service tests', () => {
     });
 
     it('io() should add a callback in the array if the event array exists in onAndSioEvents', () => {
-        service.io(EVENT, joinCallbackSio);
-        service.io(EVENT, emitMessageCallbackSio);
+        service.io('event', joinCallbackSio);
+        service.io('event', emitMessageCallbackSio);
 
         // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
