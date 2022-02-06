@@ -1,13 +1,13 @@
 import { Message } from '@app/message';
 import { DateService } from '@app/services/date.service';
-//import { Events } from '@common/events';
+// import { Events } from '@common/events';
 import { Service } from 'typedi';
 @Service()
 export class ExampleService {
     clientMessages: Message[];
     constructor(private readonly dateService: DateService) {
         this.clientMessages = [];
-    //    console.log(Events.Event1);
+        //    console.log(Events.Event1);
     }
 
     about(): Message {

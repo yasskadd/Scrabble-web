@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import * as io from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
 type SioSignature = SocketManager['sio'];
@@ -15,13 +15,14 @@ type OnSioCallbackSignature = (sio: io.Server, socket: SocketType, ...args: unkn
 
 const TEST_ROOM = 'EldenRingHype';
 const TEST_MESSAGE = 'RipNoTime';
+const EVENT = 'eventTest';
 
 describe('SocketManager service tests', () => {
     // let ioServer: io.Server;
     let service: SocketManager;
-    // eslint-disable-next-line no-unused-vars
-    // let serverSocket: io.Socket;
     let clientSocket: Socket;
+    let port: number;
+    let httpServer: Server;
 
     let sio: SioSignature;
     let joinCallbackOn: CallbackSignature;
@@ -32,8 +33,6 @@ describe('SocketManager service tests', () => {
     let changeBooleanCallbackSio: OnSioCallbackSignature;
     let testBoolean1: boolean;
     let testBoolean2: boolean;
-    let port: number;
-    let httpServer: Server;
 
     beforeEach(() => {
         joinCallbackOn = (socket) => socket.join(TEST_ROOM);
@@ -58,6 +57,7 @@ describe('SocketManager service tests', () => {
 
     afterEach(() => {
         sio.close();
+
         sinon.restore();
     });
 
@@ -72,8 +72,8 @@ describe('SocketManager service tests', () => {
     });
 
     it('on() should add a callback in the array if the event array exists in onEvents', () => {
-        service.on('event', joinCallbackOn);
-        service.on('event', emitMessageCallbackOn);
+        service.on(EVENT, joinCallbackOn);
+        service.on(EVENT, emitMessageCallbackOn);
 
         // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
@@ -83,7 +83,7 @@ describe('SocketManager service tests', () => {
     });
 
     it('io() should create a callback array if empty and add a callback in the array in onAndSioEvents', () => {
-        service.io('event', joinCallbackSio);
+        service.io(EVENT, joinCallbackSio);
 
         // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
@@ -93,8 +93,8 @@ describe('SocketManager service tests', () => {
     });
 
     it('io() should add a callback in the array if the event array exists in onAndSioEvents', () => {
-        service.io('event', joinCallbackSio);
-        service.io('event', emitMessageCallbackSio);
+        service.io(EVENT, joinCallbackSio);
+        service.io(EVENT, emitMessageCallbackSio);
 
         // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
@@ -119,7 +119,7 @@ describe('SocketManager service tests', () => {
         changeBooleanCallbackSio = (i, _) => {
             testBoolean2 = true;
         };
-        const EVENT = 'eventTest';
+
         service.io(EVENT, changeBooleanCallbackSio);
 
         service.on(EVENT, changeBooleanCallbackOn);
