@@ -4,44 +4,45 @@ import { GameRoomClient } from '@app/classes/game-room-client';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
+const FOUND_OPPONENT_MESSAGE = 'Adversaire Trouvé';
+const SEARCHING_OPPONENT = "En Attente d'un Adversaire ...";
+const WAITING_OPPONENT_CONFIRMATION = "En Attente de la confirmation de L'adversaire";
 @Injectable({
     providedIn: 'root',
 })
 export class GameConfigurationService {
-    foundOpponent: boolean;
-    availableRooms: GameRoomClient[] = [];
+    availableRooms: GameRoomClient[];
     statusGame: string;
     isCreator: boolean;
-    playerName: string;
-    opponentName: string;
+    playerName: string[];
     roomId: string;
     isGameStarted: ReplaySubject<boolean>;
     isRoomJoinable: ReplaySubject<boolean>;
     errorReason: ReplaySubject<string>;
 
     constructor(private clientSocket: ClientSocketService) {
+        this.playerName = [];
+        this.availableRooms = [];
         this.clientSocket.establishConnection();
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
         this.isGameStarted = new ReplaySubject<boolean>(1);
         this.errorReason = new ReplaySubject<string>(1);
-        this.foundOpponent = false;
         this.configureBaseSocketFeatures();
     }
 
     configureBaseSocketFeatures() {
         this.clientSocket.on('joinValid', (playerName: string) => {
             this.isCreator = false;
-            this.statusGame = "En Attente de la confirmation de L'adversaire";
+            this.statusGame = WAITING_OPPONENT_CONFIRMATION;
             this.isRoomJoinable.next(true);
             this.resetRoomJoinableSubject();
-            this.playerName = playerName;
+            this.playerName[1] = playerName;
         });
 
         this.clientSocket.on('rejectByOtherPlayer', (reason: string) => {
-            this.clientSocket.send('rejectByOtherPlayer', { id: this.roomId, name: this.opponentName });
+            this.clientSocket.send('rejectByOtherPlayer', { id: this.roomId, name: this.playerName[0] });
             this.roomId = '';
-            this.playerName = '';
-            this.opponentName = '';
+            this.playerName = [];
             this.statusGame = '';
             this.errorReason.next(reason);
             this.resetErrorSubject();
@@ -53,9 +54,8 @@ export class GameConfigurationService {
         });
 
         this.clientSocket.on('foundOpponent', (opponentName: string) => {
-            this.opponentName = opponentName;
-            this.statusGame = 'Adversaire Trouvé';
-            this.foundOpponent = true;
+            this.playerName[1] = opponentName;
+            this.statusGame = FOUND_OPPONENT_MESSAGE;
         });
         this.clientSocket.on('gameCreatedConfirmation', (roomId: string) => {
             this.roomId = roomId;
@@ -84,27 +84,26 @@ export class GameConfigurationService {
     removeRoom() {
         this.clientSocket.send('removeRoom', this.roomId);
         this.roomId = '';
-        this.playerName = '';
+        this.playerName.pop();
     }
 
     rejectOpponent() {
         this.clientSocket.send('rejectOpponent', this.roomId);
-        this.statusGame = "En Attente d'un Adversaire ...";
-        this.opponentName = '';
-        this.foundOpponent = false;
+        this.statusGame = SEARCHING_OPPONENT;
+        this.playerName.pop();
     }
 
     gameInitialization(parameters: GameParameters) {
         this.clientSocket.send('createGame', parameters);
-        this.playerName = parameters.username;
+        this.playerName[0] = parameters.username;
         this.isCreator = true;
-        this.statusGame = "En Attente d'un Adversaire ...";
+        this.statusGame = SEARCHING_OPPONENT;
     }
 
     joinGame(roomId: string, username: string) {
         ///
         this.clientSocket.send('roomJoin', { id: roomId, name: username });
-        this.opponentName = username;
+        this.playerName[0] = username;
         this.roomId = roomId;
     }
     joinPage() {

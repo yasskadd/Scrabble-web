@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { SinonFakeTimers, useFakeTimers } from 'sinon';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { DateService } from './date.service';
 
 describe('Date Service', () => {

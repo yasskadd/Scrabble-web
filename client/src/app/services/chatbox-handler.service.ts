@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/classes/chatbox-message';
 import { ClientSocketService } from './client-socket.service';
+import { GameConfigurationService } from './game-configuration.service';
 
 // const VALID_SYNTAX_REGEX_STRING = '^!aide|^!placer|^!(é|e)changer|^!passer';
 // const VALID_SYNTAX_REGEX = new RegExp(VALID_SYNTAX_REGEX_STRING);
@@ -17,7 +18,7 @@ export class ChatboxHandlerService {
     messages: ChatboxMessage[];
     private readonly validSyntaxRegex = RegExp(ChatboxHandlerService.foo);
 
-    constructor(private clientSocket: ClientSocketService) {
+    constructor(private clientSocket: ClientSocketService, private gameConfiguration: GameConfigurationService) {
         this.messages = [];
         this.clientSocket.establishConnection();
         this.configureBaseSocketFeatures();
@@ -38,7 +39,7 @@ export class ChatboxHandlerService {
 
     private configureBaseSocketFeatures(): void {
         this.clientSocket.on('gameMessage', (broadcastMessage: string) => {
-            this.messages.push({ type: 'opponent-user', data: broadcastMessage });
+            this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.playerName[1]} : ${broadcastMessage}` });
         });
         this.clientSocket.on('user disconnect', () => {
             this.addDisconnect();
@@ -46,7 +47,7 @@ export class ChatboxHandlerService {
     }
 
     private sendMessage(message: string): void {
-        this.clientSocket.send('message', message);
+        this.clientSocket.send('message', { roomId: this.gameConfiguration.roomId, message });
     }
 
     private sendCommand(command: string): void {

@@ -83,7 +83,7 @@ describe('GameConfigurationService', () => {
         const EVENT_MESSAGE = 'roomJoin';
         service.joinGame(ROOMID, USERNAME_PLAYER);
         expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, { id: ROOMID, name: USERNAME_PLAYER });
-        expect(service.opponentName).toEqual(USERNAME_PLAYER);
+        expect(service.playerName[0]).toEqual(USERNAME_PLAYER);
         expect(service.roomId).toEqual(ROOMID);
     });
 
@@ -96,7 +96,7 @@ describe('GameConfigurationService', () => {
         const EVENT_MESSAGE = 'createGame';
         service.gameInitialization(TEST_GAME_CONFIGURATION);
         expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, TEST_GAME_CONFIGURATION);
-        expect(service.playerName).toEqual(TEST_GAME_CONFIGURATION.username);
+        expect(service.playerName[0]).toEqual(TEST_GAME_CONFIGURATION.username);
         expect(service.isCreator).toBeTruthy();
         expect(service.statusGame).toEqual(TEST_STATUS_GAME);
     });
@@ -111,8 +111,6 @@ describe('GameConfigurationService', () => {
         service.roomId = ROOMID;
         service.rejectOpponent();
         expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, ROOMID);
-        expect(service.opponentName).toEqual('');
-        expect(service.foundOpponent).toBeFalsy();
         expect(service.statusGame).toEqual(TEST_STATUS_GAME);
     });
 
@@ -126,7 +124,6 @@ describe('GameConfigurationService', () => {
         service.removeRoom();
         expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, ROOMID);
         expect(service.roomId).toEqual('');
-        expect(service.playerName).toEqual('');
     });
 
     it('resetErrorSubject() should  initialize the value of the error Reason ', () => {
@@ -185,21 +182,18 @@ describe('GameConfigurationService', () => {
     it('should handle foundOpponent event with the username of the opponent that wants to join his game', () => {
         const OPPONENT_NAME = 'Marcel';
         const STATUS_GAME = 'Adversaire Trouvé';
-        const FOUND_OPPONENT = true;
         socketEmulator.peerSideEmit('foundOpponent', OPPONENT_NAME);
-        expect(service.opponentName).toEqual(OPPONENT_NAME);
+        expect(service.playerName[1]).toEqual(OPPONENT_NAME);
         expect(service.statusGame).toEqual(STATUS_GAME);
-        expect(service.foundOpponent).toEqual(FOUND_OPPONENT);
     });
 
     it('should handle foundOpponent event with the username of the opponent that wants to join his game', () => {
         const OPPONENT_NAME = 'Marcel';
         const STATUS_GAME = 'Adversaire Trouvé';
-        const FOUND_OPPONENT = true;
+
         socketEmulator.peerSideEmit('foundOpponent', OPPONENT_NAME);
-        expect(service.opponentName).toEqual(OPPONENT_NAME);
+        expect(service.playerName[1]).toEqual(OPPONENT_NAME);
         expect(service.statusGame).toEqual(STATUS_GAME);
-        expect(service.foundOpponent).toEqual(FOUND_OPPONENT);
     });
 
     it('should handle gameAboutToStart event to inform the player of the room that the game is about to start ', () => {
@@ -219,8 +213,6 @@ describe('GameConfigurationService', () => {
         expect(spy).toHaveBeenCalledWith(PLAYERS_REJECT_FROM_ROOM_ERROR);
         expect(SPYON_RESET_ERROR_SUBJECT).toHaveBeenCalled();
         expect(service.roomId).toEqual('');
-        expect(service.playerName).toEqual('');
-        expect(service.opponentName).toEqual('');
         expect(service.statusGame).toEqual('');
     });
 
@@ -235,7 +227,7 @@ describe('GameConfigurationService', () => {
         expect(spy).toHaveBeenCalledWith(IS_ROOM_JOINABLE);
         expect(SPYON_RESET_ROOM_JOINABLE_SUBJECT).toHaveBeenCalled();
         expect(service.isCreator).toEqual(IS_CREATOR);
-        expect(service.playerName).toEqual(PLAYERS_NAME);
+        expect(service.playerName[1]).toEqual(PLAYERS_NAME);
         expect(service.statusGame).toEqual(STATUS_GAME);
     });
 });
