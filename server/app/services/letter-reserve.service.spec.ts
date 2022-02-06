@@ -26,7 +26,7 @@ describe('LetterReserveService', () => {
         expect(defaultLetterReserve).to.equal(expectedReserve);
     });
 
-    it('should subtracts letter quantity by 1', () => {
+    it('should subtract letter quantity by 1', () => {
         const expectedQuantity = service.lettersReserve[0].quantity - 1;
         const letterToRemove: Letter = { letter: 'A', quantity: 9, weight: 3 };
         service.updateReserve(letterToRemove);
@@ -63,7 +63,7 @@ describe('LetterReserveService', () => {
         expect(updatedRack.length).to.equal(expectedLength);
     });
 
-    it('should properly exchange letter', () => {
+    it('should properly exchange letters from rack', () => {
         const oldRack = sampleRack;
         const newRack = service.exchangeLetter(sampleRack, sampleRack);
         expect(newRack).to.not.equal(oldRack);

@@ -22,10 +22,18 @@ describe('GameService', () => {
         gameService = new GameService(player1, player2, turnService, letterReserveService);
     });
 
-    it('start() should called generateLetter of letterReserveService two times and called determinePlayer and start of turnService ', () => {
+    it('start() should call generateLetter of letterReserveService two times', () => {
         gameService.start();
         expect(letterReserveService.generateLetters.callCount).to.equal(2);
+    });
+
+    it('start() should call determinePlayer', () => {
+        gameService.start();
         expect(turnService.determinePlayer.called).to.be.true;
+    });
+
+    it('start() should call start of turnService', () => {
+        gameService.start();
         expect(turnService.start.called).to.be.true;
     });
 
