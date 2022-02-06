@@ -1,5 +1,5 @@
 export interface Letter {
-    stringChar: string;
+    string: string;
     quantity: number;
     points: number;
 }

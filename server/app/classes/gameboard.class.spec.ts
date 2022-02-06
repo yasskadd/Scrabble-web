@@ -4,16 +4,16 @@ import { expect } from 'chai';
 import { Container } from 'typedi';
 import { Letter } from '../letter';
 import { Coordinate } from './coordinate.class';
-import { GameBoard } from './gameboard.class';
+import { Gameboard } from './gameboard.class';
 import sinon = require('sinon');
 
 describe('gameboard', () => {
-    let gameboard: GameBoard;
+    let gameboard: Gameboard;
     let boxMultiplierService: BoxMultiplier;
 
     beforeEach(() => {
         boxMultiplierService = Container.get(BoxMultiplier);
-        gameboard = new GameBoard(boxMultiplierService);
+        gameboard = new Gameboard(boxMultiplierService);
     });
 
     it('game array length should be 225', () => {
@@ -38,16 +38,16 @@ describe('gameboard', () => {
     });
 
     it('should call createCoordinates and applyBoxMultipliers', () => {
-        const spyCreateCoord = sinon.spy(GameBoard.prototype, 'createCoordinates');
+        const spyCreateCoord = sinon.spy(Gameboard.prototype, 'createCoordinates');
         const spyApplyBoxMultipliers = sinon.spy(boxMultiplierService, 'applyBoxMultipliers');
-        new GameBoard(boxMultiplierService);
+        new Gameboard(boxMultiplierService);
         expect(spyCreateCoord.called).to.be.true;
         expect(spyApplyBoxMultipliers.called).to.be.true;
     });
 
     it('should place letter on board if coordinate is not occupied', () => {
         const letter: Letter = {
-            stringChar: 'a',
+            string: 'a',
             quantity: 1, // TODO :
             points: 2,
         };
@@ -58,7 +58,7 @@ describe('gameboard', () => {
         gameboard.placeLetter(coord);
         expect(gameboardTestCoord.x).to.eql(coord.x);
         expect(gameboardTestCoord.y).to.eql(coord.y);
-        expect(gameboardTestCoord.letter.stringChar).to.eql('a');
+        expect(gameboardTestCoord.letter.string).to.eql('a');
         expect(gameboardTestCoord.isOccupied).to.be.true;
     });
 
@@ -72,7 +72,7 @@ describe('gameboard', () => {
     it('should set isOccupied attribute to false if removeLetter is called', () => {
         const gameboardCoord = gameboard.gameboardCoords[0];
         gameboardCoord.isOccupied = true;
-        gameboardCoord.letter.stringChar = 'f';
+        gameboardCoord.letter.string = 'f';
         const coord = new Coordinate(0, 0, {} as Letter);
         gameboard.removeLetter(coord);
         expect(gameboardCoord.x).to.eql(coord.x);

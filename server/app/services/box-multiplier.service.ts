@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { Service } from 'typedi';
-import { Coordinate } from '../classes/Coordinate.class';
-import { Gameboard } from '../classes/Gameboard.class';
+import { Coordinate } from '../classes/coordinate.class';
+import { Gameboard } from '../classes/gameboard.class';
 import { Letter } from '../letter';
 
 @Service()

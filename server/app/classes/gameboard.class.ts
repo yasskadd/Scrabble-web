@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
-import { Coordinate } from '../classes/coordinate.class';
 import { Letter } from '../letter';
+import { Coordinate } from './coordinate.class';
 
-export class GameBoard {
+export class Gameboard {
     gameboardCoords: Coordinate[] = new Array();
 
     constructor(private boxMultiplierService: BoxMultiplier) {

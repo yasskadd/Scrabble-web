@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { expect } from 'chai';
 import { Letter } from '../letter';
-import { Coordinate } from './Coordinate.class';
+import { Coordinate } from './coordinate.class';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
 

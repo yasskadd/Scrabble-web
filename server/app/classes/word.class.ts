@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-imports */
 import { Letter } from '../letter';
-import { Coordinate } from './Coordinate.class';
-import { Gameboard } from './Gameboard.class';
+import { Coordinate } from './coordinate.class';
+import { Gameboard } from './gameboard.class';
 
 export class Word {
     isHorizontal: boolean;
@@ -32,7 +32,7 @@ export class Word {
             }
             this.incrementCoord(currentCoord);
         }
-        this.wordCoords.forEach((coord) => (stringFormat += coord.letter.stringChar));
+        this.wordCoords.forEach((coord) => (stringFormat += coord.letter.string));
         this.findAjacentWords(gameboard, this.newLetterCoords);
     }
 
@@ -41,7 +41,7 @@ export class Word {
      */
     addNewLetterToWordCoords(lettersInOrder: string[], currentCoord: Coordinate, gameboardCoord: Coordinate) {
         const newLetter = {
-            stringChar: lettersInOrder[0],
+            string: lettersInOrder[0],
             quantity: 0, // TODO: get data for quantity
             points: 0, // TODO: get points for letter
         };
@@ -105,7 +105,7 @@ export class Word {
     }
 
     buildAdjacentWord(gameboard: Gameboard, firstLetterCoord: Coordinate) {
-        const firstCoordGameboardString: string = gameboard.getCoord(firstLetterCoord).letter.stringChar;
+        const firstCoordGameboardString: string = gameboard.getCoord(firstLetterCoord).letter.string;
         const adjacentWord: Word = new Word(!this.isHorizontal, firstLetterCoord, firstCoordGameboardString, gameboard);
         this.adjacentWords.push(adjacentWord);
     }
