@@ -34,6 +34,35 @@ describe('GameService', () => {
         expect(turnService.end.called).to.be.true;
     });
 
+    it('skip() should return false if no player has skipped', () => {
+        const skip = gameService.skip('undefined');
+        // turnService.validating.callsFake(() => {
+        //     return true;
+        // });
+        expect(skip).to.be.false;
+    });
+
+    it('skip() should return true and end turn of player1 if he has skipped', () => {
+        turnService.validating.returns(true);
+        const skip = gameService.skip(player1.name);
+        expect(skip).to.be.true;
+        expect(turnService.end.called).to.be.true;
+    });
+
+    it('skip() should return true and end turn of player2 if he has skipped', () => {
+        turnService.validating.returns(true);
+        const skip = gameService.skip(player2.name);
+        expect(skip).to.be.true;
+        expect(turnService.end.called).to.be.true;
+    });
+
+    it('skip() should return false if player1 wants to skip but it is not his turn', () => {
+        turnService.validating.returns(false);
+        const skip = gameService.skip(player1.name);
+        expect(skip).to.be.false;
+        expect(turnService.end.called).to.be.false;
+    });
+
     it('abandon() should called end of gameService', () => {
         const spyEnd = spy(gameService, 'end');
         gameService.abandon();
