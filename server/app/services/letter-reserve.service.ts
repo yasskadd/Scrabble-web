@@ -105,25 +105,29 @@ export class LetterReserveService {
      */
     exchangeLetter(toExchange: Letter[], rack: Letter[]): Letter[] {
         // Remove the letters from the rack of the player
-        rack = this.removeLettersFromRack(toExchange, rack);
+        if (this.lettersReserve.length >= 7) {
+            rack = this.removeLettersFromRack(toExchange, rack);
 
-        // Exchange X quantity of letters
-        const newRack = this.generateLetters(toExchange.length, rack);
+            // Exchange X quantity of letters
+            const newRack = this.generateLetters(toExchange.length, rack);
 
-        // Update de letter reserve
-        const updatedLetterReserve = this.lettersReserve;
-        for (const letter of toExchange) {
-            const index = this.lettersReserve.findIndex((element) => element.letter === letter.letter);
-            if (index < 0) {
-                const newLetter = { letter: letter.letter, quantity: 1, weight: letter.weight };
-                updatedLetterReserve.push(newLetter);
-            } else {
-                updatedLetterReserve[index].quantity++;
+            // Update de letter reserve
+            const updatedLetterReserve = this.lettersReserve;
+            for (const letter of toExchange) {
+                const index = this.lettersReserve.findIndex((element) => element.letter === letter.letter);
+                if (index < 0) {
+                    const newLetter = { letter: letter.letter, quantity: 1, weight: letter.weight };
+                    updatedLetterReserve.push(newLetter);
+                } else {
+                    updatedLetterReserve[index].quantity++;
+                }
             }
-        }
 
-        this.lettersReserve = updatedLetterReserve;
-        return newRack;
+            this.lettersReserve = updatedLetterReserve;
+            return newRack;
+        } else {
+            return rack;
+        }
     }
 
     /**

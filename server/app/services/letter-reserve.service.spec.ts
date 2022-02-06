@@ -70,6 +70,15 @@ describe('LetterReserveService', () => {
         expect(newRack.length).to.equal(oldRack.length);
     });
 
+    it('should not exchange letter when the reserve has less than 7 letters', () => {
+        const nLetters = 6;
+        const oldRack = sampleRack;
+        service.lettersReserve = service.lettersReserve.slice(0, nLetters);
+        const newRack = service.exchangeLetter(sampleRack, sampleRack);
+        expect(newRack).to.equal(oldRack);
+        expect(newRack.length).to.equal(oldRack.length);
+    });
+
     it('should be able to generate a random quantity of letters', () => {
         const randomQuantity = 7;
         const rack = service.generateLetters(randomQuantity, emptyRack);
