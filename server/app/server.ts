@@ -30,7 +30,6 @@ export class Server {
     }
     init(): void {
         this.application.app.set('port', Server.appPort);
-
         this.server = http.createServer(this.application.app);
 
         this.gameSessions.initSocketEvents();
