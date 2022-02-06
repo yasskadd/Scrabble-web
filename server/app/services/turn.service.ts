@@ -11,7 +11,7 @@ export class TurnService {
     activePlayer: string | undefined;
     inactivePlayer: string | undefined;
     private time: number;
-    private timeOut: number;
+    private timeOut: unknown;
 
     constructor(time: number) {
         this.time = time;
@@ -25,7 +25,7 @@ export class TurnService {
         this.timeOut = setInterval(() => {
             tempTime = tempTime - 1;
             if (tempTime === 0) {
-                clearInterval(this.timeOut);
+                clearInterval(this.timeOut as number);
                 this.end();
             }
         }, SECOND);
@@ -49,7 +49,7 @@ export class TurnService {
      * @param playerName : The player who is playing next.
      */
     end(endGame?: boolean): void {
-        clearInterval(this.timeOut);
+        clearInterval(this.timeOut as number);
 
         if (!endGame) {
             const tempInactivePlayer: string | undefined = this.inactivePlayer;

@@ -2,6 +2,7 @@
 // eslint-disable-next-line no-restricted-imports
 // import { Letter } from '../../app/letter';
 import { Service } from 'typedi';
+// eslint-disable-next-line no-restricted-imports
 import * as letterJSON from '../../assets/letter-reserve.json';
 
 // Temporary place
@@ -44,6 +45,7 @@ export class LetterReserveService {
             }
         });
 
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         this.lettersReserve = this.lettersReserve.filter((letter) => letter.quantity !== 0);
     }
 
