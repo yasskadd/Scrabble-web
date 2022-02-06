@@ -6,7 +6,7 @@ export class SocketSubscribeHandler {
     constructor(private chatBoxHandlerService: ChatboxHandlerService) {}
 
     initSocketsEvents() {
-        this.chatBoxHandlerService.initSocketsEvent();
+        this.chatBoxHandlerService.initSocketsEvents();
         // Ajouter le reste des services qui utilisent des sockets ici!
     }
 }

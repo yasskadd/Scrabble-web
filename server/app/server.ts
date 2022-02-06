@@ -4,7 +4,7 @@ import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { GameSessions } from './services/game-sessions.service';
 import { SocketManager } from './services/socket-manager.service';
-import { SocketSubscribeHandler } from './services/socket-subscribe-handler';
+import { SocketSubscribeHandler } from './services/socket-subscribe-handler.service';
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');
