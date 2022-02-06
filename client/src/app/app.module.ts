@@ -18,6 +18,7 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
+import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
@@ -29,8 +30,6 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
  * Otherwise Angular Cli will not know in which module to put new component
  */
 @NgModule({
-    declarations: [AppComponent, GamePageComponent, MaterialPageComponent, PlayAreaComponent, SidebarComponent],
-    imports: [AppMaterialModule, AppRoutingModule, BrowserAnimationsModule, BrowserModule, FormsModule, HttpClientModule],
     declarations: [
         AppComponent,
         GamePageComponent,

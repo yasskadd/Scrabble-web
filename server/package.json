@@ -45,7 +45,6 @@
         "@common": "out/common"
     },
     "dependencies": {
-        "chai-things": "^0.2.0",
         "cookie-parser": "1.4.5",
         "cors": "2.8.5",
         "debug": "^4.3.2",
@@ -60,7 +59,7 @@
         "socket.io": "^4.4.1",
         "socket.io-client": "^4.4.1",
         "swagger-jsdoc": "^6.1.0",
-        "swagger-ui-express": "^4.1.6",
+        "swagger-ui-express": "^4.3.0",
         "typedi": "^0.10.0"
     },
     "devDependencies": {
@@ -90,7 +89,7 @@
         "eslint-plugin-prefer-arrow": "^1.2.3",
         "eslint-plugin-prettier": "^3.4.0",
         "eslint-plugin-unicorn": "^35.0.0",
-        "mocha": "^9.0.3",
+        "mocha": "^9.2.0",
         "nodemon": "^2.0.12",
         "nyc": "^15.1.0",
         "rimraf": "3.0.2",
