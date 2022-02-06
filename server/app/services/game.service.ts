@@ -79,7 +79,7 @@ export class GameService {
             // TODO: return list of letters placed;
         }
 
-        return undefined;
+        // return undefined;
     }
 
     /**
