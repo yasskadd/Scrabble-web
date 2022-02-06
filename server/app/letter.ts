@@ -1,5 +1,5 @@
-export class Letter {
-    stringChar: string;
+export interface Letter {
+    string: string;
     quantity: number;
     points: number;
 }
