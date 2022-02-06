@@ -119,7 +119,8 @@ export class Word {
     addLetterPoints(wordCoords: Coordinate[], gameboard: Gameboard) {
         wordCoords.forEach((coord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(coord);
-            if (gameboardCoord.letterMultiplier > 1 && this.newLetterCoords.includes(gameboardCoord)) {
+            if (gameboardCoord.letterMultiplier > 1 && this.newLetterCoords.indexOf(gameboardCoord) > -1) {
+                // flawed because letters arent the same as x and ys
                 this.points += coord.letter.points * gameboardCoord.letterMultiplier;
             } else {
                 this.points += coord.letter.points;
