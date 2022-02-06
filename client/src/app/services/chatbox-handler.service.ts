@@ -5,7 +5,8 @@ import { GameConfigurationService } from './game-configuration.service';
 
 // const VALID_SYNTAX_REGEX_STRING = '^!aide|^!placer|^!(é|e)changer|^!passer';
 // const VALID_SYNTAX_REGEX = new RegExp(VALID_SYNTAX_REGEX_STRING);
-const VALID_COMMAND_REGEX_STRING = '^!aide$|^!placer [0-9]{2}(v|h) [a-zA-Z]*$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
+const VALID_COMMAND_REGEX_STRING =
+    '^!aide$|^!placer [a-g][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-g][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
 const VALID_COMMAND_REGEX = new RegExp(VALID_COMMAND_REGEX_STRING);
 const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);

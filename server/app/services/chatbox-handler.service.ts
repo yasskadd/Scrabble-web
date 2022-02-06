@@ -26,7 +26,6 @@ export class ChatboxHandlerService {
         // this.socketManager.on(SocketEvents.GameCommand, (socket, command: string) => {
         //     console.log(command);
         // });
-
         // Exemple de .io
         // this.socketManager.io('roomMessage', (io, socket, message) => {
         //     socket.emit('test');

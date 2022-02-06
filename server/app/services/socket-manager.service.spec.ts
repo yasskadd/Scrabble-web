@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import * as io from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { Container } from 'typedi';
+import Container from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
 type SioSignature = SocketManager['sio'];

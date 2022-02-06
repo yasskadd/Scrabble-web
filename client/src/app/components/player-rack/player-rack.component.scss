@@ -1,0 +1,36 @@
+.rack-info {
+    display: grid;
+    position: absolute;
+    bottom: 0%;
+    left: 35%;
+    right: 35%;
+    // margin: 10%;
+    // margin-left: 25%;
+    // margin-right: 25%;
+    // justify-content: center;
+    border: 1px solid #000000;
+    padding: 5px 25px;
+    border-radius: 5px;
+}
+
+#player-letters {
+    padding: 10px;
+    background-color: #f5f5dc;
+    border: 1px solid #999999;
+    border-radius: 10px;
+}
+
+#actions-list {
+    display: flex;
+    width: 100%;
+    // border: 1px solid #999999;
+    // border-radius: 10px;
+    padding: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    list-style-type: none;
+}
+
+// ul li button {
+//     background-color: #356d83;
+// }

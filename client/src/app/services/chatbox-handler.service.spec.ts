@@ -99,7 +99,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it("validCommandParameters() should validate the command parameters of the 'placer' command", () => {
-        const VALID_COMMAND = '!placer 35v acd';
+        const VALID_COMMAND = '!placer a5v acd';
 
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
