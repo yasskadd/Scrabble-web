@@ -131,7 +131,7 @@ export class Word {
     addWordMultiplierPoints(wordCoords: Coordinate[], gameboard: Gameboard) {
         wordCoords.forEach((coord: Coordinate) => {
             const gameboardCoord = gameboard.getCoord(coord);
-            if (gameboardCoord.wordMultiplier > 1 && this.newLetterCoords.includes(gameboardCoord)) {
+            if (gameboardCoord.wordMultiplier > 1 && this.newLetterCoords.indexOf(gameboardCoord) > -1) {
                 this.points *= gameboardCoord.wordMultiplier;
             }
         });
