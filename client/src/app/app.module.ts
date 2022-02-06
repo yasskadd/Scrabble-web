@@ -15,6 +15,8 @@ import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
+import { InformationPanelComponent } from './components/information-panel/information-panel.component';
+import { PlayerRackComponent } from './components/player-rack/player-rack.component';
 
 /**
  * Main module that is used in main.ts.
@@ -32,6 +34,8 @@ import { DialogBoxComponent } from './components/dialog-box/dialog-box.component
         SidebarComponent,
         ChatboxComponent,
         DialogBoxComponent,
+        InformationPanelComponent,
+        PlayerRackComponent,
     ],
     imports: [
         AppMaterialModule,
