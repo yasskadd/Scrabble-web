@@ -20,15 +20,15 @@ export class GridService {
     private static halfSquareHeight = GridService.squareHeight / 2;
 
     // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-    private static wordMultiplyThree = [1, 8, 15];
+    // private static wordMultiplyThree = [1, 8, 15];
 
     size: number;
     weightSize: number;
     gridContext: CanvasRenderingContext2D;
     constructor() {
-        this.size = 16;
+        this.size = 15;
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        this.weightSize = this.size - 10;
+        this.weightSize = this.size * 0.45;
     }
 
     // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
@@ -46,11 +46,11 @@ export class GridService {
         positions = this.positionXYPixel(4, 1);
         this.drawWordMultiplierByTwoTile(positions.x, positions.y);
 
-        this.drawLetterTile(GridService.squareWidth * 5, GridService.squareHeight * 1, 'A');
+        this.drawLetterTile(GridService.squareWidth * 5, GridService.squareHeight * 1, 'B');
+        this.drawLetterWeight(GridService.squareWidth * 5, GridService.squareHeight * 1, '4');
         this.drawMultiplierIcon(GridService.squareWidth * 5, GridService.squareHeight * 7, 5);
         this.drawMultiplierType(GridService.squareWidth * 5, GridService.squareHeight * 7, 'LETTRE');
-        this.drawLetterWeight(GridService.squareWidth * 5, GridService.squareHeight * 1, '5');
-        this.drawMultipliers();
+        // this.drawMultipliers();
     }
 
     drawRowNumbers() {
@@ -72,17 +72,17 @@ export class GridService {
         }
     }
 
-    drawMultipliers() {
-        let positions: Coord;
-        for (const x of GridService.wordMultiplyThree) {
-            for (const y of GridService.wordMultiplyThree) {
-                positions = this.positionXYPixel(x, y);
-                this.drawWordMultiplierByThreeTile(positions.x, positions.y);
-                this.drawMultiplierIcon(positions.x, positions.y, 3);
-                this.drawMultiplierType(positions.x, positions.y, 'WORD');
-            }
-        }
-    }
+    // drawMultipliers() {
+    //     let positions: Coord;
+    //     for (const x of GridService.wordMultiplyThree) {
+    //         for (const y of GridService.wordMultiplyThree) {
+    //             positions = this.positionXYPixel(x, y);
+    //             this.drawWordMultiplierByThreeTile(positions.x, positions.y);
+    //             this.drawMultiplierIcon(positions.x, positions.y, 3);
+    //             this.drawMultiplierType(positions.x, positions.y, 'WORD');
+    //         }
+    //     }
+    // }
     drawBasicTile(x: number, y: number) {
         this.gridContext.fillStyle = '#FADD7A';
         this.gridContext.fillRect(x, y, GridService.squareWidth, GridService.squareHeight);
