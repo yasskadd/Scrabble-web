@@ -128,6 +128,7 @@ export class GameSessions {
         const newRoom: GameRoom = {
             id: roomID,
             users: [parameters.username],
+            socketID: [socketId],
             isAvailable: true,
             dictionary: parameters.dictionary,
             timer: parameters.timer,
@@ -174,7 +175,10 @@ export class GameSessions {
     addUserToRoom(user: string, socketID: string, roomID: string): void {
         //
         const room = this.gameRooms.get(roomID);
-        if (room !== undefined) room.users.push(user);
+        if (room !== undefined) {
+            room.users.push(user);
+            room.socketID.push(socketID);
+        }
         this.addUserToActiveUsers(user, socketID);
         this.makeRoomUnavailable(roomID);
     }
@@ -185,6 +189,8 @@ export class GameSessions {
         if (room !== undefined) {
             const index: number = room.users.indexOf(user);
             if (index > UNAVAILABLE_ELEMENT_INDEX) room.users.splice(index, 1);
+            const index1: number = room.socketID.indexOf(socketID);
+            if (index > UNAVAILABLE_ELEMENT_INDEX) room.socketID.splice(index1, 1);
         }
 
         this.removeUserFromActiveUsers(socketID);
@@ -204,5 +210,12 @@ export class GameSessions {
     removeUserFromActiveUsers(socketID: string) {
         //
         this.activeUsers.delete(socketID);
+    }
+
+    getRoomId(socketID: string) {
+        for (const [key, value] of this.gameRooms.entries()) {
+            if (value.socketID.includes(socketID)) return key;
+        }
+        return null;
     }
 }

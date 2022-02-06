@@ -3,7 +3,9 @@ import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulat
 import { Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { ClientSocketService } from './client-socket.service';
+import { GameConfigurationService } from './game-configuration.service';
 
+const ROOM_ID = '1';
 export class SocketClientServiceMock extends ClientSocketService {
     // Reason : connect shouldn't actually connect
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -14,14 +16,20 @@ describe('ChatboxHandlerService', () => {
     let service: ChatboxHandlerService;
     let socketServiceMock: SocketClientServiceMock;
     let socketEmulator: SocketTestEmulator;
-
+    let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     beforeEach(() => {
+        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['removeRoom', 'rejectOpponent', 'beginScrabbleGame'], {
+            roomId: ROOM_ID,
+        });
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketEmulator as unknown as Socket;
 
         TestBed.configureTestingModule({
-            providers: [{ provide: ClientSocketService, useValue: socketServiceMock }],
+            providers: [
+                { provide: ClientSocketService, useValue: socketServiceMock },
+                { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
+            ],
         });
         // socketServiceMock = new SocketClientServiceMock();
         service = TestBed.inject(ChatboxHandlerService);
@@ -247,11 +255,12 @@ describe('ChatboxHandlerService', () => {
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         const EVENT_MESSAGE = 'message';
         const TEST_MESSAGE = 'Bonjour mon ami';
+        const TEST_MESSAGE_OBJECT = { roomId: '1', message: 'Bonjour mon ami' };
 
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         service['sendMessage'](TEST_MESSAGE);
-        expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, TEST_MESSAGE);
+        expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, TEST_MESSAGE_OBJECT);
     });
 
     it('sendCommand() send a command to the server with a message event', () => {

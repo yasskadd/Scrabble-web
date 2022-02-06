@@ -16,13 +16,12 @@ type OnSioCallbackSignature = (sio: io.Server, socket: SocketType, ...args: unkn
 const TEST_ROOM = 'EldenRingHype';
 const TEST_MESSAGE = 'RipNoTime';
 const EVENT = 'eventTest';
-
 describe('SocketManager service tests', () => {
     // let ioServer: io.Server;
     let service: SocketManager;
+    // eslint-disable-next-line no-unused-vars
+    // let serverSocket: io.Socket;
     let clientSocket: Socket;
-    let port: number;
-    let httpServer: Server;
 
     let sio: SioSignature;
     let joinCallbackOn: CallbackSignature;
@@ -33,6 +32,8 @@ describe('SocketManager service tests', () => {
     let changeBooleanCallbackSio: OnSioCallbackSignature;
     let testBoolean1: boolean;
     let testBoolean2: boolean;
+    let port: number;
+    let httpServer: Server;
 
     beforeEach(() => {
         joinCallbackOn = (socket) => socket.join(TEST_ROOM);
@@ -56,6 +57,7 @@ describe('SocketManager service tests', () => {
     });
 
     afterEach(() => {
+        // clientSocket.close();
         sio.close();
 
         sinon.restore();
@@ -119,7 +121,6 @@ describe('SocketManager service tests', () => {
         changeBooleanCallbackSio = (i, _) => {
             testBoolean2 = true;
         };
-
         service.io(EVENT, changeBooleanCallbackSio);
 
         service.on(EVENT, changeBooleanCallbackOn);

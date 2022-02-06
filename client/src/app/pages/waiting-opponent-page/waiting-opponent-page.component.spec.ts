@@ -36,6 +36,7 @@ describe('WaitingOpponentPageComponent', () => {
             isCreator: TEST_ISCREATOR,
             errorReason: TEST_ERROR_REASON,
             isGameStarted: TEST_ISGAMESTARTED,
+            playerName: [],
         });
 
         await TestBed.configureTestingModule({

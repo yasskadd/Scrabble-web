@@ -19,6 +19,7 @@ const OPPONENT_NAME = 'Maurice';
 const SOCKET_ID = 'EFOFJS4534';
 const roomID = '1';
 const GAME_ROOM: GameRoom = {
+    socketID: [SOCKET_ID],
     id: roomID,
     isAvailable: true,
     users: ['Maurice'],
@@ -27,6 +28,7 @@ const GAME_ROOM: GameRoom = {
     mode: 'classique',
 };
 const GAME_ROOM_2_PLAYER: GameRoom = {
+    socketID: [SOCKET_ID, 'sfdg78fdsg'],
     id: roomID,
     isAvailable: false,
     users: ['Vincent', 'Maurice'],
@@ -127,6 +129,7 @@ describe('GameSession Service', () => {
     it('removeUserFromRoom should  not remove a user from a room if the user is not in the room ', (done: Mocha.Done) => {
         const USER_NAME = 'Marcel';
         const GAME_ROOM_TEST: GameRoom = {
+            socketID: [SOCKET_ID, 'sfdg78fdsg'],
             id: roomID,
             isAvailable: false,
             users: ['Vincent', 'Maurice'],
@@ -178,6 +181,7 @@ describe('GameSession Service', () => {
     it('makeRoomUnavailable should put the room Unavailable if the roomID is the key of a gameRoom in the gameRooms Map', (done: Mocha.Done) => {
         const IS_ROOM_AVAILABLE = true;
         const GAME_ROOM_AVAILABLE: GameRoom = {
+            socketID: ['sfdg78fdsg'],
             id: roomID,
             isAvailable: IS_ROOM_AVAILABLE,
             users: ['Maurice'],
@@ -199,6 +203,7 @@ describe('GameSession Service', () => {
     it('makeRoomAvailable should put the room Available if the roomID is the key of a gameRoom in the gameRooms Map', (done: Mocha.Done) => {
         const IS_ROOM_NOT_AVAILABLE = false;
         const GAME_ROOM_NOT_AVAILABLE: GameRoom = {
+            socketID: ['sfdg78fdsg'],
             id: roomID,
             isAvailable: IS_ROOM_NOT_AVAILABLE,
             users: ['Maurice'],
@@ -220,6 +225,7 @@ describe('GameSession Service', () => {
     it('getOpponentName should return the name of the other player in the gameRoom', (done: Mocha.Done) => {
         const IS_ROOM_NOT_AVAILABLE = false;
         const GAME_ROOM_2: GameRoom = {
+            socketID: [SOCKET_ID, 'sfdg78fdsg'],
             id: roomID,
             isAvailable: IS_ROOM_NOT_AVAILABLE,
             users: [OPPONENT_NAME, PLAYER_NAME],
@@ -240,6 +246,7 @@ describe('GameSession Service', () => {
     it("getOpponentName should return a empty string if the room doesn't exist", (done: Mocha.Done) => {
         const IS_ROOM_NOT_AVAILABLE = false;
         const GAME_ROOM_2: GameRoom = {
+            socketID: [SOCKET_ID, 'sfdg78fdsg'],
             id: roomID,
             isAvailable: IS_ROOM_NOT_AVAILABLE,
             users: [OPPONENT_NAME, PLAYER_NAME],
@@ -290,6 +297,7 @@ describe('GameSession Service', () => {
     it('roomStatus should return the isAvailable property of the GameRoom', (done: Mocha.Done) => {
         const IS_ROOM_AVAILABLE = true;
         const GAME_ROOM_TEST: GameRoom = {
+            socketID: ['sfdg78fdsg'],
             id: roomID,
             isAvailable: true,
             users: ['Maurice'],
@@ -309,6 +317,7 @@ describe('GameSession Service', () => {
 
     it('getAvailableRooms should return an Array with all the room that are Available', (done: Mocha.Done) => {
         const GAME_ROOM_TEST: GameRoom = {
+            socketID: ['sfdg78fdsg'],
             id: roomID,
             isAvailable: true,
             users: ['Maurice'],
@@ -317,6 +326,7 @@ describe('GameSession Service', () => {
             mode: 'classique',
         };
         const GAME_ROOM_TEST_2: GameRoom = {
+            socketID: [SOCKET_ID],
             id: '2',
             isAvailable: false,
             users: ['Vincent'],
@@ -522,6 +532,7 @@ describe('GameSession Service', () => {
     it('roomJoin should emit an error if the room is full and he try to join the room', (done: Mocha.Done) => {
         const parameters: Parameters = { id: '1', name: 'Chris' };
         const gameRoomFull: GameRoom = {
+            socketID: [SOCKET_ID, 'sfdg78fdsg'],
             id: roomID,
             isAvailable: false,
             users: ['Vincent', 'Maurice'],
