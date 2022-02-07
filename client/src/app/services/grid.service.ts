@@ -81,8 +81,8 @@ export class GridService {
     // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
     /* eslint-disable @typescript-eslint/no-magic-numbers */
     drawGrid() {
-        for (let i = 1; i <= SQUARES_NUMBER; i++) {
-            for (let j = 1; j <= SQUARES_NUMBER; j++) {
+        for (let i = 1; i < SQUARES_NUMBER; i++) {
+            for (let j = 1; j < SQUARES_NUMBER; j++) {
                 this.drawBasicTile(GridService.squareWidth * i, GridService.squareHeight * j);
             }
         }
