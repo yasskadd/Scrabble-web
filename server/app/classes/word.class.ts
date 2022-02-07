@@ -74,7 +74,7 @@ export class Word {
 
     findNewAdjacentVerticalWords(gameboard: Gameboard, newletterCoords: Coordinate[]) {
         newletterCoords.forEach((coord) => {
-            let upLetterCoord = new Coordinate(coord.x, coord.y + 1, {} as Letter);
+            const upLetterCoord = new Coordinate(coord.x, coord.y + 1, {} as Letter);
             if (gameboard.getCoord(upLetterCoord).isOccupied) {
                 while (gameboard.getCoord(upLetterCoord).isOccupied) {
                     upLetterCoord.y++;
@@ -90,7 +90,7 @@ export class Word {
 
     findNewAdjacentHorizontalWords(gameboard: Gameboard, newletterCoords: Coordinate[]) {
         newletterCoords.forEach((coord) => {
-            let leftLetterCoord = new Coordinate(coord.x - 1, coord.y, {} as Letter);
+            const leftLetterCoord = new Coordinate(coord.x - 1, coord.y, {} as Letter);
             if (gameboard.getCoord(leftLetterCoord).isOccupied) {
                 while (gameboard.getCoord(leftLetterCoord).isOccupied) {
                     leftLetterCoord.x--;
@@ -105,9 +105,7 @@ export class Word {
     }
 
     buildAdjacentWord(gameboard: Gameboard, firstLetterCoord: Coordinate) {
-        const firstCoordGameboardString: string = gameboard.getCoord(firstLetterCoord).letter.string;
-        const adjacentWord: Word = new Word(!this.isHorizontal, firstLetterCoord, firstCoordGameboardString, gameboard);
-        this.adjacentWords.push(adjacentWord);
+        this.adjacentWords.push(new Word(!this.isHorizontal, firstLetterCoord, gameboard.getCoord(firstLetterCoord).letter.string, gameboard));
     }
 
     calculatePoints(gameboard: Gameboard) {
