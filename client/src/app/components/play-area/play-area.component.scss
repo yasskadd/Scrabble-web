@@ -1,9 +1,13 @@
-#canvas {
-    border: 1px solid black;
-}
-
 #grid-container {
     display: flex;
     justify-content: center;
     flex-direction: row;
+    height: 100%;
+}
+#container-wrapper {
+    height: 100%;
+}
+#canvas {
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
 }
