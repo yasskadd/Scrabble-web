@@ -32,18 +32,18 @@ export class GridService {
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         this.weightSize = this.size * 0.45;
         this.clientSocketService.establishConnection();
-        // this.clientSocketService.on('GameboardRobert', (gameboard: Coordinate[]) => {
-        //     // console.log(gameboard);
-        //     this.drawGridArray(gameboard);
-        // });
+        // TODO : remove after testing
+        this.clientSocketService.on('GameboardRobert', (gameboard: Coordinate[]) => {
+            this.drawGridArray(gameboard);
+        });
     }
 
     drawGridArray(gameboard: Coordinate[]) {
         gameboard.forEach((letter) => {
             this.drawTileLetter(letter);
         });
-        this.drawColumnAlphabet();
         this.drawRowNumbers();
+        this.drawColumnAlphabet();
     }
 
     drawTileLetter(letter: Coordinate) {
@@ -109,7 +109,7 @@ export class GridService {
         for (let i = 1; i <= 15; i++) {
             const char = String.fromCharCode(chatCode + i);
             this.gridContext.fillStyle = 'black';
-            const positions = this.positionXYPixel(-1, i);
+            const positions = this.positionXYPixel(-1, i - 1);
             this.drawLetter(positions.x, positions.y, char);
         }
     }
