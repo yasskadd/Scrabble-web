@@ -42,6 +42,8 @@ export class GridService {
         gameboard.forEach((letter) => {
             this.drawTileLetter(letter);
         });
+        this.drawColumnAlphabet();
+        this.drawRowNumbers();
     }
 
     drawTileLetter(letter: Coordinate) {
@@ -97,7 +99,7 @@ export class GridService {
         this.gridContext.font = this.size + 'px system-ui';
         for (let i = 1; i <= 15; i++) {
             this.gridContext.fillStyle = 'black';
-            const positions = this.positionXYPixel(i, 0);
+            const positions = this.positionXYPixel(i, -1);
             this.drawNumber(positions.x, positions.y, String(i));
         }
     }
@@ -107,7 +109,7 @@ export class GridService {
         for (let i = 1; i <= 15; i++) {
             const char = String.fromCharCode(chatCode + i);
             this.gridContext.fillStyle = 'black';
-            const positions = this.positionXYPixel(0, i);
+            const positions = this.positionXYPixel(-1, i);
             this.drawLetter(positions.x, positions.y, char);
         }
     }
@@ -264,6 +266,6 @@ export class GridService {
     }
 
     private positionXYPixel(x: number, y: number): Coord {
-        return { x: GridService.squareWidth * x, y: GridService.squareHeight * y };
+        return { x: GridService.squareWidth * (x + 1), y: GridService.squareHeight * (y + 1) };
     }
 }
