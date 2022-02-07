@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { LetterTilesService } from '@app/services/letter-tiles.service';
 
-export const DEFAULT_WIDTH = 350;
-export const DEFAULT_HEIGHT = 75;
+export const DEFAULT_WIDTH = 500;
+export const DEFAULT_HEIGHT = 45;
 
 @Component({
     selector: 'app-player-rack',
