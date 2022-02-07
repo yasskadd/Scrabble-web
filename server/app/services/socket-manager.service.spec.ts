@@ -15,7 +15,7 @@ type OnSioCallbackSignature = (sio: io.Server, socket: SocketType, ...args: unkn
 
 const TEST_ROOM = 'EldenRingHype';
 const TEST_MESSAGE = 'RipNoTime';
-
+const EVENT = 'eventTest';
 describe('SocketManager service tests', () => {
     // let ioServer: io.Server;
     let service: SocketManager;
@@ -121,7 +121,6 @@ describe('SocketManager service tests', () => {
         changeBooleanCallbackSio = (i, _) => {
             testBoolean2 = true;
         };
-        const EVENT = 'eventTest';
         service.io(EVENT, changeBooleanCallbackSio);
 
         service.on(EVENT, changeBooleanCallbackOn);

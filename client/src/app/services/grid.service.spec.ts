@@ -20,6 +20,8 @@ describe('GridService', () => {
         expect(service).toBeTruthy();
     });
 
+    // TODO : grid tests need to be done !!
+
     // it(' width should return the width of the grid canvas', () => {
     //     expect(service.width).toEqual(CANVAS_WIDTH);
     // });
