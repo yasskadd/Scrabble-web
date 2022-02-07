@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameParameters } from '@app/classes/game-parameters';
 import { GameRoomClient } from '@app/classes/game-room-client';
+import { SocketEvents } from '@common/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
@@ -31,7 +32,7 @@ export class GameConfigurationService {
     }
 
     configureBaseSocketFeatures() {
-        this.clientSocket.on('joinValid', (playerName: string) => {
+        this.clientSocket.on(SocketEvents.JoinValidGame, (playerName: string) => {
             this.isCreator = false;
             this.statusGame = WAITING_OPPONENT_CONFIRMATION;
             this.isRoomJoinable.next(true);
@@ -39,8 +40,8 @@ export class GameConfigurationService {
             this.playerName[1] = playerName;
         });
 
-        this.clientSocket.on('rejectByOtherPlayer', (reason: string) => {
-            this.clientSocket.send('rejectByOtherPlayer', { id: this.roomId, name: this.playerName[0] });
+        this.clientSocket.on(SocketEvents.RejectByOtherPlayer, (reason: string) => {
+            this.clientSocket.send(SocketEvents.RejectByOtherPlayer, { id: this.roomId, name: this.playerName[0] });
             this.roomId = '';
             this.playerName = [];
             this.statusGame = '';
@@ -48,24 +49,24 @@ export class GameConfigurationService {
             this.resetErrorSubject();
         });
 
-        this.clientSocket.on('gameAboutToStart', () => {
+        this.clientSocket.on(SocketEvents.GameAboutToStart, () => {
             this.isGameStarted.next(true);
             this.resetIsGameStartedSubject();
         });
 
-        this.clientSocket.on('foundOpponent', (opponentName: string) => {
+        this.clientSocket.on(SocketEvents.FoundAnOpponent, (opponentName: string) => {
             this.playerName[1] = opponentName;
             this.statusGame = FOUND_OPPONENT_MESSAGE;
         });
-        this.clientSocket.on('gameCreatedConfirmation', (roomId: string) => {
+        this.clientSocket.on(SocketEvents.GameCreatedConfirmation, (roomId: string) => {
             this.roomId = roomId;
         });
 
-        this.clientSocket.on('updateListOfRooms', (gamesToJoin: GameRoomClient[]) => {
+        this.clientSocket.on(SocketEvents.UpdateRoomJoinable, (gamesToJoin: GameRoomClient[]) => {
             this.updateAvailableRooms(gamesToJoin);
         });
 
-        this.clientSocket.on('joiningError', (reason: string) => {
+        this.clientSocket.on(SocketEvents.ErrorJoining, (reason: string) => {
             this.errorReason.next(reason);
             this.resetErrorSubject();
         });
@@ -82,41 +83,37 @@ export class GameConfigurationService {
     }
 
     removeRoom() {
-        this.clientSocket.send('removeRoom', this.roomId);
+        this.clientSocket.send(SocketEvents.RemoveRoom, this.roomId);
         this.roomId = '';
         this.playerName.pop();
     }
 
     rejectOpponent() {
-        this.clientSocket.send('rejectOpponent', this.roomId);
+        this.clientSocket.send(SocketEvents.RejectOpponent, this.roomId);
         this.statusGame = SEARCHING_OPPONENT;
         this.playerName.pop();
     }
 
     gameInitialization(parameters: GameParameters) {
-        this.clientSocket.send('createGame', parameters);
+        this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.playerName[0] = parameters.username;
         this.isCreator = true;
         this.statusGame = SEARCHING_OPPONENT;
     }
 
     joinGame(roomId: string, username: string) {
-        ///
-        this.clientSocket.send('roomJoin', { id: roomId, name: username });
+        this.clientSocket.send(SocketEvents.PlayerJoinGameAvailable, { id: roomId, name: username });
         this.playerName[0] = username;
         this.roomId = roomId;
     }
     joinPage() {
-        //
-        this.clientSocket.send('roomLobby');
+        this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
     beginScrabbleGame() {
-        ///
-        this.clientSocket.send('startScrabbleGame', this.roomId);
+        this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomId);
     }
     private updateAvailableRooms(availableRooms: GameRoomClient[]) {
-        ///
         this.availableRooms = availableRooms;
     }
     // Sprint 2
