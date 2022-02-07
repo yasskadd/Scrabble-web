@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Coordinate } from '@common/coordinate.class';
+import { ClientSocketService } from './client-socket.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 500;
@@ -25,12 +27,55 @@ export class GridService {
     size: number;
     weightSize: number;
     gridContext: CanvasRenderingContext2D;
-    constructor() {
+    constructor(private clientSocketService: ClientSocketService) {
         this.size = 15;
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         this.weightSize = this.size * 0.45;
+        this.clientSocketService.establishConnection();
+        // this.clientSocketService.on('GameboardRobert', (gameboard: Coordinate[]) => {
+        //     // console.log(gameboard);
+        //     this.drawGridArray(gameboard);
+        // });
     }
 
+    drawGridArray(gameboard: Coordinate[]) {
+        gameboard.forEach((letter) => {
+            this.drawTileLetter(letter);
+        });
+    }
+
+    drawTileLetter(letter: Coordinate) {
+        // const tileNumber = 14;
+        const y = letter.y;
+        if (letter.letterMultiplier > 1) {
+            if (letter.letterMultiplier === 2) {
+                this.drawLetterMultiplierByTwoTile(letter.x, y);
+            } else {
+                this.drawLetterMultiplierByThreeTile(letter.x, y);
+            }
+            if (!letter.isOccupied) {
+                this.drawMultiplierIcon(letter.x, y, letter.letterMultiplier);
+                this.drawMultiplierType(letter.x, y, 'LETTRE');
+            }
+        } else if (letter.wordMultiplier > 1) {
+            if (letter.wordMultiplier === 2) {
+                this.drawWordMultiplierByTwoTile(letter.x, y);
+            } else {
+                this.drawWordMultiplierByThreeTile(letter.x, y);
+            }
+            if (!letter.isOccupied) {
+                this.drawMultiplierIcon(letter.x, y, letter.wordMultiplier);
+                this.drawMultiplierType(letter.x, y, 'MOT');
+            }
+        } else {
+            this.drawBasicTile(letter.x, y);
+        }
+        if (!letter.isOccupied) return;
+        this.drawLetterTile(letter.x, y, letter.letter.string);
+        this.drawLetterWeight(letter.x, y, `${letter.letter.points}`);
+    }
+    // [0,1,2,3,4]
+    // [5,6,7,8,9]
     // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
     /* eslint-disable @typescript-eslint/no-magic-numbers */
     drawGrid() {
@@ -41,7 +86,7 @@ export class GridService {
         }
         this.drawRowNumbers();
         this.drawColumnAlphabet();
-        this.drawMultipliers();
+        // this.drawMultipliers();
         const middlePos = this.positionXYPixel(8, 8);
         this.drawWordMultiplierByTwoTile(middlePos.x, middlePos.y);
         this.gridContext.fillStyle = 'black';
@@ -67,190 +112,96 @@ export class GridService {
         }
     }
 
-    drawMultipliers() {
-        const letterMultipliersByTwo: number[][] = [
-            [3, 0],
-            [11, 0],
-            [6, 2],
-            [8, 2],
-            [0, 3],
-            [7, 3],
-            [14, 3],
-            [2, 6],
-            [6, 6],
-            [8, 6],
-            [12, 6],
-            [3, 7],
-            [11, 7],
-            [2, 8],
-            [6, 8],
-            [8, 8],
-            [12, 8],
-            [0, 11],
-            [7, 11],
-            [14, 11],
-            [6, 12],
-            [8, 12],
-            [3, 14],
-            [11, 14],
-        ];
-
-        const letterMultipliersByThree: number[][] = [
-            [5, 1],
-            [9, 1],
-            [1, 5],
-            [5, 5],
-            [9, 5],
-            [13, 5],
-            [1, 9],
-            [5, 9],
-            [9, 9],
-            [13, 9],
-            [5, 13],
-            [9, 13],
-        ];
-
-        const wordMultipliersByTwo: number[][] = [
-            [1, 1],
-            [2, 2],
-            [3, 3],
-            [4, 4],
-            [10, 4],
-            [11, 3],
-            [12, 2],
-            [13, 1],
-            [1, 13],
-            [2, 12],
-            [3, 11],
-            [4, 10],
-            [10, 10],
-            [11, 11],
-            [12, 12],
-            [13, 13],
-        ];
-
-        const wordMultipliersByThree: number[][] = [
-            [0, 0],
-            [7, 0],
-            [14, 0],
-            [0, 7],
-            [14, 7],
-            [0, 14],
-            [7, 14],
-            [14, 14],
-        ];
-
-        letterMultipliersByTwo.forEach((multiplyLetterByTwoPosition) => {
-            const x = multiplyLetterByTwoPosition[0] + 1;
-            const y = multiplyLetterByTwoPosition[1] + 1;
-            const letterPos = this.positionXYPixel(x, y);
-            this.drawLetterMultiplierByTwoTile(letterPos.x, letterPos.y);
-            this.drawMultiplierIcon(GridService.squareWidth * x, GridService.squareHeight * y, 2);
-            this.drawMultiplierType(GridService.squareWidth * x, GridService.squareHeight * y, 'LETTRE');
-        });
-
-        letterMultipliersByThree.forEach((multiplyLetterByThreePosition) => {
-            const x = multiplyLetterByThreePosition[0] + 1;
-            const y = multiplyLetterByThreePosition[1] + 1;
-            const letterPos = this.positionXYPixel(x, y);
-            this.drawLetterMultiplierByThreeTile(letterPos.x, letterPos.y);
-            this.drawMultiplierIcon(GridService.squareWidth * x, GridService.squareHeight * y, 3);
-            this.drawMultiplierType(GridService.squareWidth * x, GridService.squareHeight * y, 'LETTRE');
-        });
-
-        wordMultipliersByTwo.forEach((multiplyWordByTwoPosition) => {
-            const x = multiplyWordByTwoPosition[0] + 1;
-            const y = multiplyWordByTwoPosition[1] + 1;
-            const letterPos = this.positionXYPixel(x, y);
-            this.drawWordMultiplierByTwoTile(letterPos.x, letterPos.y);
-            this.drawMultiplierIcon(GridService.squareWidth * x, GridService.squareHeight * y, 2);
-            this.drawMultiplierType(GridService.squareWidth * x, GridService.squareHeight * y, 'MOT');
-        });
-
-        wordMultipliersByThree.forEach((multiplyWordByThreePosition) => {
-            const x = multiplyWordByThreePosition[0] + 1;
-            const y = multiplyWordByThreePosition[1] + 1;
-            const letterPos = this.positionXYPixel(x, y);
-            this.drawWordMultiplierByThreeTile(letterPos.x, letterPos.y);
-            this.drawMultiplierIcon(GridService.squareWidth * x, GridService.squareHeight * y, 3);
-            this.drawMultiplierType(GridService.squareWidth * x, GridService.squareHeight * y, 'MOT');
-        });
-    }
-
     drawBasicTile(x: number, y: number) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.fillStyle = '#D2CCB8';
-        this.gridContext.fillRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.fillRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
         this.gridContext.strokeStyle = '#F9F7F2';
         this.gridContext.lineWidth = 1;
-        this.gridContext.strokeRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.strokeRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
     }
 
     drawWordMultiplierByThreeTile(x: number, y: number) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.fillStyle = '#FE6E54';
-        this.gridContext.fillRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.fillRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
         this.gridContext.strokeStyle = '#F9F7F2';
         this.gridContext.lineWidth = 1;
-        this.gridContext.strokeRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.strokeRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
     }
 
     drawWordMultiplierByTwoTile(x: number, y: number) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.fillStyle = '#F0B8B8';
-        this.gridContext.fillRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.fillRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
         this.gridContext.strokeStyle = '#F9F7F2';
         this.gridContext.lineWidth = 1;
-        this.gridContext.strokeRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.strokeRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
     }
 
     drawLetterMultiplierByThreeTile(x: number, y: number) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.fillStyle = '#93CFF1';
-        this.gridContext.fillRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.fillRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
         this.gridContext.strokeStyle = '#F9F7F2';
         this.gridContext.lineWidth = 1;
-        this.gridContext.strokeRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.strokeRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
     }
 
     drawLetterMultiplierByTwoTile(x: number, y: number) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.fillStyle = '#CEE7F7';
-        this.gridContext.fillRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.fillRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
         this.gridContext.strokeStyle = '#F9F7F2';
         this.gridContext.lineWidth = 1;
-        this.gridContext.strokeRect(x, y, GridService.squareWidth, GridService.squareHeight);
+        this.gridContext.strokeRect(positions.x, positions.y, GridService.squareWidth, GridService.squareHeight);
     }
 
     drawNumber(x: number, y: number, string: string) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
-        this.gridContext.fillText(string, x + GridService.halfSquareWidth, y + GridService.halfSquareHeight, this.size);
+        this.gridContext.fillText(string, positions.x + GridService.halfSquareWidth, positions.y + GridService.halfSquareHeight, this.size);
     }
 
     drawLetterWeight(x: number, y: number, string: string) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
         const plusX = width * 0.9;
         const halfSize = this.size / 2;
         this.gridContext.font = this.weightSize + 'px system-ui';
-        this.gridContext.fillText(string, x + GridService.halfSquareWidth + plusX, y + halfSize + GridService.halfSquareHeight, this.size);
+        this.gridContext.fillText(
+            string,
+            positions.x + GridService.halfSquareWidth + plusX,
+            positions.y + halfSize + GridService.halfSquareHeight,
+            this.size,
+        );
     }
 
     drawLetter(x: number, y: number, char: string) {
         this.gridContext.font = this.size + 'px system-ui';
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
+        // console.log(positions);
+        this.gridContext.fillStyle = 'black';
         this.gridContext.fillText(char, GridService.halfSquareWidth + x, GridService.halfSquareHeight + y, GridService.squareWidth);
     }
 
     drawLetterTile(x: number, y: number, char: string) {
+        const positions = this.positionXYPixel(x, y);
         this.gridContext.lineWidth = 1;
-        this.gridContext.strokeStyle = 'Black';
+        this.gridContext.strokeStyle = 'black';
         const posX = (GridService.squareWidth - GridService.letterTileWidth) / 2;
         const posY = (GridService.squareHeight - GridService.letterTileHeight) / 2;
-        this.gridContext.strokeRect(x + posX, y + posY, GridService.letterTileWidth, GridService.letterTileHeight);
+        this.gridContext.strokeRect(positions.x + posX, positions.y + posY, GridService.letterTileWidth, GridService.letterTileHeight);
         this.gridContext.fillStyle = 'black';
-        this.drawLetter(x, y, char);
+        this.drawLetter(positions.x, positions.y, char);
     }
 
     drawMultiplierIcon(x: number, y: number, multiplier: number) {
+        const positions = this.positionXYPixel(x, y);
         const size = this.size * 0.6;
         this.gridContext.fillStyle = 'black';
         this.gridContext.font = size + 'px system-ui';
@@ -258,22 +209,28 @@ export class GridService {
         this.gridContext.textAlign = 'center';
         this.gridContext.fillText(
             'x ' + String(multiplier),
-            GridService.halfSquareWidth + x,
-            GridService.halfSquareHeight + y,
+            GridService.halfSquareWidth + positions.x,
+            GridService.halfSquareHeight + positions.y,
             GridService.squareWidth,
         );
     }
 
     drawMultiplierType(x: number, y: number, type: string) {
+        const positions = this.positionXYPixel(x, y);
         const size = this.size * 0.55;
         this.gridContext.fillStyle = 'black';
         this.gridContext.font = size + 'px system-ui';
         this.gridContext.textBaseline = 'bottom';
         this.gridContext.textAlign = 'center';
-        this.gridContext.fillText(type, GridService.halfSquareWidth + x, GridService.halfSquareHeight + y, GridService.squareWidth);
+        this.gridContext.fillText(
+            type,
+            GridService.halfSquareWidth + positions.x,
+            GridService.halfSquareHeight + positions.y,
+            GridService.squareWidth,
+        );
     }
 
-    drawStar(cx : number, cy : number, spikes :number, outerRadius:number, innerRadius:number) {
+    drawStar(cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number) {
         let rot = (Math.PI / 2) * 3;
         let x = cx;
         let y = cy;

@@ -3,8 +3,8 @@ import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { Container } from 'typedi';
-import { Letter } from '../letter';
-import { Coordinate } from './coordinate.class';
+import { Coordinate } from '../../../common/coordinate.class';
+import { Letter } from '../../../common/letter';
 import { Gameboard } from './gameboard.class';
 
 describe('gameboard', () => {

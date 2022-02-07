@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
-import { Letter } from '../letter';
-import { Coordinate } from './coordinate.class';
+import { Coordinate } from '../../../common/coordinate.class';
+import { Letter } from '../../../common/letter';
 
 export class Gameboard {
     gameboardCoords: Coordinate[] = new Array();
@@ -25,7 +25,11 @@ export class Gameboard {
 
     getCoord(coord: Coordinate): Coordinate {
         // eslint-disable-next-line no-unused-vars
-        return this.gameboardCoords.filter((gameboardCoord) => (gameboardCoord = coord))[0];
+        // console.log(coord);
+        // console.log(this.gameboardCoords[0]);
+        return this.gameboardCoords.filter((gameboardCoord) => {
+            return gameboardCoord.x === coord.x && gameboardCoord.y === coord.y;
+        })[0];
     }
 
     placeLetter(letterCoord: Coordinate): boolean {

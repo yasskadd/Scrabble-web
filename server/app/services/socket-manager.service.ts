@@ -26,6 +26,7 @@ export class SocketManager {
             this.onEvents.set(event, []);
         }
         const onElement = this.onEvents.get(event);
+        // not 100% on tests because of lint (We know the condition will never be false)
         if (onElement !== undefined) {
             onElement.push(callback);
         }
@@ -35,7 +36,8 @@ export class SocketManager {
             this.onAndSioEvents.set(event, []);
         }
         const onElement = this.onAndSioEvents.get(event);
-        if (onElement !== undefined) {
+        // not 100% on tests because of lint (We know the condition will never be false)
+        if (onElement) {
             onElement.push(callback);
         }
     }

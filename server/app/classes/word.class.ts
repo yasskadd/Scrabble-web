@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-imports */
-import { Letter } from '../letter';
-import { Coordinate } from './coordinate.class';
+import { Coordinate } from '../../../common/coordinate.class';
+import { Letter } from '../../../common/letter';
 import { Gameboard } from './gameboard.class';
 
 export class Word {

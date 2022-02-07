@@ -1,4 +1,4 @@
-import { Letter } from '@app/letter';
+import { Letter } from '@common/letter';
 
 export class Coordinate {
     x: number;

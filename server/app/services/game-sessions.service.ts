@@ -86,6 +86,13 @@ export class GameSessions {
             //
             sio.to(roomId).emit('gameAboutToStart');
         });
+        // eslint-disable-next-line no-unused-vars
+        // this.socketManager.io('gameboardTest', (sio, _) => {
+        //     const multiplierService = Container.get(BoxMultiplier);
+        //     const gameboard = new Gameboard(multiplierService);
+        //     gameboard.placeLetter(new Coordinate(2, 2, { string: 'A', points: 3, quantity: 5 }));
+        //     sio.emit('GameboardRobert', gameboard.gameboardCoords);
+        // });
     }
 
     getNewId(): string {

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
+// import { ClientSocketService } from '@app/services/client-socket.service';
 import { GridService } from '@app/services/grid.service';
-
 // TODO : Avoir un fichier séparé pour les constantes!
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 500;
@@ -27,7 +27,7 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonPressed = '';
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private readonly gridService: GridService) {}
+    constructor(private readonly gridService: GridService /* private clientSocketService: ClientSocketService*/) {}
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
@@ -36,8 +36,10 @@ export class PlayAreaComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gridService.drawGrid();
+        // this.gridService.drawGrid();
         // this.gridService.drawWord('Scrabble');
+        // this.clientSocketService.send('gameboardTest');
+
         this.gridCanvas.nativeElement.focus();
     }
 
