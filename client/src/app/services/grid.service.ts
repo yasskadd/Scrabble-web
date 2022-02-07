@@ -34,8 +34,8 @@ export class GridService {
     // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
     /* eslint-disable @typescript-eslint/no-magic-numbers */
     drawGrid() {
-        for (let i = 1; i <= SQUARES_NUMBER; i++) {
-            for (let j = 1; j <= SQUARES_NUMBER; j++) {
+        for (let i = 1; i < SQUARES_NUMBER; i++) {
+            for (let j = 1; j < SQUARES_NUMBER; j++) {
                 this.drawBasicTile(GridService.squareWidth * i, GridService.squareHeight * j);
             }
         }
@@ -273,7 +273,7 @@ export class GridService {
         this.gridContext.fillText(type, GridService.halfSquareWidth + x, GridService.halfSquareHeight + y, GridService.squareWidth);
     }
 
-    drawStar(cx : number, cy : number, spikes :number, outerRadius:number, innerRadius:number) {
+    drawStar(cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number) {
         let rot = (Math.PI / 2) * 3;
         let x = cx;
         let y = cy;
