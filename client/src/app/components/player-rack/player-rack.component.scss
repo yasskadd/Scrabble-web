@@ -9,11 +9,14 @@
     background-color: #f8ebd9;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
 }
+#player-letters #canvas {
+    display: flex;
+    align-items: center;
+}
 
 #actions-list {
     display: flex;
     width: 100%;
-    padding-top: 10px;
     flex-direction: row;
     justify-content: space-between;
     list-style-type: none;

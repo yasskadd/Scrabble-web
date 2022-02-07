@@ -3,16 +3,17 @@
     display: flex;
     justify-content: space-between;
 }
-
-.play-area-container {
-    overflow: auto;
-    flex: 1 1 auto;
+.information-panel {
+    flex-grow: 1;
+    border: 1px solid #999999;
+    height: 100%;
+    padding: 10px;
 }
-
 .play-area {
-    display: flex;
-    // display: grid;
-    // width: min-content;
-    // outline: none;
+    overflow: auto;
+    flex-grow: 4;
     justify-content: center;
+}
+.chatbox {
+    flex-grow: 1;
 }
