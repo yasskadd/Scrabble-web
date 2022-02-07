@@ -19,13 +19,6 @@ export class PlayerRackComponent implements AfterViewInit {
     ngAfterViewInit(): void {
         this.letterTilesService.gridContext = this.rackCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         this.letterTilesService.drawRack();
-        // this.letterTilesService.drawLetterTile(12, 5, 'A');
-        // this.letterTilesService.gridContext.fillStyle = '#FA5F55';
-        // this.letterTilesService.gridContext.fillRect(10, 10, 350, 75);
-        // this.letterTilesService.gridContext.strokeStyle = '#80461B';
-        // this.letterTilesService.gridContext.lineWidth = 1;
-        // this.letterTilesService.gridContext.strokeRect(10, 10, this.letterTilesService.minimumSize, this.letterTilesService.minimumSize);
-        // this.gridService.drawWord('Scrabble');
         this.rackCanvas.nativeElement.focus();
     }
 
