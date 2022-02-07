@@ -1,5 +1,4 @@
 import { Coordinate } from '@app/coordinate';
-import { GameBoard } from 'app/classes/gameboard.class';
 import { Service } from 'typedi';
 
 // Source : https://www.codegrepper.com/code-examples/javascript/how+to+assign+alphabet+to+numbers+in+js
@@ -16,28 +15,22 @@ function convertLetterToNumber(str: string) {
 
 @Service()
 export class CommandHandlerService {
-    handleCommand(command : string, gameboard : GameBoard) {
+    handleCommand(command: string) {
         const splitCommand = this.splitCommand(command);
         const commandType = this.getCommandType(splitCommand);
-        if (commandType === 'placer'){
+        if (commandType === 'placer') {
             const coordsAndDirection = this.getCoordsAndDirection(splitCommand);
-            const placedLetters : string[] = this.getLetters(splitCommand);
-            if (this.isOutOfBounds(gameboard, placedLetters, coordsAndDirection)) 
-
-            // TODO: Assign coordinate to placed Letters if command is valid
+            const coord: Coordinate = coordsAndDirection[0];
+            const direction: string = coordsAndDirection[1];
+            const placedLetters: string[] = this.getLetters(splitCommand);
+            // emit placementInfo
         }
-        else if (commandType === 'changer')
-    }
+        // else if (commandType === 'changer'){
 
+        // }
+        // else if (commandType === 'passer') {
 
-    private isOutOfBounds(gameBoard: GameBoard, placedLetters: string[], coordsAndDirection : any[]) {
-        const isOut : boolean = false;
-        const stringLength : number = placedLetters.length;
-        const direction : string = coordsAndDirection[1];
-        const coord : Coordinate = coordsAndDirection[0];
-        // TODO: Call service to validate Placement 
-
-        return isOut;
+        // }
     }
 
     private splitCommand(command: string) {
@@ -56,4 +49,6 @@ export class CommandHandlerService {
     private getLetters(stringArr: string[]) {
         return stringArr[2].split('');
     }
+
+    private emitPlacementInfo() {}
 }
