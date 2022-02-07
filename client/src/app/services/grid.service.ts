@@ -73,16 +73,17 @@ export class GridService {
     }
 
     // drawMultipliers() {
-    //     let positions: Coord;
-    //     for (const x of GridService.wordMultiplyThree) {
-    //         for (const y of GridService.wordMultiplyThree) {
-    //             positions = this.positionXYPixel(x, y);
-    //             this.drawWordMultiplierByThreeTile(positions.x, positions.y);
-    //             this.drawMultiplierIcon(positions.x, positions.y, 3);
-    //             this.drawMultiplierType(positions.x, positions.y, 'WORD');
-    //         }
+    // let positions: Coord;
+    // for (const x of GridService.wordMultiplyThree) {
+    //     for (const y of GridService.wordMultiplyThree) {
+    //         positions = this.positionXYPixel(x, y);
+    //         this.drawWordMultiplierByThreeTile(positions.x, positions.y);
+    //         this.drawMultiplierIcon(positions.x, positions.y, 3);
+    //         this.drawMultiplierType(positions.x, positions.y, 'WORD');
     //     }
     // }
+    // }
+
     drawBasicTile(x: number, y: number) {
         this.gridContext.fillStyle = '#FADD7A';
         this.gridContext.fillRect(x, y, GridService.squareWidth, GridService.squareHeight);
