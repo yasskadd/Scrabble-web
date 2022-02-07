@@ -7,6 +7,11 @@ import { environment } from 'src/environments/environment';
 })
 export class ClientSocketService {
     socket: Socket;
+
+    constructor() {
+        this.establishConnection();
+    }
+
     isSocketAlive() {
         return this.socket && this.socket.connected;
     }

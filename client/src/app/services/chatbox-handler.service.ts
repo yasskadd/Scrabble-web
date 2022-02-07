@@ -21,7 +21,6 @@ export class ChatboxHandlerService {
 
     constructor(private clientSocket: ClientSocketService, private gameConfiguration: GameConfigurationService) {
         this.messages = [];
-        this.clientSocket.establishConnection();
         this.configureBaseSocketFeatures();
     }
 
