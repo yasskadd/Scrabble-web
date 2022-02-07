@@ -90,7 +90,6 @@ export class GameSessions {
             sio.to(roomId).emit('gameAboutToStart');
         });
         // TODO : remove after testing
-
         // eslint-disable-next-line no-unused-vars
         this.socketManager.io('gameboardTest', (sio, _) => {
             const multiplierService = Container.get(BoxMultiplier);

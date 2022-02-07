@@ -3,8 +3,8 @@ import { Coordinate } from '@common/coordinate.class';
 import { ClientSocketService } from './client-socket.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
+export const DEFAULT_WIDTH = 600;
+export const DEFAULT_HEIGHT = 600;
 // Better organize later
 const SQUARES_NUMBER = 16;
 const LETTER_TILE_RATIO = 0.8;
@@ -39,45 +39,45 @@ export class GridService {
     }
 
     drawGridArray(gameboard: Coordinate[]) {
+        this.drawRowNumbers();
+        this.drawColumnAlphabet();
         gameboard.forEach((letter) => {
             this.drawTileLetter(letter);
         });
-        this.drawRowNumbers();
-        this.drawColumnAlphabet();
+        const middlePos = this.positionXYPixel(7, 7);
+        this.drawWordMultiplierByTwoTile(7, 7);
+        this.drawStar(middlePos.x + GridService.halfSquareWidth, middlePos.y + GridService.halfSquareHeight, 5, 10, 5);
     }
 
     drawTileLetter(letter: Coordinate) {
-        // const tileNumber = 14;
-        const y = letter.y;
         if (letter.letterMultiplier > 1) {
             if (letter.letterMultiplier === 2) {
-                this.drawLetterMultiplierByTwoTile(letter.x, y);
+                this.drawLetterMultiplierByTwoTile(letter.x, letter.y);
             } else {
-                this.drawLetterMultiplierByThreeTile(letter.x, y);
+                this.drawLetterMultiplierByThreeTile(letter.x, letter.y);
             }
             if (!letter.isOccupied) {
-                this.drawMultiplierIcon(letter.x, y, letter.letterMultiplier);
-                this.drawMultiplierType(letter.x, y, 'LETTRE');
+                this.drawMultiplierIcon(letter.x, letter.y, letter.letterMultiplier);
+                this.drawMultiplierType(letter.x, letter.y, 'LETTRE');
             }
         } else if (letter.wordMultiplier > 1) {
             if (letter.wordMultiplier === 2) {
-                this.drawWordMultiplierByTwoTile(letter.x, y);
+                this.drawWordMultiplierByTwoTile(letter.x, letter.y);
             } else {
-                this.drawWordMultiplierByThreeTile(letter.x, y);
+                this.drawWordMultiplierByThreeTile(letter.x, letter.y);
             }
             if (!letter.isOccupied) {
-                this.drawMultiplierIcon(letter.x, y, letter.wordMultiplier);
-                this.drawMultiplierType(letter.x, y, 'MOT');
+                this.drawMultiplierIcon(letter.x, letter.y, letter.wordMultiplier);
+                this.drawMultiplierType(letter.x, letter.y, 'MOT');
             }
         } else {
-            this.drawBasicTile(letter.x, y);
+            this.drawBasicTile(letter.x, letter.y);
         }
         if (!letter.isOccupied) return;
-        this.drawLetterTile(letter.x, y, letter.letter.string);
-        this.drawLetterWeight(letter.x, y, `${letter.letter.points}`);
+        this.drawLetterTile(letter.x, letter.y, letter.letter.string);
+        this.drawLetterWeight(letter.x, letter.y, `${letter.letter.points}`);
     }
-    // [0,1,2,3,4]
-    // [5,6,7,8,9]
+
     // TODO : pas de valeurs magiques!! Faudrait avoir une meilleure manière de le faire
     /* eslint-disable @typescript-eslint/no-magic-numbers */
     drawGrid() {
@@ -88,7 +88,6 @@ export class GridService {
         }
         this.drawRowNumbers();
         this.drawColumnAlphabet();
-        // this.drawMultipliers();
         const middlePos = this.positionXYPixel(8, 8);
         this.drawWordMultiplierByTwoTile(middlePos.x, middlePos.y);
         this.gridContext.fillStyle = 'black';
@@ -99,7 +98,7 @@ export class GridService {
         this.gridContext.font = this.size + 'px system-ui';
         for (let i = 1; i <= 15; i++) {
             this.gridContext.fillStyle = 'black';
-            const positions = this.positionXYPixel(i, -1);
+            const positions = this.positionXYPixel(i - 1, -1);
             this.drawNumber(positions.x, positions.y, String(i));
         }
     }
@@ -160,10 +159,10 @@ export class GridService {
     }
 
     drawNumber(x: number, y: number, string: string) {
-        const positions = this.positionXYPixel(x, y);
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
-        this.gridContext.fillText(string, positions.x + GridService.halfSquareWidth, positions.y + GridService.halfSquareHeight, this.size);
+        console.log(x);
+        this.gridContext.fillText(string, x + GridService.halfSquareWidth, y + GridService.halfSquareHeight, this.size);
     }
 
     drawLetterWeight(x: number, y: number, string: string) {

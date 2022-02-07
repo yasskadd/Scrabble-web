@@ -61,6 +61,11 @@ export class BoxMultiplier {
         new Coordinate(2, 12, {} as Letter),
         new Coordinate(3, 11, {} as Letter),
         new Coordinate(4, 10, {} as Letter),
+        new Coordinate(10, 10, {} as Letter),
+        new Coordinate(11, 11, {} as Letter),
+        new Coordinate(12, 12, {} as Letter),
+        new Coordinate(13, 13, {} as Letter),
+        new Coordinate(14, 14, {} as Letter),
     ];
 
     wordMultipliersByThree: Coordinate[] = [
@@ -68,7 +73,6 @@ export class BoxMultiplier {
         new Coordinate(7, 0, {} as Letter),
         new Coordinate(14, 0, {} as Letter),
         new Coordinate(0, 7, {} as Letter),
-        new Coordinate(7, 7, {} as Letter),
         new Coordinate(14, 7, {} as Letter),
         new Coordinate(0, 14, {} as Letter),
         new Coordinate(7, 14, {} as Letter),
