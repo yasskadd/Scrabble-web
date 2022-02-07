@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 500;
+export const DEFAULT_WIDTH = 600;
+export const DEFAULT_HEIGHT = 600;
 // Better organize later
 const SQUARES_NUMBER = 16;
 const LETTER_TILE_RATIO = 0.8;
