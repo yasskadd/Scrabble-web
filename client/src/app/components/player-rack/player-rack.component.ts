@@ -1,5 +1,8 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { GridService } from '@app/services/grid.service';
+import { LetterTilesService } from '@app/services/letter-tiles.service';
+
+export const DEFAULT_WIDTH = 500;
+export const DEFAULT_HEIGHT = 45;
 
 @Component({
     selector: 'app-player-rack',
@@ -7,12 +10,32 @@ import { GridService } from '@app/services/grid.service';
     styleUrls: ['./player-rack.component.scss'],
 })
 export class PlayerRackComponent implements AfterViewInit {
-    @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
+    @ViewChild('rackCanvas', { static: false }) private rackCanvas!: ElementRef<HTMLCanvasElement>;
 
-    constructor(private readonly gridService: GridService) {}
+    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+
+    constructor(private readonly letterTilesService: LetterTilesService) {}
 
     ngAfterViewInit(): void {
-        this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gridService.drawGrid();
+        this.letterTilesService.gridContext = this.rackCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.letterTilesService.drawRack();
+        // this.letterTilesService.drawLetterTile(12, 5, 'A');
+        // this.letterTilesService.gridContext.fillStyle = '#FA5F55';
+        // this.letterTilesService.gridContext.fillRect(10, 10, 350, 75);
+        // this.letterTilesService.gridContext.strokeStyle = '#80461B';
+        // this.letterTilesService.gridContext.lineWidth = 1;
+        // this.letterTilesService.gridContext.strokeRect(10, 10, this.letterTilesService.minimumSize, this.letterTilesService.minimumSize);
+        // this.gridService.drawWord('Scrabble');
+        this.rackCanvas.nativeElement.focus();
     }
+
+    get width(): number {
+        return this.canvasSize.x;
+    }
+
+    get height(): number {
+        return this.canvasSize.y;
+    }
+
+    // addLetterToRack() {}
 }
