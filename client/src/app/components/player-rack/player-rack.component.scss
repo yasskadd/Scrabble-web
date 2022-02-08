@@ -1,7 +1,8 @@
 .rack-info {
-    display: grid;
-    bottom: 0%;
-    justify-content: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 #player-letters {
@@ -13,15 +14,10 @@
     width: 300px;
     box-shadow: 1px 3px 2px -2px rgba(0, 0, 0, 0.2), 1px 2px 2px 1px rgba(0, 0, 0, 0.14), 1px 2px 4px 1px rgba(0, 0, 0, 0.12);
 }
-#player-letters #canvas {
-    display: flex;
-    align-items: center;
-}
 
-#actions-list {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    list-style-type: none;
+button {
+    margin-left: 10px;
+}
+button:hover {
+    transform: scale(1.1);
 }
