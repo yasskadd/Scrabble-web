@@ -7,7 +7,10 @@
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div>x lettres disponibles sur le chevalet</div>
-    <div class="time">--:--</div>
+    <div class="time" *ngIf="this.gameClientService.playerOneTurn">
+        {{ this.gameClientService.gameTimer.minutes }}:{{ this.gameClientService.gameTimer.seconds }}
+    </div>
+    <div class="time" *ngIf="!this.gameClientService.playerOneTurn">--:--</div>
 </section>
 <div id="versus">VS</div>
 <section class="player" id="player-2">
@@ -17,7 +20,10 @@
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div>x lettres disponibles sur le chevalet</div>
-    <div class="time">--:--</div>
+    <div class="time" *ngIf="!this.gameClientService.playerOneTurn">
+        {{ this.gameClientService.gameTimer.minutes }}:{{ this.gameClientService.gameTimer.seconds }}
+    </div>
+    <div class="time" *ngIf="this.gameClientService.playerOneTurn">--:--</div>
 </section>
 <div>x lettres disponibles dans la réserve</div>
 <p><button mat-raised-button>abandonner</button></p>

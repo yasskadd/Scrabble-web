@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GameClientService } from '@app/services/game-client.service';
 
 @Component({
     selector: 'app-information-panel',
@@ -6,7 +7,9 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./information-panel.component.scss'],
 })
 export class InformationPanelComponent implements OnInit {
-    constructor() {}
+    constructor(public gameClientService: GameClientService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.gameClientService.startTimer({ minutes: 1, seconds: 0 });
+    }
 }

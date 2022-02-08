@@ -39,7 +39,7 @@ export class PlayAreaComponent implements AfterViewInit {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
         // this.gridService.drawGrid();
         // this.gridService.drawWord('Scrabble');
-        // TODO : remove after testing
+        // TODO : remove after testing is done
         this.clientSocketService.send('gameboardTest');
 
         this.gridCanvas.nativeElement.focus();

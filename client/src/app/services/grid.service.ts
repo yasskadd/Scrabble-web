@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Coordinate } from '@common/coordinate.class';
-import { ClientSocketService } from './client-socket.service';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 600;
@@ -27,15 +26,11 @@ export class GridService {
     size: number;
     weightSize: number;
     gridContext: CanvasRenderingContext2D;
-    constructor(private clientSocketService: ClientSocketService) {
+    constructor() {
         this.size = 15;
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         this.weightSize = this.size * 0.45;
-        this.clientSocketService.establishConnection();
         // TODO : remove after testing
-        this.clientSocketService.on('GameboardRobert', (gameboard: Coordinate[]) => {
-            this.drawGridArray(gameboard);
-        });
     }
 
     drawGridArray(gameboard: Coordinate[]) {
@@ -161,7 +156,6 @@ export class GridService {
     drawNumber(x: number, y: number, string: string) {
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
-        console.log(x);
         this.gridContext.fillText(string, x + GridService.halfSquareWidth, y + GridService.halfSquareHeight, this.size);
     }
 

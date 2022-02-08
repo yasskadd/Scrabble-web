@@ -2,8 +2,9 @@ import { GameParameters } from '@app/classes/game-parameters';
 import { GameRoom } from '@app/classes/game-room';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Coordinate } from '@common/coordinate.class';
+import { SocketEvents } from '@common/socket-events';
 // import { Socket } from 'socket.io';
-import Container, { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { BoxMultiplier } from './box-multiplier.service';
 import { SocketManager } from './socket-manager.service';
 
@@ -95,7 +96,7 @@ export class GameSessions {
             const multiplierService = Container.get(BoxMultiplier);
             const gameboard = new Gameboard(multiplierService);
             gameboard.placeLetter(new Coordinate(2, 2, { string: 'A', points: 3, quantity: 5 }));
-            sio.emit('GameboardRobert', gameboard.gameboardCoords);
+            sio.emit(SocketEvents.UpdateGameBoard, gameboard.gameboardCoords);
         });
     }
 

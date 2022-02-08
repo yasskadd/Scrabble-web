@@ -3,4 +3,5 @@ export enum SocketEvents {
     GameCommand = 'command',
     Disconnect = 'disconnect',
     GameMessage = 'gameMessage',
+    UpdateGameBoard = 'updateGameBoard',
 }
