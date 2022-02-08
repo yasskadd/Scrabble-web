@@ -1,8 +1,15 @@
+// import { Message } from '@app/message';
+// import { expect } from 'chai';
+// import { createStubInstance, SinonStubbedInstance } from 'sinon';
+// import { DateService } from './date.service';
+// import { ExampleService } from './example.service';
+
 // describe('Example service', () => {
 //     let exampleService: ExampleService;
 //     let dateService: SinonStubbedInstance<DateService>;
 
 //     beforeEach(async () => {
+//         // eslint-disable-next-line no-undef
 //         dateService = createStubInstance(DateService);
 //         dateService.currentTime.resolves({
 //             title: 'Time',

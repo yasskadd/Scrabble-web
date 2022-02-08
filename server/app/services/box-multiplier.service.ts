@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-restricted-imports */
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
+import { GameBoard } from '@app/classes/gameboard.class';
 import { Letter } from '@app/letter';
 import { Service } from 'typedi';
-import { GameBoard } from '../classes/gameboard.class';
 
 @Service()
 export class BoxMultiplier {

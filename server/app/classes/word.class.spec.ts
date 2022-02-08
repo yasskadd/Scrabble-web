@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-console */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable prettier/prettier */
 import { Letter } from '@app/letter';
 import { BoxMultiplier } from '@app/services/box-multiplier.service';

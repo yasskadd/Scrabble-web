@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-restricted-imports */
 /* eslint-disable prettier/prettier */
 import { Letter } from '@app/letter';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
@@ -17,8 +15,8 @@ export class GameBoard {
     createGameboardCoordinates() {
         const rowNumbers = 15;
         const columnNumbers = 15;
-        for (let j = 0; j < rowNumbers; j++) {
-            for (let i = 0; i < columnNumbers; i++) {
+        for (let i = 0; i < rowNumbers; i++) {
+            for (let j = 0; j < columnNumbers; j++) {
                 const letter: Letter = {} as Letter;
                 const coord: GameboardCoordinate = new GameboardCoordinate(i, j, letter);
                 this.gameboardCoords.push(coord);
@@ -39,6 +37,7 @@ export class GameBoard {
         if (gameboardCoord.isOccupied === true) {
             return false;
         } else {
+            // TODO : removeLetterFromChevalet(gameboardCoord.letter);
             gameboardCoord.letter = letterCoord.letter;
             gameboardCoord.isOccupied = true;
             return true;
