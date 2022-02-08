@@ -1,14 +1,15 @@
 import { Player } from '@app/classes/player';
+import { Letter } from '@app/letter';
 import { Service } from 'typedi';
 import { LetterReserveService } from './letter-reserve.service';
 import { TurnService } from './turn.service';
 
 // Temporary place
-interface Letter {
-    letter: string;
-    quantity: number;
-    weight: number;
-}
+// interface Letter {
+//     letter: string;
+//     quantity: number;
+//     weight: number;
+// }
 
 const MAX_QUANTITY = 7;
 

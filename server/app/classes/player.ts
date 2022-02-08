@@ -1,9 +1,10 @@
+import { Letter } from '@app/letter';
 // Temporary place
-interface Letter {
-    letter: string;
-    quantity: number;
-    weight: number;
-}
+// interface Letter {
+//     letter: string;
+//     quantity: number;
+//     weight: number;
+// }
 
 export class Player {
     rack: Letter[] = [];

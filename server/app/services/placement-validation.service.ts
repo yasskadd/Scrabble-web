@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable prettier/prettier */
 
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
@@ -27,7 +28,8 @@ export class LetterPlacementService {
 
         const letters = coords.map((letter) => {
             const index = tempPlayerRack.findIndex((element) => {
-                element.stringChar === letter;
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                element.stringChar === letter.letter.stringChar;
             });
             if (index < 0) {
                 return;

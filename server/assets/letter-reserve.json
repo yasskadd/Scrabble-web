@@ -2,165 +2,165 @@
     "title": "Reserve des lettres",
     "letters": [
         {
-            "letter": "A",
+            "stringChar": "a",
             "quantity": 9,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "B",
+            "stringChar": "b",
             "quantity": 2,
-            "weight": 3
+            "points": 3
         },
 
         {
-            "letter": "C",
+            "stringChar": "c",
             "quantity": 2,
-            "weight": 3
+            "points": 3
         },
 
         {
-            "letter": "D",
+            "stringChar": "d",
             "quantity": 3,
-            "weight": 2
+            "points": 2
         },
 
         {
-            "letter": "E",
+            "stringChar": "e",
             "quantity": 15,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "F",
+            "stringChar": "f",
             "quantity": 2,
-            "weight": 4
+            "points": 4
         },
 
         {
-            "letter": "G",
+            "stringChar": "g",
             "quantity": 2,
-            "weight": 2
+            "points": 2
         },
 
         {
-            "letter": "H",
+            "stringChar": "h",
             "quantity": 2,
-            "weight": 4
+            "points": 4
         },
 
         {
-            "letter": "I",
+            "stringChar": "i",
             "quantity": 8,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "J",
+            "stringChar": "j",
             "quantity": 1,
-            "weight": 8
+            "points": 8
         },
 
         {
-            "letter": "K",
+            "stringChar": "k",
             "quantity": 1,
-            "weight": 10
+            "points": 10
         },
 
         {
-            "letter": "L",
+            "stringChar": "l",
             "quantity": 5,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "M",
+            "stringChar": "m",
             "quantity": 3,
-            "weight": 2
+            "points": 2
         },
 
         {
-            "letter": "N",
+            "stringChar": "n",
             "quantity": 6,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "O",
+            "stringChar": "o",
             "quantity": 6,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "P",
+            "stringChar": "p",
             "quantity": 2,
-            "weight": 3
+            "points": 3
         },
 
         {
-            "letter": "Q",
+            "stringChar": "q",
             "quantity": 1,
-            "weight": 8
+            "points": 8
         },
 
         {
-            "letter": "R",
+            "stringChar": "r",
             "quantity": 6,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "S",
+            "stringChar": "s",
             "quantity": 6,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "T",
+            "stringChar": "t",
             "quantity": 6,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "U",
+            "stringChar": "u",
             "quantity": 6,
-            "weight": 1
+            "points": 1
         },
 
         {
-            "letter": "V",
+            "stringChar": "v",
             "quantity": 2,
-            "weight": 4
+            "points": 4
         },
 
         {
-            "letter": "W",
+            "stringChar": "w",
             "quantity": 1,
-            "weight": 10
+            "points": 10
         },
 
         {
-            "letter": "X",
+            "stringChar": "x",
             "quantity": 1,
-            "weight": 10
+            "points": 10
         },
 
         {
-            "letter": "Y",
+            "stringChar": "y",
             "quantity": 1,
-            "weight": 10
+            "points": 10
         },
 
         {
-            "letter": "Z",
+            "stringChar": "z",
             "quantity": 1,
-            "weight": 10
+            "points": 10
         },
 
         {
-            "letter": "*",
+            "stringChar": "*",
             "quantity": 2,
-            "weight": 0
+            "points": 0
         }
     ]
 }
