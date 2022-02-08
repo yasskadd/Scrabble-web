@@ -1,6 +1,6 @@
 <h1 mat-dialog-title id="panel-title">Scrabble!</h1>
 
-<section class="player active" id="player-1">
+<section class="player" [ngClass]="{ active: this.gameClientService.playerOneTurn }" id="player-1">
     <div class="name-score">
         <div>nom du joueur</div>
         <div>score</div>
@@ -13,7 +13,7 @@
     <div class="time" *ngIf="!this.gameClientService.playerOneTurn">--:--</div>
 </section>
 <div id="versus">VS</div>
-<section class="player" id="player-2">
+<section class="player" [ngClass]="{ active: !this.gameClientService.playerOneTurn }" id="player-2">
     <div class="name-score">
         <div>nom du joueur</div>
         <div>score</div>

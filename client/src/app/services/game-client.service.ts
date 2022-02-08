@@ -20,7 +20,7 @@ export class GameClientService {
 
     constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
         // Used for testing
-        // this.playerOneTurn = false;
+        this.playerOneTurn = false;
         // setTimeout(this.stopTimer, 1000 * 5);
         this.clientSocketService.on(SocketEvents.UpdateGameBoard, (gameboard: Coordinate[]) => {
             this.updateGameboard(gameboard);
