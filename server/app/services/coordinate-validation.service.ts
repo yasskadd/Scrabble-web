@@ -17,9 +17,8 @@ export class CoordinateValidationService {
 
         if (direction === 'h') {
             while (stringLength !== 0) {
-                if (Object.keys(gameboard.getCoord(currentCoord)).length === 0) return [];
+                if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
-                    // add letterCoordinate
                     const letter = new Letter();
                     letter.stringChar = lettersPlaced.shift() as string;
                     coordOfLetters.push(new Coordinate(currentCoord.x, currentCoord.y, letter));
@@ -31,10 +30,8 @@ export class CoordinateValidationService {
             }
         } else if (direction === 'v') {
             while (stringLength !== 0) {
-                if (Object.keys(gameboard.getCoord(currentCoord)).length === 0) return [];
-                if (!gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
-                    if (gameboard.getCoord(currentCoord) === undefined) return [];
-                    // add letterCoordinate
+                if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
+                if (!gameboard.getCoord(currentCoord).isOccupied) {
                     const letter = new Letter();
                     letter.stringChar = lettersPlaced.shift() as string;
                     coordOfLetters.push(new Coordinate(currentCoord.x, currentCoord.y, letter));

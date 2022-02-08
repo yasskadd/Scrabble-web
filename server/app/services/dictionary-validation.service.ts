@@ -31,7 +31,7 @@ export class DictionaryValidationService {
             });
             return roundPoints;
         } else {
-            // TODO : flash invalideWords red and removeLetters();
+            // TODO : flash invalidWords red and removeLetters();
             return roundPoints;
         }
     }
