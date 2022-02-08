@@ -28,7 +28,7 @@ describe.only('Coordinate validation service', () => {
         expect(coordinateValidation.validateCoordinate(word, firstCoord, 'h', gameboard)).to.eql([]);
     });
 
-    it('validateCoordinate() should return empty list if string goes out of bound and there is already placed Letters', () => {
+    it.only('validateCoordinate() should return empty list if string goes out of bound and there is already placed Letters', () => {
         gameboard.placeLetter(new Coordinate(13, 0, {} as Letter));
         gameboard.placeLetter(new Coordinate(14, 0, {} as Letter));
         const coord = new Coordinate(12, 0, {} as Letter);
@@ -36,19 +36,41 @@ describe.only('Coordinate validation service', () => {
         expect(coordinateValidation.validateCoordinate(word, coord, 'h', gameboard)).to.eql([]);
     });
 
-    it('should return placedLetters array if placement is valid horizontally and there is no placedLetters', () => {
+    it.only('should return placedLetters array if placement is valid horizontally and there is no letters on the gameboard', () => {
         const coord = new Coordinate(0, 0, {} as Letter);
         const word: string[] = ['a', 'a', 'a', 'a'];
         const letterA: Letter = { stringChar: 'a' } as Letter;
-        const expectedCoordList = [new Coordinate(0, 0, letterA)];
+        const expectedCoordList = [
+            new Coordinate(0, 0, letterA),
+            new Coordinate(1, 0, letterA),
+            new Coordinate(2, 0, letterA),
+            new Coordinate(3, 0, letterA),
+        ];
         expect(coordinateValidation.validateCoordinate(word, coord, 'h', gameboard)).to.eql(expectedCoordList);
     });
 
-    it('should return correct placedLetters');
+    it.only('should return correct placedLetters array if placement is valid horizontally and there is already letters on the gameboard', () => {
+        const firstCoord = new Coordinate(4, 5, {} as Letter);
+        gameboard.placeLetter(new Coordinate(5, 5, {} as Letter));
+        gameboard.placeLetter(new Coordinate(6, 5, {} as Letter));
+        gameboard.placeLetter(new Coordinate(7, 5, {} as Letter));
+        const word: string[] = ['a', 'a', 'b'];
+        const letterA: Letter = { stringChar: 'a' } as Letter;
+        const letterB: Letter = { stringChar: 'b' } as Letter;
+        const expectedCoordList = [new Coordinate(4, 5, letterA), new Coordinate(8, 5, letterA), new Coordinate(9, 5, letterB)];
+        expect(coordinateValidation.validateCoordinate(word, firstCoord, 'h', gameboard)).to.eql(expectedCoordList);
+    });
 
-    it('validateCoordinate() should only return the firstCoord if only one letter has been placed ', () => {
-        const firstCoord: Coordinate = new Coordinate(0, 0, {} as Letter);
+    it.only('validateCoordinate() should only return the firstCoord if only one letter has been placed ', () => {
+        const firstCoord: Coordinate = new Coordinate(0, 0, { stringChar: 'a' } as Letter);
         const word: string[] = ['a'];
         expect(coordinateValidation.validateCoordinate(word, firstCoord, 'u', gameboard)).to.deep.equal([firstCoord]);
+    });
+
+    it.only('validateCoordinate() should return empty list if coordinate is already placed on the gameboard', () => {
+        gameboard.placeLetter(new Coordinate(3, 3, {} as Letter));
+        const firstCoord: Coordinate = new Coordinate(3, 3, { stringChar: 'a' } as Letter);
+        const word: string[] = ['a'];
+        expect(coordinateValidation.validateCoordinate(word, firstCoord, 'u', gameboard)).to.deep.equal([]);
     });
 });

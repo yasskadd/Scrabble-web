@@ -16,10 +16,9 @@ export class CoordinateValidationService {
         let currentCoord: Coordinate = gameboard.getCoord(firstCoord);
 
         if (direction === 'h') {
-            console.log('CALLED H');
             while (stringLength !== 0) {
+                if (Object.keys(gameboard.getCoord(currentCoord)).length === 0) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
-                    if (gameboard.getCoord(currentCoord) === undefined) return [];
                     // add letterCoordinate
                     const letter = new Letter();
                     letter.stringChar = lettersPlaced.shift() as string;
@@ -31,8 +30,8 @@ export class CoordinateValidationService {
                 currentCoord = new Coordinate(x + 1, y, {} as Letter);
             }
         } else if (direction === 'v') {
-            console.log('CALLED V');
             while (stringLength !== 0) {
+                if (Object.keys(gameboard.getCoord(currentCoord)).length === 0) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
                     if (gameboard.getCoord(currentCoord) === undefined) return [];
                     // add letterCoordinate
@@ -56,7 +55,6 @@ export class CoordinateValidationService {
     }
     isFirstCoordValid(firstCoord: Coordinate, gameboard: GameBoard) {
         // eslint-disable-next-line no-console
-        console.log(gameboard.getCoord(firstCoord));
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
     }
 }

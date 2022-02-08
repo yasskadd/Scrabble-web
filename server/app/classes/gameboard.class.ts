@@ -30,6 +30,7 @@ export class GameBoard {
         // eslint-disable-next-line no-unused-vars
         const x: number = coord.x;
         const y: number = coord.y;
+        if (x > 14 || x < 0 || y > 14 || y < 0) return {} as Coordinate;
         return this.gameboardCoords[15 * y + x];
     }
 
