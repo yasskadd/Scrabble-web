@@ -15,6 +15,7 @@ export class GameboardCoordinateValidationService {
         let currentCoord: GameboardCoordinate = gameboard.getCoord(firstCoord);
 
         if (direction === 'h') {
+            console.log('CALLED');
             while (stringLength !== 0) {
                 if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {

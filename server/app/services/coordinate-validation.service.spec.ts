@@ -8,7 +8,7 @@ import { BoxMultiplier } from './box-multiplier.service';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import Sinon = require('sinon');
 
-describe('Coordinate validation service', () => {
+describe.only('Coordinate validation service', () => {
     let gameboard: GameBoard;
     let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplier>;
     let coordinateValidation: GameboardCoordinateValidationService;

@@ -18,7 +18,7 @@ export class GameBoard {
         for (let i = 0; i < rowNumbers; i++) {
             for (let j = 0; j < columnNumbers; j++) {
                 const letter: Letter = {} as Letter;
-                const coord: GameboardCoordinate = new GameboardCoordinate(i, j, letter);
+                const coord: GameboardCoordinate = new GameboardCoordinate(j, i, letter);
                 this.gameboardCoords.push(coord);
             }
         }

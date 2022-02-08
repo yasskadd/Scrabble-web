@@ -1,18 +1,21 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-console */
 /* eslint-disable prettier/prettier */
 import { Letter } from '@app/letter';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { expect } from 'chai';
-import Container from 'typedi';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
 import { GameBoard } from './gameboard.class';
 import Sinon = require('sinon');
 
 describe('gameboard', () => {
     let gameboard: GameBoard;
-    let boxMultiplierService: BoxMultiplier;
+    let boxMultiplierService: SinonStubbedInstance<BoxMultiplier>;
 
     beforeEach(() => {
-        boxMultiplierService = Container.get(BoxMultiplier);
+        boxMultiplierService = createStubInstance(BoxMultiplier);
         gameboard = new GameBoard(boxMultiplierService);
     });
 
@@ -41,7 +44,7 @@ describe('gameboard', () => {
         const spyCreateCoord = Sinon.spy(GameBoard.prototype, 'createGameboardCoordinates');
         new GameBoard(boxMultiplierService);
         expect(spyCreateCoord.called).to.be.true;
-        expect(spyApplyBoxMultipliers.called).to.be.true;
+        expect(boxMultiplierService.applyBoxMultipliers.called).to.be.true;
     });
 
     it('should place letter on board if GameboardCoordinate is not occupied', () => {
@@ -53,7 +56,7 @@ describe('gameboard', () => {
         gameboard.placeLetter(coord);
         expect(gameboardTestCoord.x).to.eql(coord.x);
         expect(gameboardTestCoord.y).to.eql(coord.y);
-        expect(gameboardTestCoord.letter.string).to.eql('a');
+        expect(gameboardTestCoord.letter.stringChar).to.eql('a');
         expect(gameboardTestCoord.isOccupied).to.be.true;
     });
 

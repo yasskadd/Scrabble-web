@@ -17,9 +17,15 @@ export class LetterPlacementService {
     wordFinderService = Container.get(WordFinderService);
     dictionaryService = Container.get(DictionaryValidationService);
 
-    placeLetter(player: Player, firstCoordinate: GameboardCoordinate, direction: string, lettersPlaced: string[], gameboard: GameBoard) {
+    placeLetter(
+        player: Player,
+        firstCoordinate: GameboardCoordinate,
+        direction: string,
+        lettersPlaced: string[],
+        gameboard: GameBoard,
+    ): [boolean, GameBoard] {
         const coords = this.validateCoordService.validateGameboardCoordinate(lettersPlaced, firstCoordinate, direction, gameboard);
-        if (coords.length === 0) return [];
+        if (coords.length === 0) return [false, gameboard];
         const tempPlayerRack: Letter[] = [];
 
         for (const letter of player.rack) {
@@ -41,21 +47,21 @@ export class LetterPlacementService {
         });
 
         if (coords.length !== letters.length) {
-            return [];
+            return [false, gameboard];
         }
 
         player.rack = tempPlayerRack;
 
         // TODO: return empty array if validateCoordService returns empty array or letters are not in player's rack
 
-        for (const letter of letters) {
-            gameboard.placeLetter(letter);
+        for (const coord of coords) {
+            gameboard.placeLetter(coord);
         }
 
         const wordList: Word[] = this.wordFinderService.findNewWords(gameboard, coords);
         const validateWord: number = this.dictionaryService.validateWords(wordList);
-        if (validateWord === 0) return gameboard; // avec false??
+        if (validateWord === 0) return [false, gameboard]; // avec false??
 
-        return gameboard; // avec true?mm
+        return [true, gameboard]; // avec true?mm
     }
 }
