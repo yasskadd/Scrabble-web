@@ -1,23 +1,23 @@
 /* eslint-disable prettier/prettier */
 
-import { Coordinate } from '@app/classes/coordinate.class';
+import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@app/letter';
-import Container, { Service } from 'typedi';
-import { CoordinateValidationService } from './coordinate-validation.service';
+import { Container, Service } from 'typedi';
+import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordFinderService } from './word-finder.service';
 
 @Service()
 export class LetterPlacementService {
-    validateCoordService = Container.get(CoordinateValidationService);
+    validateCoordService = Container.get(GameboardCoordinateValidationService);
     wordFinderService = Container.get(WordFinderService);
     dictionaryService = Container.get(DictionaryValidationService);
 
-    placeLetter(player: Player, firstCoordinate: Coordinate, direction: string, lettersPlaced: string[], gameboard: GameBoard) {
-        const coords = this.validateCoordService.validateCoordinate(lettersPlaced, firstCoordinate, direction, gameboard);
+    placeLetter(player: Player, firstCoordinate: GameboardCoordinate, direction: string, lettersPlaced: string[], gameboard: GameBoard) {
+        const coords = this.validateCoordService.validateGameboardCoordinate(lettersPlaced, firstCoordinate, direction, gameboard);
         if (coords.length === 0) return [];
         const tempPlayerRack: Letter[] = [];
 

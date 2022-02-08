@@ -22,16 +22,11 @@ export class DictionaryValidationService {
         const invalidWords = this.isolateInvalidWords(enteredWords);
         let roundPoints = 0;
         if (invalidWords.length === 0) {
-            // TODO : calculatePoints() + endTurn()
             enteredWords.forEach((word: Word) => {
                 roundPoints += word.calculatePoints(this.gameboard);
-                // roundPoints += points;
-                // console.log('CALLED');
-                // end turn
             });
             return roundPoints;
         } else {
-            // TODO : flash invalidWords red and removeLetters();
             return roundPoints;
         }
     }

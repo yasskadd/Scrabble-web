@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-restricted-imports */
-import { Coordinate } from '@app/classes/coordinate.class';
+import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@app/letter';
 import { expect } from 'chai';
@@ -22,11 +22,11 @@ describe('Dictionary Validation Service', () => {
 
     beforeEach(() => {
         dictionaryValidationService = Container.get(DictionaryValidationService);
-        const letterA = new Letter();
+        const letterA = {} as Letter;
         letterA.points = 5;
-        validWord1 = new Word(true, [new Coordinate(0, 0, letterA), new Coordinate(0, 1, letterA)]);
+        validWord1 = new Word(true, [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterA)]);
         validWord1.stringFormat = 'bonjour';
-        validWord2 = new Word(true, [new Coordinate(1, 1, letterA), new Coordinate(1, 2, letterA)]);
+        validWord2 = new Word(true, [new GameboardCoordinate(1, 1, letterA), new GameboardCoordinate(1, 2, letterA)]);
         validWord2.stringFormat = 'chevalier';
         invalidWord1 = {} as Word;
         invalidWord1.stringFormat = 'dijasdijasd';

@@ -7,7 +7,7 @@ import { Letter } from '@app/letter';
 import { BoxMultiplier } from '@app/services/box-multiplier.service';
 import { expect } from 'chai';
 import { Container } from 'typedi';
-import { Coordinate } from './coordinate.class';
+import { GameboardCoordinate } from './gameboard-coordinate.class';
 import { GameBoard } from './gameboard.class';
 import { Word } from './word.class';
 import Sinon = require('sinon');
@@ -16,10 +16,10 @@ import Sinon = require('sinon');
 
 describe('Word', () => {
     let word: Word;
-    const letterA = new Letter();
-    const letterB = new Letter();
-    const letterC = new Letter();
-    const letterD = new Letter();
+    const letterA = {} as Letter;
+    const letterB = {} as Letter;
+    const letterC = {} as Letter;
+    const letterD = {} as Letter;
     let gameboard: GameBoard;
     let boxMultiplierService: BoxMultiplier;
 
@@ -37,18 +37,22 @@ describe('Word', () => {
     });
 
     it('stringFormat attribute should be the abc if constructed word is horizontal', () => {
-        const coordList: Coordinate[] = [new Coordinate(0, 0, letterA), new Coordinate(1, 0, letterB), new Coordinate(2, 0, letterC)];
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(0, 0, letterA),
+            new GameboardCoordinate(1, 0, letterB),
+            new GameboardCoordinate(2, 0, letterC),
+        ];
         word = new Word(true, coordList);
         expect(word.stringFormat).to.eql('abc');
         expect(word.isHorizontal).to.be.true;
     });
 
     it('stringFormat attribute should be the abcd if constructed word is vertical', () => {
-        const coordList: Coordinate[] = [
-            new Coordinate(3, 3, letterA),
-            new Coordinate(3, 4, letterB),
-            new Coordinate(3, 5, letterC),
-            new Coordinate(3, 6, letterD),
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(3, 3, letterA),
+            new GameboardCoordinate(3, 4, letterB),
+            new GameboardCoordinate(3, 5, letterC),
+            new GameboardCoordinate(3, 6, letterD),
         ];
         word = new Word(false, coordList);
         expect(word.stringFormat).to.eql('abcd');
@@ -56,7 +60,11 @@ describe('Word', () => {
     });
 
     it('should correctly calculate points if there is no multiplier', () => {
-        const coordList: Coordinate[] = [new Coordinate(0, 4, letterA), new Coordinate(1, 4, letterB), new Coordinate(2, 4, letterC)];
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(0, 4, letterA),
+            new GameboardCoordinate(1, 4, letterB),
+            new GameboardCoordinate(2, 4, letterC),
+        ];
         word = new Word(true, coordList);
         const expectedScore: number = letterA.points + letterB.points + letterC.points;
         const score: number = word.calculatePoints(gameboard);
@@ -64,7 +72,11 @@ describe('Word', () => {
     });
 
     it('should correctly calculate points if there is a letterMultiplier', () => {
-        const coordList: Coordinate[] = [new Coordinate(1, 0, letterA), new Coordinate(2, 0, letterB), new Coordinate(3, 0, letterC)];
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(1, 0, letterA),
+            new GameboardCoordinate(2, 0, letterB),
+            new GameboardCoordinate(3, 0, letterC),
+        ];
         word = new Word(true, coordList);
         const expectedScore: number = letterA.points + letterB.points + letterC.points * 2;
         const score: number = word.calculatePoints(gameboard);
@@ -72,7 +84,11 @@ describe('Word', () => {
     });
 
     it('should correctly calculate points if word is vertical and on letterMultiplier', () => {
-        const coordList: Coordinate[] = [new Coordinate(6, 0, letterA), new Coordinate(6, 1, letterB), new Coordinate(6, 2, letterC)];
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(6, 0, letterA),
+            new GameboardCoordinate(6, 1, letterB),
+            new GameboardCoordinate(6, 2, letterC),
+        ];
         word = new Word(false, coordList);
         const expectedScore: number = letterA.points + letterB.points + letterC.points * 2;
         const score: number = word.calculatePoints(gameboard);
@@ -80,7 +96,11 @@ describe('Word', () => {
     });
 
     it('should correctly calculate points if word is on a word multiplier', () => {
-        const coordList: Coordinate[] = [new Coordinate(0, 0, letterA), new Coordinate(1, 0, letterB), new Coordinate(2, 0, letterC)];
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(0, 0, letterA),
+            new GameboardCoordinate(1, 0, letterB),
+            new GameboardCoordinate(2, 0, letterC),
+        ];
         word = new Word(true, coordList);
         const expectedScore: number = (letterA.points + letterB.points + letterC.points) * 3;
         const score: number = word.calculatePoints(gameboard);
@@ -88,20 +108,24 @@ describe('Word', () => {
     });
 
     it('should correctly calculate points if word is on a word multiplier and is vertical', () => {
-        const coordList: Coordinate[] = [new Coordinate(0, 0, letterA), new Coordinate(0, 1, letterB), new Coordinate(0, 2, letterC)];
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(0, 0, letterA),
+            new GameboardCoordinate(0, 1, letterB),
+            new GameboardCoordinate(0, 2, letterC),
+        ];
         word = new Word(true, coordList);
         const expectedScore: number = (letterA.points + letterB.points + letterC.points) * 3;
         const score: number = word.calculatePoints(gameboard);
         expect(score).to.equal(expectedScore);
     });
 
-    it('should correctly calculate points if word is on a letter and a word multiplier', () => {
+    it('should correctly calculate points if word is on a Letter and a word multiplier', () => {
         // eslint-disable-next-line max-len
-        const coordList: Coordinate[] = [
-            new Coordinate(0, 7, letterA),
-            new Coordinate(1, 7, letterB),
-            new Coordinate(2, 7, letterC),
-            new Coordinate(3, 7, letterD),
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(0, 7, letterA),
+            new GameboardCoordinate(1, 7, letterB),
+            new GameboardCoordinate(2, 7, letterC),
+            new GameboardCoordinate(3, 7, letterD),
         ];
         word = new Word(true, coordList);
         const expectedScore: number = (letterA.points + letterB.points + letterC.points + letterD.points * 2) * 3;
@@ -109,8 +133,12 @@ describe('Word', () => {
         expect(score).to.equal(expectedScore);
     });
 
-    it('should correctly calculate points if word is on two letter multipliers', () => {
-        const coordList: Coordinate[] = [new Coordinate(6, 6, letterA), new Coordinate(7, 6, letterB), new Coordinate(8, 6, letterC)];
+    it('should correctly calculate points if word is on two Letter multipliers', () => {
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(6, 6, letterA),
+            new GameboardCoordinate(7, 6, letterB),
+            new GameboardCoordinate(8, 6, letterC),
+        ];
         word = new Word(true, coordList);
         const expectedScore: number = letterA.points * 2 + letterB.points + letterC.points * 2;
         const score: number = word.calculatePoints(gameboard);
@@ -118,25 +146,33 @@ describe('Word', () => {
     });
 
     it('should reset wordMultiplier in gameboard after calculating points', () => {
-        const coordList: Coordinate[] = [new Coordinate(0, 0, letterA), new Coordinate(1, 0, letterB), new Coordinate(2, 0, letterC)];
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(0, 0, letterA),
+            new GameboardCoordinate(1, 0, letterB),
+            new GameboardCoordinate(2, 0, letterC),
+        ];
         word = new Word(true, coordList);
         word.calculatePoints(gameboard);
-        const gameboardCoord = gameboard.getCoord(new Coordinate(0, 0, letterA));
+        const gameboardCoord = gameboard.getCoord(new GameboardCoordinate(0, 0, letterA));
         expect(gameboardCoord.wordMultiplier).to.equal(1);
     });
 
-    it('should reset letter in gameboard after calculating points', () => {
-        const coordList: Coordinate[] = [new Coordinate(1, 0, letterA), new Coordinate(2, 0, letterB), new Coordinate(3, 0, letterC)];
+    it('should reset Letter in gameboard after calculating points', () => {
+        const coordList: GameboardCoordinate[] = [
+            new GameboardCoordinate(1, 0, letterA),
+            new GameboardCoordinate(2, 0, letterB),
+            new GameboardCoordinate(3, 0, letterC),
+        ];
         word = new Word(true, coordList);
         word.calculatePoints(gameboard);
-        const gameboardCoord = gameboard.getCoord(new Coordinate(3, 0, letterC));
+        const gameboardCoord = gameboard.getCoord(new GameboardCoordinate(3, 0, letterC));
         expect(gameboardCoord.letterMultiplier).to.equal(1);
     });
 
     it('resetLetterMultiplier should be called when points calculation is called', () => {
-        const squareMultiplier3: Coordinate = new Coordinate(3, 0, letterC);
-        const gameboardCoord: Coordinate = gameboard.getCoord(squareMultiplier3);
-        const coordList: Coordinate[] = [new Coordinate(1, 0, letterA), new Coordinate(2, 0, letterB), squareMultiplier3];
+        const squareMultiplier3: GameboardCoordinate = new GameboardCoordinate(3, 0, letterC);
+        const gameboardCoord: GameboardCoordinate = gameboard.getCoord(squareMultiplier3);
+        const coordList: GameboardCoordinate[] = [new GameboardCoordinate(1, 0, letterA), new GameboardCoordinate(2, 0, letterB), squareMultiplier3];
         const spyReset = Sinon.spy(gameboardCoord, 'resetLetterMultiplier');
         word = new Word(true, coordList);
         word.calculatePoints(gameboard);
@@ -144,9 +180,9 @@ describe('Word', () => {
     });
 
     it('resetWordMultiplier should be called when points calculation is called', () => {
-        const squareMultiplier3: Coordinate = new Coordinate(0, 0, letterA);
-        const gameboardCoord: Coordinate = gameboard.getCoord(squareMultiplier3);
-        const coordList: Coordinate[] = [squareMultiplier3, new Coordinate(1, 0, letterB), new Coordinate(2, 0, letterC)];
+        const squareMultiplier3: GameboardCoordinate = new GameboardCoordinate(0, 0, letterA);
+        const gameboardCoord: GameboardCoordinate = gameboard.getCoord(squareMultiplier3);
+        const coordList: GameboardCoordinate[] = [squareMultiplier3, new GameboardCoordinate(1, 0, letterB), new GameboardCoordinate(2, 0, letterC)];
         const spyReset = Sinon.spy(gameboardCoord, 'resetWordMultiplier');
         word = new Word(true, coordList);
         word.calculatePoints(gameboard);
