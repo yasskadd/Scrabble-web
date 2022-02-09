@@ -3,6 +3,15 @@
     height: auto;
 }
 
+.navigation {
+    width: 100%;
+    display: flex;
+}
+.navigation > * {
+    display: flex;
+    justify-content: center;
+}
+
 .justified {
     display: flex;
     flex-direction: column;
