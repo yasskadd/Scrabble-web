@@ -20,7 +20,7 @@ export const RED = '#FE6E54';
 })
 export class GridService {
     private static squareWidth = DEFAULT_WIDTH / TOTAL_COLUMNS;
-    private static squareHeight = DEFAULT_HEIGHT / TOTAL_COLUMNS;
+    private static squareHeight = DEFAULT_HEIGHT / TOTAL_ROWS;
     private static letterTileWidth = GridService.squareWidth * LETTER_TILE_RATIO;
     private static letterTileHeight = GridService.squareHeight * LETTER_TILE_RATIO;
     private static halfSquareWidth = GridService.squareWidth / 2;
@@ -231,27 +231,22 @@ export class GridService {
         });
     }
 
-    private drawMultiplier(position: Coordinate, multiplyer: number, type: string) {
-        switch (type) {
-            case 'LETTRE':
-                if (multiplyer === 2) {
-                    this.gridContext.fillStyle = LIGHT_BLUE;
-                } else {
-                    this.gridContext.fillStyle = DARK_BLUE;
-                }
-                break;
-            case 'MOT':
-                if (multiplyer === 2) {
-                    this.gridContext.fillStyle = PINK;
-                    break;
-                } else {
-                    this.gridContext.fillStyle = RED;
-                    break;
-                }
-        }
+    private drawMultiplier(position: Coordinate, multiplier: number, type: string) {
+        this.setTileColor(type, multiplier);
         this.fillTile(position);
         this.drawMultiplierType(position, type);
-        this.drawMultiplierNumber(position, multiplyer);
+        this.drawMultiplierNumber(position, multiplier);
+    }
+
+    private setTileColor(type: string, multiplier: number) {
+        switch (type) {
+            case 'LETTRE':
+                multiplier === 2 ? (this.gridContext.fillStyle = LIGHT_BLUE) : (this.gridContext.fillStyle = DARK_BLUE);
+                break;
+            case 'MOT':
+                multiplier === 2 ? (this.gridContext.fillStyle = PINK) : (this.gridContext.fillStyle = RED);
+                break;
+        }
     }
 
     private drawMiddleTile() {
