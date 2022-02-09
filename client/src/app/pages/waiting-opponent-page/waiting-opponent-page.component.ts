@@ -19,9 +19,9 @@ export class WaitingOpponentPageComponent implements OnInit {
         this.gameConfiguration.errorReason.subscribe((reason) => {
             if (reason !== '') {
                 this.openSnackBar(reason);
-                this.exitRoom();
+                this.exitRoomByOpponent();
             }
-            this.exitRoom();
+            this.exitRoomByOpponent();
         });
 
         this.gameConfiguration.isGameStarted.subscribe((value) => {
@@ -50,9 +50,18 @@ export class WaitingOpponentPageComponent implements OnInit {
             this.gameConfiguration.removeRoom();
         } else {
             this.router.navigate(['/classique/multijoueur/rejoindre']);
+            this.gameConfiguration.exitWaitingRoom();
         }
     }
 
+    exitRoomByOpponent() {
+        if (this.gameConfiguration.isCreator) {
+            this.router.navigate(['/classique/multijoueur/creer']);
+            this.gameConfiguration.removeRoom();
+        } else {
+            this.router.navigate(['/classique/multijoueur/rejoindre']);
+        }
+    }
     openSnackBar(reason: string): void {
         this.snackBar.open(reason, 'fermer', {
             verticalPosition: 'top',

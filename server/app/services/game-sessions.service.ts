@@ -58,6 +58,15 @@ export class GameSessions {
             sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
         });
 
+        this.socketManager.on('exitWaitingRoom', (socket, parameters: Parameters) => {
+            const roomId = parameters.id;
+            const playerName = parameters.name;
+            socket.broadcast.to(roomId).emit('OpponentLeave');
+            socket.leave(roomId);
+            socket.join(PLAYERS_JOINING_ROOM);
+            this.removeUserFromRoom(playerName, socket.id, roomId);
+        });
+
         this.socketManager.io(SocketEvents.RemoveRoom, (sio, _, roomID: string) => {
             this.removeRoom(roomID);
             sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());

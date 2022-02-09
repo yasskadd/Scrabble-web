@@ -70,6 +70,10 @@ export class GameConfigurationService {
             this.errorReason.next(reason);
             this.resetErrorSubject();
         });
+        this.clientSocket.on('OpponentLeave', () => {
+            this.statusGame = SEARCHING_OPPONENT;
+            this.playerName.pop();
+        });
     }
 
     resetIsGameStartedSubject() {
@@ -83,9 +87,23 @@ export class GameConfigurationService {
     }
 
     removeRoom() {
-        this.clientSocket.send(SocketEvents.RemoveRoom, this.roomId);
+        if (this.playerName[1]) {
+            this.rejectOpponent();
+            this.clientSocket.send(SocketEvents.RemoveRoom, this.roomId);
+            this.roomId = '';
+            this.playerName.pop();
+        } else {
+            this.clientSocket.send(SocketEvents.RemoveRoom, this.roomId);
+            this.roomId = '';
+            this.playerName.pop();
+        }
+    }
+
+    exitWaitingRoom() {
+        this.clientSocket.send('exitWaitingRoom', { id: this.roomId, name: this.playerName[0] });
         this.roomId = '';
-        this.playerName.pop();
+        this.playerName = [];
+        this.statusGame = '';
     }
 
     rejectOpponent() {
