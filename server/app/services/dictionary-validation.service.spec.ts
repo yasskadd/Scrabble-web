@@ -5,12 +5,12 @@
 /* eslint-disable no-restricted-imports */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Word } from '@app/classes/word.class';
-import { Letter } from '@app/letter';
+import { Letter } from '@common/letter';
 import { expect } from 'chai';
+import * as Sinon from 'sinon';
 import { Container } from 'typedi';
 import * as jsonDictionary from '../../assets/dictionnary.json';
 import { DictionaryValidationService } from './dictionary-validation.service';
-import Sinon = require('sinon');
 
 describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;

@@ -2,8 +2,8 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable prettier/prettier */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
+import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
-import { Word } from 'app/classes/word.class';
 import { Service } from 'typedi';
 import { GameBoard } from '../classes/gameboard.class';
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable prettier/prettier */
-import { Letter } from '@app/letter';
+import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
 

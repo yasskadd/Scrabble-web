@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
+import { BoxMultiplier } from '@app/services/box-multiplier.service';
 import { Letter } from '@common/letter';
-import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { Inject } from 'typedi';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
 

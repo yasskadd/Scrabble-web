@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable no-restricted-imports */
 import * as jsonDictionary from '@app/../assets/dictionnary.json';
+import { GameBoard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
-import { GameBoard } from 'app/classes/gameboard.class';
+import { BoxMultiplier } from '@app/services/box-multiplier.service';
 import { Container, Service } from 'typedi';
-import { BoxMultiplier } from './box-multiplier.service';
 
 @Service()
 export class DictionaryValidationService {
