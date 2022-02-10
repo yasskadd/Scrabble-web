@@ -11,8 +11,20 @@ import { WaitingOpponentPageComponent } from './waiting-opponent-page.component'
     template: '',
 })
 export class StubComponent {}
+interface RoomInformation {
+    playerName: string[];
+    roomId: string;
+    isCreator: boolean;
+    statusGame: string;
+}
+const ROOM_INFORMATION: RoomInformation = {
+    playerName: ['Vincent', 'RICHARD'],
+    roomId: '1',
+    isCreator: true,
+    statusGame: 'En attente du joueur',
+};
 const TEST_ERROR = "La salle n'est plus disponible";
-const TEST_ISCREATOR = true;
+// const TEST_ISCREATOR = true;
 // const TEST_ISNOTCREATOR = true;
 const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
@@ -25,7 +37,6 @@ describe('WaitingOpponentPageComponent', () => {
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let router: Router;
     let matSnackBar: MatSnackBar;
-
     const mockMatSnackBar = {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         open: () => {},
@@ -33,10 +44,9 @@ describe('WaitingOpponentPageComponent', () => {
 
     beforeEach(async () => {
         gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['removeRoom', 'rejectOpponent', 'beginScrabbleGame'], {
-            isCreator: TEST_ISCREATOR,
+            roomInformation: ROOM_INFORMATION,
             errorReason: TEST_ERROR_REASON,
             isGameStarted: TEST_ISGAMESTARTED,
-            playerName: [],
         });
 
         await TestBed.configureTestingModule({

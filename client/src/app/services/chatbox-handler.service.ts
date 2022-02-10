@@ -40,7 +40,7 @@ export class ChatboxHandlerService {
 
     private configureBaseSocketFeatures(): void {
         this.clientSocket.on('gameMessage', (broadcastMessage: string) => {
-            this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.playerName[1]} : ${broadcastMessage}` });
+            this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
         this.clientSocket.on('user disconnect', () => {
             this.addDisconnect();
@@ -48,7 +48,7 @@ export class ChatboxHandlerService {
     }
 
     private sendMessage(message: string): void {
-        this.clientSocket.send('message', { roomId: this.gameConfiguration.roomId, message });
+        this.clientSocket.send('message', { roomId: this.gameConfiguration.roomInformation.roomId, message });
     }
 
     private sendCommand(command: string): void {

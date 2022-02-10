@@ -45,7 +45,7 @@ export class WaitingOpponentPageComponent implements OnInit {
         this.router.navigate(['/game']);
     }
     exitRoom() {
-        if (this.gameConfiguration.isCreator) {
+        if (this.gameConfiguration.roomInformation.isCreator) {
             this.router.navigate(['/classique/multijoueur/creer']);
             this.gameConfiguration.removeRoom();
         } else {
@@ -55,7 +55,7 @@ export class WaitingOpponentPageComponent implements OnInit {
     }
 
     exitRoomByOpponent() {
-        if (this.gameConfiguration.isCreator) {
+        if (this.gameConfiguration.roomInformation.isCreator) {
             this.router.navigate(['/classique/multijoueur/creer']);
             this.gameConfiguration.removeRoom();
         } else {
