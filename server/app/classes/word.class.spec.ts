@@ -1,33 +1,23 @@
 /* eslint-disable prettier/prettier */
+import { Coordinate } from '@common/coordinate';
+import { LetterTile } from '@common/LetterTile.class';
 import { expect } from 'chai';
-import { Coordinate } from '../../../common/coordinate.class';
-import { Letter } from '../../../common/letter';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
 
+// TODO : the rest of the tests
 describe('Coordinate', () => {
-    let coordinateClass: Coordinate;
+    let letter: LetterTile;
 
     beforeEach(async () => {
-        coordinateClass = new Coordinate(0, 0, {} as Letter);
+        const position: Coordinate = { x: 0, y: 0 };
+        letter = new LetterTile(position, '');
     });
 
-    // it('should reset letterMultiplier to 1 if resetLetterMultiplier is called', () => {
-    //     coordinateClass.letterMultiplier = 5;
-    //     coordinateClass.resetLetterMultiplier();
-    //     expect(coordinateClass.letterMultiplier).to.equal(1);
-    // });
-
-    // it('should reset wordMultiplier if resetWordMultiplier is called', () => {
-    //     coordinateClass.wordMultiplier = 5;
-    //     coordinateClass.resetWordMultiplier();
-    //     expect(coordinateClass.wordMultiplier).to.equal(1);
-    // });
-
     it('should correctly set class attributes when constructor is called', () => {
-        expect(coordinateClass.x && coordinateClass.y).to.equal(0);
-        expect(coordinateClass.letterMultiplier && coordinateClass.wordMultiplier).to.equal(1);
-        expect(coordinateClass.isOccupied).to.equal(false);
-        expect(coordinateClass.letter).to.eql({} as Letter);
+        expect(letter.coordinate.x && letter.coordinate.y).to.equal(0);
+        expect(letter.multiplier).to.equal(1);
+        expect(letter.isOccupied).to.equal(false);
+        expect(letter.value).to.eql({} as LetterTile);
     });
 });

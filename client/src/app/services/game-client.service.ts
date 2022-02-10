@@ -1,8 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Coordinate } from '@common/coordinate.class';
-import { SocketEvents } from '@common/socket-events';
-import { ClientSocketService } from './client-socket.service';
-import { GridService } from './grid.service';
 
 type Timer = { minutes: number; seconds: number };
 type Player = { username: string; score: number };
@@ -13,19 +9,19 @@ type Player = { username: string; score: number };
 export class GameClientService {
     static timerInterval: number;
     gameTimer: Timer;
-    gameboard: Coordinate[];
+    // gameboard: Coordinate[];
     playerOne: Player;
     secondPlayer: Player;
     playerOneTurn: boolean;
 
-    constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
-        // Used for testing
-        this.playerOneTurn = false;
-        // setTimeout(this.stopTimer, 1000 * 5);
-        this.clientSocketService.on(SocketEvents.UpdateGameBoard, (gameboard: Coordinate[]) => {
-            this.updateNewGameboard(gameboard);
-        });
-    }
+    // constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
+    //     // Used for testing
+    //     this.playerOneTurn = false;
+    //     // setTimeout(this.stopTimer, 1000 * 5);
+    //     // this.clientSocketService.on(SocketEvents.UpdateGameBoard, (gameboard: Coordinate[]) => {
+    //     //     this.updateNewGameboard(gameboard);
+    //     // });
+    // }
 
     startTimer(timer: Timer) {
         const timeOut = 1000;
@@ -40,11 +36,11 @@ export class GameClientService {
     stopTimer() {
         clearInterval(GameClientService.timerInterval as number);
     }
-    updateNewGameboard(newGameboard: Coordinate[]) {
-        this.gameboard = newGameboard;
-        this.updateGameboard();
-    }
-    updateGameboard() {
-        this.gridService.drawGridArray(this.gameboard);
-    }
+    // updateNewGameboard(newGameboard: Coordinate[]) {
+    //     this.gameboard = newGameboard;
+    //     this.updateGameboard();
+    // }
+    // updateGameboard() {
+    //     this.gridService.drawGridArray(this.gameboard);
+    // }
 }

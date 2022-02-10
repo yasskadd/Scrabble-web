@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-restricted-imports
-// eslint-disable-next-line no-restricted-imports
 // import { Letter } from '../../app/letter';
 import { Service } from 'typedi';
 // eslint-disable-next-line no-restricted-imports

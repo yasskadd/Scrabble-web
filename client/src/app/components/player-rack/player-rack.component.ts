@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { LetterTilesService } from '@app/services/letter-tiles.service';
+import { LetterTilesService } from '@app/services/draw-letter.service';
 
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 45;

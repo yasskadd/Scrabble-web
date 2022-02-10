@@ -8,6 +8,7 @@ import { LetterTile } from '@common/Letter.class';
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 600;
 export const DEFAULT_HEIGHT = 600;
+
 export const FONT_SIZE = 16;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 export const POINTS_FONT_SIZE = FONT_SIZE * 0.45;

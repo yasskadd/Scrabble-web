@@ -1,58 +1,51 @@
-/* eslint-disable prettier/prettier */
+import * as constants from '@common/constants';
+import { Coordinate } from '@common/coordinate';
+import { LetterTile } from '@common/Letter.class';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
-import { Coordinate } from '../../../common/coordinate.class';
-import { Letter } from '../../../common/letter';
-
 export class Gameboard {
-    gameboardCoords: Coordinate[] = new Array();
+    gameboard: LetterTile[] = new Array();
 
     constructor(private boxMultiplierService: BoxMultiplier) {
-        this.createCoordinates();
+        this.createLetters();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }
 
-    createCoordinates(): void {
-        const rowNumbers = 15;
-        const columnNumbers = 15;
-        for (let i = 0; i < rowNumbers; i++) {
-            for (let j = 0; j < columnNumbers; j++) {
-                const letter: Letter = {} as Letter;
-                const coord: Coordinate = new Coordinate(i, j, letter);
-                this.gameboardCoords.push(coord);
-            }
-        }
-    }
-
-    getCoord(coord: Coordinate): Coordinate {
-        // eslint-disable-next-line no-unused-vars
-        // console.log(coord);
-        // console.log(this.gameboardCoords[0]);
-        return this.gameboardCoords.filter((gameboardCoord) => {
-            return gameboardCoord.x === coord.x && gameboardCoord.y === coord.y;
-        })[0];
-    }
-
-    placeLetter(letterCoord: Coordinate): boolean {
-        const gameboardCoord = this.getCoord(letterCoord);
+    placeLetter(letter: LetterTile): boolean {
+        const gameboardCoord = this.getLetter(letter.coordinate);
         if (gameboardCoord.isOccupied === true) {
             return false;
         } else {
-            // TODO : removeLetterFromChevalet(gameboardCoord.letter);
-            gameboardCoord.letter = letterCoord.letter;
+            // TODO : remove letter to chevalet
+            gameboardCoord.value = letter.value;
             gameboardCoord.isOccupied = true;
             return true;
         }
     }
 
-    // might not be necessary
     removeLetter(letterCoord: Coordinate) {
-        const gameboardCoord = this.getCoord(letterCoord);
+        const gameboardCoord = this.getLetter(letterCoord);
         if (gameboardCoord.isOccupied) {
-            // TODO : returnLetterToChevalet(gameboardCoord.letter);
-            gameboardCoord.letter = {} as Letter;
+            // TODO : return letter to chevalet
+            gameboardCoord.value = '';
             gameboardCoord.isOccupied = false;
         } else {
             return;
+        }
+    }
+
+    getLetter(coordinate: Coordinate): LetterTile {
+        return this.gameboard.filter((boardLetter) => {
+            return boardLetter.coordinate.x === coordinate.x && boardLetter.coordinate.y === coordinate.y;
+        })[0];
+    }
+
+    private createLetters(): void {
+        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
+            for (let j = 1; j < constants.TOTAL_ROWS; j++) {
+                const position: Coordinate = { x: i, y: j };
+                const coord: LetterTile = new LetterTile(position, '');
+                this.gameboard.push(coord);
+            }
         }
     }
 }
