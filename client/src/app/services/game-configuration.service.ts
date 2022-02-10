@@ -67,7 +67,7 @@ export class GameConfigurationService {
         this.clientSocket.on(SocketEvents.ErrorJoining, (reason: string) => {
             this.setErrorSubject(reason);
         });
-        this.clientSocket.on('OpponentLeave', () => {
+        this.clientSocket.on(SocketEvents.OpponentLeave, () => {
             this.roomInformation.statusGame = SEARCHING_OPPONENT;
             this.roomInformation.playerName.pop();
         });
@@ -96,7 +96,7 @@ export class GameConfigurationService {
     }
 
     exitWaitingRoom() {
-        this.clientSocket.send('exitWaitingRoom', { id: this.roomInformation.roomId, name: this.roomInformation.playerName[0] });
+        this.clientSocket.send(SocketEvents.ExitWaitingRoom, { id: this.roomInformation.roomId, name: this.roomInformation.playerName[0] });
         this.resetRoomInformation();
     }
 

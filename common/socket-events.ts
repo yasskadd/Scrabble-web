@@ -18,4 +18,6 @@ export enum SocketEvents {
     JoinRoom = 'joinRoom',
     StartScrabbleGame = 'startScrabbleGame',
     GameAboutToStart = 'gameAboutToStart',
+    ExitWaitingRoom = 'exitWaitingRoom',
+    OpponentLeave = 'opponentLeave',
 }
