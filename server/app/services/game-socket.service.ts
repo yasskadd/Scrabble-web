@@ -1,6 +1,7 @@
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Player } from '@app/classes/player';
 import { Letter } from '@app/letter';
+import { SocketEvents } from '@common/socket-events';
 import { Container, Service } from 'typedi';
 import { GameService } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
@@ -71,17 +72,17 @@ export class GameSocket {
                     gameParam.game = newGame;
 
                     if (socket.id === gameParam.game.player1.name) {
-                        socket.emit('update-view', gameParam.game.player1.rack);
-                        socket.to(room).emit('update-view', gameParam.game.player2.rack);
+                        socket.emit(SocketEvents.ViewUpdate, gameParam.game.player1.rack);
+                        socket.to(room).emit(SocketEvents.ViewUpdate, gameParam.game.player2.rack);
                     } else {
-                        socket.emit('update-view', gameParam.game.player2.rack);
-                        socket.to(room).emit('update-view', gameParam.game.player1.rack);
+                        socket.emit(SocketEvents.ViewUpdate, gameParam.game.player2.rack);
+                        socket.to(room).emit(SocketEvents.ViewUpdate, gameParam.game.player1.rack);
                     }
                 }
             }
         });
 
-        this.socketManager.io('play', (sio, socket, firstCoordinate, direction, letters) => {
+        this.socketManager.io(SocketEvents.Play, (sio, socket, firstCoordinate, direction, letters) => {
             let player: Player;
             if (this.players.has(socket.id)) {
                 player = this.players.get(socket.id) as Player;
@@ -90,14 +91,16 @@ export class GameSocket {
                 const game = gameParam.game as GameService;
                 const played = game.play(player.name, firstCoordinate as GameboardCoordinate, direction as string, letters as string[]);
                 if (played) {
-                    sio.to(room).emit('play', player.name, game.turn.activePlayer);
+                    sio.to(room).emit(SocketEvents.Play, player.name, game.turn.activePlayer);
                 } else {
                     // TODO : Emit something that says it is not its turn
                 }
             }
         });
 
-        this.socketManager.io('exchange', (sio, socket, letters: Letter[]) => {
+        // socket.on (io.emit)
+
+        this.socketManager.io(SocketEvents.Exchange, (sio, socket, letters: Letter[]) => {
             let player: Player;
 
             if (this.players.has(socket.id)) {
@@ -108,9 +111,8 @@ export class GameSocket {
                 const newRack = game.exchange(letters, player.name);
 
                 if (newRack.length !== 0) {
-                    socket.emit('update-view', newRack);
-                    sio.to(room).emit('play', player, game.turn.activePlayer);
-                    sio.to(room).emit('console', game.letterReserve);
+                    socket.emit(SocketEvents.ViewUpdate, newRack);
+                    sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
                 } else {
                     // TODO : Emit something that says it is not its turn
                 }

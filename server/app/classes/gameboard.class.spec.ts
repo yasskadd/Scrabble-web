@@ -84,9 +84,9 @@ describe('gameboard', () => {
         letter.stringChar = 'c';
         const coord = new GameboardCoordinate(1, 1, letter);
         gameboard.placeLetter(coord);
-        const newCoord = new GameboardCoordinate(1, 1, {} as Letter);
+        const newCoord = new GameboardCoordinate(0, 14, {} as Letter);
         expect(gameboard.getCoord(newCoord).letter.stringChar).to.eql('c');
-        expect(gameboard.getCoord(newCoord).x).to.equal(1);
-        expect(gameboard.getCoord(newCoord).y).to.equal(1);
+        expect(gameboard.getCoord(newCoord).x).to.equal(0);
+        expect(gameboard.getCoord(newCoord).y).to.equal(14);
     });
 });
