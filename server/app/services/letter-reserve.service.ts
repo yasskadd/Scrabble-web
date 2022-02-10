@@ -1,16 +1,16 @@
 // eslint-disable-next-line no-restricted-imports
 // eslint-disable-next-line no-restricted-imports
 // import { Letter } from '../../app/letter';
+import * as letterJSON from '@app/../assets/letter-reserve.json';
+import { Letter } from '@common/letter';
 import { Service } from 'typedi';
-// eslint-disable-next-line no-restricted-imports
-import * as letterJSON from '../../assets/letter-reserve.json';
 
 // Temporary place
-export interface Letter {
-    letter: string;
-    quantity: number;
-    weight: number;
-}
+// export interface Letter {
+//     letter: string;
+//     quantity: number;
+//     weight: number;
+// }
 
 @Service()
 export class LetterReserveService {
@@ -40,7 +40,7 @@ export class LetterReserveService {
      */
     updateReserve(letter: Letter): void {
         this.lettersReserve.forEach((value) => {
-            if (value.letter === letter.letter) {
+            if (value.stringChar === letter.stringChar) {
                 value.quantity--;
             }
         });
@@ -71,11 +71,11 @@ export class LetterReserveService {
      */
     removeLettersFromRack(toBeRemoved: Letter[], rack: Letter[]): Letter[] {
         let tempRack = rack.map((letter) => {
-            return letter.letter;
+            return letter.stringChar;
         });
 
         const tempToBeRemoved = toBeRemoved.map((letter) => {
-            return letter.letter;
+            return letter.stringChar;
         });
 
         tempRack = tempRack.filter((letter) => {
@@ -90,7 +90,7 @@ export class LetterReserveService {
 
         for (const letter of tempRack) {
             const index = rack.findIndex((element) => {
-                return element.letter === letter;
+                return element.stringChar === letter;
             });
             updatedRack.push(rack[index]);
         }
@@ -116,9 +116,9 @@ export class LetterReserveService {
             // Update de letter reserve
             const updatedLetterReserve = this.lettersReserve;
             for (const letter of toExchange) {
-                const index = this.lettersReserve.findIndex((element) => element.letter === letter.letter);
+                const index = this.lettersReserve.findIndex((element) => element.stringChar === letter.stringChar);
                 if (index < 0) {
-                    const newLetter = { letter: letter.letter, quantity: 1, weight: letter.weight };
+                    const newLetter = { stringChar: letter.stringChar, quantity: 1, points: letter.points };
                     updatedLetterReserve.push(newLetter);
                 } else {
                     updatedLetterReserve[index].quantity++;

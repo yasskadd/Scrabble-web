@@ -69,7 +69,7 @@ export class GridService {
             this.drawBasicTile(letter.x, letter.y);
         }
         if (!letter.isOccupied) return;
-        this.drawLetterTile(letter.x, letter.y, letter.letter.string);
+        this.drawLetterTile(letter.x, letter.y, letter.letter.stringChar);
         this.drawLetterWeight(letter.x, letter.y, `${letter.letter.points}`);
     }
 

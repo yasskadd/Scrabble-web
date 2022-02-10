@@ -1,14 +1,18 @@
+import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
-import { Service } from 'typedi';
+import { PlacementCommandInfo } from '@app/command-info';
+import { Letter } from '@common/letter';
+import { Inject, Service } from 'typedi';
+import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { TurnService } from './turn.service';
 
 // Temporary place
-interface Letter {
-    letter: string;
-    quantity: number;
-    weight: number;
-}
+// interface Letter {
+//     letter: string;
+//     quantity: number;
+//     weight: number;
+// }
 
 const MAX_QUANTITY = 7;
 
@@ -16,8 +20,15 @@ const MAX_QUANTITY = 7;
 export class GameService {
     player1: Player;
     player2: Player;
+    gameboard: GameBoard;
 
-    constructor(player1: Player, player2: Player, private turn: TurnService, private letterReserve: LetterReserveService) {
+    constructor(
+        player1: Player,
+        player2: Player,
+        public turn: TurnService,
+        public letterReserve: LetterReserveService,
+        @Inject() private letterPlacement: LetterPlacementService,
+    ) {
         // this.start(player1, player2);
         this.player1 = player1;
         this.player2 = player2;
@@ -68,18 +79,19 @@ export class GameService {
      *
      * @param playerName : The active player who will play.
      */
-    play(playerName: string): void {
+    play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] {
+        let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
-            // TODO : Add placement logic
+            gameBoard = this.letterPlacement.placeLetter(this.player1, commandInfo, this.gameboard);
             this.turn.end();
-            // TODO: return list of letters placed;
+            return gameBoard;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-            // TODO: return list of letters placed;
+            gameBoard = this.letterPlacement.placeLetter(this.player2, commandInfo, this.gameboard);
             this.turn.end();
-            // TODO: return list of letters placed;
+            return gameBoard;
         }
 
-        // return undefined;
+        return gameBoard;
     }
 
     /**

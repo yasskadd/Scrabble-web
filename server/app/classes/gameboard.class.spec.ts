@@ -1,19 +1,22 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-console */
 /* eslint-disable prettier/prettier */
-import { BoxMultiplier } from 'app/services/box-multiplier.service';
+import { BoxMultiplier } from '@app/services/box-multiplier.service';
+import { Letter } from '@common/letter';
 import { expect } from 'chai';
-import * as sinon from 'sinon';
-import { Container } from 'typedi';
-import { Coordinate } from '../../../common/coordinate.class';
-import { Letter } from '../../../common/letter';
-import { Gameboard } from './gameboard.class';
+import * as Sinon from 'sinon';
+import { createStubInstance, SinonStubbedInstance } from 'sinon';
+import { GameboardCoordinate } from './gameboard-coordinate.class';
+import { GameBoard } from './gameboard.class';
 
 describe('gameboard', () => {
-    let gameboard: Gameboard;
-    let boxMultiplierService: BoxMultiplier;
+    let gameboard: GameBoard;
+    let boxMultiplierService: SinonStubbedInstance<BoxMultiplier>;
 
     beforeEach(() => {
-        boxMultiplierService = Container.get(BoxMultiplier);
-        gameboard = new Gameboard(boxMultiplierService);
+        boxMultiplierService = createStubInstance(BoxMultiplier);
+        gameboard = new GameBoard(boxMultiplierService);
     });
 
     it('game array length should be 225', () => {
@@ -22,12 +25,12 @@ describe('gameboard', () => {
         expect(length).to.equal(225);
     });
 
-    it('should create the array with each element being a Coordinate', () => {
+    it('should create the array with each element being a GameboardCoordinate', () => {
         // const array = gameboard.gameboardCoords;
         const array = gameboard.gameboardCoords;
-        const checkArrayType = (coordList: Coordinate[]) => {
+        const checkArrayType = (coordList: GameboardCoordinate[]) => {
             let bool = true;
-            coordList.forEach((coord: Coordinate) => {
+            coordList.forEach((coord: GameboardCoordinate) => {
                 if (typeof coord !== 'object' && coord !== null) {
                     bool = false;
                 }
@@ -37,33 +40,28 @@ describe('gameboard', () => {
         expect(checkArrayType(array)).to.be.true;
     });
 
-    it('should call createCoordinates and applyBoxMultipliers', () => {
-        const spyCreateCoord = sinon.spy(Gameboard.prototype, 'createCoordinates');
-        const spyApplyBoxMultipliers = sinon.spy(boxMultiplierService, 'applyBoxMultipliers');
-        new Gameboard(boxMultiplierService);
+    it('should call createGameboardCoordinates and applyBoxMultipliers', () => {
+        const spyCreateCoord = Sinon.spy(GameBoard.prototype, 'createGameboardCoordinates');
+        new GameBoard(boxMultiplierService);
         expect(spyCreateCoord.called).to.be.true;
-        expect(spyApplyBoxMultipliers.called).to.be.true;
+        expect(boxMultiplierService.applyBoxMultipliers.called).to.be.true;
     });
 
-    it('should place letter on board if coordinate is not occupied', () => {
-        const letter: Letter = {
-            string: 'a',
-            quantity: 1, // TODO :
-            points: 2,
-        };
-
-        const coord = new Coordinate(0, 0, letter);
+    it('should place letter on board if GameboardCoordinate is not occupied', () => {
+        const letter = {} as Letter;
+        letter.stringChar = 'a';
+        const coord = new GameboardCoordinate(0, 0, letter);
         const gameboardTestCoord = gameboard.gameboardCoords[0];
         gameboardTestCoord.isOccupied = false;
         gameboard.placeLetter(coord);
         expect(gameboardTestCoord.x).to.eql(coord.x);
         expect(gameboardTestCoord.y).to.eql(coord.y);
-        expect(gameboardTestCoord.letter.string).to.eql('a');
+        expect(gameboardTestCoord.letter.stringChar).to.eql('a');
         expect(gameboardTestCoord.isOccupied).to.be.true;
     });
 
-    it('should not place letter on board if coordinate is occupied', () => {
-        const coord = new Coordinate(0, 0, {} as Letter);
+    it('should not place letter on board if GameboardCoordinate is occupied', () => {
+        const coord = new GameboardCoordinate(0, 0, {} as Letter);
         const gameboardTestCoord = gameboard.gameboardCoords[0];
         gameboardTestCoord.isOccupied = true;
         expect(gameboard.placeLetter(coord)).to.be.false;
@@ -72,12 +70,23 @@ describe('gameboard', () => {
     it('should set isOccupied attribute to false if removeLetter is called', () => {
         const gameboardCoord = gameboard.gameboardCoords[0];
         gameboardCoord.isOccupied = true;
-        gameboardCoord.letter.string = 'f';
-        const coord = new Coordinate(0, 0, {} as Letter);
+        gameboardCoord.letter.stringChar = 'f';
+        const coord = new GameboardCoordinate(0, 0, {} as Letter);
         gameboard.removeLetter(coord);
         expect(gameboardCoord.x).to.eql(coord.x);
         expect(gameboardCoord.y).to.eql(coord.y);
         expect(gameboardCoord.isOccupied).to.be.false;
         expect(gameboardCoord.letter).to.eql({} as Letter);
+    });
+
+    it('should return correct GameboardCoordinate when getCoord is called', () => {
+        const letter = {} as Letter;
+        letter.stringChar = 'c';
+        const coord = new GameboardCoordinate(1, 1, letter);
+        gameboard.placeLetter(coord);
+        const newCoord = new GameboardCoordinate(0, 14, {} as Letter);
+        expect(gameboard.getCoord(newCoord).letter.stringChar).to.eql('c');
+        expect(gameboard.getCoord(newCoord).x).to.equal(0);
+        expect(gameboard.getCoord(newCoord).y).to.equal(14);
     });
 });

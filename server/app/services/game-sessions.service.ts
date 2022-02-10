@@ -1,7 +1,7 @@
 import { GameParameters } from '@app/classes/game-parameters';
 import { GameRoom } from '@app/classes/game-room';
-import { Gameboard } from '@app/classes/gameboard.class';
-import { Coordinate } from '@common/coordinate.class';
+import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
+import { GameBoard } from '@app/classes/gameboard.class';
 import { SocketEvents } from '@common/socket-events';
 // import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
@@ -94,8 +94,8 @@ export class GameSessions {
         // eslint-disable-next-line no-unused-vars
         this.socketManager.io('gameboardTest', (sio, _) => {
             const multiplierService = Container.get(BoxMultiplier);
-            const gameboard = new Gameboard(multiplierService);
-            gameboard.placeLetter(new Coordinate(2, 2, { string: 'A', points: 3, quantity: 5 }));
+            const gameboard = new GameBoard(multiplierService);
+            gameboard.placeLetter(new GameboardCoordinate(2, 2, { stringChar: 'A', points: 3, quantity: 5 }));
             sio.emit(SocketEvents.UpdateGameBoard, gameboard.gameboardCoords);
         });
     }
