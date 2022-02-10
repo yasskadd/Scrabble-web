@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
+import { Letter } from '@app/letter';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { Container } from 'typedi';
-import { Letter } from '../letter';
 import { Coordinate } from './coordinate.class';
 import { Gameboard } from './gameboard.class';
 
