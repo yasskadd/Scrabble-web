@@ -5,7 +5,18 @@ import { ChatboxHandlerService } from './chatbox-handler.service';
 import { ClientSocketService } from './client-socket.service';
 import { GameConfigurationService } from './game-configuration.service';
 
-const ROOM_ID = '1';
+interface RoomInformation {
+    playerName: string[];
+    roomId: string;
+    isCreator: boolean;
+    statusGame: string;
+}
+const ROOM_INFORMATION: RoomInformation = {
+    playerName: ['Vincent', 'RICHARD'],
+    roomId: '1',
+    isCreator: true,
+    statusGame: 'En attente du joueur',
+};
 export class SocketClientServiceMock extends ClientSocketService {
     // Reason : connect shouldn't actually connect
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -19,7 +30,7 @@ describe('ChatboxHandlerService', () => {
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     beforeEach(() => {
         gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['removeRoom', 'rejectOpponent', 'beginScrabbleGame'], {
-            roomId: ROOM_ID,
+            roomInformation: ROOM_INFORMATION,
         });
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
