@@ -252,12 +252,6 @@ export class GridService {
         this.gridContext.fill();
     }
 
-    clearTile(x: number, y: number) {
-        const position = this.positionXYPixel(x, y);
-
-        this.gridContext.clearRect(position.x, position.y, GridService.squareWidth, GridService.squareHeight);
-    }
-
     private positionXYPixel(x: number, y: number): Coord {
         return { x: GridService.squareWidth * (x + 1), y: GridService.squareHeight * (y + 1) };
     }

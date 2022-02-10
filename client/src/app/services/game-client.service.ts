@@ -23,7 +23,7 @@ export class GameClientService {
         this.playerOneTurn = false;
         // setTimeout(this.stopTimer, 1000 * 5);
         this.clientSocketService.on(SocketEvents.UpdateGameBoard, (gameboard: Coordinate[]) => {
-            this.updateGameboard(gameboard);
+            this.updateNewGameboard(gameboard);
         });
     }
 
@@ -40,8 +40,11 @@ export class GameClientService {
     stopTimer() {
         clearInterval(GameClientService.timerInterval as number);
     }
-    updateGameboard(newGameboard: Coordinate[]) {
+    updateNewGameboard(newGameboard: Coordinate[]) {
         this.gameboard = newGameboard;
+        this.updateGameboard();
+    }
+    updateGameboard() {
         this.gridService.drawGridArray(this.gameboard);
     }
 }
