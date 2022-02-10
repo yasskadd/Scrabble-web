@@ -13,6 +13,8 @@
     overflow: auto;
     flex-grow: 4;
     justify-content: center;
+    display: flex;
+    background-color: rgb(225, 232, 248);
 }
 .chatbox {
     flex-grow: 1;
