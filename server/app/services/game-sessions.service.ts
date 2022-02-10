@@ -58,10 +58,10 @@ export class GameSessions {
             sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
         });
 
-        this.socketManager.on('exitWaitingRoom', (socket, parameters: Parameters) => {
+        this.socketManager.on(SocketEvents.ExitWaitingRoom, (socket, parameters: Parameters) => {
             const roomId = parameters.id;
             const playerName = parameters.name;
-            socket.broadcast.to(roomId).emit('OpponentLeave');
+            socket.broadcast.to(roomId).emit(SocketEvents.OpponentLeave);
             socket.leave(roomId);
             socket.join(PLAYERS_JOINING_ROOM);
             this.removeUserFromRoom(playerName, socket.id, roomId);
@@ -93,13 +93,14 @@ export class GameSessions {
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             const roomId = this.getRoomId(socket.id);
             if (roomId !== null) {
+                socket.broadcast.to(roomId).emit('user disconnect');
                 this.removeRoom(roomId);
-                this.removeUserFromActiveUsers(socket.id);
             }
+            this.removeUserFromActiveUsers(socket.id);
         });
     }
 
-    getNewId(): string {
+    private getNewId(): string {
         const id = this.idCounter++;
         return id.toString();
     }
@@ -112,11 +113,11 @@ export class GameSessions {
     //     }
     // }
 
-    getActiveUser(): Map<string, string> {
-        return this.activeUsers;
-    }
+    // private getActiveUser(): Map<string, string> {
+    //     return this.activeUsers;
+    // }
 
-    getAvailableRooms(): GameRoom[] {
+    private getAvailableRooms(): GameRoom[] {
         const roomAvailableArray: GameRoom[] = [];
         this.gameRooms.forEach((gameRoom) => {
             if (gameRoom.users.length === 1) roomAvailableArray.push(gameRoom);
@@ -124,13 +125,13 @@ export class GameSessions {
         return roomAvailableArray;
     }
 
-    roomStatus(roomID: string): boolean {
+    private roomStatus(roomID: string): boolean {
         const room = this.gameRooms.get(roomID);
         if (room !== undefined) return room.isAvailable;
         return false;
     }
 
-    setupNewRoom(parameters: GameParameters, socketId: string): string {
+    private setupNewRoom(parameters: GameParameters, socketId: string): string {
         const roomID = this.getNewId();
         const newRoom: GameRoom = {
             id: roomID,
@@ -146,14 +147,14 @@ export class GameSessions {
         return roomID;
     }
 
-    sameUsernameExists(user: string, roomID: string): boolean {
+    private sameUsernameExists(user: string, roomID: string): boolean {
         const room = this.gameRooms.get(roomID);
         let sameUsername = true;
         if (room !== undefined) sameUsername = room.users[0] === user;
         return sameUsername;
     }
 
-    getOpponentName(user: string, roomID: string): string {
+    private getOpponentName(user: string, roomID: string): string {
         const room = this.gameRooms.get(roomID);
         if (room !== undefined) {
             if (room.users[0] === user) {
@@ -165,17 +166,17 @@ export class GameSessions {
         return '';
     }
 
-    makeRoomAvailable(roomID: string): void {
+    private makeRoomAvailable(roomID: string): void {
         const room = this.gameRooms.get(roomID);
         if (room !== undefined) room.isAvailable = true;
     }
 
-    makeRoomUnavailable(roomID: string): void {
+    private makeRoomUnavailable(roomID: string): void {
         const room = this.gameRooms.get(roomID);
         if (room !== undefined) room.isAvailable = false;
     }
 
-    addUserToRoom(user: string, socketID: string, roomID: string): void {
+    private addUserToRoom(user: string, socketID: string, roomID: string): void {
         const room = this.gameRooms.get(roomID);
         if (room !== undefined) {
             room.users.push(user);
@@ -185,7 +186,7 @@ export class GameSessions {
         this.makeRoomUnavailable(roomID);
     }
 
-    removeUserFromRoom(user: string, socketID: string, roomID: string): void {
+    private removeUserFromRoom(user: string, socketID: string, roomID: string): void {
         const room = this.gameRooms.get(roomID);
         if (room !== undefined) {
             const index: number = room.users.indexOf(user);
@@ -198,19 +199,19 @@ export class GameSessions {
         this.makeRoomAvailable(roomID);
     }
 
-    removeRoom(roomID: string) {
+    private removeRoom(roomID: string) {
         this.gameRooms.delete(roomID);
     }
 
-    addUserToActiveUsers(username: string, socketID: string) {
+    private addUserToActiveUsers(username: string, socketID: string) {
         this.activeUsers.set(socketID, username);
     }
 
-    removeUserFromActiveUsers(socketID: string) {
+    private removeUserFromActiveUsers(socketID: string) {
         this.activeUsers.delete(socketID);
     }
 
-    getRoomId(socketID: string) {
+    private getRoomId(socketID: string) {
         for (const [key, value] of this.gameRooms.entries()) {
             if (value.socketID.includes(socketID)) return key;
         }

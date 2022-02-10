@@ -10,15 +10,20 @@ export class ChatboxHandlerService {
 
     initSocketsEvents() {
         this.socketManager.on(SocketEvents.SendMessage, this.sendMessage);
-        this.socketManager.on(SocketEvents.Disconnect, (socket) => {
-            // eslint-disable-next-line dot-notation
-            const arr = Array.from(this.socketManager['sio'].sockets.adapter.rooms);
-            const filtered = arr.filter((room) => !room[1].has(room[0]));
-            const roomId = filtered.map((i) => i[0]);
-            if (roomId[0]) {
-                socket.broadcast.to(roomId[0]).emit(SocketEvents.OpponentDisconnect);
-            }
-        });
+        // TODO: A modifier
+
+        // this.socketManager.on(SocketEvents.Disconnect, (socket) => {
+        //     // eslint-disable-next-line dot-notation
+        //     const arr = Array.from(this.socketManager['sio'].sockets.adapter.rooms);
+        //     // eslint-disable-next-line dot-notation
+        //     const filtered = arr.filter((room) => !room[1].has(room[0]));
+
+        //     const roomId = filtered.map((i) => i[0]);
+        //     // console.log(roomId);
+        //     if (roomId[0]) {
+        //         socket.broadcast.to(roomId[0]).emit(SocketEvents.OpponentDisconnect);
+        //     }
+        // });
 
         // this.socketManager.on(SocketEvents.Disconnect, this.disconnectEvent);
 

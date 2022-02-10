@@ -27,6 +27,7 @@ export class GameConfigurationService {
 
     constructor(private clientSocket: ClientSocketService) {
         this.availableRooms = [];
+        this.roomInformation = { playerName: [], roomId: '', isCreator: false, statusGame: '' };
         this.clientSocket.establishConnection();
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
         this.isGameStarted = new ReplaySubject<boolean>(1);

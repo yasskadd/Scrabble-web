@@ -98,9 +98,15 @@ describe('WaitingOpponentPageComponent', () => {
     });
 
     // TODO: Fix this test later
-    // it('exitRoom() should navigate to /classique/multijoueur/joindre if isCreated is false', () => {
+    // it('exitRoom() should navigate to /classique/multijoueur/rejoindre if isCreated is false', () => {
+    //     const roomInformationMock: RoomInformation = {
+    //         playerName: ['Vincent', 'RICHARD'],
+    //         roomId: '1',
+    //         isCreator: false,
+    //         statusGame: 'En attente du joueur',
+    //     };
     //     gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['rejectOpponent', 'beginScrabbleGame'], {
-    //         isCreator: TEST_ISNOTCREATOR,
+    //         roomInformation: roomInformationMock,
     //         errorReason: TEST_ERROR_REASON,
     //         isGameStarted: TEST_ISGAMESTARTED,
     //     });
