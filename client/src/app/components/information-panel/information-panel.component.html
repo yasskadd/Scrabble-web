@@ -2,8 +2,8 @@
 
 <section class="player" [ngClass]="{ active: this.gameClientService.playerOneTurn }" id="player-1">
     <div class="name-score">
-        <div>nom du joueur</div>
-        <div>score</div>
+        <div>{{ this.gameClientService.secondPlayer.name }}</div>
+        <div>score : {{ this.gameClientService.secondPlayer.score }}</div>
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div>x lettres disponibles sur le chevalet</div>
@@ -15,8 +15,8 @@
 <div id="versus">VS</div>
 <section class="player" [ngClass]="{ active: !this.gameClientService.playerOneTurn }" id="player-2">
     <div class="name-score">
-        <div>nom du joueur</div>
-        <div>score</div>
+        <div>{{ this.gameClientService.playerOne.name }}</div>
+        <div>score : {{ this.gameClientService.playerOne.score }}</div>
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div>x lettres disponibles sur le chevalet</div>

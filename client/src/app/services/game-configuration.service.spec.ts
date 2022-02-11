@@ -11,12 +11,14 @@ interface RoomInformation {
     roomId: string;
     isCreator: boolean;
     statusGame: string;
+    timer: number;
 }
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
     roomId: '',
     isCreator: true,
     statusGame: '',
+    timer: 0,
 };
 export class SocketClientServiceMock extends ClientSocketService {
     // Reason : connect shouldn't actually connect

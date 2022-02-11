@@ -2,7 +2,8 @@ import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { PlacementCommandInfo } from '@app/command-info';
 import { Letter } from '@common/letter';
-import { Inject, Service } from 'typedi';
+import { Container, Inject, Service } from 'typedi';
+import { BoxMultiplier } from './box-multiplier.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { TurnService } from './turn.service';
@@ -29,9 +30,11 @@ export class GameService {
         public letterReserve: LetterReserveService,
         @Inject() private letterPlacement: LetterPlacementService,
     ) {
-        // this.start(player1, player2);
         this.player1 = player1;
         this.player2 = player2;
+        this.start();
+        const boxMultiplierService = Container.get(BoxMultiplier);
+        this.gameboard = new GameBoard(boxMultiplierService);
     }
 
     /**
@@ -80,6 +83,8 @@ export class GameService {
      * @param playerName : The active player who will play.
      */
     play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] {
+        console.log('PLACER :' + playerName);
+        console.log(commandInfo);
         let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
             gameBoard = this.letterPlacement.placeLetter(this.player1, commandInfo, this.gameboard);

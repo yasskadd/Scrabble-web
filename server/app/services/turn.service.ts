@@ -1,6 +1,7 @@
 // import { Message } from '@app/message';
 // import { DateService } from '@app/services/date.service';
 import { Player } from '@app/classes/player';
+import { ReplaySubject } from 'rxjs';
 import { Service } from 'typedi';
 
 const NUMBER_PLAYER = 2;
@@ -10,11 +11,13 @@ const SECOND = 1000;
 export class TurnService {
     activePlayer: string | undefined;
     inactivePlayer: string | undefined;
+    endTurn: ReplaySubject<string | undefined>;
     private time: number;
     private timeOut: unknown;
 
     constructor(time: number) {
         this.time = time;
+        this.endTurn = new ReplaySubject(1);
     }
 
     /**
@@ -55,6 +58,7 @@ export class TurnService {
             const tempInactivePlayer: string | undefined = this.inactivePlayer;
             this.inactivePlayer = this.activePlayer;
             this.activePlayer = tempInactivePlayer;
+            this.endTurn.next(this.activePlayer);
             this.start();
         } else {
             this.activePlayer = undefined;

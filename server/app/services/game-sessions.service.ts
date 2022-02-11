@@ -1,11 +1,8 @@
 import { GameParameters } from '@app/classes/game-parameters';
 import { GameRoom } from '@app/classes/game-room';
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
 import { SocketEvents } from '@common/socket-events';
 // import { Socket } from 'socket.io';
-import { Container, Service } from 'typedi';
-import { BoxMultiplier } from './box-multiplier.service';
+import { Service } from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
 const UNAVAILABLE_ELEMENT_INDEX = -1;
@@ -91,8 +88,10 @@ export class GameSessions {
         });
 
         this.socketManager.io(SocketEvents.StartScrabbleGame, (sio, _, roomId: string) => {
-            sio.to(roomId).emit(SocketEvents.GameAboutToStart);
+            const socketID = this.gameRooms.get(roomId)?.socketID;
+            sio.to(roomId).emit(SocketEvents.GameAboutToStart, socketID);
         });
+
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             const roomId = this.getRoomId(socket.id);
             if (roomId !== null) {
@@ -100,14 +99,6 @@ export class GameSessions {
                 this.removeRoom(roomId);
             }
             this.removeUserFromActiveUsers(socket.id);
-        });
-        // TODO : remove after testing
-        // eslint-disable-next-line no-unused-vars
-        this.socketManager.io('gameboardTest', (sio, _) => {
-            const multiplierService = Container.get(BoxMultiplier);
-            const gameboard = new GameBoard(multiplierService);
-            gameboard.placeLetter(new GameboardCoordinate(2, 2, { stringChar: 'A', points: 3, quantity: 5 }));
-            sio.emit(SocketEvents.UpdateGameBoard, gameboard.gameboardCoords);
         });
     }
 

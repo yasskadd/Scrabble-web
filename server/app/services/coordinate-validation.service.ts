@@ -7,12 +7,16 @@ import { Service } from 'typedi';
 @Service()
 export class GameboardCoordinateValidationService {
     validateGameboardCoordinate(commandInfo: PlacementCommandInfo, gameboard: GameBoard) {
+        console.log('VALIDATE');
         // Validate firstCoord
         if (!this.isFirstCoordValid(commandInfo.firstCoordinate, gameboard)) {
+            console.log('IF !!!!');
             return [];
         }
+        console.log(gameboard);
         const coordOfLetters = new Array();
         let stringLength: number = commandInfo.lettersPlaced.length;
+        console.log(commandInfo.firstCoordinate);
         let currentCoord: GameboardCoordinate = gameboard.getCoord(commandInfo.firstCoordinate);
         const direction = commandInfo.direction;
         if (direction === 'h') {
@@ -50,6 +54,7 @@ export class GameboardCoordinateValidationService {
         return coordOfLetters;
     }
     isFirstCoordValid(firstCoord: GameboardCoordinate, gameboard: GameBoard) {
+        console.log('FirstCoordValid');
         // eslint-disable-next-line no-console
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
     }

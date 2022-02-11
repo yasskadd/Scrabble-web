@@ -19,15 +19,19 @@ export class LetterPlacementService {
     dictionaryService = Container.get(DictionaryValidationService);
 
     placeLetter(player: Player, commandInfo: PlacementCommandInfo, gameboard: GameBoard): [boolean, GameBoard] {
+        console.log('TEST');
+        console.log(commandInfo);
         const coords = this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
+        console.log('COORDONNÉS : ');
+        console.log(coords);
+
         // if there is no placed letters, return false
         if (coords.length === 0) return [false, gameboard];
 
         const tempPlayerRack = this.createTempRack(player);
-        const letters = this.associateLettersWithRack(coords, tempPlayerRack);
+        const letters = this.associateLettersWithRack(coords, player);
         // Verify if the placed Letters are in the player's rack
         if (coords.length !== letters.length) return [false, gameboard];
-
         // Update the player's rack
         player.rack = tempPlayerRack;
 
@@ -36,10 +40,21 @@ export class LetterPlacementService {
             gameboard.placeLetter(coord);
         }
 
+        // TODO: Assign points to each letter
+
         const wordList: Word[] = this.wordFinderService.findNewWords(gameboard, coords);
         const validateWord: number = this.dictionaryService.validateWords(wordList);
+        console.log('VALIDATE WORD SCORE :');
+        console.log(validateWord);
         // If there is no validateWord
-        if (validateWord === 0) return [false, gameboard];
+        if (validateWord === 0) {
+            for (const coord of coords) {
+                // temp
+                gameboard.removeLetter(coord);
+            }
+            return [false, gameboard];
+        }
+        player.score += validateWord;
 
         return [true, gameboard];
     }
@@ -52,8 +67,8 @@ export class LetterPlacementService {
         return tempPlayerRack;
     }
 
-    private associateLettersWithRack(placedLettersCoord: GameboardCoordinate[], rack: Letter[]): (Letter | undefined)[] {
-        const tempRack = rack;
+    private associateLettersWithRack(placedLettersCoord: GameboardCoordinate[], player: Player): (Letter | undefined)[] {
+        const tempRack = this.createTempRack(player);
         const letters = placedLettersCoord.map((coord) => {
             const index = tempRack.findIndex((letter) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/classes/chatbox-message';
 import { Coordinate } from '@common/coordinate';
+import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
 import { GameConfigurationService } from './game-configuration.service';
 
@@ -16,9 +17,9 @@ const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
     providedIn: 'root',
 })
 export class ChatboxHandlerService {
-    private static readonly foo = '^!aide|^!placer|^!(é|e)changer|^!passer';
+    private static readonly syntaxRegexString = '^!aide|^!placer|^!(é|e)changer|^!passer';
     messages: ChatboxMessage[];
-    private readonly validSyntaxRegex = RegExp(ChatboxHandlerService.foo);
+    private readonly validSyntaxRegex = RegExp(ChatboxHandlerService.syntaxRegexString);
 
     constructor(private clientSocket: ClientSocketService, private gameConfiguration: GameConfigurationService) {
         this.messages = [];
@@ -49,7 +50,7 @@ export class ChatboxHandlerService {
     }
 
     private sendMessage(message: string): void {
-        this.clientSocket.send('message', { roomId: this.gameConfiguration.roomInformation.roomId, message });
+        this.clientSocket.send(SocketEvents.SendMessage, { roomId: this.gameConfiguration.roomInformation.roomId, message });
     }
 
     private sendCommand(command: string): void {
@@ -58,16 +59,14 @@ export class ChatboxHandlerService {
         switch (commandType) {
             case '!placer': {
                 this.sendCommandPlacer(splitCommand);
-
                 break;
             }
             case '!echanger': {
                 this.sendCommandEchanger(splitCommand);
-
                 break;
             }
             case '!passer': {
-                this.clientSocket.send('passer');
+                this.clientSocket.send(SocketEvents.Skip);
                 break;
             }
             // No default
@@ -123,18 +122,18 @@ export class ChatboxHandlerService {
     private sendCommandPlacer(command: string[]) {
         const coordsAndDirection = this.getCoordsAndDirection(command);
         const commandInformation = {
-            coord: coordsAndDirection[0],
+            firstCoordinate: coordsAndDirection[0],
             direction: coordsAndDirection[1],
-            placedLetters: this.getLetters(command, 2),
+            lettersPlaced: this.getLetters(command, 2),
         };
-        this.clientSocket.send('placer', commandInformation);
+        this.clientSocket.send(SocketEvents.Play, commandInformation);
     }
 
     private sendCommandEchanger(command: string[]) {
         const commandInformation = {
             exchangeLetters: this.getLetters(command, 1),
         };
-        this.clientSocket.send('echanger', commandInformation);
+        this.clientSocket.send(SocketEvents.Exchange, commandInformation);
     }
 
     private splitCommand(command: string) {

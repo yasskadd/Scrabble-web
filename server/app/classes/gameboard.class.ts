@@ -26,6 +26,7 @@ export class GameBoard {
 
     getCoord(coord: GameboardCoordinate) {
         // eslint-disable-next-line no-unused-vars
+        // console.log(coord);
         const x: number = coord.x;
         const y: number = coord.y;
         if (x > 14 || x < 0 || y > 14 || y < 0) return {} as GameboardCoordinate;

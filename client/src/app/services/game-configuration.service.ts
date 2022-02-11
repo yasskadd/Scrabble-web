@@ -14,6 +14,14 @@ interface RoomInformation {
     roomId: string;
     isCreator: boolean;
     statusGame: string;
+    timer: number;
+}
+
+interface GameScrabbleInformation {
+    playerName: string[];
+    roomId: string;
+    timer: number;
+    socketId: string[];
 }
 @Injectable({
     providedIn: 'root',
@@ -27,7 +35,7 @@ export class GameConfigurationService {
 
     constructor(private clientSocket: ClientSocketService) {
         this.availableRooms = [];
-        this.roomInformation = { playerName: [], roomId: '', isCreator: false, statusGame: '' };
+        this.roomInformation = { playerName: [], roomId: '', timer: 0, isCreator: false, statusGame: '' };
         this.clientSocket.establishConnection();
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
         this.isGameStarted = new ReplaySubject<boolean>(1);
@@ -49,7 +57,16 @@ export class GameConfigurationService {
             this.setErrorSubject(reason);
         });
 
-        this.clientSocket.on(SocketEvents.GameAboutToStart, () => {
+        this.clientSocket.on(SocketEvents.GameAboutToStart, (socketIDUserRoom: string[]) => {
+            const gameBoardInformation: GameScrabbleInformation = {
+                playerName: this.roomInformation.playerName,
+                roomId: this.roomInformation.roomId,
+                timer: this.roomInformation.timer,
+                socketId: socketIDUserRoom,
+            };
+            if (this.roomInformation.isCreator) {
+                this.clientSocket.send('createScrabbleGame', gameBoardInformation);
+            }
             this.setIsGameStartedSubject();
         });
 
@@ -109,6 +126,7 @@ export class GameConfigurationService {
 
     gameInitialization(parameters: GameParameters) {
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
+        this.roomInformation.timer = parameters.timer;
         this.roomInformation.playerName[0] = parameters.username;
         this.roomInformation.isCreator = true;
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
