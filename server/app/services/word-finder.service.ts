@@ -10,13 +10,10 @@ import { Gameboard } from '../classes/Gameboard.class';
 export class WordFinderService {
     allWords: Word[];
 
-    constructor(word: Word, gameboard: Gameboard) {
+    findAjacentWords(word: Word, gameboard: Gameboard) {
         this.allWords.push(word);
-        this.findAjacentWords(word, gameboard);
-    }
-
-    private findAjacentWords(word: Word, gameboard: Gameboard) {
-        word.isHorizontal ? this.findAdjacentVerticalWords(word, gameboard) : this.findAdjacentHorizontalWords(word, gameboard);
+        if (word.isHorizontal) this.findAdjacentVerticalWords(word, gameboard);
+        else this.findAdjacentHorizontalWords(word, gameboard);
     }
 
     private findAdjacentVerticalWords(word: Word, gameboard: Gameboard) {

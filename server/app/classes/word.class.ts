@@ -3,77 +3,73 @@ import { Coordinate } from '@common/Coordinate';
 import { Gameboard } from './gameboard.class';
 
 export class Word {
-    isHorizontal: boolean;
     isValid: boolean;
     points: number;
-    newLetterCoords: Coordinate[];
-    wordCoords: Coordinate[];
+    newLetterCoords: Coordinate[] = [];
+    wordCoords: Coordinate[] = [];
 
-    constructor(isHorizontal: boolean, firstCoord: Coordinate, stringFormat: string, gameboard: Gameboard) {
-        this.isHorizontal = isHorizontal;
+    constructor(public isHorizontal: boolean | undefined, coord: Coordinate, stringFormat: string, gameboard: Gameboard) {
         this.isValid = false;
         this.points = 0;
 
-        // TODO: checker si le string.length = 1
+        if (isHorizontal === undefined && stringFormat.length === 1) {
+            this.setIsHorizontal(coord, gameboard);
+        }
 
+        const firstCoord = this.findFirstCoord(coord, gameboard);
         this.findWordCoords(firstCoord, stringFormat, gameboard);
+    }
 
-        // if (coordList.length === 1) {
-        //         const verticalWord: Word = this.buildVerticalWord(gameBoard, coordList[0]);
-        //         const horizontalWord: Word = this.buildHorizontal(gameBoard, coordList[0]);
-        //         if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
-        //             newWordsArray.push(verticalWord);
-        //         } else if (horizontalWord.coords.length !== 0 && horizontalWord.coords.length !== 1) {
-        //             newWordsArray.push(horizontalWord);
-        //         }
-        //         return newWordsArray;}
+    private setIsHorizontal(firstCoord: Coordinate, gameboard: Gameboard) {
+        if (
+            gameboard.getLetterTile({ x: firstCoord.x, y: firstCoord.y-- }).isOccupied ||
+            gameboard.getLetterTile({ x: firstCoord.x, y: firstCoord.y++ }).isOccupied
+        )
+            this.isHorizontal = false;
+        else if (
+            gameboard.getLetterTile({ x: firstCoord.x--, y: firstCoord.y }).isOccupied ||
+            gameboard.getLetterTile({ x: firstCoord.x++, y: firstCoord.y }).isOccupied
+        )
+            this.isHorizontal = true;
+        else this.isValid = false;
+    }
+
+    private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {
+        if (!this.isHorizontal) {
+            console.log(coord);
+            if (this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 }) && gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied) {
+                while (this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 }) && gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied)
+                    coord.y--;
+                return coord;
+            }
+            return coord;
+        } else {
+            console.log(coord);
+            if (this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y }) && gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied) {
+                while (this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y }) && gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied)
+                    coord.x--;
+                return coord;
+            }
+            return coord;
+        }
     }
 
     private findWordCoords(firstCoord: Coordinate, stringFormat: string, gameboard: Gameboard) {
         const lettersInOrder = stringFormat.split('');
         const position = firstCoord;
+
         while (lettersInOrder.length || gameboard.getLetterTile(position).isOccupied) {
             if (!gameboard.getLetterTile(position).isOccupied) {
                 gameboard.placeLetter(position, lettersInOrder[0]);
                 lettersInOrder.shift();
                 this.wordCoords.push(position);
                 this.newLetterCoords.push(position);
-            } else {
-                this.wordCoords.push(position);
-            }
+            } else this.wordCoords.push(position);
             this.isHorizontal ? position.x++ : position.y++;
         }
     }
 
-    // SHOULD BE IN DIFFERENT FILE --> POINTS SERVICE ----------------------------------------
-    calculateWordPoints(gameboard: Gameboard) {
-        this.addLetterPoints(gameboard);
-        this.addWordMultiplierPoints(gameboard);
-        return this.points;
-    }
-
-    private addLetterPoints(gameboard: Gameboard) {
-        this.wordCoords.forEach((coord: Coordinate) => {
-            const INDEX_NOT_FOUND = -1; //TODO: take out!!
-            if (
-                gameboard.getLetterTile(coord).multiplier.type === 'LETTRE' &&
-                gameboard.getLetterTile(coord).multiplier.number > 1 &&
-                this.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
-            )
-                this.points += gameboard.getLetterTile(coord).points * gameboard.getLetterTile(coord).multiplier.number;
-            else this.points += gameboard.getLetterTile(coord).points;
-        });
-    }
-
-    private addWordMultiplierPoints(gameboard: Gameboard) {
-        this.wordCoords.forEach((coord: Coordinate) => {
-            const INDEX_NOT_FOUND = -1; //TODO: take out!!
-            if (
-                gameboard.getLetterTile(coord).multiplier.type === 'MOT' &&
-                gameboard.getLetterTile(coord).multiplier.number > 1 &&
-                this.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
-            )
-                this.points *= gameboard.getLetterTile(coord).multiplier.number;
-        });
+    isWithinBoardLimits(coord: Coordinate): boolean {
+        return coord.x >= 1 && coord.x <= 16 && coord.y >= 1 && coord.y <= 16;
     }
 }
