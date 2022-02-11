@@ -1,29 +1,25 @@
 import * as constants from '@common/constants';
-import { Coordinate } from '@common/coordinate';
-import { LetterTile } from '@common/Letter.class';
+import { Coordinate } from '@common/Coordinate';
+import { LetterTile } from '@common/LetterTile.class';
 import { BoxMultiplier } from 'app/services/box-multiplier.service';
 export class Gameboard {
     gameboard: LetterTile[] = new Array();
 
     constructor(private boxMultiplierService: BoxMultiplier) {
-        this.createLetters();
+        this.createLetterTiles();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }
 
-    placeLetter(letter: LetterTile): boolean {
-        const gameboardCoord = this.getLetter(letter.coordinate);
-        if (gameboardCoord.isOccupied === true) {
-            return false;
-        } else {
-            // TODO : remove letter to chevalet
-            gameboardCoord.value = letter.value;
-            gameboardCoord.isOccupied = true;
-            return true;
-        }
+    placeLetter(position: Coordinate, letter: string) {
+        // TODO : remove letter to chevalet
+        this.getLetterTile(position).value = letter;
+        this.getLetterTile(position).setPoints();
+        this.getLetterTile(position).isOccupied = true;
+        return true;
     }
 
     removeLetter(letterCoord: Coordinate) {
-        const gameboardCoord = this.getLetter(letterCoord);
+        const gameboardCoord = this.getLetterTile(letterCoord);
         if (gameboardCoord.isOccupied) {
             // TODO : return letter to chevalet
             gameboardCoord.value = '';
@@ -33,13 +29,13 @@ export class Gameboard {
         }
     }
 
-    getLetter(coordinate: Coordinate): LetterTile {
+    getLetterTile(coordinate: Coordinate): LetterTile {
         return this.gameboard.filter((boardLetter) => {
             return boardLetter.coordinate.x === coordinate.x && boardLetter.coordinate.y === coordinate.y;
         })[0];
     }
 
-    private createLetters(): void {
+    private createLetterTiles(): void {
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
             for (let j = 1; j < constants.TOTAL_ROWS; j++) {
                 const position: Coordinate = { x: i, y: j };

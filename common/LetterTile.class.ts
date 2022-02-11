@@ -1,7 +1,7 @@
 import { Multiplier } from '@common/Multiplier';
-import { Coordinate } from './coordinate';
+import { Coordinate } from './Coordinate';
 
-export class Letter {
+export class LetterTile {
     coordinate: Coordinate;
     isOccupied: boolean;
     value: string;
@@ -14,5 +14,9 @@ export class Letter {
         this.isOccupied = false;
         this.value = letter;
         this.multiplier = { type: '', number: 1 };
+    }
+
+    setPoints() {
+        this.points = 0; //TODO: GET DATA FROM LETTER TYPES???
     }
 }
