@@ -3,16 +3,16 @@ import { Word } from '@app/classes/Word.class';
 import { Coordinate } from '@common/Coordinate';
 import { expect } from 'chai';
 import { Container } from 'typedi';
-import { BoxMultiplier } from '../services/box-multiplier.service';
+import { BoxMultiplierService } from '../services/box-multiplier.service';
 
 // TODO : the rest of the tests
 describe('Word', () => {
     let gameboard: Gameboard;
-    let boxMultiplierService: BoxMultiplier;
+    let boxMultiplierService: BoxMultiplierService;
     let word: Word;
 
     beforeEach(async () => {
-        boxMultiplierService = Container.get(BoxMultiplier);
+        boxMultiplierService = Container.get(BoxMultiplierService);
         gameboard = new Gameboard(boxMultiplierService);
         gameboard.getLetterTile({ x: 2, y: 1 }).value = 'A';
         gameboard.getLetterTile({ x: 2, y: 1 }).isOccupied = true;

@@ -4,7 +4,7 @@ import * as multipliers from '@common/board-multiplier-coords';
 import { Service } from 'typedi';
 
 @Service()
-export class BoxMultiplier {
+export class BoxMultiplierService {
     applyBoxMultipliers(gameboard: Gameboard) {
         multipliers.letterMultipliersByTwo.forEach((coord) => {
             const letter = gameboard.getLetterTile(coord);

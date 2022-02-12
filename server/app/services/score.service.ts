@@ -7,34 +7,32 @@ export const INDEX_NOT_FOUND = -1;
 
 @Service()
 export class ScoreService {
-    word: Word;
-
-    calculateWordPoints(gameboard: Gameboard) {
-        this.addLetterPoints(gameboard);
-        this.addWordMultiplierPoints(gameboard);
-        return this.word.points;
+    calculateWordPoints(word: Word, gameboard: Gameboard): number {
+        this.addLetterPoints(word, gameboard);
+        this.addWordMultiplierPoints(word, gameboard);
+        return word.points;
     }
 
-    private addLetterPoints(gameboard: Gameboard) {
-        this.word.wordCoords.forEach((coord: Coordinate) => {
+    private addLetterPoints(word: Word, gameboard: Gameboard) {
+        word.wordCoords.forEach((coord: Coordinate) => {
             if (
                 gameboard.getLetterTile(coord).multiplier.type === 'LETTRE' &&
                 gameboard.getLetterTile(coord).multiplier.number > 1 &&
-                this.word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
+                word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
             )
-                this.word.points += gameboard.getLetterTile(coord).points * gameboard.getLetterTile(coord).multiplier.number;
-            else this.word.points += gameboard.getLetterTile(coord).points;
+                word.points += gameboard.getLetterTile(coord).points * gameboard.getLetterTile(coord).multiplier.number;
+            else word.points += gameboard.getLetterTile(coord).points;
         });
     }
 
-    private addWordMultiplierPoints(gameboard: Gameboard) {
-        this.word.wordCoords.forEach((coord: Coordinate) => {
+    private addWordMultiplierPoints(word: Word, gameboard: Gameboard) {
+        word.wordCoords.forEach((coord: Coordinate) => {
             if (
                 gameboard.getLetterTile(coord).multiplier.type === 'MOT' &&
                 gameboard.getLetterTile(coord).multiplier.number > 1 &&
-                this.word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
+                word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
             )
-                this.word.points *= gameboard.getLetterTile(coord).multiplier.number;
+                word.points *= gameboard.getLetterTile(coord).multiplier.number;
         });
     }
 }

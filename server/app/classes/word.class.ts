@@ -7,6 +7,7 @@ export class Word {
     points: number;
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
+    stringFormat: string;
 
     constructor(public isHorizontal: boolean | undefined, coord: Coordinate, stringFormat: string, gameboard: Gameboard) {
         this.isValid = false;
@@ -31,7 +32,7 @@ export class Word {
             gameboard.getLetterTile({ x: firstCoord.x++, y: firstCoord.y }).isOccupied
         )
             this.isHorizontal = true;
-        else this.isValid = false;
+        else this.isValid = false; // TODO : message d'erreur!!
     }
 
     private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {
@@ -61,10 +62,14 @@ export class Word {
         while (lettersInOrder.length || gameboard.getLetterTile(position).isOccupied) {
             if (!gameboard.getLetterTile(position).isOccupied) {
                 gameboard.placeLetter(position, lettersInOrder[0]);
+                this.stringFormat += lettersInOrder[0];
                 lettersInOrder.shift();
                 this.wordCoords.push(position);
                 this.newLetterCoords.push(position);
-            } else this.wordCoords.push(position);
+            } else {
+                this.wordCoords.push(position);
+                this.stringFormat += gameboard.getLetterTile(position).value;
+            }
             this.isHorizontal ? position.x++ : position.y++;
         }
     }

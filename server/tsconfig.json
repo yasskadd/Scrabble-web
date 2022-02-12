@@ -15,6 +15,7 @@
         "noFallthroughCasesInSwitch": true,
         "noUnusedLocals": true,
         "noImplicitReturns": true,
+        "resolveJsonModule": true,
         "suppressImplicitAnyIndexErrors": true,
         "strictNullChecks": true,
         "paths": {
