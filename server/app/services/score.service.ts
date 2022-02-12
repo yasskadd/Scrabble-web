@@ -6,7 +6,7 @@ import { Service } from 'typedi';
 export const INDEX_NOT_FOUND = -1;
 
 @Service()
-export class Score {
+export class ScoreService {
     word: Word;
 
     calculateWordPoints(gameboard: Gameboard) {
