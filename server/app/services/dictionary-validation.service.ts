@@ -1,49 +1,53 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-console */
+/* eslint-disable no-restricted-imports */
+import { Word } from '@app/classes/word.class';
+import { Gameboard } from 'app/classes/gameboard.class';
+import * as fs from 'fs';
 import { Service } from 'typedi';
-import * as jsonDictionnary from '../../assets/dictionary.json';
-import { GameBoard } from '../classes/gameboard.class';
-import { Word } from '../classes/word.class';
+import { ScoreService } from './score.service';
+import { WordFinderService } from './word-finder.service';
+
+const jsonDictionary = JSON.parse(fs.readFileSync('./assets/letter-reserve.json', 'utf8'));
 
 @Service()
 export class DictionaryValidationService {
-    dictionary: Set<string>;
-    gameboard: GameBoard; // not sure if this is good
+    dictionary: Set<string> = new Set();
+    scoreService: ScoreService;
+    wordFinderService: WordFinderService;
 
     constructor() {
-        (<any>jsonDictionnary).words.forEach((word: string) => {
+        jsonDictionary.words.forEach((word: string) => {
             this.dictionary.add(word);
         });
     }
 
-    validateWords(enteredWords: Word[]): void {
+    validateWord(word: Word, gameboard: Gameboard): number {
+        let enteredWords = this.wordFinderService.findAjacentWords(word, gameboard);
         this.checkWordInDictionary(enteredWords);
         const invalidWords = this.isolateInvalidWords(enteredWords);
-        let newPoints: number = 0;
+        let turnPoints = 0;
 
-        if (!invalidWords) {
-            enteredWords.forEach((word: Word) => {
-                newPoints += word.calculatePoints(word, this.gameboard);
-                // TODO: end turn
-            });
-        } else {
-            // TODO : flash invalideWords red and removeLetters();
+        if (invalidWords.length !== 0) {
+            word.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
+            return turnPoints;
         }
+
+        enteredWords.forEach((word: Word) => {
+            turnPoints += this.scoreService.calculateWordPoints(word, gameboard);
+        });
+
+        return turnPoints;
     }
 
-    checkWordInDictionary(enteredWords: Word[]): void {
-        enteredWords.forEach((enteredWord) => {
-            if (!this.dictionary.has(enteredWord.stringFormat)) {
-                enteredWord.isValid = false;
-                console.log(enteredWord + 'is not valid');
-            } else {
-                enteredWord.isValid = true;
-                console.log(enteredWord + 'is not valid');
-            }
+    private checkWordInDictionary(enteredWords: Word[]): void {
+        enteredWords.forEach((word) => {
+            !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
         });
     }
 
-    isolateInvalidWords(enteredWords: Array<Word>) {
-        return enteredWords.filter((word) => {
-            word.isValid = false;
-        });
+    private isolateInvalidWords(enteredWords: Word[]) {
+        return enteredWords.filter((word) => word.isValid === false);
     }
 }

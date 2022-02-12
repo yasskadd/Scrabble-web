@@ -1,33 +1,46 @@
-/* eslint-disable prettier/prettier */
+import { Gameboard } from '@app/classes/Gameboard.class';
+import { Word } from '@app/classes/Word.class';
+import { Coordinate } from '@common/Coordinate';
 import { expect } from 'chai';
-import { Letter } from '../letter';
-import { Coordinate } from './coordinate.class';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-// import sinon = require('sinon');
+import { Container } from 'typedi';
+import { BoxMultiplierService } from '../services/box-multiplier.service';
 
-describe('Coordinate', () => {
-    let coordinateClass: Coordinate;
+// TODO : the rest of the tests
+describe('Word', () => {
+    let gameboard: Gameboard;
+    let boxMultiplierService: BoxMultiplierService;
+    let word: Word;
 
     beforeEach(async () => {
-        coordinateClass = new Coordinate(0, 0, {} as Letter);
+        boxMultiplierService = Container.get(BoxMultiplierService);
+        gameboard = new Gameboard(boxMultiplierService);
+        gameboard.getLetterTile({ x: 2, y: 1 }).value = 'A';
+        gameboard.getLetterTile({ x: 2, y: 1 }).isOccupied = true;
+
+        word = new Word(true, { x: 1, y: 1 }, 'SINTE', gameboard);
     });
 
-    // it('should reset letterMultiplier to 1 if resetLetterMultiplier is called', () => {
-    //     coordinateClass.letterMultiplier = 5;
-    //     coordinateClass.resetLetterMultiplier();
-    //     expect(coordinateClass.letterMultiplier).to.equal(1);
-    // });
-
-    // it('should reset wordMultiplier if resetWordMultiplier is called', () => {
-    //     coordinateClass.wordMultiplier = 5;
-    //     coordinateClass.resetWordMultiplier();
-    //     expect(coordinateClass.wordMultiplier).to.equal(1);
-    // });
-
     it('should correctly set class attributes when constructor is called', () => {
-        expect(coordinateClass.x && coordinateClass.y).to.equal(0);
-        expect(coordinateClass.letterMultiplier && coordinateClass.wordMultiplier).to.equal(1);
-        expect(coordinateClass.isOccupied).to.equal(false);
-        expect(coordinateClass.letter).to.eql({} as Letter);
+        const expectedWordCoords: Coordinate[] = [
+            { x: 1, y: 1 },
+            { x: 2, y: 1 },
+            { x: 3, y: 1 },
+            { x: 4, y: 1 },
+            { x: 5, y: 1 },
+            { x: 6, y: 1 },
+        ];
+        const expectedNewLetterCoords: Coordinate[] = [
+            { x: 1, y: 1 },
+            { x: 2, y: 1 },
+            { x: 3, y: 1 },
+            { x: 4, y: 1 },
+            { x: 5, y: 1 },
+            { x: 6, y: 1 },
+        ];
+        expect(word.isHorizontal).to.equal(true);
+        expect(word.isValid).to.equal(false);
+        expect(word.wordCoords).to.equal(expectedWordCoords);
+        expect(word.newLetterCoords).to.equal(expectedNewLetterCoords);
+        expect(word.points).to.equal(0);
     });
 });
