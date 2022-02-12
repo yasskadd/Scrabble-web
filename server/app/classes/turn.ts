@@ -63,6 +63,7 @@ export class Turn {
             this.start();
         } else {
             this.activePlayer = undefined;
+            this.inactivePlayer = undefined;
         }
         this.endTurn.next(this.activePlayer);
     }
