@@ -1,5 +1,5 @@
 import { Player } from '@app/classes/player';
-import { TurnService } from '@app/classes/turn.service';
+import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
@@ -58,7 +58,8 @@ export class GameSocket {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
-        gameHolder.game?.skip(player.name);
+        console.log('Skip boolean :');
+        console.log(gameHolder.game?.skip(player.name));
 
         this.changeTurn(room);
     }
@@ -72,10 +73,9 @@ export class GameSocket {
         const game = gameParam.game as GameService;
         const newRack = game.exchange(letters, player.name);
 
-        if (newRack.length !== 0) {
-            socket.emit(SocketEvents.ViewUpdate, newRack);
-            sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
-        }
+        if (newRack.length === 0) return;
+        socket.emit(SocketEvents.ViewUpdate, newRack);
+        sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
     private playGame(this: this, sio: Server, socket: Socket, commandInfo: PlacementCommandInfo) {
@@ -117,6 +117,10 @@ export class GameSocket {
             gameboard: newGameHolder.game.gameboard.gameboardCoords,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
+
+        console.log('START GAME : ');
+        console.log(newGameHolder.game.turn.activePlayer);
+
         this.games.set(newGameHolder.roomId, newGameHolder);
     }
 
@@ -133,7 +137,7 @@ export class GameSocket {
         return new GameService(
             gameParam.players[0],
             gameParam.players[1],
-            new TurnService(60),
+            new Turn(60),
             new LetterReserveService(),
             Container.get(LetterPlacementService),
         );
@@ -153,6 +157,8 @@ export class GameSocket {
             players: game?.players,
             activePlayer: game?.game?.turn.activePlayer,
         };
+        console.log('CHANGE TURN : ');
+        console.log(gameInfo.activePlayer);
         this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
 

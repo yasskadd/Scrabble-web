@@ -3,12 +3,12 @@
 import { Player } from '@app/classes/player';
 import { expect } from 'chai';
 import { SinonFakeTimers, spy, useFakeTimers } from 'sinon';
-import { TurnService } from './turn.service';
+import { Turn } from './turn';
 
 const SECOND = 1000;
 
 describe('TurnService', () => {
-    let turnService: TurnService;
+    let turnService: Turn;
     let clock: SinonFakeTimers;
     let time: number;
     let player1: Player;
@@ -16,7 +16,7 @@ describe('TurnService', () => {
 
     beforeEach(() => {
         time = 30;
-        turnService = new TurnService(time);
+        turnService = new Turn(time);
         clock = useFakeTimers();
         player1 = new Player('player1');
         player2 = new Player('player2');

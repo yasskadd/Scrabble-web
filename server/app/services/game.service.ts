@@ -1,6 +1,6 @@
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
-import { TurnService } from '@app/classes/turn.service';
+import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
 import { Letter } from '@common/letter';
 import { Container, Inject, Service } from 'typedi';
@@ -25,7 +25,7 @@ export class GameService {
     constructor(
         player1: Player,
         player2: Player,
-        public turn: TurnService,
+        public turn: Turn,
         public letterReserve: LetterReserveService,
         @Inject() private letterPlacement: LetterPlacementService,
     ) {
@@ -65,15 +65,9 @@ export class GameService {
      * @param playerName : The active player who will skip.
      */
     skip(playerName: string): boolean {
-        if (this.turn.validating(playerName) && this.player1.name === playerName) {
-            this.turn.end();
-            return true;
-        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-            this.turn.end();
-            return true;
-        }
-
-        return false;
+        if (!this.turn.validating(playerName)) return false;
+        this.turn.end();
+        return true;
     }
 
     /**

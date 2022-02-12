@@ -6,7 +6,7 @@ import { ReplaySubject } from 'rxjs';
 const NUMBER_PLAYER = 2;
 const SECOND = 1000;
 
-export class TurnService {
+export class Turn {
     activePlayer: string | undefined;
     inactivePlayer: string | undefined;
     endTurn: ReplaySubject<string | undefined>;
@@ -59,11 +59,11 @@ export class TurnService {
             const tempInactivePlayer: string | undefined = this.inactivePlayer;
             this.inactivePlayer = this.activePlayer;
             this.activePlayer = tempInactivePlayer;
-            this.endTurn.next(this.activePlayer);
             this.start();
         } else {
             this.activePlayer = undefined;
         }
+        this.endTurn.next(this.activePlayer);
     }
 
     /**
@@ -73,6 +73,6 @@ export class TurnService {
      * @returns : Return a boolean. If it returns true, the player passed as parameter is the active player.
      */
     validating(playerName: string): boolean {
-        return this.activePlayer === playerName ? true : false;
+        return String(this.activePlayer) === playerName;
     }
 }
