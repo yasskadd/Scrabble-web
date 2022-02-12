@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import * as letterJSON from '../../assets/letter-reserve.json';
 import { LetterReserveService } from './letter-reserve.service';
 
-describe('LetterReserveService', () => {
+describe.only('LetterReserveService', () => {
     let service: LetterReserveService;
     let sampleRack: Letter[];
     let emptyRack: Letter[];
@@ -14,9 +14,9 @@ describe('LetterReserveService', () => {
         service = new LetterReserveService();
         emptyRack = [];
         sampleRack = [
-            { stringChar: 'a', quantity: 8, points: 3 },
-            { stringChar: 'b', quantity: 0, points: 4 },
-            { stringChar: 'b', quantity: 0, points: 4 },
+            { stringChar: 'a', quantity: 8, points: 1 },
+            { stringChar: 'b', quantity: 0, points: 3 },
+            { stringChar: 'b', quantity: 0, points: 3 },
             { stringChar: 'c', quantity: 1, points: 3 },
             { stringChar: 'd', quantity: 2, points: 2 },
         ];
@@ -52,14 +52,14 @@ describe('LetterReserveService', () => {
 
     it('should remove one letter from the rack', () => {
         const expectedLength = sampleRack.length - 1;
-        const updatedRack = service.removeLettersFromRack([{ stringChar: 'a', quantity: 8, points: 3 }], sampleRack);
+        const updatedRack = service.removeLettersFromRack(['a'], sampleRack)[0];
         expect(updatedRack.length).to.equal(expectedLength);
     });
 
     it('should remove one and only one letter B from the rack which contains two B', () => {
         const expectedLength = sampleRack.length - 1;
-        const letterToRemove = { stringChar: 'b', quantity: 0, points: 4 };
-        const updatedRack = service.removeLettersFromRack([letterToRemove], sampleRack);
+        const letterToRemove = { stringChar: 'b', quantity: 0, points: 3 };
+        const updatedRack = service.removeLettersFromRack([letterToRemove.stringChar], sampleRack)[0];
 
         expect(updatedRack).to.deep.include(letterToRemove);
         expect(updatedRack.length).to.equal(expectedLength);
@@ -67,7 +67,13 @@ describe('LetterReserveService', () => {
 
     it('should properly exchange letters from rack', () => {
         const oldRack = sampleRack;
-        const newRack = service.exchangeLetter(sampleRack, sampleRack);
+        const newRack = service.exchangeLetter(
+            sampleRack.map((letter) => {
+                return letter.stringChar;
+            }),
+            sampleRack,
+        );
+
         expect(newRack).to.not.equal(oldRack);
         expect(newRack.length).to.equal(oldRack.length);
     });
@@ -76,7 +82,12 @@ describe('LetterReserveService', () => {
         const nLetters = 6;
         const oldRack = sampleRack;
         service.lettersReserve = service.lettersReserve.slice(0, nLetters);
-        const newRack = service.exchangeLetter(sampleRack, sampleRack);
+        const newRack = service.exchangeLetter(
+            sampleRack.map((letter) => {
+                return letter.stringChar;
+            }),
+            sampleRack,
+        );
         expect(newRack).to.equal(oldRack);
         expect(newRack.length).to.equal(oldRack.length);
     });
