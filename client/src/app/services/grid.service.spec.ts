@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { GridService } from '@app/services/grid.service';
+import { GridService, PINK } from '@app/services/grid.service';
+import * as constants from '@common/constants';
 
 describe('GridService', () => {
     let service: GridService;
@@ -22,13 +23,74 @@ describe('GridService', () => {
 
     // TODO : grid tests need to be done !!
 
-    // it(' width should return the width of the grid canvas', () => {
-    //     expect(service.width).toEqual(CANVAS_WIDTH);
+    it(' squareWidth should return the width of the grid canvas', () => {
+        expect(GridService.squareWidth).toEqual(CANVAS_WIDTH / constants.TOTAL_COLUMNS);
+    });
+
+    it(' squareHeight should return the height of a single board tile the grid canvas', () => {
+        expect(GridService.squareHeight).toEqual(CANVAS_HEIGHT / constants.TOTAL_ROWS);
+    });
+
+    // setTileColor tests
+    it(' setTileColor should set a MOT type tile to pink when it is letter multipier by two', () => {
+        const fillStyleSpy = spyOn<any>(service.setTileColor, 'fillStyle');
+        service.setTileColor('MOT', 2);
+        expect(ctxStub.fillStyle).toHaveBeenCalled();
+        expect(fillStyleSpy).toBe(PINK);
+    });
+
+    // drawGrid tests below :
+    it(' drawGrid should call drawRowNumbers', () => {
+        const privateSpy = spyOn<any>(service.gridContext, 'drawRowNumbers');
+        service.drawGrid();
+        expect(privateSpy).toHaveBeenCalled();
+    });
+
+    it(' drawGrid should call drawColumnLetters', () => {
+        const privateSpy = spyOn<any>(service.gridContext, 'drawColumnLetters');
+        service.drawGrid();
+        expect(privateSpy).toHaveBeenCalled();
+    });
+
+    it(' drawGrid should call drawBasicTiles', () => {
+        const privateSpy = spyOn<any>(service.gridContext, 'drawBasicTiles');
+        service.drawGrid();
+        expect(privateSpy).toHaveBeenCalled();
+    });
+
+    it(' drawGrid should call drawMultipliers', () => {
+        const privateSpy = spyOn<any>(service.gridContext, 'drawMultipliers');
+        service.drawGrid();
+        expect(privateSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMiddleTile should call drawMiddleTile', () => {
+        const privateSpy = spyOn<any>(service.gridContext, 'drawMiddleTile');
+        service.drawGrid();
+        expect(privateSpy).toHaveBeenCalled();
+    });
+
+    // drawGrid prof examples below
+
+    // it(' drawGrid should call moveTo and lineTo 4 times', () => {
+    //     const expectedCallTimes = 4;
+    //     const moveToSpy = spyOn(service.gridContext, 'moveTo').and.callThrough();
+    //     const lineToSpy = spyOn(service.gridContext, 'lineTo').and.callThrough();
+    //     service.drawGrid();
+    //     expect(moveToSpy).toHaveBeenCalledTimes(expectedCallTimes);
+    //     expect(lineToSpy).toHaveBeenCalledTimes(expectedCallTimes);
     // });
 
-    // it(' height should return the height of the grid canvas', () => {
-    //     expect(service.width).toEqual(CANVAS_HEIGHT);
+    // it(' drawGrid should color pixels on the canvas', () => {
+    //     let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
+    //     const beforeSize = imageData.filter((x) => x !== 0).length;
+    //     service.drawGrid();
+    //     imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
+    //     const afterSize = imageData.filter((x) => x !== 0).length;
+    //     expect(afterSize).toBeGreaterThan(beforeSize);
     // });
+
+    // drawWord prof examples
 
     // it(' drawWord should call fillText on the canvas', () => {
     //     const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
@@ -53,24 +115,6 @@ describe('GridService', () => {
     //     let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
     //     const beforeSize = imageData.filter((x) => x !== 0).length;
     //     service.drawWord('test');
-    //     imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const afterSize = imageData.filter((x) => x !== 0).length;
-    //     expect(afterSize).toBeGreaterThan(beforeSize);
-    // });
-
-    // it(' drawGrid should call moveTo and lineTo 4 times', () => {
-    //     const expectedCallTimes = 4;
-    //     const moveToSpy = spyOn(service.gridContext, 'moveTo').and.callThrough();
-    //     const lineToSpy = spyOn(service.gridContext, 'lineTo').and.callThrough();
-    //     service.drawGrid();
-    //     expect(moveToSpy).toHaveBeenCalledTimes(expectedCallTimes);
-    //     expect(lineToSpy).toHaveBeenCalledTimes(expectedCallTimes);
-    // });
-
-    // it(' drawGrid should color pixels on the canvas', () => {
-    //     let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const beforeSize = imageData.filter((x) => x !== 0).length;
-    //     service.drawGrid();
     //     imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
     //     const afterSize = imageData.filter((x) => x !== 0).length;
     //     expect(afterSize).toBeGreaterThan(beforeSize);

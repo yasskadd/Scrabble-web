@@ -37,7 +37,7 @@ export class PlayAreaComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        // this.gridService.drawGrid();
+        this.gridService.drawGrid([]);
         // this.gridService.drawWord('Scrabble');
         // TODO : remove after testing is done
         this.clientSocketService.send('gameboardTest');

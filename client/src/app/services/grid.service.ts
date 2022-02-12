@@ -9,6 +9,8 @@ import { LetterTile } from '@common/LetterTile.class';
 export const DEFAULT_WIDTH = 600;
 export const DEFAULT_HEIGHT = 600;
 
+const TILE_SIZE = 35;
+
 export const FONT_SIZE = 16;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 export const POINTS_FONT_SIZE = FONT_SIZE * 0.45;
@@ -53,26 +55,19 @@ export class GridService {
         });
     }
 
-    drawLettersOnRack() {
-        for (let i = 0; i < RACK_LETTERS; i++) {
-            this.drawLetterTile(DEFAULT_WIDTH * 0.25 + TILE_SIZE * i, 1, 'A');
-            this.drawLetterWeight(TILE_SIZE * i + DEFAULT_WIDTH * 0.25, 0, '1');
-        }
-    }
-
     // this function would be similar to drawBasicTile from GridService.
-    private drawLetterTile(position: Coordinate, letter: string) {
+    public drawLetterTile(position: Coordinate, letter: string) {
         // this.gridContext.fillRect(x, y, TILE_SIZE, TILE_SIZE);
         this.gridContext.strokeStyle = '#C7A121';
         this.gridContext.lineWidth = 1;
         this.gridContext.strokeRect(position.x, position.y, TILE_SIZE, TILE_SIZE);
-        this.gridContext.font = 20 + 'px system-ui';
+        this.setFontSize(20);
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         this.gridContext.fillText(letter, position.x + TILE_SIZE / 2, TILE_SIZE / 2);
     }
 
-    private drawLetterWeight(x: number, y: number, string: string) {
+    public drawLetterPoints(x: number, y: number, string: string) {
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
@@ -82,7 +77,7 @@ export class GridService {
         this.gridContext.fillText(string, x + TILE_SIZE / 2 + plusX, y + halfSize + TILE_SIZE / 2, 20);
     }
 
-    drawLetterTileOnBoard(position: Coordinate, char: string) {
+    public drawLetterTileOnBoard(position: Coordinate, char: string) {
         this.gridContext.lineWidth = 1;
         this.gridContext.strokeStyle = 'Black';
         const posX = (GridService.squareWidth - GridService.letterTileWidth) / 2;
@@ -92,31 +87,7 @@ export class GridService {
         this.drawLetter(position, char);
     }
 
-    drawLetterTileOnBoard(position: Coordinate, char: string) {
-        this.gridContext.lineWidth = 1;
-        this.gridContext.strokeStyle = 'Black';
-        const posX = (GridService.squareWidth - GridService.letterTileWidth) / 2;
-        const posY = (GridService.squareHeight - GridService.letterTileHeight) / 2;
-        this.gridContext.strokeRect(position.x + posX, position.y + posY, GridService.letterTileWidth, GridService.letterTileHeight);
-        this.gridContext.fillStyle = 'black';
-        this.drawLetter(position, char);
-    }
-
-    drawLetterPointsOnBoard(position: Coordinate, string: string) {
-        this.gridContext.textBaseline = 'middle';
-        this.gridContext.textAlign = 'center';
-        const width = this.gridContext.measureText(string).width;
-        const halfSize = this.letterSize / 2;
-        this.gridContext.font = this.letterPointsSize + 'px system-ui';
-        this.gridContext.fillText(
-            string,
-            position.x + GridService.halfSquareWidth + width,
-            position.y + halfSize + GridService.halfSquareHeight,
-            this.letterSize,
-        );
-    }
-
-    drawLetterPointsOnBoard(position: Coordinate, string: string) {
+    public drawLetterPointsOnBoard(position: Coordinate, string: string) {
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
@@ -191,12 +162,6 @@ export class GridService {
         this.drawText(position, char);
     }
 
-    private drawLetter(position: Coordinate, char: string) {
-        this.setFontSize(this.letterSize);
-        this.gridContext.textBaseline = 'middle';
-        this.drawText(position, char);
-    }
-
     private drawBasicTiles() {
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
             for (let j = 1; j < constants.TOTAL_ROWS; j++) {
@@ -250,7 +215,8 @@ export class GridService {
         this.gridContext.fillStyle = '#F0B8B8';
         this.fillTile(middlePosition);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        this.drawStar(5, 10, 5);
+        // this.drawStar(5, 10, 5);
+        this.drawText(middlePosition, '★');
     }
 
     private fillTile(position: Coordinate) {

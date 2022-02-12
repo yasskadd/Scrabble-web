@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { LetterTilesService } from '@app/services/draw-letter.service';
+import { GridService } from '@app/services/grid.service';
 
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 45;
+const TILE_SIZE = 35;
+const RACK_LETTERS = 7;
 
 @Component({
     selector: 'app-player-rack',
@@ -14,12 +16,19 @@ export class PlayerRackComponent implements AfterViewInit {
 
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private readonly letterTilesService: LetterTilesService) {}
+    constructor(public gridService: GridService) {}
 
     ngAfterViewInit(): void {
-        this.letterTilesService.gridContext = this.rackCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.letterTilesService.drawRack();
+        this.gridService.gridContext = this.rackCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
+        this.drawLettersOnRack();
         this.rackCanvas.nativeElement.focus();
+    }
+
+    drawLettersOnRack() {
+        for (let i = 0; i < RACK_LETTERS; i++) {
+            this.gridService.drawLetterTile({ x: DEFAULT_WIDTH * 0.25 + TILE_SIZE * i, y: 1 }, 'A');
+            this.gridService.drawLetterPoints(TILE_SIZE * i + DEFAULT_WIDTH * 0.25, 0, '1');
+        }
     }
 
     get width(): number {
@@ -29,6 +38,4 @@ export class PlayerRackComponent implements AfterViewInit {
     get height(): number {
         return this.canvasSize.y;
     }
-
-    // addLetterToRack() {}
 }
