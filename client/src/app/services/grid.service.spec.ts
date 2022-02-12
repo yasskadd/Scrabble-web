@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import { GridService } from '@app/services/grid.service';
+import { DARK_BLUE, GridService, PINK } from '@app/services/grid.service';
 import * as constants from '@common/constants';
 
 describe('GridService', () => {
@@ -37,52 +37,51 @@ describe('GridService', () => {
     });
 
     // setTileColor tests
+    it(' setTileColor should set a MOT type tile to pink when it is letter multiplier by two', () => {
+        gridService.gridContext = jasmine.createSpyObj('gridContext', ['fillStyle']);
+        const fillStyleSpy = spyOn(gridService, 'setTileColor').and.callThrough();
+        gridService.setTileColor('MOT', 2);
+        expect(fillStyleSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.fillStyle).toEqual(PINK);
+    });
 
-    // it(' setTileColor should set a MOT type tile to pink when it is letter multiplier by two', () => {
-    //     const fillStyleSpy = spyOn(gridService, 'fillStyle' as never);
-    //     gridService.setTileColor('MOT', 2);
-    //     expect(fillStyleSpy).toHaveBeenCalled();
-    //     // expect(gridService.gridContext.fillStyle).toEqual(PINK);
-    // });
-
-    // it(' setTileColor should set a LETTRE type tile to pink when it is letter multiplier by three', () => {
-    //     const fillStyleSpy = spyOn(gridService, 'fillStyle' as never);
-    //     gridService.setTileColor('LETTRE', 3);
-    //     expect(fillStyleSpy).toHaveBeenCalled();
-    //     // expect(fillStyleSpy).toBe(DARK_BLUE);
-    // });
+    it(' setTileColor should set a LETTRE type tile to pink when it is letter multiplier by three', () => {
+        gridService.gridContext = jasmine.createSpyObj('gridContext', ['fillStyle']);
+        const fillStyleSpy = spyOn(gridService, 'setTileColor').and.callThrough();
+        gridService.setTileColor('LETTRE', 3);
+        expect(fillStyleSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.fillStyle).toBe(DARK_BLUE);
+    });
 
     // drawGrid tests below :
-    // it(' drawGrid should call drawRowNumbers', () => {
-    //     ctxStub = jasmine.createSpyObj('gridContext', ['fillStyle']);
-    //     ctxStub.fillStyle.and.callThrough();
-    //     const drawRowNumbersSpy = spyOn(gridService, 'drawRowNumbers');
-    //     gridService.drawGrid([]);
-    //     expect(drawRowNumbersSpy).toHaveBeenCalled();
-    // });
+    it(' drawGrid should call drawRowNumbers', () => {
+        const drawRowNumbersSpy = spyOn(gridService, 'drawRowNumbers').and.callThrough();
+        gridService.drawGrid([]);
+        expect(drawRowNumbersSpy).toHaveBeenCalled();
+    });
 
     it(' drawGrid should call drawColumnLetters', () => {
-        const privateSpy = spyOn(gridService, 'drawColumnLetters' as never);
+        const drawColumnLetterSpy = spyOn(gridService, 'drawColumnLetters').and.callThrough();
         gridService.drawGrid([]);
-        expect(privateSpy).toHaveBeenCalled();
+        expect(drawColumnLetterSpy).toHaveBeenCalled();
     });
 
     it(' drawGrid should call drawBasicTiles', () => {
-        const privateSpy = spyOn(gridService, 'drawBasicTiles' as never);
+        const drawBasicTilesSpy = spyOn(gridService, 'drawBasicTiles').and.callThrough();
         gridService.drawGrid([]);
-        expect(privateSpy).toHaveBeenCalled();
+        expect(drawBasicTilesSpy).toHaveBeenCalled();
     });
 
     it(' drawGrid should call drawMultipliers', () => {
-        const privateSpy = spyOn(gridService, 'drawMultipliers' as never);
+        const drawMultipliersSpy = spyOn(gridService, 'drawMultipliers').and.callThrough();
         gridService.drawGrid([]);
-        expect(privateSpy).toHaveBeenCalled();
+        expect(drawMultipliersSpy).toHaveBeenCalled();
     });
 
     it(' drawMiddleTile should call drawMiddleTile', () => {
-        const privateSpy = spyOn(gridService, 'drawMiddleTile' as never);
+        const drawMiddleTileSpy = spyOn(gridService, 'drawMiddleTile').and.callThrough();
         gridService.drawGrid([]);
-        expect(privateSpy).toHaveBeenCalled();
+        expect(drawMiddleTileSpy).toHaveBeenCalled();
     });
 
     // drawGrid prof examples below
