@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-console */
 /* eslint-disable no-restricted-imports */
+import { GameBoard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
-import { GameBoard } from 'app/classes/gameboard.class';
 import { Container, Service } from 'typedi';
 import * as jsonDictionary from '../../assets/dictionnary.json';
 import { BoxMultiplier } from './box-multiplier.service';
