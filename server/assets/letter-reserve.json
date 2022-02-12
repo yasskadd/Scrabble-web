@@ -1,164 +1,164 @@
 {
-    "title": "Default Letter Reserve",
+    "title": "Reserve des lettres",
     "letters": [
         {
-            "letterChar": "A",
+            "letter": "A",
             "quantity": 9,
             "weight": 1
         },
 
         {
-            "letterChar": "B",
+            "letter": "B",
             "quantity": 2,
             "weight": 3
         },
 
         {
-            "letterChar": "C",
+            "letter": "C",
             "quantity": 2,
             "weight": 3
         },
 
         {
-            "letterChar": "D",
+            "letter": "D",
             "quantity": 3,
             "weight": 2
         },
 
         {
-            "letterChar": "E",
+            "letter": "E",
             "quantity": 15,
             "weight": 1
         },
 
         {
-            "letterChar": "F",
+            "letter": "F",
             "quantity": 2,
             "weight": 4
         },
 
         {
-            "letterChar": "G",
+            "letter": "G",
             "quantity": 2,
             "weight": 2
         },
 
         {
-            "letterChar": "H",
+            "letter": "H",
             "quantity": 2,
             "weight": 4
         },
 
         {
-            "letterChar": "I",
+            "letter": "I",
             "quantity": 8,
             "weight": 1
         },
 
         {
-            "letterChar": "J",
+            "letter": "J",
             "quantity": 1,
             "weight": 8
         },
 
         {
-            "letterChar": "K",
+            "letter": "K",
             "quantity": 1,
             "weight": 10
         },
 
         {
-            "letterChar": "L",
+            "letter": "L",
             "quantity": 5,
             "weight": 1
         },
 
         {
-            "letterChar": "M",
+            "letter": "M",
             "quantity": 3,
             "weight": 2
         },
 
         {
-            "letterChar": "N",
+            "letter": "N",
             "quantity": 6,
             "weight": 1
         },
 
         {
-            "letterChar": "O",
+            "letter": "O",
             "quantity": 6,
             "weight": 1
         },
 
         {
-            "letterChar": "P",
+            "letter": "P",
             "quantity": 2,
             "weight": 3
         },
 
         {
-            "letterChar": "Q",
+            "letter": "Q",
             "quantity": 1,
             "weight": 8
         },
 
         {
-            "letterChar": "R",
+            "letter": "R",
             "quantity": 6,
             "weight": 1
         },
 
         {
-            "letterChar": "S",
+            "letter": "S",
             "quantity": 6,
             "weight": 1
         },
 
         {
-            "letterChar": "T",
+            "letter": "T",
             "quantity": 6,
             "weight": 1
         },
 
         {
-            "letterChar": "U",
+            "letter": "U",
             "quantity": 6,
             "weight": 1
         },
 
         {
-            "letterChar": "V",
+            "letter": "V",
             "quantity": 2,
             "weight": 4
         },
 
         {
-            "letterChar": "W",
+            "letter": "W",
             "quantity": 1,
             "weight": 10
         },
 
         {
-            "letterChar": "X",
+            "letter": "X",
             "quantity": 1,
             "weight": 10
         },
 
         {
-            "letterChar": "Y",
+            "letter": "Y",
             "quantity": 1,
             "weight": 10
         },
 
         {
-            "letterChar": "Z",
+            "letter": "Z",
             "quantity": 1,
             "weight": 10
         },
 
         {
-            "letterChar": "*",
+            "letter": "*",
             "quantity": 2,
             "weight": 0
         }

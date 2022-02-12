@@ -1,0 +1,30 @@
+.player {
+    border: 1px solid #c3c3c3;
+    border-radius: 5px;
+    padding: 10px;
+}
+.player > * {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
+.name-score > * {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+#panel-title {
+    color: cadetblue;
+}
+.active {
+    border: 2px solid rgb(81, 173, 81);
+}
+.active .time {
+    color: rgb(62, 133, 62);
+}
+#versus {
+    display: flex;
+    justify-content: center;
+}

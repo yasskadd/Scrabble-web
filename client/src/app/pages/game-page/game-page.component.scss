@@ -1,15 +1,21 @@
 .container {
     height: 100%;
     display: flex;
+    justify-content: space-between;
 }
-
-.play-area-container {
-    overflow: auto;
-    flex: 1 1 auto;
+.information-panel {
+    flex-grow: 1;
+    box-shadow: 1px 3px 2px -2px rgba(0, 0, 0, 0.2), 1px 2px 2px 1px rgba(0, 0, 0, 0.14), 1px 2px 4px 1px rgba(0, 0, 0, 0.12);
+    height: 100%;
+    padding: 10px;
 }
-
 .play-area {
-    display: grid;
-    width: min-content;
-    outline: none;
+    overflow: auto;
+    flex-grow: 4;
+    justify-content: center;
+    display: flex;
+    background-color: rgb(225, 232, 248);
+}
+.chatbox {
+    flex-grow: 1;
 }
