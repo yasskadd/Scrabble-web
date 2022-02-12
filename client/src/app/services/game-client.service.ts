@@ -6,7 +6,6 @@ import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 
 type PlayInfo = { gameboard: Coordinate[]; activePlayer: string };
-type Timer = { minutes: number; seconds: number };
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
 type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: string };
 @Injectable({
@@ -14,7 +13,7 @@ type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: stri
 })
 export class GameClientService {
     static timerInterval: number;
-    gameTimer: Timer;
+    timer: number;
     gameboard: Coordinate[];
     playerOne: Player;
     secondPlayer: Player;
@@ -28,11 +27,11 @@ export class GameClientService {
         this.configureBaseSocketFeatures();
     }
     configureBaseSocketFeatures() {
-        this.clientSocketService.on('UpdateMyPlayerInformation', (player: Player) => {
+        this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: Player) => {
             console.log(player);
             this.playerOne = player;
         });
-        this.clientSocketService.on('UpdateOpponentInformation', (player: Player) => {
+        this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
             console.log(player);
             this.secondPlayer = player;
         });
@@ -48,20 +47,9 @@ export class GameClientService {
             this.secondPlayer = this.secondPlayer.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
             this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
         });
-    }
-
-    startTimer(timer: Timer) {
-        const timeOut = 1000;
-        this.gameTimer = timer;
-        GameClientService.timerInterval = setInterval(() => {
-            if (this.gameTimer.seconds === 0) {
-                this.gameTimer.minutes--;
-                this.gameTimer.seconds = 60;
-            } else this.gameTimer.seconds--;
-        }, timeOut) as unknown as number;
-    }
-    stopTimer() {
-        clearInterval(GameClientService.timerInterval as number);
+        this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
+            this.timer = newTimer;
+        });
     }
     updateNewGameboard(newGameboard: Coordinate[]) {
         this.gameboard = newGameboard;

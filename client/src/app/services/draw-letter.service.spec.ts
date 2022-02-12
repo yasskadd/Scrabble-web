@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { GameClientService } from './game-client.service';
+import { LetterTilesService } from './letter-tiles.service';
 
-describe('GameClientService', () => {
-    let service: GameClientService;
-    // TODO : TESTS
+describe('LetterTilesService', () => {
+    let service: LetterTilesService;
+
     beforeEach(() => {
         TestBed.configureTestingModule({});
-        service = TestBed.inject(GameClientService);
+        service = TestBed.inject(LetterTilesService);
     });
 
     it('should be created', () => {
