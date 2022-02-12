@@ -8,13 +8,14 @@ import { createServer, Server } from 'http';
 // import { Server } from 'app/server';
 import { AddressInfo } from 'net';
 import * as sinon from 'sinon';
+import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
-import { Container } from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
 const TIMEOUT_WAIT = 200;
 type Parameters = { id: string; name: string };
 type SioSignature = SocketManager['sio'];
+
 const PLAYER_NAME = 'Vincent';
 const OPPONENT_NAME = 'Maurice';
 const SOCKET_ID = 'EFOFJS4534';
@@ -46,32 +47,51 @@ const GAME_PARAMETERS: GameParameters = {
 };
 describe('GameSession Service', () => {
     let gameSessions: GameSessions;
-    let service: SocketManager;
+    let service: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
     let clientSocket: Socket;
+    let serverSocket: ServerSocket;
     let port: number;
     let sio: SioSignature;
     // const urlString = 'http://localhost:3000';
-    beforeEach(async () => {
-        gameSessions = new GameSessions(service);
+    beforeEach((done) => {
+        // ||| Stubbing SocketManager |||
+        service = sinon.createStubInstance(SocketManager);
+        gameSessions = new GameSessions(service as unknown as SocketManager);
+
         //   server = Container.get(Server);
         //   server.init();
         // eslint-disable-next-line dot-notation
-        service = Container.get(SocketManager);
+        // service = Container.get(SocketManager);
+
+        // ||| Creating a new Server |||
         httpServer = createServer();
-        httpServer.listen();
-        service.init(httpServer);
+        sio = new ioServer(httpServer);
+        // ||| Connecting sockets to corresponding sockets when turning the server on |||
+        httpServer.listen(() => {
+            port = (httpServer.address() as AddressInfo).port;
+            clientSocket = Client(`http://localhost:${port}`);
+            // DO STUFF ON CLIENT CONNECT
+            // (socketServer is the socket received on the server side, the one we do socket.emit() and stuff from the server)
+            sio.on('connection', (socket) => {
+                serverSocket = socket;
+                console.log(`Server client connected : ${serverSocket.id}`);
+            });
+            clientSocket.on('connect', done);
+        });
+
+        // service.init(httpServer);
         // Reason :  to be able to use sio for tests
         // eslint-disable-next-line dot-notation
-        sio = service['sio'];
+        // sio = service['sio'];
 
         // clientSocket.open();
         //  clientSocket = ioClient(urlString);
-        service.handleSockets();
-        const addr = httpServer.address() as AddressInfo;
-        port = addr.port;
-        clientSocket = Client(`http://localhost:${port}`);
-        clientSocket.open();
+        // service.handleSockets();
+        // const addr = httpServer.address() as AddressInfo;
+        // port = addr.port;
+        // clientSocket = Client(`http://localhost:${port}`);
+        // clientSocket.open();
     });
 
     afterEach(() => {
@@ -375,8 +395,14 @@ describe('GameSession Service', () => {
     });
 
     it('createGame should return confirmation that the game was created with the id of the room', (done: Mocha.Done) => {
-        gameSessions.initSocketEvents();
+        // gameSessions.initSocketEvents();
 
+        // EXEMPLE HERE !!
+
+        serverSocket.on('createGame', (gameInfo) => {
+            // eslint-disable-next-line dot-notation
+            gameSessions['createGame'](sio, serverSocket, gameInfo);
+        });
         clientSocket.emit('createGame', GAME_PARAMETERS);
         clientSocket.on('gameCreatedConfirmation', (roomId: string) => {
             expect(roomId).to.contain((--gameSessions.idCounter).toString());

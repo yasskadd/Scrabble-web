@@ -1,6 +1,7 @@
 import { GameParameters } from '@app/classes/game-parameters';
 import { GameRoom } from '@app/classes/game-room';
 import { SocketEvents } from '@common/socket-events';
+import { Server, Socket } from 'socket.io';
 // import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 import { SocketManager } from './socket-manager.service';
@@ -28,10 +29,7 @@ export class GameSessions {
 
     initSocketEvents() {
         this.socketManager.io(SocketEvents.CreateGame, (sio, socket, gameInfo: GameParameters) => {
-            const roomId = this.setupNewRoom(gameInfo, socket.id);
-            socket.join(roomId);
-            socket.emit(SocketEvents.GameCreatedConfirmation, roomId);
-            sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
+            this.createGame(sio, socket, gameInfo);
         });
 
         this.socketManager.io(SocketEvents.PlayerJoinGameAvailable, (sio, socket, parameters: Parameters) => {
@@ -100,6 +98,12 @@ export class GameSessions {
             }
             this.removeUserFromActiveUsers(socket.id);
         });
+    }
+    private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameParameters) {
+        const roomId = this.setupNewRoom(gameInfo, socket.id);
+        socket.join(roomId);
+        socket.emit(SocketEvents.GameCreatedConfirmation, roomId);
+        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }
 
     private getNewId(): string {

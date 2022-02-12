@@ -26,7 +26,7 @@ interface GameScrabbleInformation {
 }
 
 @Service()
-export class GameSocket {
+export class GamesHandler {
     players: Map<string, Player>;
     games: Map<string, GameHolder>;
 
@@ -59,6 +59,7 @@ export class GameSocket {
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
         console.log('Skip boolean :');
+        // DO NOT REMOVE the skip when removing the console.log (it must be called to skip)
         console.log(gameHolder.game?.skip(player.name));
 
         this.changeTurn(room);

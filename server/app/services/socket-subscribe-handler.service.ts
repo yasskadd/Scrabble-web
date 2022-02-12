@@ -1,10 +1,10 @@
 import { Service } from 'typedi';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameSessions } from './game-sessions.service';
-import { GameSocket } from './games-handler.service';
+import { GamesHandler } from './games-handler.service';
 @Service()
 export class SocketSubscribeHandler {
-    constructor(private chatBoxHandlerService: ChatboxHandlerService, private gameSessions: GameSessions, private gameSockets: GameSocket) {}
+    constructor(private chatBoxHandlerService: ChatboxHandlerService, private gameSessions: GameSessions, private gameSockets: GamesHandler) {}
 
     initSocketsEvents() {
         this.gameSessions.initSocketEvents();

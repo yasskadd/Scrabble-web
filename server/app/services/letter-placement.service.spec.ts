@@ -12,7 +12,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { WordFinderService } from './word-finder.service';
 
-describe.only('Letter Placement Service', () => {
+describe('Letter Placement Service', () => {
     // Should we stub gameboard ???
 
     let player: Player;
@@ -61,7 +61,7 @@ describe.only('Letter Placement Service', () => {
             expect(placementService.placeLetter(player, commandInfo, gameboard)).to.eql([false, gameboard]);
         });
 
-        it.only('should return false and gameboard if gameboard has no placed letters and lettersCoord do not include (x: 7, y: 7)', () => {
+        it('should return false and gameboard if gameboard has no placed letters and lettersCoord do not include (x: 7, y: 7)', () => {
             validateCoordService.validateGameboardCoordinate
                 .withArgs(commandInfo, gameboard)
                 .returns([new GameboardCoordinate(0, 0, {} as Letter), new GameboardCoordinate(0, 1, {} as Letter)]);
@@ -70,7 +70,7 @@ describe.only('Letter Placement Service', () => {
             expect(placementService.placeLetter(player, commandInfo, gameboard)).to.eql([false, gameboard]);
         });
 
-        it.only('should return tr and gameboard if gameboard has no placed letters and lettersCoord do not include (x: 7, y: 7)', () => {
+        it('should return tr and gameboard if gameboard has no placed letters and lettersCoord do not include (x: 7, y: 7)', () => {
             validateCoordService.validateGameboardCoordinate
                 .withArgs(commandInfo, gameboard)
                 .returns([new GameboardCoordinate(0, 0, {} as Letter), new GameboardCoordinate(0, 1, {} as Letter)]);
