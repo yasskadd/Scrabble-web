@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-console */
 /* eslint-disable no-restricted-imports */
-import * as jsonDictionary from '@app/../assets/dictionnary.json';
-import { GameBoard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
-import { BoxMultiplier } from '@app/services/box-multiplier.service';
+import { GameBoard } from 'app/classes/gameboard.class';
 import { Container, Service } from 'typedi';
+import * as jsonDictionary from '../../assets/dictionnary.json';
+import { BoxMultiplier } from './box-multiplier.service';
 
 @Service()
 export class DictionaryValidationService {
@@ -21,23 +23,16 @@ export class DictionaryValidationService {
         this.checkWordInDictionary(enteredWords);
         const invalidWords = this.isolateInvalidWords(enteredWords);
         let roundPoints = 0;
-        if (invalidWords.length === 0) {
-            enteredWords.forEach((word: Word) => {
-                roundPoints += word.calculatePoints(this.gameboard);
-            });
-            return roundPoints;
-        } else {
-            return roundPoints;
-        }
+        if (invalidWords.length !== 0) return roundPoints;
+        enteredWords.forEach((word: Word) => {
+            roundPoints += word.calculatePoints(this.gameboard);
+        });
+        return roundPoints;
     }
 
     private checkWordInDictionary(wordList: Word[]): void {
         wordList.forEach((word) => {
-            if (!this.dictionary.has(word.stringFormat)) {
-                word.isValid = false;
-            } else {
-                word.isValid = true;
-            }
+            !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
         });
     }
 

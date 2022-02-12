@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions /
-/ eslint-disable no-restricted-imports */
 import { GameBoard } from '@app/classes/gameboard.class';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
 
