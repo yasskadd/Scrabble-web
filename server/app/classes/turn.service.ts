@@ -2,22 +2,22 @@
 // import { DateService } from '@app/services/date.service';
 import { Player } from '@app/classes/player';
 import { ReplaySubject } from 'rxjs';
-import { Service } from 'typedi';
 
 const NUMBER_PLAYER = 2;
 const SECOND = 1000;
 
-@Service()
 export class TurnService {
     activePlayer: string | undefined;
     inactivePlayer: string | undefined;
     endTurn: ReplaySubject<string | undefined>;
+    countdown: ReplaySubject<number | undefined>;
     private time: number;
     private timeOut: unknown;
 
     constructor(time: number) {
         this.time = time;
         this.endTurn = new ReplaySubject(1);
+        this.countdown = new ReplaySubject(1);
     }
 
     /**
@@ -31,6 +31,7 @@ export class TurnService {
                 clearInterval(this.timeOut as number);
                 this.end();
             }
+            this.countdown.next(tempTime);
         }, SECOND);
     }
 

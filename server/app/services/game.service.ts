@@ -1,12 +1,12 @@
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
+import { TurnService } from '@app/classes/turn.service';
 import { PlacementCommandInfo } from '@app/command-info';
 import { Letter } from '@common/letter';
 import { Container, Inject, Service } from 'typedi';
 import { BoxMultiplier } from './box-multiplier.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
-import { TurnService } from './turn.service';
 
 // Temporary place
 // interface Letter {
@@ -16,7 +16,6 @@ import { TurnService } from './turn.service';
 // }
 
 const MAX_QUANTITY = 7;
-
 @Service()
 export class GameService {
     player1: Player;
@@ -83,8 +82,6 @@ export class GameService {
      * @param playerName : The active player who will play.
      */
     play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] {
-        console.log('PLACER :' + playerName);
-        console.log(commandInfo);
         let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
             gameBoard = this.letterPlacement.placeLetter(this.player1, commandInfo, this.gameboard);

@@ -26,4 +26,8 @@ export enum SocketEvents {
     OpponentLeave = 'opponentLeave',
     RackViewUpdate = 'updateRackClient',
     Skip = 'skip',
+    UpdatePlayerInformation = 'UpdateMyPlayerInformation',
+    UpdateOpponentInformation = 'UpdateOpponentInformation',
+    CreateScrabbleGame = 'createScrabbleGame',
+    TimerClientUpdate = 'timerUpdate',
 }

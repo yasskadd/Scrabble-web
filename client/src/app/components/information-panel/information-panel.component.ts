@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { GameClientService } from '@app/services/game-client.service';
 
 @Component({
@@ -6,10 +6,6 @@ import { GameClientService } from '@app/services/game-client.service';
     templateUrl: './information-panel.component.html',
     styleUrls: ['./information-panel.component.scss'],
 })
-export class InformationPanelComponent implements OnInit {
+export class InformationPanelComponent {
     constructor(public gameClientService: GameClientService) {}
-
-    ngOnInit(): void {
-        this.gameClientService.startTimer({ minutes: 1, seconds: 0 });
-    }
 }

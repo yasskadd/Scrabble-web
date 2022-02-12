@@ -8,7 +8,7 @@
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div>x lettres disponibles sur le chevalet</div>
     <div class="time" *ngIf="this.gameClientService.playerOneTurn">
-        {{ this.gameClientService.gameTimer.minutes }}:{{ this.gameClientService.gameTimer.seconds }}
+        {{ this.gameClientService.timer }}
     </div>
     <div class="time" *ngIf="!this.gameClientService.playerOneTurn">--:--</div>
 </section>
@@ -21,7 +21,7 @@
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div>x lettres disponibles sur le chevalet</div>
     <div class="time" *ngIf="!this.gameClientService.playerOneTurn">
-        {{ this.gameClientService.gameTimer.minutes }}:{{ this.gameClientService.gameTimer.seconds }}
+        {{ this.gameClientService.timer }}
     </div>
     <div class="time" *ngIf="this.gameClientService.playerOneTurn">--:--</div>
 </section>
