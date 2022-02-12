@@ -31,14 +31,14 @@ describe('GridService', () => {
     // drawLetterPointsOnBoard  -
     // drawStar                 -
 
-    // drawRowNumbers           -
-    // drawColumnLetters        =
-    // drawLetter               -
+    // drawRowNumbers           - done
+    // drawColumnLetters        - done
+    // drawLetter               - done
 
-    // drawBasicTiles           -
-    // drawBasicTile            -
-    // drawMultipliers          -
-    // drawMultiplier           -
+    // drawBasicTiles           - more or less
+    // drawBasicTile            - more or less done
+    // drawMultipliers          - done
+    // drawMultiplier           - done
 
     // setTileColor             - done
     // drawMiddleTile           - mostly done
@@ -86,11 +86,89 @@ describe('GridService', () => {
         expect(drawMiddleTileSpy).toHaveBeenCalled();
     });
 
+    // NOT SURE ABOUT THIS
     it(' drawGrid should not call drawLetter on an empty letter tile', () => {
         const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
         gridService.drawGrid([]);
-        expect(drawLetterSpy).toHaveBeenCalledTimes(16); // WRONG RESULT. SHOULD BE 0
+        expect(drawLetterSpy).toHaveBeenCalledTimes(15);
         // expect(drawLetterSpy).toHaveBeenCalledTimes(0);
+    });
+
+    // drawRowNumbers tests
+    it(' drawRowNumbers should call drawText 15 times', () => {
+        const rowNumbersSpy = spyOn(gridService, 'drawText').and.callThrough();
+        gridService.drawRowNumbers();
+        expect(rowNumbersSpy).toHaveBeenCalledTimes(15);
+    });
+
+    // drawColumnLetters tests
+    it(' drawColumnLetters should call drawLetter 15 times', () => {
+        const columnLettersSpy = spyOn(gridService, 'drawLetter').and.callThrough();
+        gridService.drawColumnLetters();
+        expect(columnLettersSpy).toHaveBeenCalledTimes(15);
+    });
+
+    // drawLetter tests
+    it(' drawLetter should call drawText', () => {
+        const drawTextSpy = spyOn(gridService, 'drawText').and.callThrough();
+        gridService.drawLetter(POSITION_TEST, 'A');
+        expect(drawTextSpy).toHaveBeenCalled();
+    });
+
+    // drawBasicTiles tests
+    it(' drawBasicTiles should call drawBasicTile 225 times', () => {
+        const expectedCalls = 225;
+        const numberSpy = spyOn(gridService, 'drawBasicTile').and.callThrough();
+        gridService.drawBasicTiles();
+        expect(numberSpy).toHaveBeenCalledTimes(expectedCalls);
+    });
+
+    // drawBasicTile tests
+    // it(' drawBasicTile should fill the tile with BEIGE colour', () => {
+    //     gridService.gridContext = jasmine.createSpyObj('gridContext', ['fillStyle']);
+    //     const drawBasicTileSpy = spyOn(gridService, 'drawBasicTile').and.callThrough();
+    //     gridService.drawBasicTile(POSITION_TEST);
+    //     expect(drawBasicTileSpy).toHaveBeenCalled();
+    //     expect(gridService.gridContext.fillStyle).toEqual(BEIGE);
+    // });
+
+    it(' drawBasicTile should call fillTile', () => {
+        const fillTileSpy = spyOn(gridService, 'fillTile').and.callThrough();
+        gridService.drawBasicTile(POSITION_TEST);
+        expect(fillTileSpy).toHaveBeenCalled();
+    });
+
+    // drawMultipliers tests
+    it(' drawMultipliers should call drawMultiplier 60 times', () => {
+        const expectedCalls = 60;
+        const numberSpy = spyOn(gridService, 'drawMultiplier').and.callThrough();
+        gridService.drawMultipliers();
+        expect(numberSpy).toHaveBeenCalledTimes(expectedCalls);
+    });
+
+    // drawMultiplier tests
+    it(' drawMultiplier should call setTileColor', () => {
+        const setTileSpy = spyOn(gridService, 'setTileColor').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(setTileSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultiplier should call fillTile', () => {
+        const fillTileSpy = spyOn(gridService, 'fillTile').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(fillTileSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultiplier should call fillTile', () => {
+        const typeSpy = spyOn(gridService, 'drawMultiplierType').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(typeSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultiplier should call fillTile', () => {
+        const numberSpy = spyOn(gridService, 'drawMultiplierNumber').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(numberSpy).toHaveBeenCalled();
     });
 
     // setTileColor tests
@@ -188,54 +266,4 @@ describe('GridService', () => {
         expect(setFontSizeSpy).toHaveBeenCalled();
         expect(gridService.gridContext.font).toBe('23px system-ui');
     });
-
-    // drawGrid prof examples below
-
-    // it(' drawGrid should call moveTo and lineTo 4 times', () => {
-    //     const expectedCallTimes = 4;
-    //     const moveToSpy = spyOn(service.gridContext, 'moveTo').and.callThrough();
-    //     const lineToSpy = spyOn(service.gridContext, 'lineTo').and.callThrough();
-    //     service.drawGrid([]);
-    //     expect(moveToSpy).toHaveBeenCalledTimes(expectedCallTimes);
-    //     expect(lineToSpy).toHaveBeenCalledTimes(expectedCallTimes);
-    // });
-
-    // it(' drawGrid should color pixels on the canvas', () => {
-    //     let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const beforeSize = imageData.filter((x) => x !== 0).length;
-    //     service.drawGrid();
-    //     imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const afterSize = imageData.filter((x) => x !== 0).length;
-    //     expect(afterSize).toBeGreaterThan(beforeSize);
-    // });
-
-    // drawWord prof examples
-
-    // it(' drawWord should call fillText on the canvas', () => {
-    //     const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-    //     service.drawWord('test');
-    //     expect(fillTextSpy).toHaveBeenCalled();
-    // });
-
-    // it(' drawWord should not call fillText if word is empty', () => {
-    //     const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-    //     service.drawWord('');
-    //     expect(fillTextSpy).toHaveBeenCalledTimes(0);
-    // });
-
-    // it(' drawWord should call fillText as many times as letters in a word', () => {
-    //     const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-    //     const word = 'test';
-    //     service.drawWord(word);
-    //     expect(fillTextSpy).toHaveBeenCalledTimes(word.length);
-    // });
-
-    // it(' drawWord should color pixels on the canvas', () => {
-    //     let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const beforeSize = imageData.filter((x) => x !== 0).length;
-    //     service.drawWord('test');
-    //     imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const afterSize = imageData.filter((x) => x !== 0).length;
-    //     expect(afterSize).toBeGreaterThan(beforeSize);
-    // });
 });

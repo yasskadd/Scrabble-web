@@ -15,9 +15,9 @@ export const FONT_SIZE = 16;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 export const POINTS_FONT_SIZE = FONT_SIZE * 0.45;
 export const LETTER_TILE_RATIO = 0.8;
-export const BEIGE = '#D2CCB8';
+export const BEIGE = '#d2ccb8';
 export const LIGHT_BLUE = '#CEE7F7';
-export const DARK_BLUE = '#93CFF1';
+export const DARK_BLUE = '#93cff1';
 export const PINK = '#f0b8b8';
 export const RED = '#FE6E54';
 
@@ -148,10 +148,10 @@ export class GridService {
 
     drawColumnLetters() {
         const chatCode = 64;
-        for (let i = 1; i <= constants.TOTAL_ROWS; i++) {
+        for (let i = 1; i < constants.TOTAL_ROWS; i++) {
             const char = String.fromCharCode(chatCode + i);
             const position: Coordinate = { x: 0, y: i };
-            this.gridContext.fillStyle = 'black';
+            // this.gridContext.fillStyle = 'black'; // possible refactor. this is already called in drawText
             this.drawLetter(position, char);
         }
     }
@@ -166,7 +166,7 @@ export class GridService {
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
             for (let j = 1; j < constants.TOTAL_ROWS; j++) {
                 const position: Coordinate = { x: i, y: j };
-                this.gridContext.strokeStyle = '#F9F7F2';
+                this.gridContext.strokeStyle = '#f9f7f2';
                 this.drawBasicTile(position);
             }
         }
