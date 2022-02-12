@@ -9,8 +9,7 @@ export class LetterTile {
     multiplier: Multiplier;
 
     constructor(position: Coordinate, letter: string) {
-        this.coordinate.x = position.x;
-        this.coordinate.y = position.y;
+        this.coordinate = { ...position };
         this.isOccupied = false;
         this.value = letter;
         this.multiplier = { type: '', number: 1 };

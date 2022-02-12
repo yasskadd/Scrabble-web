@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import * as letterConstants from '@common/coordinate';
-import { Coordinate } from '@common/coordinate';
+import { Coordinate } from '@common/Coordinate';
+import { GridService } from './grid.service';
+import * as letterConstants from './letter-constants';
 const RACK_LETTERS = 7;
 const TILE_SIZE = 35;
 export const DEFAULT_WIDTH = 500;
@@ -10,11 +11,10 @@ export const DEFAULT_HEIGHT = 75;
     providedIn: 'root',
 })
 export class LetterTilesService {
-    gridContext: CanvasRenderingContext2D;
-
     letterSize: number;
     letterPointsSize: number;
     gridContext: CanvasRenderingContext2D;
+    gridService: GridService;
 
     constructor() {
         this.letterSize = letterConstants.FONT_SIZE;
