@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prettier/prettier */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
-import { Word } from '@app/classes/word.class';
 import { PlacementCommandInfo } from '@app/command-info';
 import { Coordinate } from '@app/coordinate';
 import { Letter } from '@common/letter';
@@ -12,6 +12,11 @@ import { GameboardCoordinateValidationService } from './coordinate-validation.se
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordFinderService } from './word-finder.service';
 
+const ERROR_TYPE = {
+    invalidPlacement: 'Invalid placement',
+    lettersNotInRack: 'Letters not in rack',
+    invalidFirstPlacement: 'First placement is invalid',
+};
 @Service()
 export class LetterPlacementService {
     constructor(
@@ -20,46 +25,32 @@ export class LetterPlacementService {
         private dictionaryService: DictionaryValidationService,
     ) {}
 
-    placeLetter(player: Player, commandInfo: PlacementCommandInfo, gameboard: GameBoard): [boolean, GameBoard] {
-        let coords = this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
-        console.log(coords);
-        // if there is no placed letters, return false
-        if (coords.length === 0) return [false, gameboard];
+    globalCommandVerification(commandInfo: PlacementCommandInfo, gameboard: GameBoard, player: Player) {
+        const letterCoords = this.getLettersCoord(commandInfo, gameboard);
+        if (!this.isPlacementValid(letterCoords)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
+        // update letters points in gameboardCoordinate
+        if (!this.areLettersInRack(letterCoords, player)) return [letterCoords, ERROR_TYPE.lettersNotInRack];
+        if (!this.verifyFirstTurn(letterCoords, gameboard)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
+        return [letterCoords, null];
+    }
 
-        // if gameboard is empty coords must include (7, 7)
+    placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: GameBoard): [boolean, GameBoard] {
+        const wordValidationScore: number = this.dictionaryService.validateWords(this.wordFinderService.findNewWords(gameboard, letterCoords));
+        if (wordValidationScore === 0) return [false, gameboard];
+        player.score += wordValidationScore;
+        if (letterCoords.length === 7) player.score += 50;
+        return [true, gameboard];
+    }
+
+    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
             const coordList: Coordinate[] = new Array();
-            coords.forEach((coord) => {
+            lettersCoords.forEach((coord) => {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
-            if (!coordList.some((element) => element.x === 7 && element.y === 7)) return [false, gameboard];
+            if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
         }
-
-        const tempPlayerRack = this.createTempRack(player);
-        const letters = this.associateLettersWithRack(coords, tempPlayerRack);
-        // Verify if the placed Letters are in the player's rack
-        if (coords.length !== letters.length) return [false, gameboard];
-
-        // update points
-        coords = this.createLetterPoints(coords, letters as Letter[]);
-
-        // Update the player's rack
-        player.rack = tempPlayerRack;
-
-        // Placer letters on gameboard
-        for (const coord of coords) {
-            gameboard.placeLetter(coord);
-        }
-
-        const wordList: Word[] = this.wordFinderService.findNewWords(gameboard, coords);
-        const validateWord: number = this.dictionaryService.validateWords(wordList);
-        // update player score
-        // If there is no validateWord
-        // If theres no valid word that means we should reverse the update player's rack made in line 47?????
-        if (validateWord === 0) return [false, gameboard];
-        player.score += validateWord;
-
-        return [true, gameboard];
+        return true;
     }
 
     private createTempRack(player: Player): Letter[] {
@@ -70,15 +61,12 @@ export class LetterPlacementService {
         return tempPlayerRack;
     }
 
-    private associateLettersWithRack(placedLettersCoord: GameboardCoordinate[], rack: Letter[]): (Letter | undefined)[] {
-        const tempRack = rack;
+    private associateLettersWithRack(placedLettersCoord: GameboardCoordinate[], player: Player): (Letter | undefined)[] {
+        const tempRack = this.createTempRack(player);
         const letters = placedLettersCoord.map((coord) => {
             const index = tempRack.findIndex((letter) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                // console.log(coord.letter.stringChar);
                 return letter.stringChar === coord.letter.stringChar;
             });
-
             if (index < 0) return;
             else {
                 const tempLetter = tempRack[index];
@@ -95,8 +83,6 @@ export class LetterPlacementService {
         // create new letterCoords
         const newLetterCoords = letterCoords.map((coord) => {
             const index = lettersFromRack.findIndex((letter) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                // console.log(coord.letter.stringChar);
                 return letter.stringChar === coord.letter.stringChar;
             });
             if (index < 0) return;
@@ -105,9 +91,24 @@ export class LetterPlacementService {
                 return coord;
             }
         });
-
         return newLetterCoords.filter((coord) => {
             return coord !== undefined;
         });
+    }
+
+    private getLettersCoord(commandInfo: PlacementCommandInfo, gameboard: GameBoard) {
+        return this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
+    }
+
+    private isPlacementValid(lettersCoords: GameboardCoordinate[]) {
+        return lettersCoords.length > 0;
+    }
+    private areLettersInRack(letterCoords: GameboardCoordinate[], player: Player) {
+        const letters = this.associateLettersWithRack(letterCoords, player);
+        if (letters.length !== letterCoords.length) return false;
+        else {
+            letterCoords = this.createLetterPoints(letterCoords, letters as Letter[]) as GameboardCoordinate[];
+            return true;
+        }
     }
 }
