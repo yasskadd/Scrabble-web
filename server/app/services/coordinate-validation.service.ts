@@ -9,7 +9,6 @@ export class GameboardCoordinateValidationService {
     validateGameboardCoordinate(commandInfo: PlacementCommandInfo, gameboard: GameBoard) {
         // Validate firstCoord
         if (!this.isFirstCoordValid(commandInfo.firstCoordinate, gameboard)) return [];
-
         const coordOfLetters = new Array();
         let stringLength: number = commandInfo.lettersPlaced.length;
         const currentCoord: GameboardCoordinate = gameboard.getCoord(commandInfo.firstCoordinate);
