@@ -101,30 +101,33 @@ export class GridService {
         );
     }
 
-    drawStar(spikes: number, outerRadius: number, innerRadius: number) {
+    drawStar() {
+        const SPIKES = 5;
+        const INNER_RADIUS = 5;
+        const OUTER_RADIUS = 10;
         let rotation = (Math.PI / 2) * 3;
         let x = GridService.middlePosWidth + GridService.halfSquareWidth;
         let y = GridService.middlePosHeight + GridService.halfSquareHeight;
-        const step = Math.PI / spikes;
+        const step = Math.PI / SPIKES;
         this.gridContext.strokeStyle = 'black';
         this.gridContext.beginPath();
         this.gridContext.moveTo(
             GridService.middlePosWidth + GridService.halfSquareWidth,
-            GridService.middlePosHeight + GridService.halfSquareHeight - outerRadius,
+            GridService.middlePosHeight + GridService.halfSquareHeight - OUTER_RADIUS,
         );
-        for (let i = 0; i < spikes; i++) {
-            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * outerRadius;
-            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * outerRadius;
+        for (let i = 0; i < SPIKES; i++) {
+            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * OUTER_RADIUS;
+            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * OUTER_RADIUS;
             this.gridContext.lineTo(x, y);
             rotation += step;
-            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * innerRadius;
-            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * innerRadius;
+            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * INNER_RADIUS;
+            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * INNER_RADIUS;
             this.gridContext.lineTo(x, y);
             rotation += step;
         }
         this.gridContext.lineTo(
             GridService.middlePosWidth + GridService.halfSquareWidth,
-            GridService.middlePosHeight + GridService.halfSquareHeight - outerRadius,
+            GridService.middlePosHeight + GridService.halfSquareHeight - OUTER_RADIUS,
         );
         this.gridContext.closePath();
         this.gridContext.lineWidth = 5;
@@ -215,7 +218,7 @@ export class GridService {
         this.gridContext.fillStyle = '#f0b8b8';
         this.fillTile(middlePosition);
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        this.drawStar(5, 10, 5);
+        this.drawStar();
     }
 
     fillTile(position: Coordinate) {

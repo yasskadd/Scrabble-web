@@ -10,6 +10,22 @@ describe('GridService', () => {
     const CANVAS_WIDTH = 600;
     const CANVAS_HEIGHT = 600;
     const POSITION_TEST = { x: 0, y: 1 };
+    // const gameboardTest = [
+    //     {
+    //         coordinate: { x: 3, y: 8 },
+    //         isOccupied: false,
+    //         value: 'A',
+    //         points: 0,
+    //         multiplier: 1,
+    //     },
+    //     {
+    //         coordinate: { x: 3, y: 8 },
+    //         isOccupied: true,
+    //         value: 'A',
+    //         points: 0,
+    //         multiplier: 1,
+    //     },
+    // ];
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
@@ -21,8 +37,6 @@ describe('GridService', () => {
     it('should be created', () => {
         expect(gridService).toBeTruthy();
     });
-
-    // TODO : grid tests need to be done !!
 
     // drawGrid                 - done
     // drawLetterTile           -
@@ -80,6 +94,12 @@ describe('GridService', () => {
         expect(drawMultipliersSpy).toHaveBeenCalled();
     });
 
+    // it(' drawGrid should call drawLetter when gameboard has occupied coordinate', () => {
+    //     const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
+    //     gridService.drawGrid(gameboardTest);
+    //     expect(drawLetterSpy).toHaveBeenCalled();
+    // });
+
     it(' drawGrid should call drawMiddleTile', () => {
         const drawMiddleTileSpy = spyOn(gridService, 'drawMiddleTile').and.callThrough();
         gridService.drawGrid([]);
@@ -92,6 +112,18 @@ describe('GridService', () => {
         gridService.drawGrid([]);
         expect(drawLetterSpy).toHaveBeenCalledTimes(15);
         // expect(drawLetterSpy).toHaveBeenCalledTimes(0);
+    });
+
+    // drawLetterTile
+
+    // drawLetterPoints
+    // drawLetterTileOnBoard
+    // drawLetterPointsOnBoard 
+    // drawStar
+    it(' drawStar should call fill', () => {
+        const ctxfillSpy = spyOn(gridService.gridContext, 'fill').and.callThrough();
+        gridService.drawStar();
+        expect(ctxfillSpy).toHaveBeenCalled();
     });
 
     // drawRowNumbers tests

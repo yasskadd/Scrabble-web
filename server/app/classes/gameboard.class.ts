@@ -1,23 +1,13 @@
 import * as constants from '@common/constants';
 import { Coordinate } from '@common/Coordinate';
 import { LetterTile } from '@common/LetterTile.class';
-import { BoxMultiplier } from 'app/services/box-multiplier.service';
+import { BoxMultiplierService } from 'app/services/box-multiplier.service';
 export class Gameboard {
     gameboard: LetterTile[] = [];
 
-    constructor(private boxMultiplierService: BoxMultiplier) {
+    constructor(private boxMultiplierService: BoxMultiplierService) {
         this.createLetterTiles();
         this.boxMultiplierService.applyBoxMultipliers(this);
-    }
-
-    private createLetterTiles(): void {
-        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
-            for (let j = 1; j < constants.TOTAL_ROWS; j++) {
-                const position: Coordinate = { x: i, y: j };
-                const coord: LetterTile = new LetterTile(position, '');
-                this.gameboard.push(coord);
-            }
-        }
     }
 
     placeLetter(position: Coordinate, letter: string) {
@@ -39,5 +29,15 @@ export class Gameboard {
         return this.gameboard.filter((letterTile) => {
             return letterTile.coordinate.x === coordinate.x && letterTile.coordinate.y === coordinate.y;
         })[0];
+    }
+
+    private createLetterTiles(): void {
+        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
+            for (let j = 1; j < constants.TOTAL_ROWS; j++) {
+                const position: Coordinate = { x: i, y: j };
+                const coord: LetterTile = new LetterTile(position, '');
+                this.gameboard.push(coord);
+            }
+        }
     }
 }
