@@ -1,13 +1,13 @@
+import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
-import { BoxMultiplier } from '@app/services/box-multiplier.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
 import { Container } from 'typedi';
-import { GameboardCoordinate } from './gameboard-coordinate.class';
+import { BoxMultiplier } from './box-multiplier.service';
+import { LetterPlacementService } from './letter-placement.service';
+import { LetterReserveService } from './letter-reserve.service';
 
 // Temporary place
 // interface Letter {
@@ -22,6 +22,7 @@ export class Game {
     player1: Player;
     player2: Player;
     gameboard: GameBoard;
+    letterPlacement: LetterPlacementService;
 
     constructor(
         player1: Player,
@@ -76,7 +77,7 @@ export class Game {
      *
      * @param playerName : The active player who will play.
      */
-    play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] {
+    play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] | string {
         let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
             // validate Command
@@ -84,7 +85,7 @@ export class Game {
             const letterCoords = validationInfo[0];
             const isValid = validationInfo[1];
             if (isValid !== null) {
-                // Emit invalid command
+                return isValid as string;
             }
             gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
             this.turn.end();
@@ -92,12 +93,20 @@ export class Game {
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
             const letterCoords = validationInfo[0];
+            const isValid = validationInfo[1];
+            if (isValid !== null) {
+                return isValid as string;
+            }
             gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
             this.turn.end();
-            return gameBoard;
+            return gameBoard as [boolean, GameBoard];
         }
+<<<<<<< HEAD:server/app/services/game.service.ts
+        return gameBoard as [boolean, GameBoard];
+=======
 
         return gameBoard;
+>>>>>>> 47f4eb7eebc17867df029bafa946b88785750eaa:server/app/classes/game.ts
     }
 
     /**

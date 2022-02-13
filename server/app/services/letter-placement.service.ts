@@ -27,8 +27,7 @@ export class LetterPlacementService {
 
     globalCommandVerification(commandInfo: PlacementCommandInfo, gameboard: GameBoard, player: Player) {
         const letterCoords = this.getLettersCoord(commandInfo, gameboard);
-        console.log(letterCoords);
-        if (!this.isPlacementValid(letterCoords)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
+        if (!this.isPlacementValid(letterCoords)) return [letterCoords, ERROR_TYPE.invalidPlacement];
         // it updates letters points in gameboardCoordinate
         if (!this.areLettersInRack(letterCoords, player)) return [letterCoords, ERROR_TYPE.lettersNotInRack];
         if (!this.verifyFirstTurn(letterCoords, gameboard)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
@@ -40,6 +39,7 @@ export class LetterPlacementService {
         if (wordValidationScore === 0) return [false, gameboard];
         player.score += wordValidationScore;
         if (letterCoords.length === 7) player.score += 50;
+        this.updatePlayerRack(letterCoords, player);
         return [true, gameboard];
     }
 
@@ -112,5 +112,15 @@ export class LetterPlacementService {
             if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
         }
         return true;
+    }
+
+    private updatePlayerRack(letterCoords: GameboardCoordinate[], player: Player) {
+        letterCoords.forEach((letterCoord) => {
+            const letter: Letter = letterCoord.letter;
+            if (player.rack.includes(letter)) {
+                const index = player.rack.indexOf(letter);
+                player.rack.splice(index, 1);
+            }
+        });
     }
 }
