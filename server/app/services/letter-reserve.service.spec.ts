@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import * as letterJSON from '../../assets/letter-reserve.json';
 import { LetterReserveService } from './letter-reserve.service';
 
-describe.only('LetterReserveService', () => {
+describe('LetterReserveService', () => {
     let service: LetterReserveService;
     let sampleRack: Letter[];
     let emptyRack: Letter[];

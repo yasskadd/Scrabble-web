@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { Letter } from '@common/letter';
 
 const TILE_SIZE = 35;
-export const DEFAULT_WIDTH = 300;
+export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 75;
 const X_DIFFERENCE = 100;
+const CONTAINER_WIDTH = 300;
 @Injectable({
     providedIn: 'root',
 })
@@ -20,7 +21,7 @@ export class LetterTilesService {
 
     drawRack(letters: Letter[]) {
         this.gridContext.fillStyle = '#f8ebd9';
-        this.gridContext.fillRect(X_DIFFERENCE, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        this.gridContext.fillRect(X_DIFFERENCE, 0, CONTAINER_WIDTH, DEFAULT_HEIGHT);
         this.gridContext.fillStyle = 'black';
         letters.forEach((letter, i) => {
             this.drawLetterTile(DEFAULT_WIDTH * 0.25 + TILE_SIZE * i, 1, letter.stringChar);

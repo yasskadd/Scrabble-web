@@ -12,7 +12,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { WordFinderService } from './word-finder.service';
 
-describe.only('Letter Placement Service', () => {
+describe('Letter Placement Service', () => {
     // Should we stub gameboard ???
     let player: Player;
     let commandInfo: PlacementCommandInfo;
@@ -184,7 +184,7 @@ describe.only('Letter Placement Service', () => {
     });
 
     context('globalCommandVerification() tests', () => {
-        it.only('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
+        it('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isPlacementStub = Sinon.stub(placementService, 'isPlacementValid' as any);
             isPlacementStub.withArgs(commandInfo, gameboard).returns(false);
