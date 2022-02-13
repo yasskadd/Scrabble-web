@@ -4,7 +4,8 @@ import { Turn } from '@app/classes/turn';
 // import { Coordinate } from '@common/coordinate';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
-import { Service } from 'typedi';
+import { Container, Service } from 'typedi';
+import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
@@ -134,13 +135,7 @@ export class GamesHandler {
     }
 
     private createNewGame(gameParam: GameHolder) {
-        return new Game(
-            gameParam.players[0],
-            gameParam.players[1],
-            new Turn(60),
-            new LetterReserveService(),
-            // Container.get(LetterPlacementService),
-        );
+        return new Game(gameParam.players[0], gameParam.players[1], new Turn(60), new LetterReserveService(), Container.get(LetterPlacementService));
     }
 
     private updatePlayerInfo(socket: Socket, roomId: string, game: Game) {

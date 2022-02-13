@@ -244,6 +244,7 @@ describe('GameConfigurationService', () => {
             roomId: '1',
             isCreator: true,
             statusGame: 'Adversaire Trouvé',
+            timer: 60,
         };
         service.roomInformation = roomInformationUpdated;
         expect(service.roomInformation.playerName).toEqual(['Vincent', 'Marcel']);
