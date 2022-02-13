@@ -118,7 +118,7 @@ describe('GridService', () => {
 
     // drawLetterPoints
     // drawLetterTileOnBoard
-    // drawLetterPointsOnBoard 
+    // drawLetterPointsOnBoard
     // drawStar
     it(' drawStar should call fill', () => {
         const ctxfillSpy = spyOn(gridService.gridContext, 'fill').and.callThrough();

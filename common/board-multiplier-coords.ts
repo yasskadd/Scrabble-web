@@ -1,4 +1,4 @@
-import { Coordinate } from './Coordinate';
+import { Coordinate } from './coordinate';
 export const letterMultipliersByTwo: Coordinate[] = [
     { x: 4, y: 1 },
     { x: 12, y: 1 },

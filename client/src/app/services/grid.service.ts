@@ -2,8 +2,8 @@
 import { Injectable } from '@angular/core';
 import * as multipliers from '@common/board-multiplier-coords';
 import * as constants from '@common/constants';
-import { Coordinate } from '@common/Coordinate';
-import { LetterTile } from '@common/LetterTile.class';
+import { Coordinate } from '@common/coordinate';
+import { LetterTile } from '@common/letter-tile.class';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 600;
@@ -33,11 +33,15 @@ export class GridService {
     static halfSquareHeight = GridService.squareHeight / 2;
     static middlePosWidth = GridService.squareWidth * 8;
     static middlePosHeight = GridService.squareHeight * 8;
-
     letterSize: number;
     letterPointsSize: number;
-    gridContext: CanvasRenderingContext2D;
 
+    // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+    // private static wordMultiplyThree = [1, 8, 15];
+
+    size: number;
+    weightSize: number;
+    gridContext: CanvasRenderingContext2D;
     constructor() {
         this.letterSize = FONT_SIZE;
         this.letterPointsSize = POINTS_FONT_SIZE;

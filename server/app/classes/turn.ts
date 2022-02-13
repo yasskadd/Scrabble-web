@@ -1,20 +1,24 @@
 // import { Message } from '@app/message';
 // import { DateService } from '@app/services/date.service';
 import { Player } from '@app/classes/player';
-import { Service } from 'typedi';
+import { ReplaySubject } from 'rxjs';
 
 const NUMBER_PLAYER = 2;
 const SECOND = 1000;
 
-@Service()
-export class TurnService {
+export class Turn {
     activePlayer: string | undefined;
     inactivePlayer: string | undefined;
+    endTurn: ReplaySubject<string | undefined>;
+    countdown: ReplaySubject<number | undefined>;
+    private skipCounter: number = 0;
     private time: number;
     private timeOut: unknown;
 
     constructor(time: number) {
         this.time = time;
+        this.endTurn = new ReplaySubject(1);
+        this.countdown = new ReplaySubject(1);
     }
 
     /**
@@ -28,6 +32,7 @@ export class TurnService {
                 clearInterval(this.timeOut as number);
                 this.end();
             }
+            this.countdown.next(tempTime);
         }, SECOND);
     }
 
@@ -58,7 +63,9 @@ export class TurnService {
             this.start();
         } else {
             this.activePlayer = undefined;
+            this.inactivePlayer = undefined;
         }
+        this.endTurn.next(this.activePlayer);
     }
 
     /**
@@ -68,6 +75,20 @@ export class TurnService {
      * @returns : Return a boolean. If it returns true, the player passed as parameter is the active player.
      */
     validating(playerName: string): boolean {
-        return this.activePlayer === playerName ? true : false;
+        return String(this.activePlayer) === playerName;
+    }
+
+    skipTurn(): void {
+        this.incrementSkipCounter();
+        if (this.skipCounter === 6) this.end(true);
+        this.end();
+    }
+
+    resetSkipCounter(): void {
+        this.skipCounter = 0;
+    }
+
+    private incrementSkipCounter(): void {
+        this.skipCounter++;
     }
 }

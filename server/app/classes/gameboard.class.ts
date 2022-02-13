@@ -1,7 +1,7 @@
+import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import * as constants from '@common/constants';
-import { Coordinate } from '@common/Coordinate';
-import { LetterTile } from '@common/LetterTile.class';
-import { BoxMultiplierService } from 'app/services/box-multiplier.service';
+import { Coordinate } from '@common/coordinate';
+import { LetterTile } from '@common/letter-tile.class';
 export class Gameboard {
     gameboard: LetterTile[] = [];
 

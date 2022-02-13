@@ -2,11 +2,11 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
 import { expect } from 'chai';
 import * as fs from 'fs';
+import * as Sinon from 'sinon';
 import { Container } from 'typedi';
 import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { ScoreService } from './score.service';
-import Sinon = require('sinon');
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/letter-reserve.json', 'utf8'));
 
@@ -43,6 +43,7 @@ describe.only('Dictionary Validation Service', () => {
         validWord1.isValid = false;
         validWord2.isValid = false;
         const validWords: Word[] = [validWord1, validWord2];
+        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](validWords);
         expect(validWord1.isValid && validWord2.isValid).to.be.true;
     });
@@ -51,18 +52,22 @@ describe.only('Dictionary Validation Service', () => {
         invalidWord1.isValid = true;
         invalidWord2.isValid = true;
         const invalidWords: Word[] = [invalidWord1, invalidWord2];
+        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](invalidWords);
         expect(invalidWord1.isValid && invalidWord2).to.be.false;
     });
 
     it('should return an array if isolateInvalidWords() is called', () => {
         const wordList: Word[] = new Array();
+        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)).to.be.an('array');
     });
 
     it('isolateInvalidWords() should filter list of words and return list of invalid words', () => {
         const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
+        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
+        // eslint-disable-next-line dot-notation
         const invalidWords: Word[] = dictionaryValidationService['isolateInvalidWords'](wordList);
         expect(invalidWords).to.have.lengthOf(2);
         expect(invalidWords).to.include.members([invalidWord1, invalidWord2]);
@@ -70,15 +75,17 @@ describe.only('Dictionary Validation Service', () => {
 
     it('isolateInvalidWords should return empty list of words if words exist', () => {
         const wordList: Word[] = [validWord1, validWord2];
+        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
+        // eslint-disable-next-line dot-notation
         const invalidWords: Word[] = dictionaryValidationService['isolateInvalidWords'](wordList);
         expect(invalidWords).to.have.lengthOf(0);
         expect(invalidWords).to.eql([]);
     });
 
     it('should call isolateInvalidWords and checkWordInDictionary when validateWord is called', () => {
-        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as any);
-        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as any);
+        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as unknown);
+        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as unknown);
         dictionaryValidationService.validateWord(validWord1, gameboard);
         expect(spyIsolate.calledOnce && spyCheckWord.calledOnce).to.be.true;
     });

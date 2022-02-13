@@ -24,7 +24,7 @@ export class DictionaryValidationService {
     }
 
     validateWord(word: Word, gameboard: Gameboard): number {
-        let enteredWords = this.wordFinderService.findAjacentWords(word, gameboard);
+        const enteredWords = this.wordFinderService.findAjacentWords(word, gameboard);
         this.checkWordInDictionary(enteredWords);
         const invalidWords = this.isolateInvalidWords(enteredWords);
         let turnPoints = 0;
@@ -34,8 +34,8 @@ export class DictionaryValidationService {
             return turnPoints;
         }
 
-        enteredWords.forEach((word: Word) => {
-            turnPoints += this.scoreService.calculateWordPoints(word, gameboard);
+        enteredWords.forEach((wordEntered: Word) => {
+            turnPoints += this.scoreService.calculateWordPoints(wordEntered, gameboard);
         });
 
         return turnPoints;

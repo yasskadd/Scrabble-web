@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-restricted-imports */
-/* eslint-disable prettier/prettier */
-import { Word } from '@app/classes/Word.class';
-import { Coordinate } from '@common/Coordinate';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Word } from '@app/classes/word.class';
+import { Coordinate } from '@common/coordinate';
 import { Service } from 'typedi';
-import { Gameboard } from '../classes/Gameboard.class';
 
 @Service()
 export class WordFinderService {

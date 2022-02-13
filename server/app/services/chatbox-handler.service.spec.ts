@@ -6,13 +6,11 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 // import { Server, Socket } from 'socket.io';
 // import { io as Client } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
-import { GameSessions } from './game-sessions.service';
 import { SocketManager } from './socket-manager.service';
 
 describe('Chatbox handler service tests', () => {
     let socketManagerStub: SinonStubbedInstance<SocketManager>;
     let chatboxHandlerService: ChatboxHandlerService;
-    let gameSessionsHandlerService: SinonStubbedInstance<GameSessions>;
     let httpServer: HttpServer;
     // let io: Server;
     // let clientSocket: Socket;
@@ -22,10 +20,7 @@ describe('Chatbox handler service tests', () => {
     beforeEach(() => {
         socketManagerStub = createStubInstance(SocketManager);
         socketManagerStub.on.resolves();
-        chatboxHandlerService = new ChatboxHandlerService(
-            socketManagerStub as unknown as SocketManager,
-            gameSessionsHandlerService as unknown as GameSessions,
-        );
+        chatboxHandlerService = new ChatboxHandlerService(socketManagerStub as unknown as SocketManager);
 
         httpServer = createServer();
         httpServer.listen();

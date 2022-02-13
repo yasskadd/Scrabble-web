@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import { Coordinate } from '@common/Coordinate';
+import { Coordinate } from '@common/coordinate';
 import { Gameboard } from './gameboard.class';
 
 export class Word {
@@ -20,6 +20,9 @@ export class Word {
         const firstCoord = this.findFirstCoord(coord, gameboard);
         this.findWordCoords(firstCoord, stringFormat, gameboard);
     }
+    isWithinBoardLimits(coord: Coordinate): boolean {
+        return coord.x >= 1 && coord.x <= 16 && coord.y >= 1 && coord.y <= 16;
+    }
 
     private setIsHorizontal(firstCoord: Coordinate, gameboard: Gameboard) {
         if (
@@ -37,7 +40,6 @@ export class Word {
 
     private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {
         if (!this.isHorizontal) {
-            console.log(coord);
             if (this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 }) && gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied) {
                 while (this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 }) && gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied)
                     coord.y--;
@@ -45,7 +47,6 @@ export class Word {
             }
             return coord;
         } else {
-            console.log(coord);
             if (this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y }) && gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied) {
                 while (this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y }) && gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied)
                     coord.x--;
@@ -70,11 +71,8 @@ export class Word {
                 this.wordCoords.push(position);
                 this.stringFormat += gameboard.getLetterTile(position).value;
             }
+            // TODO: fix this
             this.isHorizontal ? position.x++ : position.y++;
         }
-    }
-
-    isWithinBoardLimits(coord: Coordinate): boolean {
-        return coord.x >= 1 && coord.x <= 16 && coord.y >= 1 && coord.y <= 16;
     }
 }

@@ -1,9 +1,9 @@
-import { Gameboard } from '@app/classes/Gameboard.class';
-import { Word } from '@app/classes/Word.class';
-import { Coordinate } from '@common/Coordinate';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Word } from '@app/classes/word.class';
+import { BoxMultiplierService } from '@app/services/box-multiplier.service';
+import { Coordinate } from '@common/coordinate';
 import { expect } from 'chai';
 import { Container } from 'typedi';
-import { BoxMultiplierService } from '../services/box-multiplier.service';
 
 // TODO : the rest of the tests
 describe('Word', () => {

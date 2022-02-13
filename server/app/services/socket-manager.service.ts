@@ -42,6 +42,10 @@ export class SocketManager {
         }
     }
 
+    emitRoom(room: string, event: string, ...args: unknown[]) {
+        this.sio.to(room).emit(event, ...args);
+    }
+
     handleSockets(): void {
         this.sio.on('connection', (socket) => {
             // console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
