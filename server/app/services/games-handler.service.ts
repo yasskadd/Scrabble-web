@@ -27,8 +27,8 @@ interface GameScrabbleInformation {
 
 @Service()
 export class GamesHandler {
-    players: Map<string, Player>;
-    games: Map<string, GameHolder>;
+    private players: Map<string, Player>;
+    private games: Map<string, GameHolder>;
 
     constructor(private socketManager: SocketManager) {
         this.players = new Map();

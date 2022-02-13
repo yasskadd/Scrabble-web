@@ -106,7 +106,12 @@ export class Game {
             this.turn.end();
             return gameBoard as [boolean, GameBoard];
         }
+<<<<<<< HEAD
         return gameBoard as [boolean, GameBoard];
+=======
+
+        return gameBoard;
+>>>>>>> 1860493491461f7c9521e07d601138defeb4b18e
     }
 
     /**
