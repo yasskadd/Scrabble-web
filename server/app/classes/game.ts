@@ -4,7 +4,7 @@ import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
 import { Letter } from '@common/letter';
-import { Container, Service } from 'typedi';
+import { Container } from 'typedi';
 import { BoxMultiplier } from './box-multiplier.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
@@ -17,8 +17,8 @@ import { LetterReserveService } from './letter-reserve.service';
 // }
 
 const MAX_QUANTITY = 7;
-@Service()
-export class GameService {
+
+export class Game {
     player1: Player;
     player2: Player;
     gameboard: GameBoard;
@@ -28,7 +28,8 @@ export class GameService {
         player1: Player,
         player2: Player,
         public turn: Turn,
-        public letterReserve: LetterReserveService, // @Inject() private letterPlacement: LetterPlacementService,
+        public letterReserve: LetterReserveService,
+        private letterPlacement: LetterPlacementService,
     ) {
         this.player1 = player1;
         this.player2 = player2;
@@ -100,7 +101,12 @@ export class GameService {
             this.turn.end();
             return gameBoard as [boolean, GameBoard];
         }
+<<<<<<< HEAD:server/app/services/game.service.ts
         return gameBoard as [boolean, GameBoard];
+=======
+
+        return gameBoard;
+>>>>>>> 47f4eb7eebc17867df029bafa946b88785750eaa:server/app/classes/game.ts
     }
 
     /**

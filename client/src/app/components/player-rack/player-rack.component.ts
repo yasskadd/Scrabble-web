@@ -18,7 +18,6 @@ export class PlayerRackComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.letterTilesService.gridContext = this.rackCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.letterTilesService.drawRack();
         this.rackCanvas.nativeElement.focus();
     }
 

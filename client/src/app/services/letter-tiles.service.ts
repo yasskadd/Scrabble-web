@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-const RACK_LETTERS = 7;
-const TILE_SIZE = 35;
-export const DEFAULT_WIDTH = 500;
-export const DEFAULT_HEIGHT = 75;
+import { Letter } from '@common/letter';
 
+const TILE_SIZE = 35;
+export const DEFAULT_WIDTH = 300;
+export const DEFAULT_HEIGHT = 75;
+const X_DIFFERENCE = 100;
 @Injectable({
     providedIn: 'root',
 })
@@ -17,11 +18,14 @@ export class LetterTilesService {
         this.maxSize = 20;
     }
 
-    drawRack() {
-        for (let i = 0; i < RACK_LETTERS; i++) {
-            this.drawLetterTile(DEFAULT_WIDTH * 0.25 + TILE_SIZE * i, 1, 'A');
-            this.drawLetterWeight(TILE_SIZE * i + DEFAULT_WIDTH * 0.25, 0, '1');
-        }
+    drawRack(letters: Letter[]) {
+        this.gridContext.fillStyle = '#f8ebd9';
+        this.gridContext.fillRect(X_DIFFERENCE, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        this.gridContext.fillStyle = 'black';
+        letters.forEach((letter, i) => {
+            this.drawLetterTile(DEFAULT_WIDTH * 0.25 + TILE_SIZE * i, 1, letter.stringChar);
+            this.drawLetterWeight(TILE_SIZE * i + DEFAULT_WIDTH * 0.25, 0, String(letter.points));
+        });
     }
 
     // this function would be similar to drawBasicTile from GridService.
@@ -45,8 +49,4 @@ export class LetterTilesService {
         this.gridContext.font = 20 * 0.45 + 'px system-ui';
         this.gridContext.fillText(string, x + TILE_SIZE / 2 + plusX, y + halfSize + TILE_SIZE / 2, 20);
     }
-
-    // drawLetterWeight(letter: Letter) {
-    //   this.gridContext.
-    // }
 }
