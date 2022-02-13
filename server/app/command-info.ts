@@ -1,7 +1,7 @@
-import { LetterTile } from '@common/letter-tile.class';
+import { Coordinate } from '@common/coordinate';
 
-export interface PlacementCommandInfo {
-    firstCoordinate: LetterTile;
-    direction: string;
+export interface CommandInfo {
+    firstCoordinate: Coordinate;
+    isHorizontal: boolean;
     lettersPlaced: string[];
 }

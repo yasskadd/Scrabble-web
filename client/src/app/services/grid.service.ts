@@ -55,7 +55,7 @@ export class GridService {
         this.drawMultipliers();
         this.drawMiddleTile();
         gameboard.forEach((letter) => {
-            if (letter.isOccupied) this.drawLetter(letter.coordinate, letter.value);
+            if (letter.isOccupied) this.drawLetter(letter.coordinate, letter.getLetter());
         });
     }
 
@@ -163,7 +163,7 @@ export class GridService {
         }
     }
 
-    drawLetter(position: Coordinate, char: string) {
+    drawLetter(position: Coordinate, char: string | undefined) {
         this.setFontSize(this.letterSize);
         this.gridContext.textBaseline = 'middle';
         this.drawText(position, char);
@@ -259,9 +259,10 @@ export class GridService {
         this.drawText(position, type);
     }
 
-    drawText(position: Coordinate, content: string) {
+    drawText(position: Coordinate, content: string | undefined) {
         this.gridContext.fillStyle = 'black';
         this.gridContext.textAlign = 'center';
+        if (content === undefined) content = '';
         this.gridContext.fillText(
             content,
             GridService.squareWidth * position.x + GridService.halfSquareWidth,

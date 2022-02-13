@@ -8,7 +8,7 @@ import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { ScoreService } from './score.service';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/letter-reserve.json', 'utf8'));
+const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
 describe.only('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
@@ -84,8 +84,8 @@ describe.only('Dictionary Validation Service', () => {
     });
 
     it('should call isolateInvalidWords and checkWordInDictionary when validateWord is called', () => {
-        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as unknown);
-        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as unknown);
+        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
+        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
         dictionaryValidationService.validateWord(validWord1, gameboard);
         expect(spyIsolate.calledOnce && spyCheckWord.calledOnce).to.be.true;
     });

@@ -2,9 +2,9 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prettier/prettier */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
+import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
-import { PlacementCommandInfo } from '@app/command-info';
+import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@app/coordinate';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';
@@ -25,8 +25,9 @@ export class LetterPlacementService {
         private dictionaryService: DictionaryValidationService,
     ) {}
 
-    globalCommandVerification(commandInfo: PlacementCommandInfo, gameboard: GameBoard, player: Player) {
+    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player) {
         const letterCoords = this.getLettersCoord(commandInfo, gameboard);
+        const word = new Word(commandInfo, gameboard);
         if (!this.isPlacementValid(letterCoords)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
         // update letters points in gameboardCoordinate
         if (!this.areLettersInRack(letterCoords, player)) return [letterCoords, ERROR_TYPE.lettersNotInRack];
@@ -34,7 +35,7 @@ export class LetterPlacementService {
         return [letterCoords, null];
     }
 
-    placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: GameBoard): [boolean, GameBoard] {
+    placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: Gameboard): [boolean, Gameboard] {
         const wordValidationScore: number = this.dictionaryService.validateWords(this.wordFinderService.findNewWords(gameboard, letterCoords));
         if (wordValidationScore === 0) return [false, gameboard];
         player.score += wordValidationScore;
@@ -42,7 +43,7 @@ export class LetterPlacementService {
         return [true, gameboard];
     }
 
-    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
+    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: Gameboard) {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
             const coordList: Coordinate[] = new Array();
             lettersCoords.forEach((coord) => {
@@ -96,7 +97,7 @@ export class LetterPlacementService {
         });
     }
 
-    private getLettersCoord(commandInfo: PlacementCommandInfo, gameboard: GameBoard) {
+    private getLettersCoord(commandInfo: CommandInfo, gameboard: Gameboard) {
         return this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
     }
 

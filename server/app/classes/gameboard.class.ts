@@ -11,8 +11,7 @@ export class Gameboard {
 
     placeLetter(position: Coordinate, letter: string) {
         // TODO : remove letter to chevalet
-        this.getLetterTile(position).value = letter;
-        this.getLetterTile(position).setPoints();
+        this.getLetterTile(position).setLetter(letter);
         this.getLetterTile(position).isOccupied = true;
         return true;
     }
@@ -20,7 +19,7 @@ export class Gameboard {
     removeLetter(letterCoord: Coordinate) {
         const gameboardCoord = this.getLetterTile(letterCoord);
         // TODO : return letter to chevalet
-        gameboardCoord.value = '';
+        gameboardCoord.setLetter(undefined);
         gameboardCoord.isOccupied = false;
     }
 
@@ -34,7 +33,7 @@ export class Gameboard {
         for (let i = 1; i < 15; i++) {
             for (let j = 1; j < 15; j++) {
                 const position: Coordinate = { x: i, y: j };
-                const coord: LetterTile = new LetterTile(position, '');
+                const coord: LetterTile = new LetterTile(position);
                 this.gameboard.push(coord);
             }
         }

@@ -1,6 +1,6 @@
 // import { Letter } from '../../app/letter';
-import * as letterJSON from '@app/../assets/letter-reserve.json';
 import { Letter } from '@common/letter';
+import * as letterTypes from '@common/letter-reserve';
 import { Service } from 'typedi';
 
 // Temporary place
@@ -24,11 +24,11 @@ export class LetterReserveService {
      */
     getDefaultLetterReserve(): Letter[] {
         // const defaultLetterReserve: Letter[] = Object.assign({}, letterJSON).letters;
-        const defaultLetterReserve = letterJSON.letters.map((letter) => {
-            return letter;
+        const defaultLetterReserveCopy = letterTypes.LETTERS.map((letter) => {
+            return { ...letter };
         });
 
-        return defaultLetterReserve;
+        return defaultLetterReserveCopy;
     }
 
     /**
@@ -38,7 +38,7 @@ export class LetterReserveService {
      */
     updateReserve(letter: Letter): void {
         this.lettersReserve.forEach((value) => {
-            if (value.stringChar === letter.stringChar) {
+            if (value.value === letter.value) {
                 value.quantity--;
             }
         });
@@ -69,7 +69,7 @@ export class LetterReserveService {
      */
     removeLettersFromRack(toBeRemoved: string[], rack: Letter[]): [Letter[], Letter[]] {
         let tempRack = rack.map((letter) => {
-            return letter.stringChar;
+            return letter.value;
         });
 
         const tempToBeRemoved: (string | Letter)[] = [];
@@ -88,14 +88,14 @@ export class LetterReserveService {
 
         for (const letter of tempRack) {
             const index = rack.findIndex((element) => {
-                return element.stringChar === letter;
+                return element.value === letter;
             });
             updatedRack.push(rack[index]);
         }
 
         tempToBeRemoved.map((removedLetter) => {
             const index = rack.findIndex((element) => {
-                return element.stringChar === removedLetter;
+                return element.value === removedLetter;
             });
 
             return rack[index];
@@ -123,9 +123,9 @@ export class LetterReserveService {
             // Update de letter reserve
             const updatedLetterReserve = this.lettersReserve;
             for (const letter of this.removeLettersFromRack(toExchange, rack)[1]) {
-                const index = this.lettersReserve.findIndex((element) => element.stringChar === letter.stringChar);
+                const index = this.lettersReserve.findIndex((element) => element.value === letter.value);
                 if (index < 0) {
-                    const newLetter = { stringChar: letter.stringChar, quantity: 1, points: letter.points };
+                    const newLetter = { value: letter.value, quantity: 1, points: letter.points };
                     updatedLetterReserve.push(newLetter);
                 } else {
                     updatedLetterReserve[index].quantity++;

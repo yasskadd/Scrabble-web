@@ -1,162 +1,162 @@
 export const LETTERS = [
     {
-        stringChar: 'a',
+        value: 'a',
         quantity: 9,
         points: 1,
     },
 
     {
-        stringChar: 'b',
+        value: 'b',
         quantity: 2,
         points: 3,
     },
 
     {
-        stringChar: 'c',
+        value: 'c',
         quantity: 2,
         points: 3,
     },
 
     {
-        stringChar: 'd',
+        value: 'd',
         quantity: 3,
         points: 2,
     },
 
     {
-        stringChar: 'e',
+        value: 'e',
         quantity: 15,
         points: 1,
     },
 
     {
-        stringChar: 'f',
+        value: 'f',
         quantity: 2,
         points: 4,
     },
 
     {
-        stringChar: 'g',
+        value: 'g',
         quantity: 2,
         points: 2,
     },
 
     {
-        stringChar: 'h',
+        value: 'h',
         quantity: 2,
         points: 4,
     },
 
     {
-        stringChar: 'i',
+        value: 'i',
         quantity: 8,
         points: 1,
     },
 
     {
-        stringChar: 'j',
+        value: 'j',
         quantity: 1,
         points: 8,
     },
 
     {
-        stringChar: 'k',
+        value: 'k',
         quantity: 1,
         points: 10,
     },
 
     {
-        stringChar: 'l',
+        value: 'l',
         quantity: 5,
         points: 1,
     },
 
     {
-        stringChar: 'm',
+        value: 'm',
         quantity: 3,
         points: 2,
     },
 
     {
-        stringChar: 'n',
+        value: 'n',
         quantity: 6,
         points: 1,
     },
 
     {
-        stringChar: 'o',
+        value: 'o',
         quantity: 6,
         points: 1,
     },
 
     {
-        stringChar: 'p',
+        value: 'p',
         quantity: 2,
         points: 3,
     },
 
     {
-        stringChar: 'q',
+        value: 'q',
         quantity: 1,
         points: 8,
     },
 
     {
-        stringChar: 'r',
+        value: 'r',
         quantity: 6,
         points: 1,
     },
 
     {
-        stringChar: 's',
+        value: 's',
         quantity: 6,
         points: 1,
     },
 
     {
-        stringChar: 't',
+        value: 't',
         quantity: 6,
         points: 1,
     },
 
     {
-        stringChar: 'u',
+        value: 'u',
         quantity: 6,
         points: 1,
     },
 
     {
-        stringChar: 'v',
+        value: 'v',
         quantity: 2,
         points: 4,
     },
 
     {
-        stringChar: 'w',
+        value: 'w',
         quantity: 1,
         points: 10,
     },
 
     {
-        stringChar: 'x',
+        value: 'x',
         quantity: 1,
         points: 10,
     },
 
     {
-        stringChar: 'y',
+        value: 'y',
         quantity: 1,
         points: 10,
     },
 
     {
-        stringChar: 'z',
+        value: 'z',
         quantity: 1,
         points: 10,
     },
 
     {
-        stringChar: '*',
+        value: '*',
         quantity: 2,
         points: 0,
     },

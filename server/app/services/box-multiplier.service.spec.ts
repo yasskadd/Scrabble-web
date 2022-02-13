@@ -1,11 +1,10 @@
 // TODO : TESTS
 import * as multipliers from '@common/board-multiplier-coords';
 import { expect } from 'chai';
-import { BoxMultiplierService } from './box-multiplier.service';
 // import { Service } from 'typedi';
 
 describe('BoxMultiplier', () => {
-    let boxMultiplierService: BoxMultiplierService;
+    // let boxMultiplierService: BoxMultiplierService;
 
     beforeEach(async () => {});
 
@@ -29,5 +28,5 @@ describe('BoxMultiplier', () => {
         expect(multipliers.wordMultipliersByThree).to.include(testCoordinate);
     });
 
-    it('');
+    it(' ');
 });

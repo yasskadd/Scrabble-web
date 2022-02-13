@@ -1,24 +1,27 @@
 /* eslint-disable no-restricted-imports */
+import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@common/coordinate';
 import { Gameboard } from './gameboard.class';
 
 export class Word {
     isValid: boolean;
+    isHorizontal: boolean;
     points: number;
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
     stringFormat: string;
 
-    constructor(public isHorizontal: boolean | undefined, coord: Coordinate, stringFormat: string, gameboard: Gameboard) {
+    constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
         this.isValid = false;
         this.points = 0;
+        this.isHorizontal = commandInfo.isHorizontal;
 
-        if (isHorizontal === undefined && stringFormat.length === 1) {
-            this.setIsHorizontal(coord, gameboard);
+        if (commandInfo.isHorizontal === undefined && commandInfo.lettersPlaced.length === 1) {
+            this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
         }
 
-        const firstCoord = this.findFirstCoord(coord, gameboard);
-        this.findWordCoords(firstCoord, stringFormat, gameboard);
+        const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
+        this.findWordCoords(firstCoord, commandInfo.lettersPlaced, gameboard);
     }
     isWithinBoardLimits(coord: Coordinate): boolean {
         return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
@@ -56,20 +59,19 @@ export class Word {
         }
     }
 
-    private findWordCoords(firstCoord: Coordinate, stringFormat: string, gameboard: Gameboard) {
-        const lettersInOrder = stringFormat.split('');
+    private findWordCoords(firstCoord: Coordinate, placedLetters: string[], gameboard: Gameboard) {
         const position = firstCoord;
 
-        while (lettersInOrder.length || gameboard.getLetterTile(position).isOccupied) {
+        while (placedLetters.length || gameboard.getLetterTile(position).isOccupied) {
             if (!gameboard.getLetterTile(position).isOccupied) {
-                gameboard.placeLetter(position, lettersInOrder[0]);
-                this.stringFormat += lettersInOrder[0];
-                lettersInOrder.shift();
+                gameboard.placeLetter(position, placedLetters[0]); // TODO : move
+                this.stringFormat += placedLetters[0];
+                placedLetters.shift();
                 this.wordCoords.push(position);
                 this.newLetterCoords.push(position);
             } else {
                 this.wordCoords.push(position);
-                this.stringFormat += gameboard.getLetterTile(position).value;
+                this.stringFormat += gameboard.getLetterTile(position).getLetter();
             }
             // TODO: fix this
             this.isHorizontal ? position.x++ : position.y++;

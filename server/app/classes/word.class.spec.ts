@@ -14,7 +14,7 @@ describe('Word', () => {
     beforeEach(async () => {
         boxMultiplierService = Container.get(BoxMultiplierService);
         gameboard = new Gameboard(boxMultiplierService);
-        gameboard.getLetterTile({ x: 2, y: 1 }).value = 'A';
+        gameboard.getLetterTile({ x: 2, y: 1 }).setLetter('a');
         gameboard.getLetterTile({ x: 2, y: 1 }).isOccupied = true;
 
         word = new Word(true, { x: 1, y: 1 }, 'SINTE', gameboard);

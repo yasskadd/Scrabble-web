@@ -9,7 +9,7 @@ import { Service } from 'typedi';
 import { ScoreService } from './score.service';
 import { WordFinderService } from './word-finder.service';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/letter-reserve.json', 'utf8'));
+const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
 @Service()
 export class DictionaryValidationService {
