@@ -4,6 +4,7 @@ import * as multipliers from '@common/board-multiplier-coords';
 import * as constants from '@common/constants';
 import { Coordinate } from '@common/coordinate';
 import { LetterTile } from '@common/letter-tile.class';
+// import { LetterTile } from '@common/letter-tile.class';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 600;
@@ -55,7 +56,10 @@ export class GridService {
         this.drawMultipliers();
         this.drawMiddleTile();
         gameboard.forEach((letter) => {
-            if (letter.isOccupied) this.drawLetter(letter.coordinate, letter.getLetter());
+            if (letter.isOccupied) {
+                this.drawLetter({ x: letter.coordinate.x, y: letter.coordinate.y }, letter.getLetter());
+                this.drawLetterWeight({ x: letter.coordinate.x, y: letter.coordinate.y }, String(letter.points));
+            }
         });
     }
 
@@ -263,6 +267,7 @@ export class GridService {
         this.gridContext.fillStyle = 'black';
         this.gridContext.textAlign = 'center';
         if (content === undefined) content = '';
+        content.toUpperCase();
         this.gridContext.fillText(
             content,
             GridService.squareWidth * position.x + GridService.halfSquareWidth,
@@ -273,5 +278,20 @@ export class GridService {
 
     setFontSize(size: number) {
         this.gridContext.font = size + 'px system-ui';
+    }
+
+    drawLetterWeight(position: Coordinate, string: string) {
+        this.gridContext.textBaseline = 'middle';
+        this.gridContext.textAlign = 'center';
+        const width = this.gridContext.measureText(string).width;
+        const plusX = width * 0.9;
+        const halfSize = this.size / 2;
+        this.gridContext.font = this.weightSize + 'px system-ui';
+        this.gridContext.fillText(
+            string,
+            GridService.squareWidth * position.x + GridService.halfSquareWidth + plusX,
+            GridService.squareHeight * position.y + halfSize + GridService.halfSquareHeight,
+            this.size,
+        );
     }
 }

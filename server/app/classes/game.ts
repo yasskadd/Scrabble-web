@@ -1,7 +1,10 @@
+import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
+import { CommandInfo } from '@app/command-info';
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
 import { Container } from 'typedi';
@@ -24,7 +27,8 @@ export class Game {
         player1: Player,
         player2: Player,
         public turn: Turn,
-        public letterReserve: LetterReserveService, // @Inject() private letterPlacement: LetterPlacementService,
+        public letterReserve: LetterReserveService,
+        private letterPlacement: LetterPlacementService,
     ) {
         this.player1 = player1;
         this.player2 = player2;
@@ -72,29 +76,39 @@ export class Game {
      *
      * @param playerName : The active player who will play.
      */
-    // play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] {
-    //     let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
-    //     if (this.turn.validating(playerName) && this.player1.name === playerName) {
-    //         // validate Command
-    //         const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player1);
-    //         const letterCoords = validationInfo[0];
-    //         // const isValid: boolean = validationInfo[1] as boolean;
-    //         // if (!isValid) {
-    //         //     // Emit invalid command
-    //         // }
-    //         gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
-    //         this.turn.resetSkipCounter();
-    //         this.turn.end();
-    //         return gameBoard;
-    //     } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-    //         gameBoard = this.letterPlacement.placeLetter(commandInfo, this.player2,this.gameboard);
-    //         this.turn.resetSkipCounter();
-    //         this.turn.end();
-    //         return gameBoard;
-    //     }
+    play(playerName: string, commandInfo: CommandInfo): [boolean, Gameboard] | string {
+        let gameBoard: [boolean, Gameboard] = [false, this.gameboard];
+        if (this.turn.validating(playerName) && this.player1.name === playerName) {
+            // validate Command
+            console.log('ENTERED PLAY');
+            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player1);
+            console.log(validationInfo);
+            const letterCoords = validationInfo[0];
+            const isValid = validationInfo[1];
+            console.log(`isValid : ${isValid}`);
+            if (isValid !== null) {
+                return isValid as string;
+            }
+            gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
+            this.turn.end();
+            return gameBoard;
+        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
+            console.log('ENTERED PLAY');
+            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
+            console.log(validationInfo);
+            const letterCoords = validationInfo[0];
+            const isValid = validationInfo[1];
+            console.log(`isValid : ${isValid}`);
+            if (isValid !== null) {
+                return isValid as string;
+            }
+            gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
+            this.turn.end();
+            return gameBoard as [boolean, Gameboard];
+        }
 
-    //     return gameBoard;
-    // }
+        return gameBoard;
+    }
 
     /**
      * Exchange letters.

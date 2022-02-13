@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
+import { GridService } from './grid.service';
+import { LetterTilesService } from './letter-tiles.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type Player = { name: string; score: number; rack?: LetterTile[]; room: string };
@@ -18,7 +20,7 @@ export class GameClientService {
     playerOneTurn: boolean;
     etterTileReserve: LetterTile[];
 
-    constructor(/* private gridService: GridService*/ private clientSocketService: ClientSocketService) {
+    constructor(private gridService: GridService, private letterTilesService: LetterTilesService, private clientSocketService: ClientSocketService) {
         // Used for testing
         this.playerOneTurn = false;
         // setTimeout(this.stopTimer, 1000 * 5)
@@ -28,10 +30,12 @@ export class GameClientService {
         this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: Player) => {
             console.log(player);
             this.playerOne = player;
+            this.updateGameboard();
         });
         this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
             console.log(player);
             this.secondPlayer = player;
+            this.updateGameboard();
         });
         this.clientSocketService.on(SocketEvents.ViewUpdate, (info: PlayInfo) => {
             console.log(info.gameboard);
@@ -44,6 +48,7 @@ export class GameClientService {
             this.playerOne = this.playerOne.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
             this.secondPlayer = this.secondPlayer.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
             this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
+            this.updateGameboard();
         });
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
             this.timer = newTimer;
@@ -54,6 +59,7 @@ export class GameClientService {
         this.updateGameboard();
     }
     updateGameboard() {
-        // this.gridService.drawGridArray(this.gameboard);
+        this.gridService.drawGrid(this.gameboard);
+        this.letterTilesService.drawRack(this.playerOne.rack as Letter[]);
     }
 }

@@ -1,14 +1,17 @@
 import { Game } from '@app/classes/game';
+import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
-// import { Coordinate } from '@common/coordinate';
+import { PlacementCommandInfo } from '@app/command-info';
+import { Coordinate } from '@app/coordinate';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
-import { Service } from 'typedi';
+import { Container, Service } from 'typedi';
+import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
-// type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
+type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
     players: Player[];
@@ -24,8 +27,8 @@ interface GameScrabbleInformation {
 
 @Service()
 export class GamesHandler {
-    players: Map<string, Player>;
-    games: Map<string, GameHolder>;
+    private players: Map<string, Player>;
+    private games: Map<string, GameHolder>;
 
     constructor(private socketManager: SocketManager) {
         this.players = new Map();
@@ -36,9 +39,9 @@ export class GamesHandler {
             this.createGame(sio, socket, gameInfo);
         });
 
-        // this.socketManager.io(SocketEvents.Play, (sio, socket /** commandInfo: PlacementCommandInfo*/) => {
-        // this.playGame(sio, socket /** commandInfo */);
-        // });
+        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: PlacementCommandInfo) => {
+            this.playGame(sio, socket, commandInfo);
+        });
 
         this.socketManager.io(SocketEvents.Exchange, (sio, socket, letters: string[]) => {
             this.exchange(sio, socket, letters);
@@ -78,24 +81,26 @@ export class GamesHandler {
         sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
-    // private playGame(this: this, sio: Server, socket: Socket /** commandInfo: PlacementCommandInfo*/) {
-    // if (!this.players.has(socket.id)) return;
-    // const player = this.players.get(socket.id) as Player;
+    private playGame(this: this, sio: Server, socket: Socket, commandInfo: PlacementCommandInfo) {
+        if (!this.players.has(socket.id)) return;
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const gameParam = this.games.get(room) as GameHolder;
+        const game = gameParam.game as Game;
+        const play = game.play(player.name, commandInfo) as [boolean, GameBoard] | string;
 
-    //     const room = player.room;
-    //     const gameParam = this.games.get(room) as GameHolder;
-
-    // const game = gameParam.game as Game;
-    // game.play(player.name, commandInfo);
-
-    //     const playerInfo: PlayInfo = {
-    //         gameboard: game.gameboard.gameboardCoords,
-    //         activePlayer: game.turn.activePlayer,
-    //     };
-
-    //     sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
-    //     this.updatePlayerInfo(socket, room, game);
-    // }
+        if (typeof play !== 'string') {
+            const playerInfo: PlayInfo = {
+                gameboard: play[1].gameboardCoords,
+                activePlayer: game.turn.activePlayer,
+            };
+            sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
+            this.updatePlayerInfo(socket, room, game);
+        } else {
+            // socket.emit(SocketEvents.UpdatePlayerInformation, player);
+            // emit ds chatbox le 'play'
+        }
+    }
 
     private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
@@ -134,20 +139,22 @@ export class GamesHandler {
     }
 
     private createNewGame(gameParam: GameHolder) {
-        return new Game(
-            gameParam.players[0],
-            gameParam.players[1],
-            new Turn(60),
-            new LetterReserveService(),
-            // Container.get(LetterPlacementService),
-        );
+        return new Game(gameParam.players[0], gameParam.players[1], new Turn(60), new LetterReserveService(), Container.get(LetterPlacementService));
     }
 
     private updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
-        socket.emit(SocketEvents.UpdatePlayerInformation, game.player1);
-        socket.emit(SocketEvents.UpdateOpponentInformation, game.player2);
-        socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player2);
-        socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player1);
+        const player = this.players.get(socket.id) as Player;
+        if (player.name === game.player1.name) {
+            socket.emit(SocketEvents.UpdatePlayerInformation, game.player1);
+            socket.emit(SocketEvents.UpdateOpponentInformation, game.player2);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player2);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player1);
+        } else {
+            socket.emit(SocketEvents.UpdatePlayerInformation, game.player2);
+            socket.emit(SocketEvents.UpdateOpponentInformation, game.player1);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player1);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player2);
+        }
     }
 
     private changeTurn(roomId: string) {

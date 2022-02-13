@@ -7,7 +7,7 @@ import { Service } from 'typedi';
 export class WordFinderService {
     allWords: Word[] = [];
 
-    findAjacentWords(word: Word, gameboard: Gameboard): Word[] {
+    findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
         this.allWords.push(word);
         this.findWords(word, gameboard);
         return this.allWords;
@@ -23,9 +23,27 @@ export class WordFinderService {
                     if (word.isHorizontal) backwardPosition.y--;
                     else backwardPosition.x--;
                 }
-                this.allWords.push(new Word(!word.isHorizontal, backwardPosition, gameboard.getLetterTile(backwardPosition).value, gameboard));
+                this.allWords.push(
+                    new Word(
+                        {
+                            firstCoordinate: backwardPosition,
+                            isHorizontal: !word.isHorizontal,
+                            letters: [gameboard.getLetterTile(backwardPosition).getLetter()],
+                        },
+                        gameboard,
+                    ),
+                );
             } else if (gameboard.getLetterTile(forwardPosition).isOccupied)
-                this.allWords.push(new Word(!word.isHorizontal, coord, gameboard.getLetterTile(coord).value, gameboard));
+                this.allWords.push(
+                    new Word(
+                        {
+                            firstCoordinate: coord,
+                            isHorizontal: !word.isHorizontal,
+                            letters: [gameboard.getLetterTile(coord).getLetter()],
+                        },
+                        gameboard,
+                    ),
+                );
         });
     }
 }
