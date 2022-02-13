@@ -11,6 +11,7 @@ export class Turn {
     inactivePlayer: string | undefined;
     endTurn: ReplaySubject<string | undefined>;
     countdown: ReplaySubject<number | undefined>;
+    private skipCounter: number = 0;
     private time: number;
     private timeOut: unknown;
 
@@ -62,6 +63,7 @@ export class Turn {
             this.start();
         } else {
             this.activePlayer = undefined;
+            this.inactivePlayer = undefined;
         }
         this.endTurn.next(this.activePlayer);
     }
@@ -74,5 +76,19 @@ export class Turn {
      */
     validating(playerName: string): boolean {
         return String(this.activePlayer) === playerName;
+    }
+
+    skipTurn(): void {
+        this.incrementSkipCounter();
+        if (this.skipCounter === 6) this.end(true);
+        this.end();
+    }
+
+    resetSkipCounter(): void {
+        this.skipCounter = 0;
+    }
+
+    private incrementSkipCounter(): void {
+        this.skipCounter++;
     }
 }

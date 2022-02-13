@@ -28,16 +28,16 @@ describe('TurnService', () => {
 
     it('start() should start the timer and not end it when there is still time left on the clock', () => {
         turnService.start();
-        const spyEnd = spy(turnService, 'end');
+        const endSpy = spy(turnService, 'end');
         clock.tick(SECOND);
-        expect(spyEnd.called).to.be.false;
+        expect(endSpy.called).to.be.false;
     });
 
     it('start() should start the timer and  end it when the time up', () => {
         turnService.start();
-        const spyEnd = spy(turnService, 'end');
+        const endSpy = spy(turnService, 'end');
         clock.tick(time * SECOND);
-        expect(spyEnd.called).to.be.true;
+        expect(endSpy.called).to.be.true;
     });
 
     it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other', () => {
@@ -52,11 +52,11 @@ describe('TurnService', () => {
     it('end() should end the activePlayer turn and start the inactivePlayer turn', () => {
         turnService.activePlayer = player1.name;
         turnService.inactivePlayer = player2.name;
-        const spyStart = spy(turnService, 'start');
+        const startSpy = spy(turnService, 'start');
         // turnService.start();
         turnService.end();
 
-        expect(spyStart.called).to.be.true;
+        expect(startSpy.called).to.be.true;
         expect(turnService.activePlayer).to.equal(player2.name);
         expect(turnService.inactivePlayer).to.equal(player1.name);
     });
@@ -85,5 +85,49 @@ describe('TurnService', () => {
         const validated = turnService.validating(player1.name);
 
         expect(validated).to.be.false;
+    });
+
+    it('skipTurn() should increment skipCounter by 1', () => {
+        turnService.skipTurn();
+
+        // eslint-disable-next-line dot-notation
+        expect(turnService['skipCounter']).to.equal(1);
+    });
+
+    it('skipTurn() should call end with true as argument when the skipCounter is at 6', () => {
+        const endSpy = spy(turnService, 'end');
+        // eslint-disable-next-line dot-notation
+        turnService['skipCounter'] = 5;
+        turnService.skipTurn();
+
+        // eslint-disable-next-line dot-notation
+        expect(endSpy.calledWith(true)).to.be.true;
+    });
+
+    it('skipTurn() should call end without true as argument when the skipCounter is not at 6', () => {
+        const endSpy = spy(turnService, 'end');
+        // eslint-disable-next-line dot-notation
+        turnService['skipCounter'] = 4;
+        turnService.skipTurn();
+
+        // eslint-disable-next-line dot-notation
+        expect(endSpy.calledWith(true)).to.be.false;
+    });
+
+    it('resetSkipCounter() should assign skipCounter to 0', () => {
+        // eslint-disable-next-line dot-notation
+        turnService['skipCounter'] = 4;
+        turnService.resetSkipCounter();
+
+        // eslint-disable-next-line dot-notation
+        expect(turnService['skipCounter']).to.equal(0);
+    });
+
+    it('incrementSkipCounter() should increment skipCounter by 1', () => {
+        // eslint-disable-next-line dot-notation
+        turnService['incrementSkipCounter']();
+
+        // eslint-disable-next-line dot-notation
+        expect(turnService['skipCounter']).to.equal(1);
     });
 });
