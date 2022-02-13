@@ -2,11 +2,11 @@ import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
+import { BoxMultiplier } from '@app/services/box-multiplier.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
-import { Container, Inject, Service } from 'typedi';
-import { BoxMultiplier } from './box-multiplier.service';
-import { LetterPlacementService } from './letter-placement.service';
-import { LetterReserveService } from './letter-reserve.service';
+import { Container, Inject } from 'typedi';
 
 // Temporary place
 // interface Letter {
@@ -16,8 +16,8 @@ import { LetterReserveService } from './letter-reserve.service';
 // }
 
 const MAX_QUANTITY = 7;
-@Service()
-export class GameService {
+
+export class Game {
     player1: Player;
     player2: Player;
     gameboard: GameBoard;

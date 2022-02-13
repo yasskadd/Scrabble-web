@@ -1,3 +1,4 @@
+import { Game } from '@app/classes/game';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
@@ -6,14 +7,13 @@ import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
-import { GameService } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
 type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
 interface GameHolder {
-    game: GameService | undefined;
+    game: Game | undefined;
     players: Player[];
     roomId: string;
 }
@@ -71,7 +71,7 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
-        const game = gameParam.game as GameService;
+        const game = gameParam.game as Game;
         const newRack = game.exchange(letters, player.name);
 
         if (newRack.length === 0) return;
@@ -86,7 +86,7 @@ export class GamesHandler {
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
 
-        const game = gameParam.game as GameService;
+        const game = gameParam.game as Game;
         game.play(player.name, commandInfo);
 
         const playerInfo: PlayInfo = {
@@ -135,16 +135,10 @@ export class GamesHandler {
     }
 
     private createNewGame(gameParam: GameHolder) {
-        return new GameService(
-            gameParam.players[0],
-            gameParam.players[1],
-            new Turn(60),
-            new LetterReserveService(),
-            Container.get(LetterPlacementService),
-        );
+        return new Game(gameParam.players[0], gameParam.players[1], new Turn(60), new LetterReserveService(), Container.get(LetterPlacementService));
     }
 
-    private updatePlayerInfo(socket: Socket, roomId: string, game: GameService) {
+    private updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
         socket.emit(SocketEvents.UpdatePlayerInformation, game.player1);
         socket.emit(SocketEvents.UpdateOpponentInformation, game.player2);
         socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player2);
