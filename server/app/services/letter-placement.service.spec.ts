@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { GameBoard } from '@app/classes/gameboard.class';
@@ -42,6 +43,7 @@ describe.only('Letter Placement Service', () => {
         wordFinderService = Sinon.createStubInstance(WordFinderService);
         validateCoordService = Sinon.createStubInstance(GameboardCoordinateValidationService);
         boxMultiplierService = Sinon.createStubInstance(BoxMultiplier);
+        dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService);
         gameboard = new GameBoard(boxMultiplierService);
         // gameboardCoordValidation = Sinon.createStubInstance(GameboardCoordinateValidationService);
         placementService = new LetterPlacementService(
@@ -184,12 +186,68 @@ describe.only('Letter Placement Service', () => {
     });
 
     context('globalCommandVerification() tests', () => {
-        it.only('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
+        it('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const isPlacementStub = Sinon.stub(placementService, 'isPlacementValid' as any);
             isPlacementStub.withArgs(commandInfo, gameboard).returns(false);
             const expectedReturn = [placementService['getLettersCoord'](commandInfo, gameboard), 'Invalid placement'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
+        });
+
+        it('should return array with letterCoords and lettersNotInRack string if isPlacement() returns false', () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const letterCoords: GameboardCoordinate[] = [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterB)];
+            const getLettersStub = Sinon.stub(placementService, 'getLettersCoord' as any);
+            getLettersStub.returns(letterCoords);
+            const lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as any);
+            lettersInRackStub.returns(false);
+            const expectedReturn = [placementService['getLettersCoord'](commandInfo, gameboard), 'Letters not in rack'];
+            expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
+        });
+    });
+
+    context('placeLetter tests', () => {
+        let letterCoords: GameboardCoordinate[];
+        const bonusPoint = 50;
+        const points = 10;
+        beforeEach(() => {
+            letterCoords = [
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(0, 0, letterA),
+            ];
+        });
+
+        it('should call validateWords() once', () => {
+            placementService.placeLetter(letterCoords, player, gameboard);
+            expect(dictionaryValidation.validateWords.calledOnce).to.equal(true);
+        });
+
+        it('should return false and the gameboard if validateWords returns 0', () => {
+            dictionaryValidation.validateWords.returns(0);
+            expect(placementService.placeLetter(letterCoords, player, gameboard)).to.eql([false, gameboard]);
+        });
+
+        it('should change player score if validateWords() dont return 0', () => {
+            letterCoords = [new GameboardCoordinate(0, 0, letterA)];
+            dictionaryValidation.validateWords.returns(points);
+            placementService.placeLetter(letterCoords, player, gameboard);
+            expect(player.score).to.equal(points);
+        });
+
+        it('should return true and gameboard if validateWords() dont return 0', () => {
+            dictionaryValidation.validateWords.returns(points);
+            expect(placementService.placeLetter(letterCoords, player, gameboard)).to.eql([true, gameboard]);
+        });
+
+        it('should give a bonus of 50 points', () => {
+            dictionaryValidation.validateWords.returns(points);
+            placementService.placeLetter(letterCoords, player, gameboard);
+            expect(player.score).to.equal(points + bonusPoint);
         });
     });
 

@@ -1,8 +1,12 @@
+import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
+import { PlacementCommandInfo } from '@app/command-info';
+import { Letter } from '@common/letter';
 import { Container, Service } from 'typedi';
 import { BoxMultiplier } from './box-multiplier.service';
+import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 
 // Temporary place
@@ -18,6 +22,7 @@ export class GameService {
     player1: Player;
     player2: Player;
     gameboard: GameBoard;
+    letterPlacement: LetterPlacementService;
 
     constructor(
         player1: Player,
@@ -71,7 +76,7 @@ export class GameService {
      *
      * @param playerName : The active player who will play.
      */
-    play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] {
+    play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] | string {
         let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
             // validate Command
@@ -79,7 +84,7 @@ export class GameService {
             const letterCoords = validationInfo[0];
             const isValid = validationInfo[1];
             if (isValid !== null) {
-                // Emit invalid command
+                return isValid as string;
             }
             gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
             this.turn.end();
@@ -87,13 +92,16 @@ export class GameService {
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
             const letterCoords = validationInfo[0];
+            const isValid = validationInfo[1];
+            if (isValid !== null) {
+                return isValid as string;
+            }
             gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
             this.turn.end();
-            return gameBoard;
+            return gameBoard as [boolean, GameBoard];
         }
-
-    //     return gameBoard;
-    // }
+        return gameBoard as [boolean, GameBoard];
+    }
 
     /**
      * Exchange letters.

@@ -1,5 +1,7 @@
+import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
+import { PlacementCommandInfo } from '@app/command-info';
 import { Coordinate } from '@common/coordinate';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
@@ -78,23 +80,25 @@ export class GamesHandler {
         sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
-    private playGame(this: this, sio: Server, socket: Socket /** commandInfo: PlacementCommandInfo*/) {
+    private playGame(this: this, sio: Server, socket: Socket, commandInfo: PlacementCommandInfo) {
         if (!this.players.has(socket.id)) return;
         const player = this.players.get(socket.id) as Player;
-
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
-
         const game = gameParam.game as GameService;
-        // game.play(player.name, commandInfo);
+        const play = game.play(player.name, commandInfo) as [boolean, GameBoard] | string;
 
-        const playerInfo: PlayInfo = {
-            gameboard: game.gameboard.gameboardCoords,
-            activePlayer: game.turn.activePlayer,
-        };
-
-        sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
-        this.updatePlayerInfo(socket, room, game);
+        if (typeof play !== 'string') {
+            const playerInfo: PlayInfo = {
+                gameboard: play[1].gameboardCoords,
+                activePlayer: game.turn.activePlayer,
+            };
+            sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
+            this.updatePlayerInfo(socket, room, game);
+        } else {
+            // socket.emit(SocketEvents.UpdatePlayerInformation, player);
+            // emit ds chatbox le 'play'
+        }
     }
 
     private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameScrabbleInformation) {
