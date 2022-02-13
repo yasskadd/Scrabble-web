@@ -13,7 +13,7 @@ import { Container } from 'typedi';
 import { BoxMultiplier } from './box-multiplier.service';
 import { WordFinderService } from './word-finder.service';
 
-describe('WordFinderService', () => {
+describe.only('WordFinderService', () => {
     let gameboard: GameBoard;
     let boxMultiplierService: BoxMultiplier;
     let wordFinderService: WordFinderService;

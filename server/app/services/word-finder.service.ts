@@ -10,6 +10,7 @@ import { Service } from 'typedi';
 @Service()
 export class WordFinderService {
     findNewWords(gameBoard: GameBoard, coordList: GameboardCoordinate[]) {
+        console.log('FIND NEW WORDS CALLED');
         const newWordsArray: Word[] = new Array();
         // Verify if only one letter is placed
         if (coordList.length === 1) {
@@ -29,12 +30,12 @@ export class WordFinderService {
             // Build other words
             coordList.forEach((coord) => {
                 if (!firstWord.isHorizontal) {
-                    const horizontalWord: Word = this.buildVerticalWord(gameBoard, coord);
+                    const horizontalWord: Word = this.buildHorizontalWord(gameBoard, coord);
                     if (horizontalWord.coords.length !== 0 && horizontalWord.coords.length !== 1) {
                         newWordsArray.push(horizontalWord);
                     }
                 } else if (firstWord.isHorizontal) {
-                    const verticalWord: Word = this.buildHorizontalWord(gameBoard, coord);
+                    const verticalWord: Word = this.buildVerticalWord(gameBoard, coord);
                     if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
                         newWordsArray.push(verticalWord);
                     }

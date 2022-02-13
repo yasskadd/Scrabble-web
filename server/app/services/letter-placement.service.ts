@@ -4,8 +4,8 @@
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
+import { Word } from '@app/classes/word.class';
 import { PlacementCommandInfo } from '@app/command-info';
-import { Coordinate } from '@app/coordinate';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
@@ -27,19 +27,33 @@ export class LetterPlacementService {
 
     globalCommandVerification(commandInfo: PlacementCommandInfo, gameboard: GameBoard, player: Player) {
         const letterCoords = this.getLettersCoord(commandInfo, gameboard);
-        if (!this.isPlacementValid(letterCoords)) return [letterCoords, ERROR_TYPE.invalidPlacement];
+        if (!this.isPlacementValid(letterCoords)) {
+            console.log('INVALID PLACEMENT');
+            return [letterCoords, ERROR_TYPE.invalidPlacement];
+        }
         // it updates letters points in gameboardCoordinate
-        if (!this.areLettersInRack(letterCoords, player)) return [letterCoords, ERROR_TYPE.lettersNotInRack];
-        if (!this.verifyFirstTurn(letterCoords, gameboard)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
+        if (!this.areLettersInRack(letterCoords, player)) {
+            console.log('LETTERS NOT IN RACK');
+            return [letterCoords, ERROR_TYPE.lettersNotInRack];
+        }
+        // if (!this.verifyFirstTurn(letterCoords, gameboard)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
         return [letterCoords, null];
     }
 
     placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: GameBoard): [boolean, GameBoard] {
-        const wordValidationScore: number = this.dictionaryService.validateWords(this.wordFinderService.findNewWords(gameboard, letterCoords));
+        letterCoords.forEach((coord) => {
+            console.log('PLACED LETTER');
+            gameboard.placeLetter(coord);
+        });
+        const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
+        console.log(words);
+        const wordValidationScore: number = this.dictionaryService.validateWords(words);
         if (wordValidationScore === 0) return [false, gameboard];
         player.score += wordValidationScore;
         if (letterCoords.length === 7) player.score += 50;
         this.updatePlayerRack(letterCoords, player);
+        console.log('PLAYER RACK');
+        console.log(player.rack);
         return [true, gameboard];
     }
 
@@ -103,22 +117,22 @@ export class LetterPlacementService {
         }
     }
 
-    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
-        if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
-            const coordList: Coordinate[] = new Array();
-            lettersCoords.forEach((coord) => {
-                coordList.push({ x: coord.x, y: coord.y } as Coordinate);
-            });
-            if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
-        }
-        return true;
-    }
+    // private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
+    //     if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
+    //         const coordList: Coordinate[] = new Array();
+    //         lettersCoords.forEach((coord) => {
+    //             coordList.push({ x: coord.x, y: coord.y } as Coordinate);
+    //         });
+    //         if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
+    //     }
+    //     return true;
+    // }
 
     private updatePlayerRack(letterCoords: GameboardCoordinate[], player: Player) {
         letterCoords.forEach((letterCoord) => {
-            const letter: Letter = letterCoord.letter;
-            if (player.rack.includes(letter)) {
-                const index = player.rack.indexOf(letter);
+            const value = player.rack.filter((item) => item.stringChar === letterCoord.letter.stringChar)[0];
+            if (player.rack.includes(value)) {
+                const index = player.rack.indexOf(value);
                 player.rack.splice(index, 1);
             }
         });

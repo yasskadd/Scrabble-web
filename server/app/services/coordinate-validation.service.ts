@@ -11,7 +11,7 @@ export class GameboardCoordinateValidationService {
         if (!this.isFirstCoordValid(commandInfo.firstCoordinate, gameboard)) return [];
         const coordOfLetters = new Array();
         let stringLength: number = commandInfo.lettersPlaced.length;
-        const currentCoord: GameboardCoordinate = gameboard.getCoord(commandInfo.firstCoordinate);
+        let currentCoord: GameboardCoordinate = gameboard.getCoord(commandInfo.firstCoordinate);
         const direction = commandInfo.direction;
         if (direction === 'h') {
             while (stringLength !== 0) {
@@ -21,7 +21,8 @@ export class GameboardCoordinateValidationService {
                     coordOfLetters.push(new GameboardCoordinate(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }
-                currentCoord.x++;
+                const coordinate: GameboardCoordinate = new GameboardCoordinate(currentCoord.x + 1, currentCoord.y, currentCoord.letter);
+                currentCoord = coordinate;
             }
         } else if (direction === 'v') {
             while (stringLength !== 0) {
@@ -31,7 +32,8 @@ export class GameboardCoordinateValidationService {
                     coordOfLetters.push(new GameboardCoordinate(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }
-                currentCoord.y++;
+                const coordinate: GameboardCoordinate = new GameboardCoordinate(currentCoord.x, currentCoord.y + 1, currentCoord.letter);
+                currentCoord = coordinate;
             }
         } else {
             const letter = { stringChar: commandInfo.lettersPlaced.shift() as string } as Letter;

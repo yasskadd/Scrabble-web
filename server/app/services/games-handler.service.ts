@@ -1,7 +1,9 @@
+import { Game } from '@app/classes/game';
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
+import { Coordinate } from '@app/coordinate';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
@@ -9,7 +11,7 @@ import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
-// type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
+type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
     players: Player[];
@@ -37,9 +39,9 @@ export class GamesHandler {
             this.createGame(sio, socket, gameInfo);
         });
 
-        // this.socketManager.io(SocketEvents.Play, (sio, socket /** commandInfo: PlacementCommandInfo*/) => {
-        // this.playGame(sio, socket /** commandInfo */);
-        // });
+        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: PlacementCommandInfo) => {
+            this.playGame(sio, socket, commandInfo);
+        });
 
         this.socketManager.io(SocketEvents.Exchange, (sio, socket, letters: string[]) => {
             this.exchange(sio, socket, letters);
@@ -84,7 +86,7 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
-        const game = gameParam.game as GameService;
+        const game = gameParam.game as Game;
         const play = game.play(player.name, commandInfo) as [boolean, GameBoard] | string;
 
         if (typeof play !== 'string') {
@@ -141,10 +143,18 @@ export class GamesHandler {
     }
 
     private updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
-        socket.emit(SocketEvents.UpdatePlayerInformation, game.player1);
-        socket.emit(SocketEvents.UpdateOpponentInformation, game.player2);
-        socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player2);
-        socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player1);
+        const player = this.players.get(socket.id) as Player;
+        if (player.name === game.player1.name) {
+            socket.emit(SocketEvents.UpdatePlayerInformation, game.player1);
+            socket.emit(SocketEvents.UpdateOpponentInformation, game.player2);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player2);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player1);
+        } else {
+            socket.emit(SocketEvents.UpdatePlayerInformation, game.player2);
+            socket.emit(SocketEvents.UpdateOpponentInformation, game.player1);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player1);
+            socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player2);
+        }
     }
 
     private changeTurn(roomId: string) {
