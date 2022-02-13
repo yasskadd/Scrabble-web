@@ -82,15 +82,17 @@ export class GameService {
             // validate Command
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player1);
             const letterCoords = validationInfo[0];
-            const isValid: boolean = validationInfo[1];
-            if (!isValid) {
+            const isValid = validationInfo[1];
+            if (isValid !== null) {
                 // Emit invalid command
             }
             gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
             this.turn.end();
             return gameBoard;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-            gameBoard = this.letterPlacement.placeLetter(this.player2, commandInfo, this.gameboard);
+            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
+            const letterCoords = validationInfo[0];
+            gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
             this.turn.end();
             return gameBoard;
         }
