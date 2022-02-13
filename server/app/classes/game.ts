@@ -3,11 +3,11 @@ import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
 import { PlacementCommandInfo } from '@app/command-info';
+import { LetterPlacementService } from '@app/services//letter-placement.service';
+import { LetterReserveService } from '@app/services//letter-reserve.service';
+import { BoxMultiplier } from '@app/services/box-multiplier.service';
 import { Letter } from '@common/letter';
 import { Container } from 'typedi';
-import { BoxMultiplier } from './box-multiplier.service';
-import { LetterPlacementService } from './letter-placement.service';
-import { LetterReserveService } from './letter-reserve.service';
 
 // Temporary place
 // interface Letter {
@@ -22,7 +22,6 @@ export class Game {
     player1: Player;
     player2: Player;
     gameboard: GameBoard;
-    letterPlacement: LetterPlacementService;
 
     constructor(
         player1: Player,
@@ -101,12 +100,8 @@ export class Game {
             this.turn.end();
             return gameBoard as [boolean, GameBoard];
         }
-<<<<<<< HEAD:server/app/services/game.service.ts
-        return gameBoard as [boolean, GameBoard];
-=======
 
         return gameBoard;
->>>>>>> 47f4eb7eebc17867df029bafa946b88785750eaa:server/app/classes/game.ts
     }
 
     /**
