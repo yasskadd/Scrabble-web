@@ -79,14 +79,14 @@ export class GamesHandler {
     }
 
     // private playGame(this: this, sio: Server, socket: Socket /** commandInfo: PlacementCommandInfo*/) {
-    // if (!this.players.has(socket.id)) return;
-    // const player = this.players.get(socket.id) as Player;
+    //     if (!this.players.has(socket.id)) return;
+    //     const player = this.players.get(socket.id) as Player;
 
     //     const room = player.room;
     //     const gameParam = this.games.get(room) as GameHolder;
 
-    // const game = gameParam.game as Game;
-    // game.play(player.name, commandInfo);
+    //     const game = gameParam.game as Game;
+    //     game.play(player.name, commandInfo);
 
     //     const playerInfo: PlayInfo = {
     //         gameboard: game.gameboard.gameboardCoords,
