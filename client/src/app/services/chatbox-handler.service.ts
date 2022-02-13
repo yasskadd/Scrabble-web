@@ -130,10 +130,10 @@ export class ChatboxHandlerService {
     }
 
     private sendCommandEchanger(command: string[]) {
-        const commandInformation = {
-            exchangeLetters: this.getLetters(command, 1),
-        };
-        this.clientSocket.send(SocketEvents.Exchange, commandInformation);
+        // const commandInformation = {
+        //     exchangeLetters: this.getLetters(command, 1),
+        // };
+        this.clientSocket.send(SocketEvents.Exchange, this.getLetters(command, 1));
     }
 
     private splitCommand(command: string) {
