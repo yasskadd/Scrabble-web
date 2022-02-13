@@ -1,5 +1,4 @@
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
-import * as constants from '@common/constants';
 import { Coordinate } from '@common/coordinate';
 import { LetterTile } from '@common/letter-tile.class';
 export class Gameboard {
@@ -27,13 +26,13 @@ export class Gameboard {
 
     getLetterTile(coordinate: Coordinate): LetterTile {
         return this.gameboard.filter((letterTile) => {
-            return letterTile.coordinate.x === coordinate.x && letterTile.coordinate.y === coordinate.y;
+            return letterTile.coordinate === coordinate;
         })[0];
     }
 
     private createLetterTiles(): void {
-        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
-            for (let j = 1; j < constants.TOTAL_ROWS; j++) {
+        for (let i = 1; i < 15; i++) {
+            for (let j = 1; j < 15; j++) {
                 const position: Coordinate = { x: i, y: j };
                 const coord: LetterTile = new LetterTile(position, '');
                 this.gameboard.push(coord);

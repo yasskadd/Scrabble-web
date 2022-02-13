@@ -1,3 +1,4 @@
+import * as letterTypes from '@common/letter-reserve';
 import { Multiplier } from '@common/Multiplier';
 import { Coordinate } from './coordinate';
 
@@ -15,7 +16,10 @@ export class LetterTile {
         this.multiplier = { type: '', number: 1 };
     }
 
-    setPoints() {
-        this.points = 0; //TODO: GET DATA FROM LETTER TYPES???
+    setPoints(letterTile: LetterTile) {
+        const letterType = letterTypes.LETTERS.filter((letter) => {
+            return letter.stringChar === letterTile.value;
+        })[0];
+        letterTile.points = letterType.points;
     }
 }

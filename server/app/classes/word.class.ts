@@ -21,7 +21,7 @@ export class Word {
         this.findWordCoords(firstCoord, stringFormat, gameboard);
     }
     isWithinBoardLimits(coord: Coordinate): boolean {
-        return coord.x >= 1 && coord.x <= 16 && coord.y >= 1 && coord.y <= 16;
+        return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
     }
 
     private setIsHorizontal(firstCoord: Coordinate, gameboard: Gameboard) {

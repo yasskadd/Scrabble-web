@@ -1,42 +1,33 @@
 // TODO : TESTS
-
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { Letter } from '@common/letter';
+import * as multipliers from '@common/board-multiplier-coords';
 import { expect } from 'chai';
-import { BoxMultiplier } from './box-multiplier.service';
+import { BoxMultiplierService } from './box-multiplier.service';
 // import { Service } from 'typedi';
 
 describe('BoxMultiplier', () => {
-    let boxMultiplierService: BoxMultiplier;
-    let letterMultiplier2: GameboardCoordinate[];
-    let letterMultiplier3: GameboardCoordinate[];
-    let wordMultiplier2: GameboardCoordinate[];
-    // let wordMultiplier3: GameboardCoordinate[];
+    let boxMultiplierService: BoxMultiplierService;
 
-    beforeEach(async () => {
-        letterMultiplier2 = boxMultiplierService.letterMultipliersByTwo;
-        letterMultiplier3 = boxMultiplierService.letterMultipliersByThree;
-        wordMultiplier2 = boxMultiplierService.wordMultipliersByTwo;
-        // wordMultiplier3 = boxMultiplierService.wordMultipliersByThree;
-    });
+    beforeEach(async () => {});
 
     it(' {12, 6} board coordinate should belong in letterMultipliersByTwo', () => {
-        const testCoordinate = new GameboardCoordinate(12, 6, {} as Letter);
-        expect(letterMultiplier2).to.include(testCoordinate);
+        const testCoordinate = { x: 12, y: 6 };
+        expect(multipliers.letterMultipliersByTwo).to.include(testCoordinate);
     });
 
     it(' {5, 9} board coordinate should belong in letterMultipliersByThree', () => {
-        const testCoordinate = new GameboardCoordinate(5, 9, {} as Letter);
-        expect(letterMultiplier3).to.include(testCoordinate);
+        const testCoordinate = { x: 5, y: 9 };
+        expect(multipliers.letterMultipliersByThree).to.include(testCoordinate);
     });
 
     it(' {10, 4} board coordinate should belong in wordMultipliersByTwo', () => {
-        const testCoordinate = new GameboardCoordinate(10, 4, {} as Letter);
-        expect(wordMultiplier2).to.include(testCoordinate);
+        const testCoordinate = { x: 10, y: 4 };
+        expect(multipliers.wordMultipliersByTwo).to.include(testCoordinate);
     });
 
-    // it(' {0, 0} board coordinate should belong in wordMultipliersByThree', () => {
-    //     const testCoordinate = new GameboardCoordinate(0, 0, [] Letter[]);
-    //     expect(wordMultiplier3).to.include(testCoordinate);
-    // });
+    it(' {0, 0} board coordinate should belong in wordMultipliersByThree', () => {
+        const testCoordinate = { x: 0, y: 0 };
+        expect(multipliers.wordMultipliersByThree).to.include(testCoordinate);
+    });
+
+    it('');
 });
