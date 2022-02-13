@@ -16,10 +16,10 @@ export class LetterTile {
         this.multiplier = { type: '', number: 1 };
     }
 
-    setPoints(letterTile: LetterTile) {
+    setPoints() {
         const letterType = letterTypes.LETTERS.filter((letter) => {
-            return letter.stringChar === letterTile.value;
+            return letter.stringChar === this.value;
         })[0];
-        letterTile.points = letterType.points;
+        this.points = letterType.points;
     }
 }
