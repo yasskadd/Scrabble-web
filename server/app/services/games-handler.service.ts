@@ -68,13 +68,13 @@ export class GamesHandler {
         console.log('Skip boolean :');
         // DO NOT REMOVE the skip when removing the console.log (it must be called to skip)
         console.log(gameHolder.game?.skip(player.name));
-
+        socket.broadcast.to(room).emit(SocketEvents.GameMessage, '!passer');
         this.changeTurn(room);
     }
 
     private exchange(this: this, sio: Server, socket: Socket, letters: string[]) {
         if (!this.players.has(socket.id)) return;
-
+        const lettersToExchange = letters.length;
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const playerRack = player.rack;
@@ -85,6 +85,8 @@ export class GamesHandler {
         if (newRack.length === 0) return;
         if (JSON.stringify(playerRack) === JSON.stringify(player.rack)) {
             socket.emit('impossibleCommandError', 'Vous ne posséder pas toutes les lettres a échanger');
+        } else {
+            socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         }
         this.updatePlayerInfo(socket, room, game);
         // socket.emit(SocketEvents.UpdatePlayerInformation, player);
@@ -94,6 +96,7 @@ export class GamesHandler {
 
     private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
+        const letterPlaced = commandInfo.lettersPlaced.join('');
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
@@ -109,6 +112,14 @@ export class GamesHandler {
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, room, game);
+            socket.broadcast
+                .to(player.room)
+                .emit(
+                    SocketEvents.GameMessage,
+                    `!placer ${String.fromCharCode(96 + commandInfo.firstCoordinate.x)}${commandInfo.firstCoordinate.y}${
+                        commandInfo.direction
+                    } ${letterPlaced}`,
+                );
         } else {
             // socket.emit(SocketEvents.UpdatePlayerInformation, player);
             // emit ds chatbox le 'play'
