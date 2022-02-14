@@ -6,7 +6,9 @@
         <div>score : {{ this.gameClientService.playerOne.score }}</div>
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
-    <div>x lettres disponibles sur le chevalet</div>
+    <div *nfIf="!this.gameClientService.playerOne.rack.length">
+        {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet
+    </div>
     <div class="time" *ngIf="this.gameClientService.playerOneTurn">
         {{ this.gameClientService.timer }}
     </div>
@@ -19,7 +21,9 @@
         <div>score : {{ this.gameClientService.secondPlayer.score }}</div>
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
-    <div>x lettres disponibles sur le chevalet</div>
+    <div *nfIf="!this.gameClientService.secondPlayer.rack.length">
+        {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
+    </div>
     <div class="time" *ngIf="!this.gameClientService.playerOneTurn">
         {{ this.gameClientService.timer }}
     </div>

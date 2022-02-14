@@ -11,6 +11,7 @@ import { GameClientService } from '@app/services/game-client.service';
 })
 export class InformationPanelComponent {
     private readonly dialogWidth: string = '25%';
+
     constructor(public gameClientService: GameClientService, public dialog: MatDialog, public router: Router) {}
 
     abandonGame(): void {

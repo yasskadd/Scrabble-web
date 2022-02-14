@@ -50,9 +50,10 @@ export class ChatboxHandlerService {
         const letterReserve = this.getAllLetterReserve(this.gameClient.letterReserve);
         const myLetterLeft = this.getAllLetter(this.gameClient.playerOne.rack as never);
         const opponentLetterLeft = this.getAllLetter(this.gameClient.secondPlayer.rack as never);
-        this.messages.push({ type: 'system-message', data: `Fin de la partie : ${letterReserve}` });
+        this.messages.push({ type: 'system-message', data: 'Fin de la partie : lettres restantes' });
         this.messages.push({ type: 'system-message', data: `${this.gameClient.playerOne.name} : ${myLetterLeft}` });
         this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
+        this.messages.push({ type: 'system-message', data: `Lettre restante dans la réserve : ${letterReserve}` });
     }
 
     private configureBaseSocketFeatures(): void {
