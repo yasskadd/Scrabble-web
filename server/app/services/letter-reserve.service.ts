@@ -1,4 +1,3 @@
-// import { Letter } from '../../app/letter';
 import { Letter } from '@common/letter';
 import * as letterTypes from '@common/letter-reserve';
 import { Service } from 'typedi';

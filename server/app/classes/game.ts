@@ -1,5 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player';
+import { Player } from '@app/classes/player.class';
 import { CommandInfo } from '@app/command-info';
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';

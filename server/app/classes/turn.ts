@@ -1,6 +1,6 @@
 // import { Message } from '@app/message';
 // import { DateService } from '@app/services/date.service';
-import { Player } from '@app/classes/player';
+import { Player } from '@app/classes/player.class';
 import { ReplaySubject } from 'rxjs';
 
 const NUMBER_PLAYER = 2;
