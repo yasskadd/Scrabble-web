@@ -4,7 +4,7 @@ import { Letter } from '@common/letter';
 const TILE_SIZE = 40;
 export const DEFAULT_WIDTH = 300;
 export const DEFAULT_HEIGHT = 75;
-const FONT_SIZE = 20;
+
 const X_DIFFERENCE = 100;
 const CONTAINER_WIDTH = 300;
 @Injectable({
@@ -15,9 +15,14 @@ export class LetterTilesService {
     maxSize: number;
     gridContext: CanvasRenderingContext2D;
 
+    fontSize: number;
+
     constructor() {
-        this.minimumSize = 15;
-        this.maxSize = 20;
+        this.fontSize = 30;
+    }
+
+    changeFontSize(sizePx: number) {
+        this.fontSize = sizePx;
     }
 
     drawRack(letters: Letter[]) {
@@ -35,7 +40,7 @@ export class LetterTilesService {
         this.gridContext.strokeStyle = '#C7A121';
         this.gridContext.lineWidth = 1;
         this.gridContext.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
-        this.gridContext.font = FONT_SIZE + 'px system-ui';
+        this.gridContext.font = this.fontSize + 'px system-ui';
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         this.gridContext.fillText(letter, x + TILE_SIZE / 2, TILE_SIZE / 2);
@@ -46,8 +51,8 @@ export class LetterTilesService {
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
         const plusX = width * 0.9;
-        const halfSize = FONT_SIZE / 2;
-        this.gridContext.font = FONT_SIZE * 0.45 + 'px system-ui';
+        const halfSize = this.fontSize / 2;
+        this.gridContext.font = this.fontSize * 0.45 + 'px system-ui';
         this.gridContext.fillText(string, x + TILE_SIZE / 2 + plusX, y + halfSize + TILE_SIZE / 2, 20);
     }
 }
