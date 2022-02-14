@@ -16,7 +16,7 @@ describe('GridService', () => {
             x: 2,
             y: 5,
             isOccupied: true,
-            letter: { stringChar: 'S', quantity: 2, points: 2 },
+            letter: { value: 'S', quantity: 2, points: 2 },
             letterMultiplier: 1,
             wordMultiplier: 2,
         },

@@ -17,7 +17,7 @@ const TIMER: Timer = { minutes: 1, seconds: 20 };
 const PLAYER_ONE: Player = {
     name: '667',
     score: 23,
-    rack: [{ stringChar: 'b', quantity: 2, points: 1 }],
+    rack: [{ value: 'b', quantity: 2, points: 1 }],
     room: '1',
 };
 
@@ -25,9 +25,9 @@ const PLAYER_TWO: Player = {
     name: 'QLF',
     score: 327,
     rack: [
-        { stringChar: 'c', quantity: 2, points: 1 },
-        { stringChar: 'r', quantity: 2, points: 1 },
-        { stringChar: 'p', quantity: 2, points: 1 },
+        { value: 'c', quantity: 2, points: 1 },
+        { value: 'r', quantity: 2, points: 1 },
+        { value: 'p', quantity: 2, points: 1 },
     ],
     room: '3',
 };

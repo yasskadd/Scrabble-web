@@ -27,9 +27,9 @@ const PLAYER1_INFORMATION: Player = {
     name: 'Vincent',
     score: 70,
     rack: [
-        { stringChar: 'c', quantity: 2, points: 1 },
-        { stringChar: 'r', quantity: 2, points: 1 },
-        { stringChar: 'p', quantity: 2, points: 1 },
+        { value: 'c', quantity: 2, points: 1 },
+        { value: 'r', quantity: 2, points: 1 },
+        { value: 'p', quantity: 2, points: 1 },
     ],
     room: '1',
 };
@@ -37,9 +37,9 @@ const SECOND_PLAYER_INFORMATION: Player = {
     name: 'Vincent',
     score: 70,
     rack: [
-        { stringChar: 'w', quantity: 2, points: 1 },
-        { stringChar: 'k', quantity: 2, points: 1 },
-        { stringChar: 't', quantity: 2, points: 1 },
+        { value: 'w', quantity: 2, points: 1 },
+        { value: 'k', quantity: 2, points: 1 },
+        { value: 't', quantity: 2, points: 1 },
     ],
     room: '1',
 };

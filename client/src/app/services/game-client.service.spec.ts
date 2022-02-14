@@ -14,7 +14,7 @@ type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: stri
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,
-    rack: [{ stringChar: 'b', quantity: 2, points: 1 }],
+    rack: [{ value: 'b', quantity: 2, points: 1 }],
     room: '1',
 };
 
@@ -22,31 +22,31 @@ const PLAYER_TWO: Player = {
     name: 'QLF',
     score: 327,
     rack: [
-        { stringChar: 'c', quantity: 2, points: 1 },
-        { stringChar: 'r', quantity: 2, points: 1 },
-        { stringChar: 'p', quantity: 2, points: 1 },
+        { value: 'c', quantity: 2, points: 1 },
+        { value: 'r', quantity: 2, points: 1 },
+        { value: 'p', quantity: 2, points: 1 },
     ],
     room: '3',
 };
 
 const PLAYER_INFO: PlayInfo = {
-    gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { stringChar: 'b', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
+    gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { value: 'b', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
     activePlayer: 'QLF',
 };
 
 const GAME_INFO: GameInfo = {
-    gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { stringChar: 'e', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
+    gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { value: 'e', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
     players: [
         {
             name: 'Paul',
             score: 23,
-            rack: [{ stringChar: 'b', quantity: 2, points: 1 }],
+            rack: [{ value: 'b', quantity: 2, points: 1 }],
             room: '1',
         },
         {
             name: 'Maurice',
             score: 333,
-            rack: [{ stringChar: 'c', quantity: 2, points: 1 }],
+            rack: [{ value: 'c', quantity: 2, points: 1 }],
             room: '1',
         },
     ],
