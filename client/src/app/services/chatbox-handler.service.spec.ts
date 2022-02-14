@@ -27,9 +27,9 @@ const PLAYER1_INFORMATION: Player = {
     name: 'Vincent',
     score: 70,
     rack: [
-        { stringChar: 'c', quantity: 2, points: 1 },
-        { stringChar: 'r', quantity: 2, points: 1 },
-        { stringChar: 'p', quantity: 2, points: 1 },
+        { value: 'c', quantity: 2, points: 1 },
+        { value: 'r', quantity: 2, points: 1 },
+        { value: 'p', quantity: 2, points: 1 },
     ],
     room: '1',
 };
@@ -37,9 +37,9 @@ const SECOND_PLAYER_INFORMATION: Player = {
     name: 'Vincent',
     score: 70,
     rack: [
-        { stringChar: 'w', quantity: 2, points: 1 },
-        { stringChar: 'k', quantity: 2, points: 1 },
-        { stringChar: 't', quantity: 2, points: 1 },
+        { value: 'w', quantity: 2, points: 1 },
+        { value: 'k', quantity: 2, points: 1 },
+        { value: 't', quantity: 2, points: 1 },
     ],
     room: '1',
 };
@@ -457,10 +457,11 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('configureImpossibleCommandError() should return the valid error configuration', () => {
-        const EXPECTED_IMPOSSIBLE_ERROR = { type: 'system-message', data: '[Erreur] Commande impossible à réaliser' };
+        const errorMessage = 'invalid placement';
+        const EXPECTED_IMPOSSIBLE_ERROR = { type: 'system-message', data: `[Erreur] ${errorMessage}` };
 
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
-        expect(service['configureImpossibleCommandError']()).toEqual(EXPECTED_IMPOSSIBLE_ERROR);
+        expect(service['configureImpossibleCommandError'](errorMessage)).toEqual(EXPECTED_IMPOSSIBLE_ERROR);
     });
 });

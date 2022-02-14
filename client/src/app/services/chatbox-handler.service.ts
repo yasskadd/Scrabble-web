@@ -193,7 +193,7 @@ export class ChatboxHandlerService {
     // TODO : come back to test and code
 
     private configureImpossibleCommandError(error: string): ChatboxMessage {
-        return { type: 'system-message', data: error };
+        return { type: 'system-message', data: `[Erreur] ${error}` };
     }
 
     private getAllLetter(letters: Letter[]): string {

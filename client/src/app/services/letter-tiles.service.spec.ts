@@ -6,19 +6,19 @@ const CANVAS_HEIGHT = 75;
 const CANVAS_WIDTH = 500;
 const testPlayerRack = [
     {
-        stringChar: 'S',
+        value: 'S',
         quantity: 1,
         points: 3,
     },
 
     {
-        stringChar: 'C',
+        value: 'C',
         quantity: 1,
         points: 3,
     },
 
     {
-        stringChar: 'H',
+        value: 'H',
         quantity: 1,
         points: 3,
     },
