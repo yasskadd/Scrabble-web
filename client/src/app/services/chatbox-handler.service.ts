@@ -58,8 +58,9 @@ export class ChatboxHandlerService {
         this.clientSocket.on('gameMessage', (broadcastMessage: string) => {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
-        this.clientSocket.on('impossibleCommandError', () => {
-            this.configureImpossibleCommandError();
+        this.clientSocket.on('impossibleCommandError', (error: string) => {
+            console.log(error);
+            this.addMessage(this.configureImpossibleCommandError(error));
         });
         this.clientSocket.on('user disconnect', () => {
             this.addDisconnect();
@@ -190,8 +191,8 @@ export class ChatboxHandlerService {
 
     // TODO : come back to test and code
 
-    private configureImpossibleCommandError(): ChatboxMessage {
-        return { type: 'system-message', data: '[Erreur] Commande impossible à réaliser' };
+    private configureImpossibleCommandError(error: string): ChatboxMessage {
+        return { type: 'system-message', data: error };
     }
 
     private getAllLetter(letter: Letter[]): string {
