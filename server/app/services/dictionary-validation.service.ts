@@ -4,9 +4,11 @@
 /* eslint-disable no-restricted-imports */
 import { GameBoard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
+import * as fs from 'fs';
 import { Container, Service } from 'typedi';
-import * as jsonDictionary from '../../assets/dictionnary.json';
 import { BoxMultiplier } from './box-multiplier.service';
+
+const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
 
 @Service()
 export class DictionaryValidationService {
