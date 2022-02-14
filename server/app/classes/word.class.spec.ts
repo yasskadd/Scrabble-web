@@ -17,7 +17,7 @@ describe('Word', () => {
         gameboard.getLetterTile({ x: 2, y: 1 }).setLetter('a');
         gameboard.getLetterTile({ x: 2, y: 1 }).isOccupied = true;
 
-        word = new Word(true, { x: 1, y: 1 }, 'SINTE', gameboard);
+        word = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 1 }, letters: ['S', 'I', 'N', 'T', 'E'] }, gameboard);
     });
 
     it('should correctly set class attributes when constructor is called', () => {

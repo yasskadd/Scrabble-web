@@ -24,32 +24,31 @@ export class DictionaryValidationService {
     }
 
     validateWord(word: Word, gameboard: Gameboard): number {
-        const enteredWords = this.wordFinderService.findAjacentWords(word, gameboard);
-        this.checkWordInDictionary(enteredWords);
-        const invalidWords = this.isolateInvalidWords(enteredWords);
-        let turnPoints = 0;
-
-        if (invalidWords.length !== 0) {
-            word.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
-            return turnPoints;
-        }
-
-        enteredWords.forEach((wordEntered: Word) => {
-            turnPoints += this.scoreService.calculateWordPoints(wordEntered, gameboard);
-        });
-
-        return turnPoints;
+        const foundWords = this.wordFinderService.findAdjacentWords(word, gameboard);
+        this.checkWordInDictionary(foundWords);
+        return this.calculateTurnPoints(word, foundWords, gameboard);
     }
 
-    private checkWordInDictionary(enteredWords: Word[]): void {
-        enteredWords.forEach((word) => {
+    private checkWordInDictionary(foundWords: Word[]): void {
+        foundWords.forEach((word) => {
             console.log(word.stringFormat);
             console.log(this.dictionary.has(word.stringFormat));
-            !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
+            if (!this.dictionary.has(word.stringFormat)) word.isValid = false;
         });
     }
 
-    private isolateInvalidWords(enteredWords: Word[]) {
-        return enteredWords.filter((word) => word.isValid === false);
+    private calculateTurnPoints(word: Word, foundWords: Word[], gameboard: Gameboard): number {
+        let totalPointsForTurn = 0;
+        if (this.isolateInvalidWords(foundWords).length !== 0) totalPointsForTurn = 0;
+        else
+            foundWords.forEach((enteredWord: Word) => {
+                totalPointsForTurn += this.scoreService.calculateWordPoints(enteredWord, gameboard);
+            });
+
+        return totalPointsForTurn;
+    }
+
+    private isolateInvalidWords(foundWords: Word[]) {
+        return foundWords.filter((word) => word.isValid === false);
     }
 }

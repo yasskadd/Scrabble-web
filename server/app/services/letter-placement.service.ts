@@ -1,139 +1,87 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prettier/prettier */
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Gameboard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player';
+import { Player } from '@app/classes/player.class';
+import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/command-info';
-import { Letter } from '@common/letter';
+import { Coordinate } from '@common/coordinate';
 import { Service } from 'typedi';
-import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
-import { WordFinderService } from './word-finder.service';
 
-const ERROR_TYPE = {
-    invalidPlacement: 'Invalid placement',
-    lettersNotInRack: 'Letters not in rack',
-    invalidFirstPlacement: 'First placement is invalid',
-};
+enum ErrorType {
+    commandCoordinateOutOfBounds = 'First Coordinate is an invalid placement',
+    lettersNotInRack = 'Letters not in rack',
+    invalidFirstWordPlacement = 'One coordinate in the first word needs to pass by the middle coordinate',
+    invalidWordBuild = 'At least one letter in word does not fit on rack or word only contains 1 letter',
+    wordsNotInDictionary = 'At Least one newly formed words does not exist in dictionary',
+    noErrors = 'All verifications have passed. Letters have been placed on board',
+}
 @Service()
 export class LetterPlacementService {
-    constructor(
-        private validateCoordService: GameboardCoordinateValidationService,
-        private wordFinderService: WordFinderService,
-        private dictionaryService: DictionaryValidationService,
-    ) {}
+    constructor(private dictionaryService: DictionaryValidationService) {}
 
-    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player) {
-        const letterCoords = this.getLettersCoord(commandInfo, gameboard);
-        if (!this.isPlacementValid(letterCoords)) {
-            console.log('INVALID PLACEMENT');
-            return [letterCoords, ERROR_TYPE.invalidPlacement];
-        }
-        // it updates letters points in gameboardCoordinate
-        if (!this.areLettersInRack(letterCoords, player)) {
-            console.log('LETTERS NOT IN RACK');
-            return [letterCoords, ERROR_TYPE.lettersNotInRack];
-        }
-        // if (!this.verifyFirstTurn(letterCoords, gameboard)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
-        return [letterCoords, null];
+    globalCommandHandler(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): ErrorType {
+        if (!this.validateCommandCoordinate(commandInfo.firstCoordinate)) return ErrorType.commandCoordinateOutOfBounds;
+
+        const lettersInRack = this.getLettersInRack(commandInfo.letters, player);
+        if (lettersInRack.length !== commandInfo.letters.length) return ErrorType.lettersNotInRack;
+
+        commandInfo.letters.forEach((letterInCommand: string) => player.removeLetterFromRack(letterInCommand));
+
+        // validate word
+        this.validateWordConstraints(commandInfo, lettersInRack, gameboard, player);
+        return ErrorType.noErrors;
     }
 
-    placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: GameBoard): [boolean, GameBoard] {
-        letterCoords.forEach((coord) => {
-            console.log('PLACED LETTER');
-            gameboard.placeLetter(coord);
+    private validateCommandCoordinate(commandCoord: Coordinate): boolean {
+        return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15;
+    }
+    private getLettersInRack(commandLetters: string[], player: Player): string[] {
+        let lettersInRack: string[] = [];
+        let tempRack: string[] = this.createTempRack(player);
+        commandLetters.forEach((commandLetter: string) => {
+            for (let i = 0; i < tempRack.length; i++) {
+                tempRack.forEach((rackLetter: string) => {
+                    if (rackLetter == commandLetter) {
+                        lettersInRack.push(commandLetter);
+                        tempRack.splice(i, 1);
+                    }
+                });
+            }
         });
-        const words: Word[] = this.wordFinderService.findAjacentWords(gameboard, letterCoords);
-        console.log(words);
-        const wordValidationScore: number = this.dictionaryService.validateWords(words);
-        if (wordValidationScore === 0) return [false, gameboard];
-        player.score += wordValidationScore;
-        if (letterCoords.length === 7) player.score += 50;
-        this.updatePlayerRack(letterCoords, player);
-        console.log('PLAYER RACK');
-        console.log(player.rack);
-        return [true, gameboard];
+        return lettersInRack;
     }
-
-    private getLettersCoord(commandInfo: PlacementCommandInfo, gameboard: GameBoard) {
-        return this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
-    }
-
-    private isPlacementValid(lettersCoords: GameboardCoordinate[]) {
-        return lettersCoords.length > 0;
-    }
-
-    private createTempRack(player: Player): Letter[] {
-        const tempPlayerRack: Letter[] = [];
-        for (const letter of player.rack) {
-            tempPlayerRack.push(letter);
-        }
+    private createTempRack(player: Player): string[] {
+        const tempPlayerRack: string[] = [];
+        player.rack.forEach((letter: string) => tempPlayerRack.push(letter));
         return tempPlayerRack;
     }
 
-    private associateLettersWithRack(placedLettersCoord: GameboardCoordinate[], player: Player): (Letter | undefined)[] {
-        const tempRack = this.createTempRack(player);
-        const letters = placedLettersCoord.map((coord) => {
-            const index = tempRack.findIndex((letter) => {
-                return letter.value === coord.letter.stringChar;
-            });
-            if (index < 0) return;
-            else {
-                const tempLetter = tempRack[index];
-                tempRack.splice(index, 1);
-                return tempLetter;
-            }
-        });
-        return letters.filter((letter) => {
-            return letter !== undefined;
-        });
-    }
+    validateWordConstraints(commandInfo: CommandInfo, lettersInRack: string[], gameboard: Gameboard, player: Player) {
+        const word = new Word(commandInfo, gameboard);
+        if (gameboard.gameboardTiles.every((coord) => coord.isOccupied === false) && !this.validateFirstTurnCoords(word, gameboard))
+            return ErrorType.invalidFirstWordPlacement;
+        if (!word.isValid) return ErrorType.invalidWordBuild;
 
-    private createLetterPoints(letterCoords: GameboardCoordinate[], lettersFromRack: Letter[]) {
-        // create new letterCoords
-        const newLetterCoords = letterCoords.map((coord) => {
-            const index = lettersFromRack.findIndex((letter) => {
-                return letter.value === coord.letter.stringChar;
-            });
-            if (index < 0) return;
-            else {
-                coord.letter.points = lettersFromRack[index].points;
-                return coord;
-            }
-        });
-        return newLetterCoords.filter((coord) => {
-            return coord !== undefined;
-        });
-    }
-
-    private areLettersInRack(letterCoords: GameboardCoordinate[], player: Player) {
-        const letters = this.associateLettersWithRack(letterCoords, player);
-        if (letters.length !== letterCoords.length) return false;
-        else {
-            letterCoords = this.createLetterPoints(letterCoords, letters as Letter[]) as GameboardCoordinate[];
-            return true;
+        const wordValidationScore: number = this.dictionaryService.validateWord(word, gameboard);
+        if (wordValidationScore !== 0) {
+            this.updatePlayerScore(word, player, wordValidationScore);
+            return ErrorType.noErrors;
+        } else {
+            setTimeout(() => {
+                // TODO : CHECK IF WAITS 3 SECONDS TO REMOVE LETTERS
+                word.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
+                player.replaceLettersOnRack(lettersInRack);
+            }, 3000);
+            return ErrorType.wordsNotInDictionary;
         }
     }
-
-    // private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
-    //     if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
-    //         const coordList: Coordinate[] = new Array();
-    //         lettersCoords.forEach((coord) => {
-    //             coordList.push({ x: coord.x, y: coord.y } as Coordinate);
-    //         });
-    //         if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
-    //     }
-    //     return true;
-    // }
-
-    private updatePlayerRack(letterCoords: GameboardCoordinate[], player: Player) {
-        letterCoords.forEach((letterCoord) => {
-            const value = player.rack.filter((item) => item.stringChar === letterCoord.letter.stringChar)[0];
-            if (player.rack.includes(value)) {
-                const index = player.rack.indexOf(value);
-                player.rack.splice(index, 1);
-            }
-        });
+    private validateFirstTurnCoords(word: Word, gameboard: Gameboard): boolean {
+        return word.newLetterCoords.some((coord) => coord.x === 8 && coord.y === 8);
+    }
+    updatePlayerScore(word: Word, player: Player, score: number) {
+        if (word.newLetterCoords.length === 7) player.score += 50;
+        player.score += score;
     }
 }

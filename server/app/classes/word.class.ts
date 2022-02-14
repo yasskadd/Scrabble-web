@@ -12,16 +12,16 @@ export class Word {
     stringFormat: string;
 
     constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
-        this.isValid = false;
+        this.isValid = true;
         this.points = 0;
         this.isHorizontal = commandInfo.isHorizontal;
 
-        if (commandInfo.isHorizontal === undefined && commandInfo.lettersPlaced.length === 1) {
+        if (commandInfo.isHorizontal === undefined && commandInfo.letters.length === 1) {
             this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
         }
 
         const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
-        this.findWordCoords(firstCoord, commandInfo.lettersPlaced, gameboard);
+        this.findWordCoords(firstCoord, commandInfo.letters, gameboard);
     }
     isWithinBoardLimits(coord: Coordinate): boolean {
         return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
@@ -59,14 +59,15 @@ export class Word {
         }
     }
 
-    private findWordCoords(firstCoord: Coordinate, placedLetters: string[], gameboard: Gameboard) {
+    private findWordCoords(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
         const position = firstCoord;
+        let commandLettersCopy = { ...commandLetters };
 
-        while (placedLetters.length || gameboard.getLetterTile(position).isOccupied) {
+        while ((commandLettersCopy.length || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
             if (!gameboard.getLetterTile(position).isOccupied) {
-                gameboard.placeLetter(position, placedLetters[0]); // TODO : move
-                this.stringFormat += placedLetters[0];
-                placedLetters.shift();
+                this.stringFormat += commandLettersCopy[0];
+                gameboard.placeLetter(position, commandLettersCopy[0]);
+                commandLettersCopy.shift();
                 this.wordCoords.push(position);
                 this.newLetterCoords.push(position);
             } else {
@@ -76,5 +77,7 @@ export class Word {
             // TODO: fix this
             this.isHorizontal ? position.x++ : position.y++;
         }
+
+        if (commandLettersCopy.length !== 0) this.isValid == false;
     }
 }

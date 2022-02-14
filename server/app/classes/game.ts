@@ -1,13 +1,13 @@
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
-import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { Container } from 'typedi';
+import { Turn } from './turn';
 
 // Temporary place
 // interface Letter {
@@ -89,7 +89,7 @@ export class Game {
             if (isValid !== null) {
                 return isValid as string;
             }
-            gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
+            gameBoard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player1, this.gameboard);
             this.turn.end();
             return gameBoard;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
@@ -102,7 +102,7 @@ export class Game {
             if (isValid !== null) {
                 return isValid as string;
             }
-            gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
+            gameBoard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
             this.turn.end();
             return gameBoard as [boolean, Gameboard];
         }

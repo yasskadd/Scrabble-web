@@ -26,11 +26,14 @@ describe.only('Dictionary Validation Service', () => {
         dictionaryValidationService = Container.get(DictionaryValidationService);
         gameboard = new Gameboard(boxMultiplierService);
 
-        validWord1 = new Word(false, { x: 1, y: 1 }, 'bonjour', gameboard);
-        validWord2 = new Word(false, { x: 3, y: 3 }, 'chevalier', gameboard);
+        validWord1 = new Word({ isHorizontal: false, firstCoordinate: { x: 1, y: 1 }, letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'] }, gameboard);
+        validWord2 = new Word(
+            { isHorizontal: false, firstCoordinate: { x: 3, y: 3 }, letters: ['c', 'h', 'e', 'v', 'a', 'l', 'i', 'e', 'r'] },
+            gameboard,
+        );
 
-        invalidWord1 = new Word(true, { x: 1, y: 13 }, 'dijasdijasd', gameboard);
-        invalidWord2 = new Word(true, { x: 1, y: 15 }, 'hhhhh', gameboard);
+        invalidWord1 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 13 }, letters: ['c', 'e', 'v', 'l', 'i', 'e', 'r'] }, gameboard);
+        invalidWord2 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 15 }, letters: ['h', 'h', 'h', 'h', 'h'] }, gameboard);
     });
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {

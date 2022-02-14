@@ -1,9 +1,9 @@
 import { Game } from '@app/classes/game';
-import { GameBoard } from '@app/classes/gameboard.class';
+import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Turn } from '@app/classes/turn';
-import { PlacementCommandInfo } from '@app/command-info';
-import { Coordinate } from '@app/coordinate';
+import { CommandInfo } from '@app/command-info';
+import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
@@ -11,7 +11,7 @@ import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
-type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
+type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
     players: Player[];
@@ -39,7 +39,7 @@ export class GamesHandler {
             this.createGame(sio, socket, gameInfo);
         });
 
-        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: PlacementCommandInfo) => {
+        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: CommandInfo) => {
             this.playGame(sio, socket, commandInfo);
         });
 
@@ -81,17 +81,17 @@ export class GamesHandler {
         sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
-    private playGame(this: this, sio: Server, socket: Socket, commandInfo: PlacementCommandInfo) {
+    private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
         const game = gameParam.game as Game;
-        const play = game.play(player.name, commandInfo) as [boolean, GameBoard] | string;
+        const play = game.play(player.name, commandInfo) as [boolean, Gameboard] | string;
 
         if (typeof play !== 'string') {
             const playerInfo: PlayInfo = {
-                gameboard: play[1].gameboardCoords,
+                gameboard: play[1].gameboardTiles,
                 activePlayer: game.turn.activePlayer,
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
@@ -119,7 +119,7 @@ export class GamesHandler {
             this.sendTimer(gameInfo.roomId, timer);
         });
         sio.to(gameInfo.roomId).emit(SocketEvents.ViewUpdate, {
-            gameboard: newGameHolder.game.gameboard.gameboardCoords,
+            gameboard: newGameHolder.game.gameboard.gameboardTiles,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
 
@@ -160,7 +160,7 @@ export class GamesHandler {
     private changeTurn(roomId: string) {
         const game = this.games.get(roomId);
         const gameInfo = {
-            gameboard: game?.game?.gameboard.gameboardCoords,
+            gameboard: game?.game?.gameboard.gameboardTiles,
             players: game?.players,
             activePlayer: game?.game?.turn.activePlayer,
         };
