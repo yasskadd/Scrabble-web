@@ -3,7 +3,7 @@ import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { LetterTilesService } from '@app/services/letter-tiles.service';
 
-export const DEFAULT_WIDTH = 500;
+export const DEFAULT_WIDTH = 300;
 export const DEFAULT_HEIGHT = 45;
 
 @Component({

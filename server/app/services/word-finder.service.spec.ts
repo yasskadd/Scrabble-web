@@ -5,29 +5,29 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable prettier/prettier */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
+import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import { Container } from 'typedi';
-import { BoxMultiplier } from './box-multiplier.service';
+import { BoxMultiplierService } from './box-multiplier.service';
 import { WordFinderService } from './word-finder.service';
 
-describe.only('WordFinderService', () => {
-    let gameboard: GameBoard;
-    let boxMultiplierService: BoxMultiplier;
+describe('WordFinderService', () => {
+    let gameboard: Gameboard;
+    let boxMultiplierService: BoxMultiplierService;
     let wordFinderService: WordFinderService;
     const letterA: Letter = {} as Letter;
     const letterB: Letter = {} as Letter;
     const letterC: Letter = {} as Letter;
 
     beforeEach(() => {
-        boxMultiplierService = Container.get(BoxMultiplier);
+        boxMultiplierService = Container.get(BoxMultiplierService);
         wordFinderService = Container.get(WordFinderService);
-        gameboard = new GameBoard(boxMultiplierService);
-        letterA.stringChar = 'a';
-        letterB.stringChar = 'b';
-        letterC.stringChar = 'c';
+        gameboard = new Gameboard(boxMultiplierService);
+        letterA.value = 'a';
+        letterB.value = 'b';
+        letterC.value = 'c';
     });
 
     it('buildFirstWord should build word with string abc if all placedLetters form abc', () => {

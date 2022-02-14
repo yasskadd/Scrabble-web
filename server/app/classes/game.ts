@@ -1,27 +1,20 @@
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player';
-import { Turn } from '@app/classes/turn';
-import { PlacementCommandInfo } from '@app/command-info';
-import { BoxMultiplier } from '@app/services/box-multiplier.service';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Player } from '@app/classes/player.class';
+import { CommandInfo } from '@app/command-info';
+import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
 import { Container } from 'typedi';
-
-// Temporary place
-// interface Letter {
-//     letter: string;
-//     quantity: number;
-//     weight: number;
-// }
+import { GameboardCoordinate } from './gameboard-coordinate.class';
+import { Turn } from './turn';
 
 const MAX_QUANTITY = 7;
 
 export class Game {
     player1: Player;
     player2: Player;
-    gameboard: GameBoard;
+    gameboard: Gameboard;
 
     constructor(
         player1: Player,
@@ -33,16 +26,12 @@ export class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.start();
-        const boxMultiplierService = Container.get(BoxMultiplier);
-        this.gameboard = new GameBoard(boxMultiplierService);
+        const boxMultiplierService = Container.get(BoxMultiplierService);
+        this.gameboard = new Gameboard(boxMultiplierService);
     }
 
     /**
      * Start a game.
-     *
-     * @param player1 : The first player in the game.
-     * @param player2 : The second player in the game.
-     * @param time    : The maximum time allowed per player's turn.
      */
     start(): void {
         this.letterReserve.generateLetters(MAX_QUANTITY, this.player1.rack);
@@ -53,7 +42,6 @@ export class Game {
 
     /**
      * End a game.
-     *
      */
     end(): void {
         this.turn.end(undefined);
@@ -62,8 +50,6 @@ export class Game {
 
     /**
      * Skip a turn.
-     *
-     * @param playerName : The active player who will skip.
      */
     skip(playerName: string): boolean {
         if (!this.turn.validating(playerName)) return false;
@@ -76,8 +62,8 @@ export class Game {
      *
      * @param playerName : The active player who will play.
      */
-    play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] | string {
-        let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
+    play(playerName: string, commandInfo: CommandInfo): [boolean, Gameboard] | string {
+        let gameboard: [boolean, Gameboard] = [false, this.gameboard];
         const numberOfLetterPlaced = commandInfo.lettersPlaced.length;
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
             // validate Command
@@ -90,12 +76,12 @@ export class Game {
             if (isValid !== null) {
                 return isValid as string;
             }
-            gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
-            if (gameBoard[0] === true) {
+            gameboard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
+            if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
             }
             this.turn.end();
-            return gameBoard;
+            return gameboard;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
             console.log('ENTERED PLAY');
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
@@ -106,15 +92,16 @@ export class Game {
             if (isValid !== null) {
                 return isValid as string;
             }
-            gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
+            gameboard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
             // TODO: test to do
-            if (gameBoard[0] === true) {
+            if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);
             }
             this.turn.end();
-            return gameBoard as [boolean, GameBoard];
+            return gameboard as [boolean, Gameboard];
         }
-        return gameBoard as [boolean, GameBoard];
+
+        return gameboard;
     }
 
     /**

@@ -33,4 +33,4 @@
 <p><button *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button>abandonner</button></p>
 <p><button *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button></p>
 <p *ngIf="this.gameClientService.isGameFinish">{{ this.gameClientService.winningMessage }}</p>
-<mat-slider aria-label="unit(s)"></mat-slider>
+<mat-slider thumbLabel [displayWith]="formatLabel" step="1" min="28" max="40" aria-label="units"></mat-slider>

@@ -1,4 +1,4 @@
-import { GameBoard } from '@app/classes/gameboard.class';
+import { Gameboard } from '@app/classes/gameboard.class';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
 
 export class Word {
@@ -15,18 +15,18 @@ export class Word {
         this.coords = coordList;
         this.points = 0;
         coordList.forEach((coord: GameboardCoordinate) => {
-            this.stringFormat += coord.letter.stringChar;
+            this.stringFormat += coord.letter.value;
         });
     }
 
-    calculatePoints(gameboard: GameBoard) {
+    calculatePoints(gameboard: Gameboard) {
         const letterCoords: GameboardCoordinate[] = this.coords;
         this.addLetterPoints(letterCoords, gameboard);
         this.addWordMultiplierPoints(letterCoords, gameboard);
         return this.points;
     }
 
-    private addLetterPoints(letterCoords: GameboardCoordinate[], gameboard: GameBoard) {
+    private addLetterPoints(letterCoords: GameboardCoordinate[], gameboard: Gameboard) {
         letterCoords.forEach((letterCoord: GameboardCoordinate) => {
             const gameboardCoord = gameboard.getCoord(letterCoord);
             if (gameboardCoord.letterMultiplier > 1) {
@@ -38,7 +38,7 @@ export class Word {
         });
     }
 
-    private addWordMultiplierPoints(letterCoords: GameboardCoordinate[], gameboard: GameBoard) {
+    private addWordMultiplierPoints(letterCoords: GameboardCoordinate[], gameboard: Gameboard) {
         letterCoords.forEach((letterCoord: GameboardCoordinate) => {
             const gameboardCoord = gameboard.getCoord(letterCoord);
             if (gameboardCoord.wordMultiplier > 1) {

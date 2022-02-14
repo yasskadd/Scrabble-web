@@ -1,27 +1,27 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
-import { PlacementCommandInfo } from '@app/command-info';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { CommandInfo } from '@app/command-info';
 import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { Container } from 'typedi';
-import { BoxMultiplier } from './box-multiplier.service';
+import { BoxMultiplierService } from './box-multiplier.service';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 
 describe('Coordinate validation service', () => {
-    let gameboard: GameBoard;
-    let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplier>;
+    let gameboard: Gameboard;
+    let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
     let coordinateValidation: GameboardCoordinateValidationService;
     let letterA: Letter;
     let letterB: Letter;
 
     beforeEach(() => {
-        boxMultiplierService = Sinon.createStubInstance(BoxMultiplier);
+        boxMultiplierService = Sinon.createStubInstance(BoxMultiplierService);
         coordinateValidation = Container.get(GameboardCoordinateValidationService);
-        gameboard = new GameBoard(boxMultiplierService);
-        letterA = { stringChar: 'a' } as Letter;
-        letterB = { stringChar: 'b' } as Letter;
+        gameboard = new Gameboard(boxMultiplierService);
+        letterA = { value: 'a' } as Letter;
+        letterB = { value: 'b' } as Letter;
     });
     it('should return false if theFirstCoord is occupied on the gameboard', () => {
         gameboard.placeLetter(new GameboardCoordinate(1, 1, {} as Letter));
@@ -44,12 +44,12 @@ describe('Coordinate validation service', () => {
             word = ['a', 'a', 'a', 'a'];
         });
         it('horizontal', () => {
-            const commandInfo: PlacementCommandInfo = { firstCoordinate: firstCoord, direction: 'h', lettersPlaced: word };
+            const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'h', lettersPlaced: word };
             expect(coordinateValidation.validateGameboardCoordinate(commandInfo, gameboard)).to.eql([]);
         });
 
         it('vertical', () => {
-            const commandInfo: PlacementCommandInfo = { firstCoordinate: firstCoord, direction: 'v', lettersPlaced: word };
+            const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'v', lettersPlaced: word };
             expect(coordinateValidation.validateGameboardCoordinate(commandInfo, gameboard)).to.eql([]);
         });
     });
@@ -65,12 +65,12 @@ describe('Coordinate validation service', () => {
         });
         it('horizontal', () => {
             const coord = new GameboardCoordinate(12, 0, {} as Letter);
-            const commandInfo: PlacementCommandInfo = { firstCoordinate: coord, direction: 'h', lettersPlaced: word };
+            const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'h', lettersPlaced: word };
             expect(coordinateValidation.validateGameboardCoordinate(commandInfo, gameboard)).to.eql([]);
         });
         it('vertical', () => {
             const coord = new GameboardCoordinate(0, 12, {} as Letter);
-            const commandInfo: PlacementCommandInfo = { firstCoordinate: coord, direction: 'v', lettersPlaced: word };
+            const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'v', lettersPlaced: word };
             expect(coordinateValidation.validateGameboardCoordinate(commandInfo, gameboard)).to.eql([]);
         });
     });
@@ -80,11 +80,11 @@ describe('Coordinate validation service', () => {
         let coord: GameboardCoordinate;
         beforeEach(() => {
             word = ['a', 'a', 'a', 'a'];
-            letterA = { stringChar: 'a' } as Letter;
+            letterA = { value: 'a' } as Letter;
             coord = new GameboardCoordinate(0, 0, letterA);
         });
         it('horizontal', () => {
-            const commandInfo: PlacementCommandInfo = { firstCoordinate: coord, direction: 'h', lettersPlaced: word };
+            const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'h', lettersPlaced: word };
             const expectedCoordList = [
                 new GameboardCoordinate(0, 0, letterA),
                 new GameboardCoordinate(1, 0, letterA),
@@ -95,7 +95,7 @@ describe('Coordinate validation service', () => {
         });
 
         it('vertical', () => {
-            const commandInfo: PlacementCommandInfo = { firstCoordinate: coord, direction: 'v', lettersPlaced: word };
+            const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'v', lettersPlaced: word };
             const expectedCoordList = [
                 new GameboardCoordinate(0, 0, letterA),
                 new GameboardCoordinate(0, 1, letterA),
@@ -112,7 +112,7 @@ describe('Coordinate validation service', () => {
         gameboard.placeLetter(new GameboardCoordinate(6, 5, {} as Letter));
         gameboard.placeLetter(new GameboardCoordinate(7, 5, {} as Letter));
         const word: string[] = ['a', 'a', 'b'];
-        const commandInfo: PlacementCommandInfo = { firstCoordinate: firstCoord, direction: 'h', lettersPlaced: word };
+        const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'h', lettersPlaced: word };
         const expectedCoordList = [
             new GameboardCoordinate(4, 5, letterA),
             new GameboardCoordinate(8, 5, letterA),
@@ -127,7 +127,7 @@ describe('Coordinate validation service', () => {
         gameboard.placeLetter(new GameboardCoordinate(4, 7, {} as Letter));
         gameboard.placeLetter(new GameboardCoordinate(4, 8, {} as Letter));
         const word: string[] = ['a', 'a', 'b'];
-        const commandInfo: PlacementCommandInfo = { firstCoordinate: firstCoord, direction: 'v', lettersPlaced: word };
+        const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'v', lettersPlaced: word };
         const expectedCoordList = [
             new GameboardCoordinate(4, 5, letterA),
             new GameboardCoordinate(4, 9, letterA),
@@ -137,17 +137,17 @@ describe('Coordinate validation service', () => {
     });
 
     it('validateCoordinate() should only return the firstCoord if only one letter has been placed ', () => {
-        const firstCoord: GameboardCoordinate = new GameboardCoordinate(0, 0, { stringChar: 'a' } as Letter);
+        const firstCoord: GameboardCoordinate = new GameboardCoordinate(0, 0, { value: 'a' } as Letter);
         const word: string[] = ['a'];
-        const commandInfo: PlacementCommandInfo = { firstCoordinate: firstCoord, direction: '', lettersPlaced: word };
+        const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: '', lettersPlaced: word };
         expect(coordinateValidation.validateGameboardCoordinate(commandInfo, gameboard)).to.deep.equal([firstCoord]);
     });
 
     it('validateCoordinate() should return empty list if coordinate is already placed on the gameboard', () => {
         gameboard.placeLetter(new GameboardCoordinate(3, 3, {} as Letter));
-        const firstCoord: GameboardCoordinate = new GameboardCoordinate(3, 3, { stringChar: 'a' } as Letter);
+        const firstCoord: GameboardCoordinate = new GameboardCoordinate(3, 3, { value: 'a' } as Letter);
         const word: string[] = ['a'];
-        const commandInfo: PlacementCommandInfo = { firstCoordinate: firstCoord, direction: '', lettersPlaced: word };
+        const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: '', lettersPlaced: word };
         expect(coordinateValidation.validateGameboardCoordinate(commandInfo, gameboard)).to.deep.equal([]);
     });
 });

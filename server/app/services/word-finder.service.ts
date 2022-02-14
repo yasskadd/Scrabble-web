@@ -2,20 +2,20 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable prettier/prettier */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
+import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';
 
 @Service()
 export class WordFinderService {
-    findNewWords(gameBoard: GameBoard, coordList: GameboardCoordinate[]) {
+    findNewWords(gameboard: Gameboard, coordList: GameboardCoordinate[]) {
         console.log('FIND NEW WORDS CALLED');
         const newWordsArray: Word[] = new Array();
         // Verify if only one letter is placed
         if (coordList.length === 1) {
-            const verticalWord: Word = this.buildVerticalWord(gameBoard, coordList[0]);
-            const horizontalWord: Word = this.buildHorizontalWord(gameBoard, coordList[0]);
+            const verticalWord: Word = this.buildVerticalWord(gameboard, coordList[0]);
+            const horizontalWord: Word = this.buildHorizontalWord(gameboard, coordList[0]);
             if (verticalWord.coords.length > 1) {
                 newWordsArray.push(verticalWord);
             }
@@ -25,17 +25,17 @@ export class WordFinderService {
             return newWordsArray;
         } else {
             // Build first word
-            const firstWord: Word = this.buildFirstWord(gameBoard, coordList);
+            const firstWord: Word = this.buildFirstWord(gameboard, coordList);
             newWordsArray.push(firstWord);
             // Build other words
             coordList.forEach((coord) => {
                 if (!firstWord.isHorizontal) {
-                    const horizontalWord: Word = this.buildHorizontalWord(gameBoard, coord);
+                    const horizontalWord: Word = this.buildHorizontalWord(gameboard, coord);
                     if (horizontalWord.coords.length !== 0 && horizontalWord.coords.length !== 1) {
                         newWordsArray.push(horizontalWord);
                     }
                 } else if (firstWord.isHorizontal) {
-                    const verticalWord: Word = this.buildVerticalWord(gameBoard, coord);
+                    const verticalWord: Word = this.buildVerticalWord(gameboard, coord);
                     if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
                         newWordsArray.push(verticalWord);
                     }
@@ -45,7 +45,7 @@ export class WordFinderService {
         }
     }
 
-    buildFirstWord(gameboard: GameBoard, coordList: GameboardCoordinate[]) {
+    buildFirstWord(gameboard: Gameboard, coordList: GameboardCoordinate[]) {
         const direction: string = GameboardCoordinate.findDirection(coordList) as string;
         const currentCoord = coordList[0];
         let word: Word;
@@ -55,22 +55,22 @@ export class WordFinderService {
         return word;
     }
 
-    private buildVerticalWord(gameBoard: GameBoard, coord: GameboardCoordinate) {
+    private buildVerticalWord(gameboard: Gameboard, coord: GameboardCoordinate) {
         let currentCoord: GameboardCoordinate = coord;
-        while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
+        while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             if (y !== 0) {
                 const nextCoord = new GameboardCoordinate(x, y - 1, {} as Letter);
-                if (gameBoard.getCoord(nextCoord).isOccupied) currentCoord = nextCoord;
+                if (gameboard.getCoord(nextCoord).isOccupied) currentCoord = nextCoord;
                 else break;
             } else break;
         }
         const coordArray: GameboardCoordinate[] = new Array();
-        while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
+        while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            const gameCoord: GameboardCoordinate = gameBoard.getCoord(currentCoord);
+            const gameCoord: GameboardCoordinate = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
             if (y !== 14) {
                 currentCoord = new GameboardCoordinate(x, y + 1, {} as Letter);
@@ -86,14 +86,14 @@ export class WordFinderService {
         }
     }
 
-    private buildHorizontalWord(gameBoard: GameBoard, coord: GameboardCoordinate) {
+    private buildHorizontalWord(gameboard: Gameboard, coord: GameboardCoordinate) {
         let currentCoord: GameboardCoordinate = coord;
-        while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
+        while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             if (x !== 0) {
                 const nextCoord = new GameboardCoordinate(x - 1, y, {} as Letter);
-                if (gameBoard.getCoord(nextCoord).isOccupied) {
+                if (gameboard.getCoord(nextCoord).isOccupied) {
                     currentCoord = nextCoord;
                 } else {
                     break;
@@ -103,10 +103,10 @@ export class WordFinderService {
             }
         }
         const coordArray: GameboardCoordinate[] = new Array();
-        while (gameBoard.getCoord(currentCoord).isOccupied && gameBoard.getCoord(currentCoord) !== undefined) {
+        while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            const gameCoord: GameboardCoordinate = gameBoard.getCoord(currentCoord);
+            const gameCoord: GameboardCoordinate = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
             if (x !== 14) {
                 currentCoord = new GameboardCoordinate(x + 1, y, {} as Letter);

@@ -1,7 +1,7 @@
 // import { Message } from '@app/message';
 // import { DateService } from '@app/services/date.service';
-import { Player } from '@app/classes/player';
 import { ReplaySubject } from 'rxjs';
+import { Player } from './player.class';
 
 const NUMBER_PLAYER = 2;
 const SECOND = 1000;
