@@ -75,14 +75,14 @@ export class GridService {
         this.gridContext.fillText(letter, position.x + TILE_SIZE / 2, TILE_SIZE / 2);
     }
 
-    drawLetterPoints(x: number, y: number, string: string) {
+    drawLetterPoints(position: Coordinate, string: string) {
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
         const plusX = width * 0.9;
         const halfSize = 20 / 2;
         this.gridContext.font = 20 * 0.45 + 'px system-ui';
-        this.gridContext.fillText(string, x + TILE_SIZE / 2 + plusX, y + halfSize + TILE_SIZE / 2, 20);
+        this.gridContext.fillText(string, position.x + TILE_SIZE / 2 + plusX, position.y + halfSize + TILE_SIZE / 2, 20);
     }
 
     drawLetterTileOnBoard(position: Coordinate, char: string) {

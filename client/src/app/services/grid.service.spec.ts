@@ -9,23 +9,18 @@ describe('GridService', () => {
 
     const CANVAS_WIDTH = 600;
     const CANVAS_HEIGHT = 600;
-    const POSITION_TEST = { x: 0, y: 1 };
-    // const gameboardTest = [
-    //     {
-    //         coordinate: { x: 3, y: 8 },
-    //         isOccupied: false,
-    //         value: 'A',
-    //         points: 0,
-    //         multiplier: 1,
-    //     },
-    //     {
-    //         coordinate: { x: 3, y: 8 },
-    //         isOccupied: true,
-    //         value: 'A',
-    //         points: 0,
-    //         multiplier: 1,
-    //     },
-    // ];
+    const POSITION_TEST = { x: 2, y: 11 };
+    const BOARD_SIZE = 15;
+    const GAMEBOARD_TEST = [
+        {
+            x: 2,
+            y: 5,
+            isOccupied: true,
+            letter: { stringChar: 'S', quantity: 2, points: 2 },
+            letterMultiplier: 1,
+            wordMultiplier: 2,
+        },
+    ];
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
@@ -37,30 +32,6 @@ describe('GridService', () => {
     it('should be created', () => {
         expect(gridService).toBeTruthy();
     });
-
-    // drawGrid                 - done
-    // drawLetterTile           -
-    // drawLetterPoints         -
-    // drawLetterTileOnBoard    -
-    // drawLetterPointsOnBoard  -
-    // drawStar                 -
-
-    // drawRowNumbers           - done
-    // drawColumnLetters        - done
-    // drawLetter               - done
-
-    // drawBasicTiles           - more or less
-    // drawBasicTile            - more or less done
-    // drawMultipliers          - done
-    // drawMultiplier           - done
-
-    // setTileColor             - done
-    // drawMiddleTile           - mostly done
-    // fillTile                 - mostly done
-    // drawMultiplierNumber     - double check
-    // drawMultiplierType       - double check
-    // drawText                 - done
-    // setFontSize              - done
 
     it(' squareWidth should return the width of the grid canvas', () => {
         expect(GridService.squareWidth).toEqual(CANVAS_WIDTH / constants.TOTAL_COLUMNS);
@@ -94,11 +65,12 @@ describe('GridService', () => {
         expect(drawMultipliersSpy).toHaveBeenCalled();
     });
 
-    // it(' drawGrid should call drawLetter when gameboard has occupied coordinate', () => {
-    //     const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
-    //     gridService.drawGrid(gameboardTest);
-    //     expect(drawLetterSpy).toHaveBeenCalled();
-    // });
+    it(' drawGrid should call drawLetter when gameboard has occupied coordinate', () => {
+        const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
+        gridService.drawGrid(GAMEBOARD_TEST);
+        expect(drawLetterSpy).toHaveBeenCalled();
+        // expect(GAMEBOARD_TEST.letter.isOccupied).toBeTruthy();
+    });
 
     it(' drawGrid should call drawMiddleTile', () => {
         const drawMiddleTileSpy = spyOn(gridService, 'drawMiddleTile').and.callThrough();
@@ -110,15 +82,40 @@ describe('GridService', () => {
     it(' drawGrid should not call drawLetter on an empty letter tile', () => {
         const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
         gridService.drawGrid([]);
-        expect(drawLetterSpy).toHaveBeenCalledTimes(15);
+        expect(drawLetterSpy).toHaveBeenCalledTimes(BOARD_SIZE);
         // expect(drawLetterSpy).toHaveBeenCalledTimes(0);
     });
 
     // drawLetterTile
+    it(' drawLetterTile should call strokeRect ', () => {
+        const strokeRectSpy = spyOn(gridService.gridContext, 'strokeRect').and.callThrough();
+        gridService.drawLetterTile(POSITION_TEST, 'K');
+        expect(strokeRectSpy).toHaveBeenCalledTimes(1);
+    });
 
     // drawLetterPoints
+    it(' drawLetterPoints should have a middle baseline and center alignment ', () => {
+        gridService.drawLetterPoints(POSITION_TEST, '1');
+        expect(gridService.gridContext.textAlign).toEqual('center');
+        expect(gridService.gridContext.textBaseline).toEqual('middle');
+    });
+
     // drawLetterTileOnBoard
+    it(' drawLetterTileOnBoard should not call drawLetter more than once', () => {
+        const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
+        gridService.drawLetterTileOnBoard(POSITION_TEST, 'R');
+        expect(drawLetterSpy).not.toHaveBeenCalledTimes(2);
+        expect(drawLetterSpy).toHaveBeenCalled();
+    });
+
     // drawLetterPointsOnBoard
+    it(' drawLetterPointsOnBoard should call fillText 1 time only', () => {
+        const fillTextSpy = spyOn(gridService.gridContext, 'fillText').and.callThrough();
+        gridService.drawLetterPointsOnBoard(POSITION_TEST, 'R');
+        expect(fillTextSpy).toHaveBeenCalledTimes(1);
+        expect(fillTextSpy).not.toHaveBeenCalledTimes(10);
+    });
+
     // drawStar
     it(' drawStar should call fill', () => {
         const ctxfillSpy = spyOn(gridService.gridContext, 'fill').and.callThrough();
@@ -126,18 +123,25 @@ describe('GridService', () => {
         expect(ctxfillSpy).toHaveBeenCalled();
     });
 
+    it(' drawStar should call lineTo 11 times', () => {
+        const expectedCalls = 11;
+        const lineToSpy = spyOn(gridService.gridContext, 'lineTo').and.callThrough();
+        gridService.drawStar();
+        expect(lineToSpy).toHaveBeenCalledTimes(expectedCalls);
+    });
+
     // drawRowNumbers tests
     it(' drawRowNumbers should call drawText 15 times', () => {
         const rowNumbersSpy = spyOn(gridService, 'drawText').and.callThrough();
         gridService.drawRowNumbers();
-        expect(rowNumbersSpy).toHaveBeenCalledTimes(15);
+        expect(rowNumbersSpy).toHaveBeenCalledTimes(BOARD_SIZE);
     });
 
     // drawColumnLetters tests
     it(' drawColumnLetters should call drawLetter 15 times', () => {
         const columnLettersSpy = spyOn(gridService, 'drawLetter').and.callThrough();
         gridService.drawColumnLetters();
-        expect(columnLettersSpy).toHaveBeenCalledTimes(15);
+        expect(columnLettersSpy).toHaveBeenCalledTimes(BOARD_SIZE);
     });
 
     // drawLetter tests
@@ -191,13 +195,13 @@ describe('GridService', () => {
         expect(fillTileSpy).toHaveBeenCalled();
     });
 
-    it(' drawMultiplier should call fillTile', () => {
+    it(' drawMultiplier should call drawMultiplierType', () => {
         const typeSpy = spyOn(gridService, 'drawMultiplierType').and.callThrough();
         gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
         expect(typeSpy).toHaveBeenCalled();
     });
 
-    it(' drawMultiplier should call fillTile', () => {
+    it(' drawMultiplier should call drawMultiplierNumber', () => {
         const numberSpy = spyOn(gridService, 'drawMultiplierNumber').and.callThrough();
         gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
         expect(numberSpy).toHaveBeenCalled();
@@ -217,7 +221,7 @@ describe('GridService', () => {
         const fillStyleSpy = spyOn(gridService, 'setTileColor').and.callThrough();
         gridService.setTileColor('LETTRE', 3);
         expect(fillStyleSpy).toHaveBeenCalled();
-        expect(gridService.gridContext.fillStyle).toBe(DARK_BLUE);
+        expect(gridService.gridContext.fillStyle).toEqual(DARK_BLUE);
     });
 
     // drawMiddleTile
@@ -298,5 +302,11 @@ describe('GridService', () => {
         gridService.setFontSize(testFontSize);
         expect(setFontSizeSpy).toHaveBeenCalled();
         expect(gridService.gridContext.font).toBe('23px system-ui');
+    });
+
+    it(' drawLetterWeight should call measureText ', () => {
+        const measureTextSpy = spyOn(gridService.gridContext, 'measureText').and.callThrough();
+        gridService.drawLetterWeight(POSITION_TEST, '6');
+        expect(measureTextSpy).toHaveBeenCalledTimes(1);
     });
 });
