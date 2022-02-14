@@ -195,19 +195,19 @@ export class ChatboxHandlerService {
         return { type: 'system-message', data: error };
     }
 
-    private getAllLetter(letter: Letter[]): string {
+    private getAllLetter(letters: Letter[]): string {
         let letterString = '';
-        letter?.forEach((value) => {
-            letterString = letterString + value.stringChar;
+        letters?.forEach((letter) => {
+            letterString = letterString + letter.value;
         });
         return letterString;
     }
 
-    private getAllLetterReserve(letter: Letter[]): string {
+    private getAllLetterReserve(letters: Letter[]): string {
         let letterString = '';
-        letter?.forEach((value) => {
-            for (let i = 1; i <= value.quantity; i++) {
-                letterString = letterString + value.stringChar;
+        letters?.forEach((letter) => {
+            for (let i = 1; i <= letter.quantity; i++) {
+                letterString = letterString + letter.value;
             }
         });
         return letterString;

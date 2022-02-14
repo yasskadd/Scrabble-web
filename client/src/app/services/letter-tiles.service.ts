@@ -25,7 +25,7 @@ export class LetterTilesService {
         this.gridContext.fillRect(X_DIFFERENCE, 0, CONTAINER_WIDTH, DEFAULT_HEIGHT);
         this.gridContext.fillStyle = 'black';
         letters.forEach((letter, i) => {
-            this.drawLetterTile(DEFAULT_WIDTH / TILE_SIZE + TILE_SIZE * i, 1, letter.stringChar);
+            this.drawLetterTile(DEFAULT_WIDTH / TILE_SIZE + TILE_SIZE * i, 1, letter.value);
             this.drawLetterWeight(DEFAULT_WIDTH / TILE_SIZE + TILE_SIZE * i, 0, String(letter.points));
         });
     }

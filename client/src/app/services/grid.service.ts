@@ -55,10 +55,10 @@ export class GridService {
         this.drawBasicTiles();
         this.drawMultipliers();
         this.drawMiddleTile();
-        gameboard.forEach((letter) => {
-            if (letter.isOccupied) {
-                this.drawLetter({ x: letter.x, y: letter.y }, letter.letter.stringChar.toUpperCase());
-                this.drawLetterWeight({ x: letter.x, y: letter.y }, String(letter.letter.points));
+        gameboard.forEach((letterTile) => {
+            if (letterTile.isOccupied) {
+                this.drawLetter({ x: letterTile.x, y: letterTile.y }, letterTile.letter.value.toUpperCase());
+                this.drawLetterWeight({ x: letterTile.x, y: letterTile.y }, String(letterTile.letter.points));
             }
         });
     }
