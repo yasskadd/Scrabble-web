@@ -46,7 +46,7 @@ describe('LetterTilesService', () => {
 
     it(' letter tiles of player rack should have a minimum size of 20px', () => {
         const expectedSize = 20;
-        expect(letterTilesService.minimumSize).toEqual(expectedSize);
+        expect(letterTilesService.maxSize).toEqual(expectedSize);
     });
 
     it(' drawRack should call drawLetterTile 3 times', () => {
@@ -54,6 +54,13 @@ describe('LetterTilesService', () => {
         const drawLetterSpy = spyOn(letterTilesService, 'drawLetterTile').and.callThrough();
         letterTilesService.drawRack(testPlayerRack);
         expect(drawLetterSpy).toHaveBeenCalledTimes(expected);
+    });
+
+    it(' drawRack should call drawLetterWeight 3 times', () => {
+        const expected = 3;
+        const drawWeightSpy = spyOn(letterTilesService, 'drawLetterWeight').and.callThrough();
+        letterTilesService.drawRack(testPlayerRack);
+        expect(drawWeightSpy).toHaveBeenCalledTimes(expected);
     });
 
     it(' drawRack should call drawLetterWeight 3 times', () => {

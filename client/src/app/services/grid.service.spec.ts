@@ -292,9 +292,10 @@ describe('GridService', () => {
 
     // setFontSize
     it(' setFontSize should set the font', () => {
+        const testFontSize = 23;
         gridService.gridContext = jasmine.createSpyObj('gridContext', ['font']);
         const setFontSizeSpy = spyOn(gridService, 'setFontSize').and.callThrough();
-        gridService.setFontSize(23);
+        gridService.setFontSize(testFontSize);
         expect(setFontSizeSpy).toHaveBeenCalled();
         expect(gridService.gridContext.font).toBe('23px system-ui');
     });
