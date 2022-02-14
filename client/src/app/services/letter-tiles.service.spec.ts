@@ -69,4 +69,40 @@ describe('LetterTilesService', () => {
         letterTilesService.drawRack(testPlayerRack);
         expect(drawWeightSpy).toHaveBeenCalledTimes(expected);
     });
+
+    it(' drawLetterTile should call fillText ', () => {
+        const fillTextSpy = spyOn(letterTilesService.gridContext, 'fillText').and.callThrough();
+        letterTilesService.drawLetterTile(3, 1, 'Z');
+        expect(fillTextSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it(' drawLetterTile should call strokeRect ', () => {
+        const strokeRectSpy = spyOn(letterTilesService.gridContext, 'strokeRect').and.callThrough();
+        letterTilesService.drawLetterTile(0, 1, 'K');
+        expect(strokeRectSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it(' drawLetterTile should have a middle baseline and center alignment ', () => {
+        letterTilesService.drawLetterTile(0, 1, 'R');
+        expect(letterTilesService.gridContext.textAlign).toEqual('center');
+        expect(letterTilesService.gridContext.textBaseline).toEqual('middle');
+    });
+
+    it(' drawLetterWeight should call fillText ', () => {
+        const fillTextSpy = spyOn(letterTilesService.gridContext, 'fillText').and.callThrough();
+        letterTilesService.drawLetterWeight(0, 1, '6');
+        expect(fillTextSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it(' drawLetterWeight should call measureText ', () => {
+        const measureTextSpy = spyOn(letterTilesService.gridContext, 'measureText').and.callThrough();
+        letterTilesService.drawLetterWeight(1, 0, '6');
+        expect(measureTextSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it(' drawLetterWeight should have a middle baseline and center alignment ', () => {
+        letterTilesService.drawLetterWeight(0, 1, '7');
+        expect(letterTilesService.gridContext.textAlign).toEqual('center');
+        expect(letterTilesService.gridContext.textBaseline).toEqual('middle');
+    });
 });
