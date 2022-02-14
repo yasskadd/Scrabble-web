@@ -65,7 +65,7 @@ describe('GameClientService', () => {
     let gridServiceSpy: jasmine.SpyObj<GridService>;
     // TODO : TESTS
     beforeEach(() => {
-        gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGridArray']);
+        gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketEmulator as unknown as Socket;
@@ -125,12 +125,10 @@ describe('GameClientService', () => {
     });
 
     it('should set the value of isGameFinish to true when the opponent left the game ', () => {
-        const spy = spyOn(service, 'stopTimer' as never);
         service.isGameFinish = false;
         socketEmulator.peerSideEmit('OpponentLeftTheGame');
         expect(service.playerOneTurn).toBeFalsy();
         expect(service.isGameFinish).toBeTruthy();
-        expect(spy).toHaveBeenCalled();
     });
 
     it('should call findWinner when the endGame event is emit', () => {
@@ -144,10 +142,8 @@ describe('GameClientService', () => {
     it('should emit abandonGame to the server if the player Abandon the game', () => {
         // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocketService'], 'send');
-        const spy2 = spyOn(service, 'stopTimer' as never);
         service.abandonGame();
         expect(spy).toHaveBeenCalledOnceWith('AbandonGame');
-        expect(spy2).toHaveBeenCalled();
     });
 
     it('should disconnect the player if he quit the game', () => {

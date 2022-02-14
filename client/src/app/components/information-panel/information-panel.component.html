@@ -26,5 +26,7 @@
     <div class="time" *ngIf="this.gameClientService.playerOneTurn">--:--</div>
 </section>
 <div>x lettres disponibles dans la réserve</div>
-<p><button mat-raised-button>abandonner</button></p>
+<p><button *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button>abandonner</button></p>
+<p><button *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button></p>
+<p *ngIf="this.gameClientService.isGameFinish">{{ this.gameClientService.winningMessage }}</p>
 <mat-slider aria-label="unit(s)"></mat-slider>

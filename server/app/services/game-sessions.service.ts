@@ -7,7 +7,7 @@ import { Service } from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
 const UNAVAILABLE_ELEMENT_INDEX = -1;
-
+const SECOND = 1000;
 const PLAYERS_JOINING_ROOM = 'joinGameRoom';
 const SAME_USER_IN_ROOM_ERROR = "L'adversaire a le même nom";
 const ROOM_NOT_AVAILABLE_ERROR = "La salle n'est plus disponible";
@@ -69,12 +69,18 @@ export class GameSessions {
     }
 
     private disconnect(this: this, sio: Server, socket: Socket) {
-        const roomId = this.getRoomId(socket.id);
-        if (roomId !== null) {
-            socket.broadcast.to(roomId).emit('user disconnect');
-            this.removeRoom(sio, roomId);
-        }
-        this.removeUserFromActiveUsers(socket.id);
+        let tempTime = 5;
+        setInterval(() => {
+            tempTime = tempTime - 1;
+            if (tempTime === 0) {
+                const roomId = this.getRoomId(socket.id);
+                if (roomId !== null) {
+                    socket.broadcast.to(roomId).emit('user disconnect');
+                    this.removeRoom(sio, roomId);
+                }
+                this.removeUserFromActiveUsers(socket.id);
+            }
+        }, SECOND);
     }
     private playerJoinGameAvailable(this: this, sio: Server, socket: Socket, parameters: Parameters) {
         const roomId = parameters.id;

@@ -11,6 +11,7 @@ import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
+const SECOND = 1000;
 type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
@@ -49,6 +50,12 @@ export class GamesHandler {
 
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
+        });
+        this.socketManager.on(SocketEvents.Disconnect, (socket) => {
+            this.disconnect(socket);
+        });
+        this.socketManager.on('AbandonGame', (socket) => {
+            this.abandonGame(socket);
         });
     }
 
@@ -171,5 +178,31 @@ export class GamesHandler {
 
     private sendTimer(roomId: string, timer: number) {
         this.socketManager.emitRoom(roomId, SocketEvents.TimerClientUpdate, timer);
+    }
+
+    private abandonGame(socket: Socket) {
+        let player: Player;
+        if (this.players.has(socket.id)) {
+            player = this.players.get(socket.id) as Player;
+            const room = player.room;
+            socket.broadcast.to(room).emit('OpponentLeftTheGame');
+            socket.broadcast.to(room).emit('endGame');
+        }
+    }
+
+    private disconnect(socket: Socket) {
+        let tempTime = 5;
+        setInterval(() => {
+            tempTime = tempTime - 1;
+            if (tempTime === 0) {
+                let player: Player;
+                if (this.players.has(socket.id)) {
+                    player = this.players.get(socket.id) as Player;
+                    const room = player.room;
+                    socket.broadcast.to(room).emit('OpponentLeftTheGame');
+                    socket.broadcast.to(room).emit('endGame');
+                }
+            }
+        }, SECOND);
     }
 }
