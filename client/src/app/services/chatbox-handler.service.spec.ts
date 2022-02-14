@@ -206,7 +206,7 @@ describe('ChatboxHandlerService', () => {
         // eslint-disable-next-line dot-notation
         expect(service['validCommand'](INVALID_SYNTAX)).toBeFalsy();
 
-        const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de synthese' };
+        const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de syntaxe' };
         expect(service.messages.pop()).toEqual(EXPECTED_SYNTAX_ERROR);
     });
 
