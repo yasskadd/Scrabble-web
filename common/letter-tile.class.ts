@@ -1,5 +1,5 @@
-import { Multiplier } from '@common/Multiplier';
 import { Coordinate } from './coordinate';
+import { Multiplier } from './multiplier';
 
 export class LetterTile {
     coordinate: Coordinate;
