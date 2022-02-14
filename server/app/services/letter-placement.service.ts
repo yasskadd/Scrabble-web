@@ -6,6 +6,7 @@ import { GameBoard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player';
 import { Word } from '@app/classes/word.class';
 import { PlacementCommandInfo } from '@app/command-info';
+import { Coordinate } from '@app/coordinate';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
@@ -36,7 +37,10 @@ export class LetterPlacementService {
             console.log('LETTERS NOT IN RACK');
             return [letterCoords, ERROR_TYPE.lettersNotInRack];
         }
-        // if (!this.verifyFirstTurn(letterCoords, gameboard)) return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
+        if (!this.verifyFirstTurn(letterCoords, gameboard)) {
+            console.log('FIRST TURN NOT VALID');
+            return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
+        }
         return [letterCoords, null];
     }
 
@@ -76,6 +80,10 @@ export class LetterPlacementService {
     private associateLettersWithRack(placedLettersCoord: GameboardCoordinate[], player: Player): (Letter | undefined)[] {
         const tempRack = this.createTempRack(player);
         const letters = placedLettersCoord.map((coord) => {
+            // BLANK LETTER IMPLEMENTATION
+            if (coord.letter.stringChar === coord.letter.stringChar.toUpperCase()) {
+                coord.letter.stringChar = '*';
+            }
             const index = tempRack.findIndex((letter) => {
                 return letter.stringChar === coord.letter.stringChar;
             });
@@ -117,16 +125,16 @@ export class LetterPlacementService {
         }
     }
 
-    // private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
-    //     if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
-    //         const coordList: Coordinate[] = new Array();
-    //         lettersCoords.forEach((coord) => {
-    //             coordList.push({ x: coord.x, y: coord.y } as Coordinate);
-    //         });
-    //         if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
-    //     }
-    //     return true;
-    // }
+    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
+        if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
+            const coordList: Coordinate[] = new Array();
+            lettersCoords.forEach((coord) => {
+                coordList.push({ x: coord.x, y: coord.y } as Coordinate);
+            });
+            if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
+        }
+        return true;
+    }
 
     private updatePlayerRack(letterCoords: GameboardCoordinate[], player: Player) {
         letterCoords.forEach((letterCoord) => {
