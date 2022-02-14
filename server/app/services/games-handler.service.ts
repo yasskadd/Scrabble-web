@@ -191,7 +191,11 @@ export class GamesHandler {
         };
         console.log('CHANGE TURN : ');
         console.log(gameInfo.activePlayer);
-        this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
+        if (gameInfo.activePlayer === undefined) {
+            this.socketManager.emitRoom(roomId, 'endGame');
+        } else {
+            this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
+        }
     }
 
     private sendTimer(roomId: string, timer: number) {

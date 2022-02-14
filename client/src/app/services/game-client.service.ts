@@ -52,7 +52,6 @@ export class GameClientService {
             this.isGameFinish = true;
         });
         this.clientSocketService.on('endGame', () => {
-            this.isGameFinish = true;
             this.findWinner();
         });
 
@@ -99,6 +98,7 @@ export class GameClientService {
         }
     }
     private findWinnerByScore(): void {
+        this.isGameFinish = true;
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo au deux joueur, vous avez le même score';
         } else if (this.playerOne.score > this.secondPlayer.score) {
