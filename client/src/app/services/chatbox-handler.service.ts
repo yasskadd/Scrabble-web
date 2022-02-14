@@ -148,16 +148,16 @@ export class ChatboxHandlerService {
         // TODO : Number magic to remove
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         if (this.isDigit(placementArray[2]) && placementArray[3] != null) {
-            const coordinateY = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateY, y: parseInt(placementArray[0], 36) - 9 } as Coordinate, placementArray[3] as string];
+            const coordinateX = +(placementArray[1] + placementArray[2]);
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, placementArray[3] as string];
         } else if (this.isDigit(placementArray[2])) {
-            const coordinateY = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateY, y: parseInt(placementArray[0], 36) - 9 } as Coordinate, '' as string];
+            const coordinateX = +(placementArray[1] + placementArray[2]);
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, '' as string];
         } else if (placementArray[2] == null) {
-            const coordinateY = +placementArray[1];
-            return [{ x: coordinateY, y: parseInt(placementArray[0], 36) - 9 } as Coordinate, '' as string];
+            const coordinateX = +placementArray[1];
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, '' as string];
         }
-        return [{ x: parseInt(placementArray[1], 10), y: parseInt(placementArray[0], 36) - 9 } as Coordinate, placementArray[2] as string];
+        return [{ x: parseInt(placementArray[1], 10) - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, placementArray[2] as string];
     }
 
     private isDigit(information: string) {
