@@ -1,12 +1,12 @@
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
-import { PlacementCommandInfo } from '@app/command-info';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { CommandInfo } from '@app/command-info';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';
 
 @Service()
 export class GameboardCoordinateValidationService {
-    validateGameboardCoordinate(commandInfo: PlacementCommandInfo, gameboard: GameBoard) {
+    validateGameboardCoordinate(commandInfo: CommandInfo, gameboard: Gameboard) {
         // Validate firstCoord
         if (!this.isFirstCoordValid(commandInfo.firstCoordinate, gameboard)) return [];
         const coordOfLetters = new Array();
@@ -17,7 +17,7 @@ export class GameboardCoordinateValidationService {
             while (stringLength !== 0) {
                 if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
-                    const letter = { stringChar: commandInfo.lettersPlaced.shift() as string } as Letter;
+                    const letter = { value: commandInfo.lettersPlaced.shift() as string } as Letter;
                     coordOfLetters.push(new GameboardCoordinate(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }
@@ -28,7 +28,7 @@ export class GameboardCoordinateValidationService {
             while (stringLength !== 0) {
                 if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
-                    const letter = { stringChar: commandInfo.lettersPlaced.shift() as string } as Letter;
+                    const letter = { value: commandInfo.lettersPlaced.shift() as string } as Letter;
                     coordOfLetters.push(new GameboardCoordinate(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }
@@ -36,12 +36,12 @@ export class GameboardCoordinateValidationService {
                 currentCoord = coordinate;
             }
         } else {
-            const letter = { stringChar: commandInfo.lettersPlaced.shift() as string } as Letter;
+            const letter = { value: commandInfo.lettersPlaced.shift() as string } as Letter;
             coordOfLetters.push(new GameboardCoordinate(currentCoord.x, currentCoord.y, letter));
         }
         return coordOfLetters;
     }
-    isFirstCoordValid(firstCoord: GameboardCoordinate, gameboard: GameBoard) {
+    isFirstCoordValid(firstCoord: GameboardCoordinate, gameboard: Gameboard) {
         if (Object.keys(gameboard.getCoord(firstCoord)).length === 0 || gameboard.getCoord(firstCoord) === undefined) return false;
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
     }

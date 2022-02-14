@@ -3,11 +3,10 @@
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Letter } from '@common/letter';
 import { expect } from 'chai';
-import { BoxMultiplier } from './box-multiplier.service';
-// import { Service } from 'typedi';
+import { BoxMultiplierService } from './box-multiplier.service';
 
 describe('BoxMultiplier', () => {
-    let boxMultiplierService: BoxMultiplier;
+    let boxMultiplierService: BoxMultiplierService;
     let letterMultiplier2: GameboardCoordinate[];
     let letterMultiplier3: GameboardCoordinate[];
     let wordMultiplier2: GameboardCoordinate[];

@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Player } from '@app/classes/player';
 import { expect } from 'chai';
 import { SinonFakeTimers, spy, useFakeTimers } from 'sinon';
+import { Player } from './player.class';
 import { Turn } from './turn';
 
 const SECOND = 1000;

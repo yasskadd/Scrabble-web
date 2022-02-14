@@ -1,8 +1,8 @@
 import { Game } from '@app/classes/game';
-import { GameBoard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
-import { PlacementCommandInfo } from '@app/command-info';
+import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@app/coordinate';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
@@ -40,7 +40,7 @@ export class GamesHandler {
             this.createGame(sio, socket, gameInfo);
         });
 
-        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: PlacementCommandInfo) => {
+        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: CommandInfo) => {
             this.playGame(sio, socket, commandInfo);
         });
 
@@ -88,13 +88,13 @@ export class GamesHandler {
         sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
-    private playGame(this: this, sio: Server, socket: Socket, commandInfo: PlacementCommandInfo) {
+    private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
         const game = gameParam.game as Game;
-        const play = game.play(player.name, commandInfo) as [boolean, GameBoard] | string;
+        const play = game.play(player.name, commandInfo) as [boolean, Gameboard] | string;
 
         if (typeof play[0] === 'string') {
             socket.emit('impossibleCommandError', play);

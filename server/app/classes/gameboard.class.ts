@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
-import { BoxMultiplier } from '@app/services/box-multiplier.service';
+import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { Letter } from '@common/letter';
 import { Inject } from 'typedi';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
 
-export class GameBoard {
+export class Gameboard {
     gameboardCoords: GameboardCoordinate[] = new Array();
 
-    constructor(@Inject() private boxMultiplierService: BoxMultiplier) {
+    constructor(@Inject() private boxMultiplierService: BoxMultiplierService) {
         this.createGameboardCoordinates();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }
@@ -35,14 +35,9 @@ export class GameBoard {
 
     placeLetter(letterCoord: GameboardCoordinate) {
         const gameboardCoord = this.getCoord(letterCoord);
-        if (gameboardCoord.isOccupied === true) {
-            return false;
-        } else {
-            // TODO : removeLetterFromChevalet(gameboardCoord.letter);
-            gameboardCoord.letter = letterCoord.letter;
-            gameboardCoord.isOccupied = true;
-            return true;
-        }
+        gameboardCoord.letter = letterCoord.letter;
+        gameboardCoord.isOccupied = true;
+        return true;
     }
 
     removeLetter(letterCoord: GameboardCoordinate) {

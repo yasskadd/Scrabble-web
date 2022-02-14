@@ -1,6 +1,6 @@
 import { Game } from '@app/classes/game';
-import { GameBoard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
 import { GamesHandler } from '@app/services/games-handler.service';
 import { expect } from 'chai';
@@ -69,7 +69,7 @@ describe('GamesHandler Service', () => {
             const ROOM = '0';
             const player = { room: ROOM } as Player;
             game = sinon.createStubInstance(Game);
-            game.gameboard = { gameboardCoords: [] } as unknown as GameBoard;
+            game.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
             game.turn = { activePlayer: '' } as Turn;
             game.skip.returns(true);
             const gameHolder = { game, players: [] };
