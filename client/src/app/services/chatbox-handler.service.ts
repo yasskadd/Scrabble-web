@@ -47,9 +47,10 @@ export class ChatboxHandlerService {
     }
 
     endGameMessage(): void {
+        const letterReserve = this.getAllLetterReserve(this.gameClient.letterReserve);
         const myLetterLeft = this.getAllLetter(this.gameClient.playerOne.rack as never);
         const opponentLetterLeft = this.getAllLetter(this.gameClient.secondPlayer.rack as never);
-        this.messages.push({ type: 'system-message', data: 'Fin de la partie : ' });
+        this.messages.push({ type: 'system-message', data: `Fin de la partie : ${letterReserve}` });
         this.messages.push({ type: 'system-message', data: `${this.gameClient.playerOne.name} : ${myLetterLeft}` });
         this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
     }
@@ -59,7 +60,6 @@ export class ChatboxHandlerService {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
         this.clientSocket.on('impossibleCommandError', (error: string) => {
-            console.log(error);
             this.addMessage(this.configureImpossibleCommandError(error));
         });
         this.clientSocket.on('user disconnect', () => {
@@ -199,6 +199,16 @@ export class ChatboxHandlerService {
         let letterString = '';
         letter?.forEach((value) => {
             letterString = letterString + value.stringChar;
+        });
+        return letterString;
+    }
+
+    private getAllLetterReserve(letter: Letter[]): string {
+        let letterString = '';
+        letter?.forEach((value) => {
+            for (let i = 1; i <= value.quantity; i++) {
+                letterString = letterString + value.stringChar;
+            }
         });
         return letterString;
     }

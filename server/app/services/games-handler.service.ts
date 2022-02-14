@@ -77,14 +77,18 @@ export class GamesHandler {
 
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
+        const playerRack = player.rack;
         const gameParam = this.games.get(room) as GameHolder;
         const game = gameParam.game as Game;
         const newRack = game.exchange(letters, player.name);
         player.rack = newRack;
-
         if (newRack.length === 0) return;
-        socket.emit(SocketEvents.UpdatePlayerInformation, player);
-        socket.broadcast.to(room).emit(SocketEvents.UpdateOpponentInformation, player);
+        if (JSON.stringify(playerRack) === JSON.stringify(player.rack)) {
+            socket.emit('impossibleCommandError', 'Vous ne posséder pas toutes les lettres a échanger');
+        }
+        this.updatePlayerInfo(socket, room, game);
+        // socket.emit(SocketEvents.UpdatePlayerInformation, player);
+        // socket.broadcast.to(room).emit(SocketEvents.UpdateOpponentInformation, player);
         sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
@@ -131,7 +135,7 @@ export class GamesHandler {
             gameboard: newGameHolder.game.gameboard.gameboardCoords,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
-
+        this.socketManager.emitRoom(gameInfo.roomId, 'letterReserveUpdated', newGameHolder.game.letterReserve.lettersReserve);
         console.log('START GAME : ');
         console.log(newGameHolder.game.turn.activePlayer);
 
@@ -164,6 +168,7 @@ export class GamesHandler {
             socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player1);
             socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player2);
         }
+        this.socketManager.emitRoom(roomId, 'letterReserveUpdated', game.letterReserve.lettersReserve);
     }
 
     private changeTurn(roomId: string) {

@@ -42,6 +42,11 @@ export class GameClientService {
             this.secondPlayer = player;
             this.updateGameboard();
         });
+
+        this.clientSocketService.on('letterReserveUpdated', (letterReserveUpdated: Letter[]) => {
+            console.log(letterReserveUpdated);
+            this.letterReserve = letterReserveUpdated;
+        });
         this.clientSocketService.on('OpponentLeftTheGame', () => {
             this.playerOneTurn = false;
             this.isGameFinish = true;
