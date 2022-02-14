@@ -78,6 +78,7 @@ export class Game {
      */
     play(playerName: string, commandInfo: PlacementCommandInfo): [boolean, GameBoard] | string {
         let gameBoard: [boolean, GameBoard] = [false, this.gameboard];
+        const numberOfLetterPlaced = commandInfo.lettersPlaced.length;
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
             // validate Command
             console.log('ENTERED PLAY');
@@ -90,6 +91,9 @@ export class Game {
                 return isValid as string;
             }
             gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
+            if (gameBoard[0] === true) {
+                this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
+            }
             this.turn.end();
             return gameBoard;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
@@ -103,6 +107,10 @@ export class Game {
                 return isValid as string;
             }
             gameBoard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
+            // TODO: test to do
+            if (gameBoard[0] === true) {
+                this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);
+            }
             this.turn.end();
             return gameBoard as [boolean, GameBoard];
         }
