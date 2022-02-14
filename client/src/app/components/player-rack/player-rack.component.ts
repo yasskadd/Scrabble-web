@@ -3,8 +3,6 @@ import { LetterTilesService } from '@app/services/letter-tiles.service';
 
 export const DEFAULT_WIDTH = 500;
 export const DEFAULT_HEIGHT = 45;
-const TILE_SIZE = 35;
-const RACK_LETTERS = 7;
 
 @Component({
     selector: 'app-player-rack',

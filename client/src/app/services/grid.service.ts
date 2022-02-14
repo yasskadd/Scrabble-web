@@ -167,7 +167,7 @@ export class GridService {
         }
     }
 
-    drawLetter(position: Coordinate, char: string | undefined) {
+    drawLetter(position: Coordinate, char: string) {
         this.setFontSize(this.letterSize);
         this.gridContext.textBaseline = 'middle';
         this.drawText(position, char);
@@ -263,10 +263,9 @@ export class GridService {
         this.drawText(position, type);
     }
 
-    drawText(position: Coordinate, content: string | undefined) {
+    drawText(position: Coordinate, content: string) {
         this.gridContext.fillStyle = 'black';
         this.gridContext.textAlign = 'center';
-        if (content === undefined) content = '';
         content.toUpperCase();
         this.gridContext.fillText(
             content,

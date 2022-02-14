@@ -5,7 +5,7 @@ import { Multiplier } from './multiplier';
 export class LetterTile {
     coordinate: Coordinate;
     isOccupied: boolean;
-    private letter: string | undefined;
+    private letter: string;
     points: number;
     multiplier: Multiplier;
 
@@ -13,13 +13,14 @@ export class LetterTile {
         this.coordinate = { ...position };
         this.isOccupied = false;
         this.multiplier = { type: '', number: 1 };
+        this.setLetter('');
     }
 
     public getLetter() {
         return this.letter;
     }
 
-    public setLetter(letter: string | undefined) {
+    public setLetter(letter: string) {
         this.letter = letter;
         this.setPoints();
     }

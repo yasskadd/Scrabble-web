@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
@@ -6,7 +7,7 @@ import { GridService } from './grid.service';
 import { LetterTilesService } from './letter-tiles.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type Player = { name: string; score: number; rack?: LetterTile[]; room: string };
+type Player = { name: string; score: number; rack: Letter[]; room: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 @Injectable({
     providedIn: 'root',
@@ -18,7 +19,7 @@ export class GameClientService {
     playerOne: Player;
     secondPlayer: Player;
     playerOneTurn: boolean;
-    etterTileReserve: LetterTile[];
+    letterTileReserve: LetterTile[];
 
     constructor(private gridService: GridService, private letterTilesService: LetterTilesService, private clientSocketService: ClientSocketService) {
         // Used for testing
