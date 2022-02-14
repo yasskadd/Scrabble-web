@@ -17,7 +17,7 @@ interface GameHolder {
 }
 type SioSignature = SocketManager['sio'];
 
-describe.only('GamesHandler Service', () => {
+describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
