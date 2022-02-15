@@ -8,8 +8,10 @@ describe('PlayerRackComponent', () => {
     let chatBoxHandlerSpy: jasmine.SpyObj<ChatboxHandlerService>;
 
     beforeEach(async () => {
+        chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage']);
         await TestBed.configureTestingModule({
             declarations: [PlayerRackComponent],
+            providers: [{ provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy }],
         }).compileComponents();
     });
 

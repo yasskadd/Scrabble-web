@@ -100,7 +100,7 @@ export class GameClientService {
     private findWinnerByScore(): void {
         this.isGameFinish = true;
         if (this.playerOne.score === this.secondPlayer.score) {
-            this.winningMessage = 'Bravo au deux joueur, vous avez le même score';
+            this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
         } else if (this.playerOne.score > this.secondPlayer.score) {
             this.winningMessage = 'Bravo Vous avez gagné la partie de Scrabble';
         } else {

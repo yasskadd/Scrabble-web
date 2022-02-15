@@ -50,7 +50,7 @@ describe('InformationPanelComponent', () => {
     let gameClientSpy: jasmine.SpyObj<GameClientService>;
 
     beforeEach(async () => {
-        gameClientSpy = jasmine.createSpyObj('GameClientService', ['startTimer', 'quitGame'], {
+        gameClientSpy = jasmine.createSpyObj('GameClientService', ['startTimer', 'quitGame', 'updateGameboard'], {
             playerOne: PLAYER_ONE,
             secondPlayer: PLAYER_TWO,
             gameTimer: TIMER,
@@ -71,7 +71,6 @@ describe('InformationPanelComponent', () => {
         fixture.detectChanges();
         router = TestBed.inject(Router);
     });
-
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -102,8 +101,7 @@ describe('InformationPanelComponent', () => {
 
     // ???? not sure why this is not working
     it('should call the method gameClientService.updateGameboard if updateFontSize is called', () => {
-        const drawWeightSpy = spyOn(gameClientSpy, 'updateGameboard' as never).and.callThrough();
         component.updateFontSize();
-        expect(drawWeightSpy).toHaveBeenCalled();
+        expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
     });
 });
