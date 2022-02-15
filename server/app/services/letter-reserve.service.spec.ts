@@ -95,4 +95,15 @@ describe('LetterReserveService', () => {
         const rack = letterReserveService.generateLetters(randomQuantity, emptyRack);
         expect(rack.length).to.equal(randomQuantity);
     });
+
+    it('should return true if the reserve is empty', () => {
+        letterReserveService.lettersReserve = [];
+        const isEmpty = letterReserveService.isEmpty();
+        expect(isEmpty).to.eql(true);
+    });
+
+    it('should return false if the reserve is not empty', () => {
+        const isEmpty = letterReserveService.isEmpty();
+        expect(isEmpty).to.eql(false);
+    });
 });
