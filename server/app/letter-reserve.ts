@@ -159,7 +159,7 @@ export const LETTERS: Letter[] = [
 
     {
         value: '*',
-        quantity: 2,
+        quantity: 40,
         points: 0,
     },
 ];
