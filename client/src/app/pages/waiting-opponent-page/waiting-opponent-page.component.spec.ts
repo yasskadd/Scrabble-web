@@ -121,6 +121,18 @@ describe('WaitingOpponentPageComponent', () => {
         expect(gameConfigurationServiceSpy.exitWaitingRoom).toHaveBeenCalled();
     });
 
+    it('should have a button to start the game when you created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        expect(button).toBeTruthy();
+    });
+    it('should have a button to reject the opponent when you created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.rejectButton');
+        expect(button).toBeTruthy();
+    });
     it('rejectOpponent should call gameconfiguration.rejectOponent()', () => {
         component.rejectOpponent();
         fixture.detectChanges();

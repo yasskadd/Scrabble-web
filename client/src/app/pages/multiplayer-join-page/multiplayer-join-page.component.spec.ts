@@ -118,6 +118,16 @@ describe('MultiplayerJoinPageComponent', () => {
         expect(spy).not.toHaveBeenCalledWith();
     });
 
+    it('Should have a table when there is room availables', () => {
+        fixture.detectChanges();
+        const table = fixture.debugElement.nativeElement.querySelector('.roomAvailable');
+        expect(table).toBeTruthy();
+    });
+    it('Should  not have a paragraph saying there is no room available when there is room availables', () => {
+        fixture.detectChanges();
+        const text = fixture.debugElement.nativeElement.querySelector('.noRoomAvailable');
+        expect(text).toBeFalsy();
+    });
     it('Should open a snackBar when there an error while trying to join a multiplayer game', () => {
         const spy = spyOn(component, 'openSnackBar');
         gameConfigurationServiceSpy.errorReason.next(TEST_ERROR);
