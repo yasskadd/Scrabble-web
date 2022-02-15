@@ -40,16 +40,6 @@ describe('LetterTilesService', () => {
         expect(letterTilesService).toBeTruthy();
     });
 
-    // it(' letter tiles of player rack should have a minimum size of 15px', () => {
-    //     const expectedSize = 15;
-    //     expect(letterTilesService.minimumSize).toEqual(expectedSize);
-    // });
-
-    // it(' letter tiles of player rack should have a minimum size of 20px', () => {
-    //     const expectedSize = 20;
-    //     expect(letterTilesService.maxSize).toEqual(expectedSize);
-    // });
-
     it(' drawRack should call drawLetterTile 3 times', () => {
         const expected = 3;
         const drawLetterSpy = spyOn(letterTilesService, 'drawLetterTile').and.callThrough();
