@@ -101,6 +101,13 @@ describe('Letter Placement Service', () => {
             const letters: GameboardCoordinate[] = [new GameboardCoordinate(0, 0, letterC)];
             expect(placementService['associateLettersWithRack'](letters, player)).to.eql([]);
         });
+
+        it('should set isBlank attribute to true and points to 0 if letter i uppercase', () => {
+            const letters: GameboardCoordinate[] = [new GameboardCoordinate(0, 0, { value: 'C', points: 1 } as Letter)];
+            placementService['associateLettersWithRack'](letters, player);
+            expect(letters[0].letter.isBlankLetter).to.equal(true);
+            expect(letters[0].letter.points).to.equal(0);
+        });
     });
 
     context('createLetterPoints tests', () => {
@@ -183,25 +190,62 @@ describe('Letter Placement Service', () => {
             expect(allEqual).to.equal(true);
             expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(true);
         });
+
+        it('should return false if there is placed letters on the gameboard', () => {
+            const letterCoords: GameboardCoordinate[] = [new GameboardCoordinate(7, 7, letterA), new GameboardCoordinate(7, 8, letterB)];
+            gameboard.placeLetter(new GameboardCoordinate(0, 0, {} as Letter));
+            expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(false);
+        });
     });
 
     context('globalCommandVerification() tests', () => {
+        let getLettersStub: Sinon.SinonStub<unknown[], unknown>;
+        let isPlacementStub: Sinon.SinonStub<unknown[], unknown>;
+        let lettersInRackStub: Sinon.SinonStub<unknown[], unknown>;
+        let invalidFirstPlacementStub: Sinon.SinonStub<unknown[], unknown>;
+        let letterCoords: GameboardCoordinate[];
+        beforeEach(() => {
+            getLettersStub = Sinon.stub(placementService, 'getLettersCoord' as never);
+            isPlacementStub = Sinon.stub(placementService, 'isPlacementValid' as never);
+            lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as never);
+            invalidFirstPlacementStub = Sinon.stub(placementService, 'verifyFirstTurn' as never);
+            letterCoords = [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterB)];
+            getLettersStub.returns(letterCoords);
+        });
+
+        afterEach(() => {
+            getLettersStub.restore();
+            isPlacementStub.restore();
+            lettersInRackStub.restore();
+            invalidFirstPlacementStub.restore();
+        });
+
         it('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const isPlacementStub = Sinon.stub(placementService, 'isPlacementValid' as any);
             isPlacementStub.withArgs(commandInfo, gameboard).returns(false);
-            const expectedReturn = [placementService['getLettersCoord'](commandInfo, gameboard), 'Invalid placement'];
+            const expectedReturn = [letterCoords, 'Placement invalide'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
-        it('should return array with letterCoords and lettersNotInRack string if isPlacement() returns false', () => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const letterCoords: GameboardCoordinate[] = [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterB)];
-            const getLettersStub = Sinon.stub(placementService, 'getLettersCoord' as any);
-            getLettersStub.returns(letterCoords);
-            const lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as any);
+        it('should return array with letterCoords and lettersNotInRack string if areLettersInRack() returns false', () => {
+            isPlacementStub.returns(true);
             lettersInRackStub.returns(false);
-            const expectedReturn = [placementService['getLettersCoord'](commandInfo, gameboard), 'Letters not in rack'];
+            const expectedReturn = [letterCoords, 'Lettres absents du chevalet'];
+            expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
+        });
+
+        it('should return letterCoords and invalidFirstPlacement string if verifyFirstTurn() returns false', () => {
+            isPlacementStub.returns(true);
+            lettersInRackStub.returns(true);
+            invalidFirstPlacementStub.returns(false);
+            const expectedReturn = [letterCoords, 'Placement du premier tour pas valide'];
+            expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
+        });
+
+        it('should return letterCoords and null if verification is valid', () => {
+            isPlacementStub.returns(true);
+            lettersInRackStub.returns(true);
+            invalidFirstPlacementStub.returns(true);
+            const expectedReturn = [letterCoords, null];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
     });

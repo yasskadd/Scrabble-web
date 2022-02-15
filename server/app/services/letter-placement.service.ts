@@ -94,9 +94,9 @@ export class LetterPlacementService {
                 console.log(coord.letter);
             }
             const index = tempRack.findIndex((letter) => {
-                if (coord.letter.isBlankLetter !== undefined) {
+                if (coord.letter.isBlankLetter !== undefined && coord.letter.isBlankLetter) {
                     console.log('TEST CALLED 1');
-                    if (coord.letter.isBlankLetter === true) return letter.value === '*';
+                    return letter.value === '*';
                 }
                 return letter.value === coord.letter.value;
             });
@@ -147,7 +147,7 @@ export class LetterPlacementService {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
             if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
-        }
+        } else return false;
         return true;
     }
 

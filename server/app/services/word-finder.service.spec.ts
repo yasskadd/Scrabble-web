@@ -17,17 +17,17 @@ describe('WordFinderService', () => {
     let gameboard: Gameboard;
     let boxMultiplierService: BoxMultiplierService;
     let wordFinderService: WordFinderService;
-    const letterA: Letter = {} as Letter;
-    const letterB: Letter = {} as Letter;
-    const letterC: Letter = {} as Letter;
+    let letterA: Letter;
+    let letterB: Letter;
+    let letterC: Letter;
 
     beforeEach(() => {
         boxMultiplierService = Container.get(BoxMultiplierService);
         wordFinderService = Container.get(WordFinderService);
         gameboard = new Gameboard(boxMultiplierService);
-        letterA.value = 'a';
-        letterB.value = 'b';
-        letterC.value = 'c';
+        letterA = { value: 'a' } as Letter;
+        letterB = { value: 'b' } as Letter;
+        letterC = { value: 'c' } as Letter;
     });
 
     it('buildFirstWord should build word with string abc if all placedLetters form abc', () => {
@@ -52,7 +52,7 @@ describe('WordFinderService', () => {
         expect(word.stringFormat).to.eql('abc');
     });
 
-    it('buildFirstWord should build string aabbcc if there is already occupied squares between placedLetters', () => {
+    it('buildFirstWord should build string aabbcc if there is already occupied squares between horizontal placedLetters', () => {
         gameboard.placeLetter(new GameboardCoordinate(1, 0, letterA));
         gameboard.placeLetter(new GameboardCoordinate(2, 0, letterA));
         gameboard.placeLetter(new GameboardCoordinate(3, 0, letterB));
@@ -69,7 +69,7 @@ describe('WordFinderService', () => {
         expect(word.isHorizontal).to.be.true;
     });
 
-    it('buildFirstWord should build string if there is already occupied squares between placedLetters', () => {
+    it('buildFirstWord should build string if there is already occupied squares between vertical placedLetters', () => {
         gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
         gameboard.placeLetter(new GameboardCoordinate(0, 1, letterA));
         gameboard.placeLetter(new GameboardCoordinate(0, 2, letterB));
@@ -86,98 +86,107 @@ describe('WordFinderService', () => {
         expect(word.isHorizontal).to.be.false;
     });
 
-    it('buildVerticalWord should return a word with empty string if there is no vertical word on board', () => {
-        gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(1, 0, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(2, 0, letterC));
-        const word: Word = wordFinderService['buildVerticalWord'](gameboard, new GameboardCoordinate(0, 0, letterA));
-        expect(word.stringFormat).to.eql('');
+    it('buildFirstWord should return empty word if coordList is empty', () => {
+        const word: Word = wordFinderService.buildFirstWord(gameboard, []);
+        expect(word).to.eql({} as Word);
     });
 
-    it('buildVertical should return word with string if word is on the edge of the gameboard', () => {
-        gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(0, 1, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(0, 2, letterC));
-        const placedLetters: GameboardCoordinate[] = [
-            new GameboardCoordinate(0, 0, letterA),
-            new GameboardCoordinate(0, 1, letterB),
-            new GameboardCoordinate(0, 2, letterC),
-        ];
-        const word: Word = wordFinderService['buildVerticalWord'](gameboard, placedLetters[1]);
-        expect(word.stringFormat).to.eql('abc');
+    context('buildVerticalWord() tests', () => {
+        it('buildVerticalWord should return a word with empty string if there is no vertical word on board', () => {
+            gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(1, 0, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(2, 0, letterC));
+            const word: Word = wordFinderService['buildVerticalWord'](gameboard, new GameboardCoordinate(0, 0, letterA));
+            expect(word.stringFormat).to.eql('');
+        });
+
+        it('buildVertical should return word with string if word is on the edge of the gameboard', () => {
+            gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(0, 1, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(0, 2, letterC));
+            const placedLetters: GameboardCoordinate[] = [
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(0, 1, letterB),
+                new GameboardCoordinate(0, 2, letterC),
+            ];
+            const word: Word = wordFinderService['buildVerticalWord'](gameboard, placedLetters[1]);
+            expect(word.stringFormat).to.eql('abc');
+        });
+
+        it('buildVertical should return word with string if word is on the opposite edge of the gameboard', () => {
+            gameboard.placeLetter(new GameboardCoordinate(0, 12, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(0, 13, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(0, 14, letterC));
+            const placedLetters: GameboardCoordinate[] = [
+                new GameboardCoordinate(0, 12, letterA),
+                new GameboardCoordinate(0, 13, letterB),
+                new GameboardCoordinate(0, 14, letterC),
+            ];
+            const word: Word = wordFinderService['buildVerticalWord'](gameboard, placedLetters[1]);
+            expect(word.stringFormat).to.eql('abc');
+        });
+
+        it('buildVertical should return word with string if word is not on the edge of the gameboard', () => {
+            gameboard.placeLetter(new GameboardCoordinate(0, 1, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(0, 2, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(0, 3, letterC));
+            const placedLetters: GameboardCoordinate[] = [
+                new GameboardCoordinate(0, 1, letterA),
+                new GameboardCoordinate(0, 2, letterB),
+                new GameboardCoordinate(0, 3, letterC),
+            ];
+            const word: Word = wordFinderService['buildVerticalWord'](gameboard, placedLetters[1]);
+            expect(word.stringFormat).to.eql('abc');
+        });
     });
 
-    it('buildVertical should return word with string if word is on the opposite edge of the gameboard', () => {
-        gameboard.placeLetter(new GameboardCoordinate(0, 12, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(0, 13, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(0, 14, letterC));
-        const placedLetters: GameboardCoordinate[] = [
-            new GameboardCoordinate(0, 12, letterA),
-            new GameboardCoordinate(0, 13, letterB),
-            new GameboardCoordinate(0, 14, letterC),
-        ];
-        const word: Word = wordFinderService['buildVerticalWord'](gameboard, placedLetters[1]);
-        expect(word.stringFormat).to.eql('abc');
-    });
+    context('buildHorizontalWord tests', () => {
+        it('buildHorizontal should return a word with empty string if there is no horizontal word on board', () => {
+            gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(0, 1, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(0, 2, letterC));
+            const word: Word = wordFinderService['buildHorizontalWord'](gameboard, new GameboardCoordinate(0, 0, letterA));
+            expect(word.stringFormat).to.eql('');
+        });
 
-    it('buildVertical should return word with string if word is not on the edge of the gameboard', () => {
-        gameboard.placeLetter(new GameboardCoordinate(0, 1, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(0, 2, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(0, 3, letterC));
-        const placedLetters: GameboardCoordinate[] = [
-            new GameboardCoordinate(0, 1, letterA),
-            new GameboardCoordinate(0, 2, letterB),
-            new GameboardCoordinate(0, 3, letterC),
-        ];
-        const word: Word = wordFinderService['buildVerticalWord'](gameboard, placedLetters[1]);
-        expect(word.stringFormat).to.eql('abc');
-    });
+        it('buildHorizontal should return word with string if word is on the edge of the gameboard', () => {
+            gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(1, 0, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(2, 0, letterC));
+            const placedLetters: GameboardCoordinate[] = [
+                new GameboardCoordinate(0, 0, letterA),
+                new GameboardCoordinate(1, 0, letterB),
+                new GameboardCoordinate(2, 0, letterC),
+            ];
+            const word: Word = wordFinderService['buildHorizontalWord'](gameboard, placedLetters[1]);
+            expect(word.stringFormat).to.eql('abc');
+        });
 
-    it('buildHorizontal should return a word with empty string if there is no horizontal word on board', () => {
-        gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(0, 1, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(0, 2, letterC));
-        const word: Word = wordFinderService['buildHorizontalWord'](gameboard, new GameboardCoordinate(0, 0, letterA));
-        expect(word.stringFormat).to.eql('');
-    });
+        it('buildHorizontal should return word with string if word is on the opposite edge of the gameboard', () => {
+            gameboard.placeLetter(new GameboardCoordinate(12, 0, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(13, 0, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(14, 0, letterC));
+            const placedLetters: GameboardCoordinate[] = [
+                new GameboardCoordinate(12, 0, letterA),
+                new GameboardCoordinate(13, 0, letterB),
+                new GameboardCoordinate(14, 0, letterC),
+            ];
+            const word: Word = wordFinderService['buildHorizontalWord'](gameboard, placedLetters[1]);
+            expect(word.stringFormat).to.eql('abc');
+        });
 
-    it('buildHorizontal should return word with string if word is on the edge of the gameboard', () => {
-        gameboard.placeLetter(new GameboardCoordinate(0, 0, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(1, 0, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(2, 0, letterC));
-        const placedLetters: GameboardCoordinate[] = [
-            new GameboardCoordinate(0, 0, letterA),
-            new GameboardCoordinate(1, 0, letterB),
-            new GameboardCoordinate(2, 0, letterC),
-        ];
-        const word: Word = wordFinderService['buildHorizontalWord'](gameboard, placedLetters[1]);
-        expect(word.stringFormat).to.eql('abc');
-    });
-
-    it('buildHorizontal should return word with string if word is on the opposite edge of the gameboard', () => {
-        gameboard.placeLetter(new GameboardCoordinate(12, 0, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(13, 0, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(14, 0, letterC));
-        const placedLetters: GameboardCoordinate[] = [
-            new GameboardCoordinate(12, 0, letterA),
-            new GameboardCoordinate(13, 0, letterB),
-            new GameboardCoordinate(14, 0, letterC),
-        ];
-        const word: Word = wordFinderService['buildHorizontalWord'](gameboard, placedLetters[1]);
-        expect(word.stringFormat).to.eql('abc');
-    });
-
-    it('buildHorizontal should return word with string if word is not on the edge of the gameboard', () => {
-        gameboard.placeLetter(new GameboardCoordinate(1, 0, letterA));
-        gameboard.placeLetter(new GameboardCoordinate(2, 0, letterB));
-        gameboard.placeLetter(new GameboardCoordinate(3, 0, letterC));
-        const placedLetters: GameboardCoordinate[] = [
-            new GameboardCoordinate(1, 0, letterA),
-            new GameboardCoordinate(2, 0, letterB),
-            new GameboardCoordinate(3, 0, letterC),
-        ];
-        const word: Word = wordFinderService['buildHorizontalWord'](gameboard, placedLetters[1]);
-        expect(word.stringFormat).to.eql('abc');
+        it('buildHorizontal should return word with string if word is not on the edge of the gameboard', () => {
+            gameboard.placeLetter(new GameboardCoordinate(1, 0, letterA));
+            gameboard.placeLetter(new GameboardCoordinate(2, 0, letterB));
+            gameboard.placeLetter(new GameboardCoordinate(3, 0, letterC));
+            const placedLetters: GameboardCoordinate[] = [
+                new GameboardCoordinate(1, 0, letterA),
+                new GameboardCoordinate(2, 0, letterB),
+                new GameboardCoordinate(3, 0, letterC),
+            ];
+            const word: Word = wordFinderService['buildHorizontalWord'](gameboard, placedLetters[1]);
+            expect(word.stringFormat).to.eql('abc');
+        });
     });
 
     it('findNewWords should return a single word if there is one placedLetter and letters are horizontal', () => {
@@ -213,5 +222,35 @@ describe('WordFinderService', () => {
             return word.stringFormat;
         });
         expect(stringList).to.include.members(['aa', 'ab']);
+    });
+
+    it('findNewWords() should return an array of 2 words if there is 2 horizontal placed Letters related to 2 words', () => {
+        const placedLetters: GameboardCoordinate[] = [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(1, 0, letterB)];
+        gameboard.placeLetter(placedLetters[0]);
+        gameboard.placeLetter(placedLetters[1]);
+        gameboard.placeLetter(new GameboardCoordinate(0, 1, { value: 'c' } as Letter));
+        gameboard.placeLetter(new GameboardCoordinate(1, 1, { value: 'b' } as Letter));
+        const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
+        const stringList: string[] = words.map((word) => {
+            return word.stringFormat;
+        });
+        expect(stringList).to.include.members(['ab', 'ac', 'bb']);
+    });
+
+    it('findNewWords() should return an array of 2 words if there is 2 vertical placed Letters related to 2 words', () => {
+        const placedLetters: GameboardCoordinate[] = [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterB)];
+        gameboard.placeLetter(placedLetters[0]);
+        gameboard.placeLetter(placedLetters[1]);
+        gameboard.placeLetter(new GameboardCoordinate(1, 0, letterA));
+        gameboard.placeLetter(new GameboardCoordinate(1, 1, letterA));
+        const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
+        const stringList: string[] = words.map((word) => {
+            return word.stringFormat;
+        });
+        expect(stringList).to.include.members(['ab', 'aa', 'ba']);
+    });
+
+    it('findNewWords() should return empty array if coordList is empty', () => {
+        expect(wordFinderService.findNewWords(gameboard, [])).to.eql([]);
     });
 });
