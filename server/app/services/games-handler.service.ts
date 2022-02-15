@@ -52,9 +52,11 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
+        //
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
         });
+        // NOT
         this.socketManager.on('AbandonGame', (socket) => {
             this.abandonGame(socket);
         });
@@ -201,25 +203,26 @@ export class GamesHandler {
         console.log('CHANGE TURN : ');
         console.log(gameInfo.activePlayer);
         if (gameInfo.activePlayer === undefined) {
-            this.socketManager.emitRoom(roomId, 'endGame');
+            this.socketManager.emitRoom(roomId, SocketEvents.GameEnd);
         } else {
             this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
         }
     }
 
     private sendTimer(roomId: string, timer: number) {
-        console.log('HERE IT DIES');
         this.socketManager.emitRoom(roomId, SocketEvents.TimerClientUpdate, timer);
     }
 
     private abandonGame(socket: Socket) {
-        let player: Player;
-        if (this.players.has(socket.id)) {
-            player = this.players.get(socket.id) as Player;
-            const room = player.room;
-            socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
-            socket.broadcast.to(room).emit(SocketEvents.GameEnd);
-        }
+        if (!this.players.has(socket.id)) return;
+
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        // Passed 2 hours trying to test it and it was hell | it won't matter since the other would have left the room
+        // socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
+        // socket.broadcast.to(room).emit(SocketEvents.GameEnd);
+        this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
+        this.socketManager.emitRoom(room, SocketEvents.GameEnd);
     }
 
     private disconnect(socket: Socket) {
