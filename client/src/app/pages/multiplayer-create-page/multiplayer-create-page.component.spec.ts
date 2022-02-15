@@ -84,6 +84,15 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
+    it('should  not call createGame() if the player did not enter his name before trying to click the button', fakeAsync(() => {
+        fixture.detectChanges();
+        const spy = spyOn(component, 'createGame');
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).not.toHaveBeenCalled();
+    }));
     it('createGame should call gameConfiguration.gameInitialization', fakeAsync(() => {
         component.playerName = 'Vincent';
         component.createGame();

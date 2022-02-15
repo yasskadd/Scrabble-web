@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -75,16 +75,25 @@ describe('MultiplayerJoinPageComponent', () => {
             verticalPosition: 'top',
         });
     });
-    // TODO:Test to fix
-    // it('should call joinRoom() when the joinGameButton is pressed', fakeAsync(() => {
-    //     fixture.detectChanges();
-    //     const spy = spyOn(component, 'joinRoom');
-    //     const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
-    //     button.click();
-    //     tick();
-    //     fixture.detectChanges();
-    //     expect(spy).toHaveBeenCalled();
-    // }));
+    it('should call joinRoom() when the joinGameButton is pressed', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        fixture.detectChanges();
+        const spy = spyOn(component, 'joinRoom');
+        const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+    it('should not be able to call joinRoom() when the player did not enter his name', fakeAsync(() => {
+        fixture.detectChanges();
+        const spy = spyOn(component, 'joinRoom');
+        const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).not.toHaveBeenCalled();
+    }));
     it('joinRoom should call gameconfiguration.joinGame()', () => {
         const NAME_PLAYER = 'Marcel';
         component.playerName = NAME_PLAYER;

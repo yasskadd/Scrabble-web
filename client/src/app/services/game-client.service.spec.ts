@@ -73,7 +73,6 @@ describe('GameClientService', () => {
     let socketServiceMock: SocketClientServiceMock;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
     let letterTilesServiceSpy: jasmine.SpyObj<LetterTilesService>;
-    // TODO : TESTS
     beforeEach(() => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid']);
         letterTilesServiceSpy = jasmine.createSpyObj('LetterTilesService', ['drawRack']);

@@ -28,7 +28,7 @@
                 </tbody>
             </table>
 
-            <a *ngIf="this.gameConfiguration.availableRooms.length === 0">Aucune Partie Disponible à joindre</a>
+            <a class="noRoomAvailable" *ngIf="this.gameConfiguration.availableRooms.length === 0">Aucune Partie Disponible à joindre</a>
         </mat-card>
 
         <div class="containerButton">
