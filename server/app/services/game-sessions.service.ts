@@ -132,7 +132,7 @@ export class GameSessions {
     }
 
     private startScrabbleGame(this: this, sio: Server, socket: Socket, roomId: string) {
-        const socketID = this.gameRooms.get(roomId)?.socketID;
+        const socketID = this.gameRooms.get(roomId).socketID;
         sio.to(roomId).emit(SocketEvents.GameAboutToStart, socketID);
     }
 
