@@ -142,11 +142,9 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
-            console.log('SUBSCRIBE 1');
             this.changeTurn(gameInfo.roomId);
         });
         newGameHolder.game.turn.countdown.subscribe((timer: number) => {
-            console.log('SUBSCRIBE 2');
             this.sendTimer(gameInfo.roomId, timer);
         });
         sio.to(gameInfo.roomId).emit(SocketEvents.ViewUpdate, {
@@ -154,8 +152,6 @@ export class GamesHandler {
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
-        console.log('START GAME : ');
-        console.log(newGameHolder.game.turn.activePlayer);
 
         this.games.set(newGameHolder.roomId, newGameHolder);
     }
@@ -203,8 +199,6 @@ export class GamesHandler {
             players: game?.players,
             activePlayer: game?.game?.turn.activePlayer,
         };
-        console.log('CHANGE TURN : ');
-        console.log(gameInfo.activePlayer);
 
         this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
