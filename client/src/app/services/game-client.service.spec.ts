@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { Coordinate } from '@common/coordinate.class';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile';
 import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
@@ -9,8 +9,8 @@ import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 import { LetterTilesService } from './letter-tiles.service';
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
-type PlayInfo = { gameboard: Coordinate[]; activePlayer: string };
-type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: string };
+type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,
@@ -18,7 +18,7 @@ const PLAYER_ONE: Player = {
     room: '1',
 };
 
-const Letter_Reserve = [
+const LETTER_RESERVE = [
     { value: 'c', quantity: 2, points: 1 },
     { value: 'r', quantity: 2, points: 1 },
     { value: 'p', quantity: 2, points: 1 },
@@ -138,8 +138,8 @@ describe('GameClientService', () => {
     });
 
     it('should update the letter reserve if SocketEvents.letterReserveUpdated event is called from the server', () => {
-        socketEmulator.peerSideEmit('letterReserveUpdated', Letter_Reserve);
-        expect(service.letterReserve).toEqual(Letter_Reserve);
+        socketEmulator.peerSideEmit('letterReserveUpdated', LETTER_RESERVE);
+        expect(service.letterReserve).toEqual(LETTER_RESERVE);
     });
 
     it('should update the time when the SocketEvents.TimerClientUpdate event is called from the server', () => {
@@ -151,7 +151,7 @@ describe('GameClientService', () => {
         expect(service.timer).not.toEqual(TIME);
     });
     it('should  not update the letter reserve if SocketEvents.letterReserveUpdated  is not called from the server', () => {
-        expect(service.letterReserve).not.toEqual(Letter_Reserve);
+        expect(service.letterReserve).not.toEqual(LETTER_RESERVE);
     });
     it('should set the value of isGameFinish to true when the opponent left the game ', () => {
         service.isGameFinish = false;

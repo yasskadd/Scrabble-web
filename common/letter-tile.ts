@@ -1,6 +1,6 @@
-import { Letter } from '@common/letter';
+import { Letter } from './letter';
 
-export class Coordinate {
+export class LetterTile {
     x: number;
     y: number;
     isOccupied: boolean;

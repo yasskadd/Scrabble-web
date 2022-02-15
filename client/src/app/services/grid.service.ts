@@ -3,8 +3,7 @@ import { Injectable } from '@angular/core';
 import * as gridConstants from '@app/grid-constants';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
-import { Coordinate as LetterTile } from '@common/coordinate.class';
-// import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/letter-tile';
 
 // TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
 export const DEFAULT_WIDTH = 600;
