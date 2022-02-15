@@ -20,7 +20,7 @@ type SioSignature = SocketManager['sio'];
 
 const ROOM = '0';
 
-describe.only('GamesHandler Service', () => {
+describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
