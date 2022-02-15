@@ -1,7 +1,4 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable no-console */
-/* eslint-disable prettier/prettier */
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
@@ -21,12 +18,15 @@ describe('gameboard', () => {
 
     it('game array length should be 225', () => {
         const length: number = gameboard.gameboardCoords.length;
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         expect(length).to.equal(225);
     });
 
+<<<<<<< HEAD
+    it('should create the array with each element being a GameboardCoordinate', () => {
+=======
     it('should create the array with each element being a LetterTile', () => {
         // const array = gameboard.gameboardCoords;
+>>>>>>> 35bbf425ae41e3256f55bc4228d09a709d685080
         const array = gameboard.gameboardCoords;
         const checkArrayType = (coordList: LetterTile[]) => {
             let bool = true;
@@ -37,14 +37,14 @@ describe('gameboard', () => {
             });
             return bool;
         };
-        expect(checkArrayType(array)).to.be.true;
+        expect(checkArrayType(array)).to.equal(true);
     });
 
     it('should call createLetterTiles and applyBoxMultipliers', () => {
         const spyCreateCoord = Sinon.spy(Gameboard.prototype, 'createLetterTiles');
         new Gameboard(boxMultiplierService);
-        expect(spyCreateCoord.called).to.be.true;
-        expect(boxMultiplierService.applyBoxMultipliers.called).to.be.true;
+        expect(spyCreateCoord.called).to.equal(true);
+        expect(boxMultiplierService.applyBoxMultipliers.called).to.equal(true);
     });
 
     it('should place letter on board when placeLetter() is called', () => {
@@ -57,7 +57,7 @@ describe('gameboard', () => {
         expect(gameboardTestCoord.x).to.eql(coord.x);
         expect(gameboardTestCoord.y).to.eql(coord.y);
         expect(gameboardTestCoord.letter.value).to.eql('a');
-        expect(gameboardTestCoord.isOccupied).to.be.true;
+        expect(gameboardTestCoord.isOccupied).to.equal(true);
     });
 
     it('should set isOccupied attribute to false if removeLetter is called', () => {
@@ -68,7 +68,7 @@ describe('gameboard', () => {
         gameboard.removeLetter(coord);
         expect(gameboardCoord.x).to.eql(coord.x);
         expect(gameboardCoord.y).to.eql(coord.y);
-        expect(gameboardCoord.isOccupied).to.be.false;
+        expect(gameboardCoord.isOccupied).to.equal(false);
         expect(gameboardCoord.letter).to.eql({} as Letter);
     });
 

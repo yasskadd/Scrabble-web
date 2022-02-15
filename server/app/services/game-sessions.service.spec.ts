@@ -44,7 +44,6 @@ const GAME_PARAMETERS: GameParameters = {
     timer: 1,
     mode: 'classique',
 };
-
 describe('GameSession Service', () => {
     let gameSessions: GameSessions;
     let service: sinon.SinonStubbedInstance<SocketManager>;
@@ -429,6 +428,7 @@ describe('GameSession Service', () => {
         done();
     });
     it('disconnect should call the removeRoom method', (done: Mocha.Done) => {
+        const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
             id: ROOM_ID,
@@ -444,12 +444,14 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-
-        assert(spy.called);
-        done();
+        setTimeout(() => {
+            assert(spy.called);
+            done();
+        }, timeout6seconds);
     });
 
     it('disconnect should call the removeUserFromActiveUser method', (done: Mocha.Done) => {
+        const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
             id: ROOM_ID,
@@ -466,8 +468,10 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-        assert(spy.called);
-        done();
+        setTimeout(() => {
+            assert(spy.called);
+            done();
+        }, timeout6seconds);
     });
 
     it('roomJoin should emit an error if the person in the room have the same name that the player that want to join', (done: Mocha.Done) => {
@@ -623,17 +627,6 @@ describe('GameSession Service', () => {
             secondSocket = Client(`http://localhost:${port}`);
             secondSocket.on('connect', done);
         });
-        it('rejectOpponent should emit a message to the other player in the room when he reject him', (done) => {
-            const rejectMessage = "L'adversaire à rejeter votre demande";
-
-            clientSocket.on(SocketEvents.RejectByOtherPlayer, (information) => {
-                expect(information).to.be.eql(rejectMessage);
-                done();
-            });
-            // eslint-disable-next-line dot-notation
-            gameSessions['rejectOpponent'](serverSocket, ROOM_ID);
-        });
-
         it('rejectOpponent should emit a message to the other player in the room when he reject him', (done) => {
             const rejectMessage = "L'adversaire à rejeter votre demande";
 
