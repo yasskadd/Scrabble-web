@@ -13,7 +13,7 @@ export class LetterTilesService {
     fontSize: number;
 
     constructor() {
-        this.fontSize = 20;
+        this.fontSize = constants.FONT_SIZE;
     }
 
     drawRack(letters: Letter[]) {
@@ -21,7 +21,11 @@ export class LetterTilesService {
         this.gridContext.fillRect(0, 0, constants.LETTER_CANVAS_WIDTH, constants.LETTER_CANVAS_HEIGHT);
         this.gridContext.fillStyle = 'black';
         letters.forEach((letter, i) => {
-            this.drawLetterTile(constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i, 1, letter.value);
+            this.drawLetterTile(
+                constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
+                1,
+                letter.value.toUpperCase(),
+            );
             this.drawLetterWeight(
                 constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
                 0,

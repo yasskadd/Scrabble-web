@@ -5,8 +5,8 @@ import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { Container } from 'typedi';
-import { GameboardCoordinate } from './gameboard-coordinate.class';
 import { Turn } from './turn';
 
 const MAX_QUANTITY = 7;
@@ -72,7 +72,7 @@ export class Game {
             if (isValid !== null) {
                 return isValid as string;
             }
-            gameboard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
+            gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player1, this.gameboard);
             // TODO: test to do
             if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
@@ -92,7 +92,7 @@ export class Game {
             if (isValid !== null) {
                 return isValid as string;
             }
-            gameboard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player2, this.gameboard);
+            gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
             // TODO: test to do
             if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);

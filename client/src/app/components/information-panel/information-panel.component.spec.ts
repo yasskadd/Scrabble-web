@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -14,12 +14,6 @@ type Timer = { minutes: number; seconds: number };
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
 
 const TIMER: Timer = { minutes: 1, seconds: 20 };
-const PLAYER_ONE: Player = {
-    name: '667',
-    score: 23,
-    rack: [{ value: 'b', quantity: 2, points: 1 }],
-    room: '1',
-};
 
 const PLAYER_TWO: Player = {
     name: 'QLF',
@@ -30,6 +24,15 @@ const PLAYER_TWO: Player = {
         { value: 'p', quantity: 2, points: 1 },
     ],
     room: '3',
+};
+const PLAYER_ONE: Player = {
+    name: '667',
+    score: 23,
+    rack: [
+        { value: 'a', quantity: 2, points: 1 },
+        { value: 'b', quantity: 2, points: 1 },
+    ],
+    room: '1',
 };
 @Component({
     template: '',
@@ -48,7 +51,6 @@ describe('InformationPanelComponent', () => {
     let component: InformationPanelComponent;
     let fixture: ComponentFixture<InformationPanelComponent>;
     let gameClientSpy: jasmine.SpyObj<GameClientService>;
-
     beforeEach(async () => {
         gameClientSpy = jasmine.createSpyObj('GameClientService', ['startTimer', 'quitGame', 'updateGameboard'], {
             playerOne: PLAYER_ONE,
@@ -99,9 +101,108 @@ describe('InformationPanelComponent', () => {
         expect(testedValue).toEqual(expectedValue);
     });
 
-    // ???? not sure why this is not working
     it('should call the method gameClientService.updateGameboard if updateFontSize is called', () => {
         component.updateFontSize();
         expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
     });
+
+    it('should have a div with the timer when it is your turn to play', () => {
+        gameClientSpy.playerOneTurn = true;
+        fixture.detectChanges();
+        const divTimer = fixture.debugElement.nativeElement.querySelector('#playerOneTimer');
+        expect(divTimer).toBeTruthy();
+    });
+
+    it('should not have a div with the timer when it is not your turn to play', () => {
+        gameClientSpy.playerOneTurn = false;
+        fixture.detectChanges();
+        const divTimer = fixture.debugElement.nativeElement.querySelector('#playerOneTimer');
+        expect(divTimer).not.toBeTruthy();
+    });
+
+    it('should have a div with the timer when it is your opponent turn to play', () => {
+        gameClientSpy.playerOneTurn = false;
+        fixture.detectChanges();
+        const divTimer = fixture.debugElement.nativeElement.querySelector('#playerTwoTimer');
+        expect(divTimer).toBeTruthy();
+    });
+
+    it('should not have a div with the timer when it is not your opponent turn to play', () => {
+        gameClientSpy.playerOneTurn = true;
+        fixture.detectChanges();
+        const divTimer = fixture.debugElement.nativeElement.querySelector('#playerTwoTimer');
+        expect(divTimer).not.toBeTruthy();
+    });
+
+    it('should have a button to abandonGame when the game is not finish and you want to leave', () => {
+        gameClientSpy.isGameFinish = false;
+        fixture.detectChanges();
+        const buttonAbandon = fixture.debugElement.nativeElement.querySelector('#abandonButton');
+        expect(buttonAbandon).toBeTruthy();
+    });
+
+    it('should not have a button to abandonGame when the game is finish and you want to leave', () => {
+        gameClientSpy.isGameFinish = true;
+        fixture.detectChanges();
+        const buttonAbandon = fixture.debugElement.nativeElement.querySelector('#abandonButton');
+        expect(buttonAbandon).not.toBeTruthy();
+    });
+
+    it('should have a button to quitGame when the game is finish and you want to leave', () => {
+        gameClientSpy.isGameFinish = true;
+        fixture.detectChanges();
+        const leaveButton = fixture.debugElement.nativeElement.querySelector('#quitGame');
+        expect(leaveButton).toBeTruthy();
+    });
+
+    it('should not have a button to quitGame when the game is not finish', () => {
+        gameClientSpy.isGameFinish = false;
+        fixture.detectChanges();
+        const leaveButton = fixture.debugElement.nativeElement.querySelector('#quitGame');
+        expect(leaveButton).not.toBeTruthy();
+    });
+
+    it('should call abandonGame when the abandonButton button is pressed', fakeAsync(() => {
+        const spy = spyOn(component, 'abandonGame');
+        gameClientSpy.isGameFinish = false;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#abandonButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toBeTruthy();
+    }));
+
+    it('should call leaveGame when the quitGame button is pressed', fakeAsync(() => {
+        const spy = spyOn(component, 'leaveGame');
+        gameClientSpy.isGameFinish = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#quitGame');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toBeTruthy();
+    }));
+
+    it('should have a winning message when the game is finish', () => {
+        gameClientSpy.isGameFinish = true;
+        fixture.detectChanges();
+        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
+        expect(message).toBeTruthy();
+    });
+
+    it('should not have a winning message when the game is not finish', () => {
+        gameClientSpy.isGameFinish = false;
+        fixture.detectChanges();
+        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
+        expect(message).not.toBeTruthy();
+    });
+
+    it('should call updateFontSize() when the mat-slider is pressed', fakeAsync(() => {
+        const button = fixture.debugElement.nativeElement.querySelector('#updateFontSlider');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
+    }));
 });

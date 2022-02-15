@@ -167,6 +167,29 @@ describe('WaitingOpponentPageComponent', () => {
         expect(progressBar).toBeFalsy();
     });
 
+    it('should call startGame() when the startButton is pressed', fakeAsync(() => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const spy = spyOn(component, 'startGame');
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should call rejectOpponent() when the rejectButton is pressed', fakeAsync(() => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const spy = spyOn(component, 'rejectOpponent');
+        const button = fixture.debugElement.nativeElement.querySelector('.rejectButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
     it('rejectOpponent should call gameconfiguration.rejectOponent()', () => {
         component.rejectOpponent();
         fixture.detectChanges();

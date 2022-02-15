@@ -1,41 +1,31 @@
-// TODO : TESTS
-
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
+import { Gameboard } from '@app/classes/gameboard.class';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import { BoxMultiplierService } from './box-multiplier.service';
 
 describe('BoxMultiplier', () => {
+    let gameboard: Gameboard;
     let boxMultiplierService: BoxMultiplierService;
-    let letterMultiplier2: GameboardCoordinate[];
-    let letterMultiplier3: GameboardCoordinate[];
-    let wordMultiplier2: GameboardCoordinate[];
-    // let wordMultiplier3: GameboardCoordinate[];
 
     beforeEach(async () => {
-        letterMultiplier2 = boxMultiplierService.letterMultipliersByTwo;
-        letterMultiplier3 = boxMultiplierService.letterMultipliersByThree;
-        wordMultiplier2 = boxMultiplierService.wordMultipliersByTwo;
-        // wordMultiplier3 = boxMultiplierService.wordMultipliersByThree;
+        boxMultiplierService = new BoxMultiplierService();
+        gameboard = new Gameboard(boxMultiplierService);
     });
 
-    it(' {12, 6} board coordinate should belong in letterMultipliersByTwo', () => {
-        const testCoordinate = new GameboardCoordinate(12, 6, {} as Letter);
-        expect(letterMultiplier2).to.include(testCoordinate);
+    it('should modify letterMultiplier to two for coordinate (4,1)', () => {
+        expect(gameboard.getCoord(new LetterTile(4, 1, {} as Letter)).letterMultiplier).to.equal(2);
     });
 
-    it(' {5, 9} board coordinate should belong in letterMultipliersByThree', () => {
-        const testCoordinate = new GameboardCoordinate(5, 9, {} as Letter);
-        expect(letterMultiplier3).to.include(testCoordinate);
+    it('should modify letterMultiplier to three for coordinate (6,2)', () => {
+        expect(gameboard.getCoord(new LetterTile(6, 2, {} as Letter)).letterMultiplier).to.equal(3);
     });
 
-    it(' {10, 4} board coordinate should belong in wordMultipliersByTwo', () => {
-        const testCoordinate = new GameboardCoordinate(10, 4, {} as Letter);
-        expect(wordMultiplier2).to.include(testCoordinate);
+    it('should modify wordMultiplier to two for coordinate (2,2)', () => {
+        expect(gameboard.getCoord(new LetterTile(2, 2, {} as Letter)).wordMultiplier).to.equal(2);
     });
 
-    // it(' {0, 0} board coordinate should belong in wordMultipliersByThree', () => {
-    //     const testCoordinate = new GameboardCoordinate(0, 0, [] Letter[]);
-    //     expect(wordMultiplier3).to.include(testCoordinate);
-    // });
+    it('should modify wordMultiplier to three for coordinate (6,2)', () => {
+        expect(gameboard.getCoord(new LetterTile(1, 1, {} as Letter)).wordMultiplier).to.equal(3);
+    });
 });

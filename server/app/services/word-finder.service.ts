@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
+
+const ROW_NUMBER = 15;
+const COLUMN_NUMBER = 15;
 
 @Service()
 export class WordFinderService {
-    findNewWords(gameboard: Gameboard, coordList: GameboardCoordinate[]) {
+    findNewWords(gameboard: Gameboard, coordList: LetterTile[]) {
         const newWordsArray: Word[] = new Array();
         if (coordList.length === 0) return [];
         // Verify if only one letter is placed
@@ -39,8 +42,8 @@ export class WordFinderService {
         }
     }
 
-    buildFirstWord(gameboard: Gameboard, coordList: GameboardCoordinate[]) {
-        const direction: string = GameboardCoordinate.findDirection(coordList) as string;
+    buildFirstWord(gameboard: Gameboard, coordList: LetterTile[]) {
+        const direction: string = LetterTile.findDirection(coordList) as string;
         const currentCoord = coordList[0];
         let word: Word;
         if (direction === 'Horizontal') word = this.buildHorizontalWord(gameboard, currentCoord);
@@ -49,25 +52,23 @@ export class WordFinderService {
         return word;
     }
 
-    private buildVerticalWord(gameboard: Gameboard, coord: GameboardCoordinate) {
-        let currentCoord: GameboardCoordinate = coord;
+    private buildVerticalWord(gameboard: Gameboard, coord: LetterTile) {
+        let currentCoord: LetterTile = coord;
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             if (y !== 0) {
-                const nextCoord = new GameboardCoordinate(x, y - 1, {} as Letter);
+                const nextCoord = new LetterTile(x, y - 1, {} as Letter);
                 if (gameboard.getCoord(nextCoord).isOccupied) currentCoord = nextCoord;
                 else break;
             } else break;
         }
-        const coordArray: GameboardCoordinate[] = new Array();
+        const coordArray: LetterTile[] = new Array();
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
-            const x: number = currentCoord.x;
-            const y: number = currentCoord.y;
-            const gameCoord: GameboardCoordinate = gameboard.getCoord(currentCoord);
+            const gameCoord: LetterTile = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (y !== 14) {
-                currentCoord = new GameboardCoordinate(x, y + 1, {} as Letter);
+            if (currentCoord.y !== ROW_NUMBER) {
+                currentCoord = new LetterTile(currentCoord.x, currentCoord.y + 1, {} as Letter);
             } else {
                 break;
             }
@@ -80,13 +81,13 @@ export class WordFinderService {
         }
     }
 
-    private buildHorizontalWord(gameboard: Gameboard, coord: GameboardCoordinate) {
-        let currentCoord: GameboardCoordinate = coord;
+    private buildHorizontalWord(gameboard: Gameboard, coord: LetterTile) {
+        let currentCoord: LetterTile = coord;
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
             if (x !== 0) {
-                const nextCoord = new GameboardCoordinate(x - 1, y, {} as Letter);
+                const nextCoord = new LetterTile(x - 1, y, {} as Letter);
                 if (gameboard.getCoord(nextCoord).isOccupied) {
                     currentCoord = nextCoord;
                 } else {
@@ -96,14 +97,14 @@ export class WordFinderService {
                 break;
             }
         }
-        const coordArray: GameboardCoordinate[] = new Array();
+        const coordArray: LetterTile[] = new Array();
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            const gameCoord: GameboardCoordinate = gameboard.getCoord(currentCoord);
+            const gameCoord: LetterTile = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (x !== 14) {
-                currentCoord = new GameboardCoordinate(x + 1, y, {} as Letter);
+            if (x !== COLUMN_NUMBER) {
+                currentCoord = new LetterTile(x + 1, y, {} as Letter);
             } else {
                 break;
             }

@@ -3,7 +3,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';
-import { LetterTile } from '@common/letter-tile';
+import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
@@ -37,9 +37,9 @@ export class GamesHandler {
     }
     initSocketsEvents(): void {
         //
-        this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) => {
-            this.createGame(sio, socket, gameInfo);
-        });
+        this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) =>
+            this.createGame(sio, socket, gameInfo),
+        );
 
         this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: CommandInfo) => {
             this.playGame(sio, socket, commandInfo);
@@ -56,7 +56,7 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
         });
-        // NOT
+        //
         this.socketManager.on(SocketEvents.AbandonGame, (socket) => {
             this.abandonGame(socket);
         });
@@ -97,8 +97,8 @@ export class GamesHandler {
 
     private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
-        const firstCoordinateColumns = commandInfo.firstCoordinate.x + 1;
-        const firstCoordinateRows = commandInfo.firstCoordinate.y + 1;
+        const firstCoordinateColumns = commandInfo.firstCoordinate.x;
+        const firstCoordinateRows = commandInfo.firstCoordinate.y;
         const letterPlaced = commandInfo.lettersPlaced.join('');
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
@@ -142,11 +142,9 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
-            console.log('SUBSCRIBE 1');
             this.changeTurn(gameInfo.roomId);
         });
         newGameHolder.game.turn.countdown.subscribe((timer: number) => {
-            console.log('SUBSCRIBE 2');
             this.sendTimer(gameInfo.roomId, timer);
         });
         sio.to(gameInfo.roomId).emit(SocketEvents.ViewUpdate, {
@@ -154,8 +152,6 @@ export class GamesHandler {
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
-        console.log('START GAME : ');
-        console.log(newGameHolder.game.turn.activePlayer);
 
         this.games.set(newGameHolder.roomId, newGameHolder);
     }
@@ -203,13 +199,8 @@ export class GamesHandler {
             players: game?.players,
             activePlayer: game?.game?.turn.activePlayer,
         };
-        console.log('CHANGE TURN : ');
-        console.log(gameInfo.activePlayer);
-        if (gameInfo.activePlayer === undefined) {
-            this.socketManager.emitRoom(roomId, SocketEvents.GameEnd);
-        } else {
-            this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
-        }
+
+        this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
 
     private sendTimer(roomId: string, timer: number) {

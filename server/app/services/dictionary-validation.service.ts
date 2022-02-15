@@ -34,8 +34,6 @@ export class DictionaryValidationService {
 
     private checkWordInDictionary(wordList: Word[]): void {
         wordList.forEach((word) => {
-            console.log(word.stringFormat);
-            console.log(this.dictionary.has(word.stringFormat));
             !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
         });
     }
