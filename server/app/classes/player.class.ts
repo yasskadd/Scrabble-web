@@ -10,7 +10,7 @@ export class Player {
         this.name = name;
     }
 
-    rackIsEmpty() {
+    rackIsEmpty(): boolean {
         return this.rack.length === 0;
     }
 }
