@@ -5,7 +5,6 @@ export class Player {
     score: number = 0;
     name: string;
     room: string;
-    // private objs[] : Objectif;
 
     constructor(name: string) {
         this.name = name;

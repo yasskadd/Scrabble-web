@@ -1,9 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import * as letterConstants from '@app/letter-constants';
 import { LetterTilesService } from './letter-tiles.service';
 
-const CANVAS_HEIGHT = 75;
-const CANVAS_WIDTH = 500;
 const testPlayerRack = [
     {
         value: 'S',
@@ -31,7 +30,9 @@ describe('LetterTilesService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         letterTilesService = TestBed.inject(LetterTilesService);
-        ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
+        ctxStub = CanvasTestHelper.createCanvas(letterConstants.CANVAS_WIDTH, letterConstants.CANVAS_HEIGHT).getContext(
+            '2d',
+        ) as CanvasRenderingContext2D;
         letterTilesService.gridContext = ctxStub;
     });
 
