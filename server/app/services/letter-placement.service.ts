@@ -18,6 +18,12 @@ const ERROR_TYPE = {
     lettersNotInRack: 'Lettres absents du chevalet',
     invalidFirstPlacement: 'Placement du premier tour pas valide',
 };
+
+const SEVEN_LETTERS = 7;
+const SEVEN_LETTER_BONUS = 50;
+const MIDDLE_X = 8;
+const MIDDLE_Y = 8;
+
 @Service()
 export class LetterPlacementService {
     constructor(
@@ -53,7 +59,7 @@ export class LetterPlacementService {
             return [false, gameboard];
         }
         player.score += wordValidationScore;
-        if (letterCoords.length === 7) player.score += 50;
+        if (letterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
         this.updatePlayerRack(letterCoords, player);
         return [true, gameboard];
     }
@@ -132,7 +138,7 @@ export class LetterPlacementService {
             lettersCoords.forEach((coord) => {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
-            if (!coordList.some((element) => element.x === 8 && element.y === 8)) return false;
+            if (!coordList.some((element) => element.x === MIDDLE_X && element.y === MIDDLE_Y)) return false;
         }
         return true;
     }
