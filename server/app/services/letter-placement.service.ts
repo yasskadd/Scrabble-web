@@ -29,16 +29,12 @@ export class LetterPlacementService {
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player) {
         const letterCoords = this.getLettersCoord(commandInfo, gameboard);
         if (!this.isPlacementValid(letterCoords)) {
-            console.log('INVALID PLACEMENT');
             return [letterCoords, ERROR_TYPE.invalidPlacement];
         }
-        // it updates letters points in gameboardCoordinate
         if (!this.areLettersInRack(letterCoords, player)) {
-            console.log('LETTERS NOT IN RACK');
             return [letterCoords, ERROR_TYPE.lettersNotInRack];
         }
         if (!this.verifyFirstTurn(letterCoords, gameboard)) {
-            console.log('FIRST TURN NOT VALID');
             return [letterCoords, ERROR_TYPE.invalidFirstPlacement];
         }
         return [letterCoords, null];
@@ -46,15 +42,12 @@ export class LetterPlacementService {
 
     placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: Gameboard): [boolean, Gameboard] {
         letterCoords.forEach((coord) => {
-            console.log('PLACED LETTER');
             gameboard.placeLetter(coord);
         });
         const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
-        console.log(words);
         const wordValidationScore: number = this.dictionaryService.validateWords(words);
         if (wordValidationScore === 0) {
             letterCoords.forEach((coord) => {
-                console.log('PLACED LETTER');
                 gameboard.removeLetter(coord);
             });
             return [false, gameboard];
@@ -62,8 +55,6 @@ export class LetterPlacementService {
         player.score += wordValidationScore;
         if (letterCoords.length === 7) player.score += 50;
         this.updatePlayerRack(letterCoords, player);
-        console.log('PLAYER RACK');
-        console.log(player.rack);
         return [true, gameboard];
     }
 
@@ -88,19 +79,15 @@ export class LetterPlacementService {
         const letters = placedLettersCoord.map((coord) => {
             // BLANK LETTER IMPLEMENTATION
             if (coord.letter.value === coord.letter.value.toUpperCase()) {
-                console.log('UPPERCASE');
                 coord.letter.isBlankLetter = true;
                 coord.letter.points = 0;
-                console.log(coord.letter);
             }
             const index = tempRack.findIndex((letter) => {
                 if (coord.letter.isBlankLetter !== undefined) {
-                    console.log('TEST CALLED 1');
                     if (coord.letter.isBlankLetter === true) return letter.value === '*';
                 }
                 return letter.value === coord.letter.value;
             });
-            console.log(index);
             if (index < 0) return;
             else {
                 const tempLetter = tempRack[index];
@@ -108,7 +95,6 @@ export class LetterPlacementService {
                 return tempLetter;
             }
         });
-        console.log(letters);
         return letters.filter((letter) => {
             return letter !== undefined;
         });
@@ -146,7 +132,7 @@ export class LetterPlacementService {
             lettersCoords.forEach((coord) => {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
-            if (!coordList.some((element) => element.x === 7 && element.y === 7)) return false;
+            if (!coordList.some((element) => element.x === 8 && element.y === 8)) return false;
         }
         return true;
     }
