@@ -180,11 +180,11 @@ describe('WordFinderService', () => {
     });
 
     it('findNewWords() should return an array of 2 words if there is 2 horizontal placed Letters related to 2 words', () => {
-        const placedLetters: LetterTile[] = [new LetterTile(0, 0, letterA), new LetterTile(1, 0, letterB)];
+        const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(2, 1, letterB)];
         gameboard.placeLetter(placedLetters[0]);
         gameboard.placeLetter(placedLetters[1]);
-        gameboard.placeLetter(new LetterTile(0, 1, { value: 'c' } as Letter));
-        gameboard.placeLetter(new LetterTile(1, 1, { value: 'b' } as Letter));
+        gameboard.placeLetter(new LetterTile(1, 2, { value: 'c' } as Letter));
+        gameboard.placeLetter(new LetterTile(2, 2, { value: 'b' } as Letter));
         const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
         const stringList: string[] = words.map((word) => {
             return word.stringFormat;
@@ -193,11 +193,11 @@ describe('WordFinderService', () => {
     });
 
     it('findNewWords() should return an array of 2 words if there is 2 vertical placed Letters related to 2 words', () => {
-        const placedLetters: LetterTile[] = [new LetterTile(0, 0, letterA), new LetterTile(0, 1, letterB)];
+        const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB)];
         gameboard.placeLetter(placedLetters[0]);
         gameboard.placeLetter(placedLetters[1]);
-        gameboard.placeLetter(new LetterTile(1, 0, letterA));
-        gameboard.placeLetter(new LetterTile(1, 1, letterA));
+        gameboard.placeLetter(new LetterTile(2, 1, letterA));
+        gameboard.placeLetter(new LetterTile(2, 2, letterA));
         const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
         const stringList: string[] = words.map((word) => {
             return word.stringFormat;
