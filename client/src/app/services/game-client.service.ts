@@ -33,12 +33,10 @@ export class GameClientService {
     }
     configureBaseSocketFeatures() {
         this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: Player) => {
-            console.log(player);
             this.playerOne = player;
             this.updateGameboard();
         });
         this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
-            console.log(player);
             this.secondPlayer = player;
             this.updateGameboard();
         });

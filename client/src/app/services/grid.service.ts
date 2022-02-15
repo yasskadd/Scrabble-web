@@ -10,7 +10,7 @@ import { Coordinate as LetterTile } from '@common/coordinate.class';
 export const DEFAULT_WIDTH = 600;
 export const DEFAULT_HEIGHT = 600;
 
-const TILE_SIZE = 35;
+const TILE_SIZE = 20;
 
 export const FONT_SIZE = 16;
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
