@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
+import * as constants from '@app/constants';
 import * as multipliers from '@common/board-multiplier-coords';
-import * as constants from '@common/constants';
 import { Coordinate } from '@common/coordinate';
 import { Coordinate as LetterTile } from '@common/coordinate.class';
 // import { LetterTile } from '@common/letter-tile.class';
