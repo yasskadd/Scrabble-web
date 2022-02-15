@@ -13,7 +13,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { WordFinderService } from './word-finder.service';
 
-describe.only('Letter Placement Service', () => {
+describe('Letter Placement Service', () => {
     // Should we stub gameboard ???
     let player: Player;
     let commandInfo: CommandInfo;
