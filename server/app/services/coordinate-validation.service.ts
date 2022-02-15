@@ -43,12 +43,12 @@ export class GameboardCoordinateValidationService {
         if (!this.verifyLettersContact(coordOfLetters, gameboard)) return [];
         return coordOfLetters;
     }
-    isFirstCoordValid(firstCoord: GameboardCoordinate, gameboard: Gameboard) {
+    private isFirstCoordValid(firstCoord: GameboardCoordinate, gameboard: Gameboard) {
         if (Object.keys(gameboard.getCoord(firstCoord)).length === 0 || gameboard.getCoord(firstCoord) === undefined) return false;
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
     }
 
-    isThereAdjacentLetters(letterCoord: GameboardCoordinate, gameboard: Gameboard) {
+    private isThereAdjacentLetters(letterCoord: GameboardCoordinate, gameboard: Gameboard) {
         let isValid = false;
         // Verify upward
         if (letterCoord.y !== 0) {
@@ -68,7 +68,7 @@ export class GameboardCoordinateValidationService {
         }
         return isValid;
     }
-    verifyLettersContact(letterCoords: GameboardCoordinate[], gameboard: Gameboard) {
+    private verifyLettersContact(letterCoords: GameboardCoordinate[], gameboard: Gameboard) {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) return true;
         for (const coord of letterCoords) {
             if (this.isThereAdjacentLetters(coord, gameboard)) return true;

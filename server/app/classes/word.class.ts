@@ -15,7 +15,7 @@ export class Word {
         this.coords = coordList;
         this.points = 0;
         coordList.forEach((coord: GameboardCoordinate) => {
-            this.stringFormat += coord.letter.value.toLowerCase();
+            this.stringFormat += coord.letter.value?.toLowerCase();
         });
     }
 

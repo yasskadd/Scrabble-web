@@ -1,37 +1,22 @@
-/* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
 import { LetterTile } from '@common/letter-tile';
 
-// TODO : Avoir un fichier séparé pour les constantes et ne pas les répéter!
-export const DEFAULT_WIDTH = 600;
-export const DEFAULT_HEIGHT = 600;
-
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-export const POINTS_FONT_SIZE = constants.FONT_SIZE * 0.45;
-export const LETTER_TILE_RATIO = 0.8;
-export const BEIGE = '#d2ccb8';
-export const LIGHT_BLUE = '#CEE7F7';
-export const DARK_BLUE = '#93cff1';
-export const PINK = '#f0b8b8';
-export const RED = '#FE6E54';
-
 @Injectable({
     providedIn: 'root',
 })
 export class GridService {
-    static squareWidth = DEFAULT_WIDTH / constants.TOTAL_COLUMNS;
-    static squareHeight = DEFAULT_HEIGHT / constants.TOTAL_ROWS;
-    static letterTileWidth = GridService.squareWidth * LETTER_TILE_RATIO;
-    static letterTileHeight = GridService.squareHeight * LETTER_TILE_RATIO;
+    static squareWidth = constants.GRID_CANVAS_WIDTH / constants.TOTAL_COLUMNS;
+    static squareHeight = constants.GRID_CANVAS_HEIGHT / constants.TOTAL_ROWS;
+    static letterTileWidth = GridService.squareWidth * constants.LETTER_TILE_RATIO;
+    static letterTileHeight = GridService.squareHeight * constants.LETTER_TILE_RATIO;
     static halfSquareWidth = GridService.squareWidth / 2;
     static halfSquareHeight = GridService.squareHeight / 2;
-    static middlePosWidth = GridService.squareWidth * 8;
-    static middlePosHeight = GridService.squareHeight * 8;
+    static middlePosWidth = GridService.squareWidth * constants.MIDDLE_POSITION;
+    static middlePosHeight = GridService.squareHeight * constants.MIDDLE_POSITION;
 
-    // private static wordMultiplyThree = [1, 8, 15];
     letterSize: number;
     boardTileSize: number;
     letterPointsSize: number;
@@ -42,12 +27,11 @@ export class GridService {
     constructor() {
         this.letterSize = constants.FONT_SIZE;
         this.boardTileSize = constants.BOARD_TILE_SIZE;
-        this.letterPointsSize = POINTS_FONT_SIZE;
-        // TODO : remove after testing
+        this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
     drawGrid(gameboard: LetterTile[]) {
-        this.gridContext.clearRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
         this.drawRowNumbers();
         this.drawColumnLetters();
         this.drawBasicTiles();
@@ -66,39 +50,36 @@ export class GridService {
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
-        const plusX = width * 0.9;
+        const plusX = width * constants.POINTS_RATIO * 2;
         const halfSize = this.letterSize / 2;
-        this.gridContext.font = this.letterSize * 0.45 + 'px system-ui';
-        this.gridContext.fillText(string, position.x + this.letterSize / 2 + plusX, position.y + halfSize + this.letterSize / 2, 20);
+        this.gridContext.font = this.letterSize * constants.POINTS_RATIO + 'px system-ui';
+        this.gridContext.fillText(string, position.x + this.letterSize / 2 + plusX, position.y + halfSize + this.letterSize / 2);
     }
 
     drawStar() {
-        const SPIKES = 5;
-        const INNER_RADIUS = 5;
-        const OUTER_RADIUS = 10;
         let rotation = (Math.PI / 2) * 3;
         let x = GridService.middlePosWidth + GridService.halfSquareWidth;
         let y = GridService.middlePosHeight + GridService.halfSquareHeight;
-        const step = Math.PI / SPIKES;
+        const step = Math.PI / constants.SPIKES;
         this.gridContext.strokeStyle = 'black';
         this.gridContext.beginPath();
         this.gridContext.moveTo(
             GridService.middlePosWidth + GridService.halfSquareWidth,
-            GridService.middlePosHeight + GridService.halfSquareHeight - OUTER_RADIUS,
+            GridService.middlePosHeight + GridService.halfSquareHeight - constants.OUTER_RADIUS,
         );
-        for (let i = 0; i < SPIKES; i++) {
-            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * OUTER_RADIUS;
-            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * OUTER_RADIUS;
+        for (let i = 0; i < constants.SPIKES; i++) {
+            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * constants.OUTER_RADIUS;
+            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * constants.OUTER_RADIUS;
             this.gridContext.lineTo(x, y);
             rotation += step;
-            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * INNER_RADIUS;
-            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * INNER_RADIUS;
+            x = GridService.middlePosWidth + GridService.halfSquareWidth + Math.cos(rotation) * constants.INNER_RADIUS;
+            y = GridService.middlePosHeight + GridService.halfSquareHeight + Math.sin(rotation) * constants.INNER_RADIUS;
             this.gridContext.lineTo(x, y);
             rotation += step;
         }
         this.gridContext.lineTo(
             GridService.middlePosWidth + GridService.halfSquareWidth,
-            GridService.middlePosHeight + GridService.halfSquareHeight - OUTER_RADIUS,
+            GridService.middlePosHeight + GridService.halfSquareHeight - constants.OUTER_RADIUS,
         );
         this.gridContext.closePath();
         this.gridContext.lineWidth = 5;
@@ -108,16 +89,11 @@ export class GridService {
         this.gridContext.fill();
     }
 
-    // REFACTORED, but
-    // TODO: remove magic numbers --------------------------------------------------------------------------------------------------
-
     drawRowNumbers() {
         this.setFontSize(this.boardTileSize);
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
             const position: Coordinate = { x: i, y: 0 };
             this.gridContext.textBaseline = 'middle';
-            // this.letterSize = this.boardTileSize;
-
             this.drawText(position, String(i));
         }
     }
@@ -127,7 +103,6 @@ export class GridService {
         for (let i = 1; i < constants.TOTAL_ROWS; i++) {
             const char = String.fromCharCode(chatCode + i);
             const position: Coordinate = { x: 0, y: i };
-            // this.letterSize = this.boardTileSize;
             this.drawLetter(position, char);
         }
     }
@@ -150,7 +125,7 @@ export class GridService {
     }
 
     drawBasicTile(position: Coordinate) {
-        this.gridContext.fillStyle = BEIGE;
+        this.gridContext.fillStyle = constants.BEIGE;
         this.fillTile(position);
     }
 
@@ -179,10 +154,10 @@ export class GridService {
     setTileColor(type: string, multiplier: number) {
         switch (type) {
             case 'LETTRE':
-                this.gridContext.fillStyle = multiplier === 2 ? LIGHT_BLUE : DARK_BLUE;
+                this.gridContext.fillStyle = multiplier === 2 ? constants.LIGHT_BLUE : constants.DARK_BLUE;
                 break;
             case 'MOT':
-                this.gridContext.fillStyle = multiplier === 2 ? PINK : RED;
+                this.gridContext.fillStyle = multiplier === 2 ? constants.PINK : constants.RED;
                 break;
         }
     }
@@ -211,18 +186,14 @@ export class GridService {
     }
 
     drawMultiplierNumber(position: Coordinate, multiplier: number) {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        const size = this.letterSize * 0.6;
-        this.setFontSize(size);
+        this.setFontSize(this.letterSize * constants.MULTIPLIER_NUMBER_RATIO);
         this.gridContext.textBaseline = 'top';
         this.gridContext.textAlign = 'center';
         this.drawText(position, 'x ' + String(multiplier));
     }
 
     drawMultiplierType(position: Coordinate, type: string) {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        const size = this.letterSize * 0.55;
-        this.setFontSize(size);
+        this.setFontSize(this.letterSize * constants.MULTIPLIER_TYPE_RATIO);
         this.gridContext.textBaseline = 'bottom';
         this.gridContext.textAlign = 'center';
         this.drawText(position, type);
@@ -247,7 +218,7 @@ export class GridService {
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
-        const plusX = width * 0.9;
+        const plusX = width * constants.LETTER_WEIGHT_RATIO;
         const halfSize = this.size / 2;
         this.gridContext.font = this.weightSize + 'px system-ui';
         this.gridContext.fillText(

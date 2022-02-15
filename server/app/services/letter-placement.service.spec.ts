@@ -13,7 +13,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { WordFinderService } from './word-finder.service';
 
-describe('Letter Placement Service', () => {
+describe.only('Letter Placement Service', () => {
     // Should we stub gameboard ???
     let player: Player;
     let commandInfo: CommandInfo;
@@ -47,7 +47,7 @@ describe('Letter Placement Service', () => {
         gameboard = new Gameboard(boxMultiplierService);
         // gameboardCoordValidation = Sinon.createStubInstance(GameboardCoordinateValidationService);
         placementService = new LetterPlacementService(
-            validateCoordService,
+            validateCoordService as unknown as GameboardCoordinateValidationService,
             wordFinderService as unknown as WordFinderService,
             dictionaryValidation as unknown as DictionaryValidationService,
         );
