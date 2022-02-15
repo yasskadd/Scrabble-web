@@ -37,9 +37,9 @@ export class GamesHandler {
     }
     initSocketsEvents(): void {
         //
-        this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) => {
-            this.createGame(sio, socket, gameInfo);
-        });
+        this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) =>
+            this.createGame(sio, socket, gameInfo),
+        );
 
         this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: CommandInfo) => {
             this.playGame(sio, socket, commandInfo);
@@ -56,7 +56,7 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
         });
-        // NOT
+        //
         this.socketManager.on(SocketEvents.AbandonGame, (socket) => {
             this.abandonGame(socket);
         });
@@ -205,11 +205,8 @@ export class GamesHandler {
         };
         console.log('CHANGE TURN : ');
         console.log(gameInfo.activePlayer);
-        if (gameInfo.activePlayer === undefined) {
-            this.socketManager.emitRoom(roomId, SocketEvents.GameEnd);
-        } else {
-            this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
-        }
+
+        this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
 
     private sendTimer(roomId: string, timer: number) {
