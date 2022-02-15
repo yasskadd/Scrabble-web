@@ -21,12 +21,7 @@ describe('gameboard', () => {
         expect(length).to.equal(225);
     });
 
-<<<<<<< HEAD
     it('should create the array with each element being a GameboardCoordinate', () => {
-=======
-    it('should create the array with each element being a LetterTile', () => {
-        // const array = gameboard.gameboardCoords;
->>>>>>> 35bbf425ae41e3256f55bc4228d09a709d685080
         const array = gameboard.gameboardCoords;
         const checkArrayType = (coordList: LetterTile[]) => {
             let bool = true;

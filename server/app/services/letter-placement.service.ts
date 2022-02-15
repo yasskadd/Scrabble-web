@@ -89,14 +89,9 @@ export class LetterPlacementService {
                 coord.letter.points = 0;
             }
             const index = tempRack.findIndex((letter) => {
-<<<<<<< HEAD
                 if (coord.letter.isBlankLetter !== undefined && coord.letter.isBlankLetter) {
                     console.log('TEST CALLED 1');
                     return letter.value === '*';
-=======
-                if (coord.letter.isBlankLetter !== undefined) {
-                    if (coord.letter.isBlankLetter === true) return letter.value === '*';
->>>>>>> 35bbf425ae41e3256f55bc4228d09a709d685080
                 }
                 return letter.value === coord.letter.value;
             });

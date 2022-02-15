@@ -103,7 +103,7 @@ describe('Letter Placement Service', () => {
         });
 
         it('should set isBlank attribute to true and points to 0 if letter i uppercase', () => {
-            const letters: GameboardCoordinate[] = [new GameboardCoordinate(0, 0, { value: 'C', points: 1 } as Letter)];
+            const letters: LetterTile[] = [new LetterTile(0, 0, { value: 'C', points: 1 } as Letter)];
             placementService['associateLettersWithRack'](letters, player);
             expect(letters[0].letter.isBlankLetter).to.equal(true);
             expect(letters[0].letter.points).to.equal(0);
@@ -184,8 +184,8 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return false if there is placed letters on the gameboard', () => {
-            const letterCoords: GameboardCoordinate[] = [new GameboardCoordinate(7, 7, letterA), new GameboardCoordinate(7, 8, letterB)];
-            gameboard.placeLetter(new GameboardCoordinate(0, 0, {} as Letter));
+            const letterCoords: LetterTile[] = [new LetterTile(7, 7, letterA), new LetterTile(7, 8, letterB)];
+            gameboard.placeLetter(new LetterTile(0, 0, {} as Letter));
             expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(false);
         });
     });
@@ -195,13 +195,13 @@ describe('Letter Placement Service', () => {
         let isPlacementStub: Sinon.SinonStub<unknown[], unknown>;
         let lettersInRackStub: Sinon.SinonStub<unknown[], unknown>;
         let invalidFirstPlacementStub: Sinon.SinonStub<unknown[], unknown>;
-        let letterCoords: GameboardCoordinate[];
+        let letterCoords: LetterTile[];
         beforeEach(() => {
             getLettersStub = Sinon.stub(placementService, 'getLettersCoord' as never);
             isPlacementStub = Sinon.stub(placementService, 'isPlacementValid' as never);
             lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as never);
             invalidFirstPlacementStub = Sinon.stub(placementService, 'verifyFirstTurn' as never);
-            letterCoords = [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterB)];
+            letterCoords = [new LetterTile(0, 0, letterA), new LetterTile(0, 1, letterB)];
             getLettersStub.returns(letterCoords);
         });
 
