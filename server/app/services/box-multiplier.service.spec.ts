@@ -16,26 +16,20 @@ describe('BoxMultiplier', () => {
         letterMultiplier2 = boxMultiplierService.letterMultipliersByTwo;
         letterMultiplier3 = boxMultiplierService.letterMultipliersByThree;
         wordMultiplier2 = boxMultiplierService.wordMultipliersByTwo;
-        // wordMultiplier3 = boxMultiplierService.wordMultipliersByThree;
     });
 
     it(' {12, 6} board coordinate should belong in letterMultipliersByTwo', () => {
-        const testCoordinate = new LetterTile(12, 6, {} as Letter);
+        const testCoordinate = new LetterTile(13, 7, {} as Letter);
         expect(letterMultiplier2).to.include(testCoordinate);
     });
 
     it(' {5, 9} board coordinate should belong in letterMultipliersByThree', () => {
-        const testCoordinate = new LetterTile(5, 9, {} as Letter);
+        const testCoordinate = new LetterTile(6, 10, {} as Letter);
         expect(letterMultiplier3).to.include(testCoordinate);
     });
 
     it(' {10, 4} board coordinate should belong in wordMultipliersByTwo', () => {
-        const testCoordinate = new LetterTile(10, 4, {} as Letter);
+        const testCoordinate = new LetterTile(11, 5, {} as Letter);
         expect(wordMultiplier2).to.include(testCoordinate);
     });
-
-    // it(' {0, 0} board coordinate should belong in wordMultipliersByThree', () => {
-    //     const testCoordinate = new LetterTile(0, 0, [] Letter[]);
-    //     expect(wordMultiplier3).to.include(testCoordinate);
-    // });
 });
