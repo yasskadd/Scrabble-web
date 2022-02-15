@@ -105,7 +105,7 @@ export class GamesHandler {
         const play = game.play(player.name, commandInfo) as [boolean, Gameboard] | string;
 
         if (typeof play[0] === 'string') {
-            socket.emit('impossibleCommandError', play);
+            socket.emit(SocketEvents.ImpossibleCommandError, play);
         } else if (typeof play !== 'string') {
             const playerInfo: PlayInfo = {
                 gameboard: play[1].gameboardCoords,

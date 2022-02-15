@@ -34,5 +34,6 @@ export enum SocketEvents {
     GameEnd = 'endGame',
     AbandonGame = 'AbandonGame',
     LetterReserveUpdated = 'letterReserveUpdated',
-    impossibleCommandError = 'impossibleCommandError',
+    ImpossibleCommandError = 'impossibleCommandError',
+    UserDisconnect = 'user disconnect',
 }

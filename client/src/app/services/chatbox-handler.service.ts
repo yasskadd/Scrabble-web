@@ -55,16 +55,16 @@ export class ChatboxHandlerService {
     }
 
     private configureBaseSocketFeatures(): void {
-        this.clientSocket.on('gameMessage', (broadcastMessage: string) => {
+        this.clientSocket.on(SocketEvents.GameMessage, (broadcastMessage: string) => {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
-        this.clientSocket.on('impossibleCommandError', (error: string) => {
+        this.clientSocket.on(SocketEvents.ImpossibleCommandError, (error: string) => {
             this.addMessage(this.configureImpossibleCommandError(error));
         });
-        this.clientSocket.on('user disconnect', () => {
+        this.clientSocket.on(SocketEvents.UserDisconnect, () => {
             this.addDisconnect();
         });
-        this.clientSocket.on('endGame', () => {
+        this.clientSocket.on(SocketEvents.GameEnd, () => {
             this.endGameMessage();
         });
     }

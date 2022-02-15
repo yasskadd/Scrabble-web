@@ -73,6 +73,7 @@ export class Game {
                 return isValid as string;
             }
             gameboard = this.letterPlacement.placeLetter(letterCoords as GameboardCoordinate[], this.player1, this.gameboard);
+            // TODO: test to do
             if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
             }

@@ -430,7 +430,7 @@ describe('ChatboxHandlerService', () => {
     it('should called the configureImpossibleCommandError if the server emit the Event', () => {
         const messageError = 'impossible de placer la lettre';
         const spy = spyOn(service, 'configureImpossibleCommandError' as never);
-        socketEmulator.peerSideEmit(SocketEvents.impossibleCommandError, messageError);
+        socketEmulator.peerSideEmit(SocketEvents.ImpossibleCommandError, messageError);
         expect(spy).toHaveBeenCalledWith(messageError as never);
     });
     it('should called the addDisconnect  method if the server emit the Event', () => {
