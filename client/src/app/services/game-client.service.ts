@@ -59,6 +59,7 @@ export class GameClientService {
             this.playerOneTurn = info.activePlayer === this.playerOne.name;
             this.updateNewGameboard(info.gameboard);
         });
+
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
             this.gameboard = gameInfo.gameboard;
             this.playerOne = this.playerOne.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
@@ -66,6 +67,7 @@ export class GameClientService {
             this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
             this.updateGameboard();
         });
+
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
             this.timer = newTimer;
         });
@@ -90,7 +92,7 @@ export class GameClientService {
 
     private findWinner(): void {
         if (this.isGameFinish) {
-            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire à quitter la partie";
+            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
         } else {
             this.findWinnerByScore();
         }
@@ -102,7 +104,7 @@ export class GameClientService {
         } else if (this.playerOne.score > this.secondPlayer.score) {
             this.winningMessage = 'Bravo Vous avez gagné la partie de Scrabble';
         } else {
-            this.winningMessage = "L'adversaire à gagné la partie";
+            this.winningMessage = "L'adversaire a gagné la partie";
         }
     }
 }
