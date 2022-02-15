@@ -53,9 +53,11 @@ export class LetterPlacementService {
         const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
         const wordValidationScore: number = this.dictionaryService.validateWords(words);
         if (wordValidationScore === 0) {
-            letterCoords.forEach((coord) => {
-                gameboard.removeLetter(coord);
-            });
+            setTimeout(() => {
+                letterCoords.forEach((coord) => {
+                    gameboard.removeLetter(coord);
+                });
+            }, 3000);
             return [false, gameboard];
         }
         player.score += wordValidationScore;
