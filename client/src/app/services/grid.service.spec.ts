@@ -69,6 +69,7 @@ describe('GridService', () => {
         const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
         gridService.drawGrid(GAMEBOARD_TEST);
         expect(drawLetterSpy).toHaveBeenCalled();
+        expect(GAMEBOARD_TEST[0].isOccupied).toBeTruthy();
     });
 
     it(' drawGrid should call drawMiddleTile', () => {
@@ -240,7 +241,7 @@ describe('GridService', () => {
         expect(gridService.gridContext.font).toBe('23px system-ui');
     });
 
-    it(' drawLetterWeight should call measureText ', () => {
+    it(' drawLetterWeight should call measureText once', () => {
         const measureTextSpy = spyOn(gridService.gridContext, 'measureText').and.callThrough();
         gridService.drawLetterWeight(POSITION_TEST, '6');
         expect(measureTextSpy).toHaveBeenCalledTimes(1);
