@@ -44,7 +44,8 @@ const GAME_PARAMETERS: GameParameters = {
     timer: 1,
     mode: 'classique',
 };
-describe.only('GameSession Service', () => {
+
+describe('GameSession Service', () => {
     let gameSessions: GameSessions;
     let service: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
