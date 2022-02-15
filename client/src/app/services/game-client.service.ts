@@ -92,7 +92,7 @@ export class GameClientService {
 
     private findWinner(): void {
         if (this.isGameFinish) {
-            this.winningMessage = "Bravo vous agit vez gagné la partie, l'adversaire à quitter la partie";
+            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire à quitter la partie";
         } else {
             this.findWinnerByScore();
         }
