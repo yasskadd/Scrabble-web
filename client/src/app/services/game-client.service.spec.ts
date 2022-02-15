@@ -18,7 +18,7 @@ const PLAYER_ONE: Player = {
     room: '1',
 };
 
-const Letter_Reserve = [
+const LETTER_RESERVE = [
     { value: 'c', quantity: 2, points: 1 },
     { value: 'r', quantity: 2, points: 1 },
     { value: 'p', quantity: 2, points: 1 },
@@ -26,7 +26,7 @@ const Letter_Reserve = [
     { value: 'w', quantity: 1, points: 7 },
 ];
 const PLAYER_TWO: Player = {
-    name: 'QLF',
+    name: 'Paul',
     score: 327,
     rack: [
         { value: 'c', quantity: 2, points: 1 },
@@ -38,7 +38,7 @@ const PLAYER_TWO: Player = {
 
 const PLAYER_INFO: PlayInfo = {
     gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { value: 'b', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
-    activePlayer: 'QLF',
+    activePlayer: 'Paul',
 };
 
 const GAME_INFO: GameInfo = {
@@ -104,12 +104,16 @@ describe('GameClientService', () => {
     });
     it('the playerOneTurn should be false when ViewUpdate is called and it is not their turn to play', () => {
         service.playerOne = PLAYER_ONE;
+        console.log(service.playerOne);
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
+        console.log(service.playerOneTurn);
         expect(service.playerOneTurn).not.toBeTruthy();
     });
     it('playerOneTurn should be true when ViewUpdate is called and it is their turn to play', () => {
         service.playerOne = PLAYER_TWO;
+        console.log(service.playerOne);
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
+        console.log(service.playerOneTurn);
         expect(service.playerOneTurn).toBeTruthy();
     });
 
@@ -136,10 +140,18 @@ describe('GameClientService', () => {
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).toBeTruthy();
     });
-
+    it('should update the playOneTurn to false if it is not your turn to play', () => {
+        service.playerOne = PLAYER_TWO;
+        service.secondPlayer = PLAYER_ONE;
+        service.gameboard = PLAYER_INFO.gameboard;
+        expect(service.gameboard).not.toEqual(GAME_INFO.gameboard);
+        socketEmulator.peerSideEmit(SocketEvents.Skip, GAME_INFO);
+        expect(service.gameboard).toEqual(GAME_INFO.gameboard);
+        expect(service.playerOneTurn).not.toBeTruthy();
+    });
     it('should update the letter reserve if SocketEvents.letterReserveUpdated event is called from the server', () => {
-        socketEmulator.peerSideEmit('letterReserveUpdated', Letter_Reserve);
-        expect(service.letterReserve).toEqual(Letter_Reserve);
+        socketEmulator.peerSideEmit('letterReserveUpdated', LETTER_RESERVE);
+        expect(service.letterReserve).toEqual(LETTER_RESERVE);
     });
 
     it('should update the time when the SocketEvents.TimerClientUpdate event is called from the server', () => {
@@ -151,7 +163,7 @@ describe('GameClientService', () => {
         expect(service.timer).not.toEqual(TIME);
     });
     it('should  not update the letter reserve if SocketEvents.letterReserveUpdated  is not called from the server', () => {
-        expect(service.letterReserve).not.toEqual(Letter_Reserve);
+        expect(service.letterReserve).not.toEqual(LETTER_RESERVE);
     });
     it('should set the value of isGameFinish to true when the opponent left the game ', () => {
         service.isGameFinish = false;

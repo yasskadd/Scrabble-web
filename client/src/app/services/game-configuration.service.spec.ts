@@ -13,6 +13,13 @@ interface RoomInformation {
     statusGame: string;
     timer: number;
 }
+
+interface GameScrabbleInformation {
+    playerName: string[];
+    roomId: string;
+    timer: number;
+    socketId: string[];
+}
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
     roomId: '',
@@ -238,6 +245,25 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.statusGame).toEqual(searchingOpponent);
     });
 
+    it('should handle OpponentLeave event to remove the player name of the second player ', () => {
+        const socketIDUserRoom = ['346574gdvb', 'dsfhg56ter'];
+        const gameScrabbleInformation: GameScrabbleInformation = {
+            playerName: ROOM_INFORMATION.playerName,
+            roomId: ROOM_INFORMATION.roomId,
+            timer: ROOM_INFORMATION.timer,
+            socketId: socketIDUserRoom,
+        };
+        service.roomInformation.playerName = ROOM_INFORMATION.playerName;
+        service.roomInformation.roomId = ROOM_INFORMATION.roomId;
+        service.roomInformation.timer = ROOM_INFORMATION.timer;
+        service.roomInformation.isCreator = true;
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        const spyOnSocket = spyOn(service['clientSocket'], 'send');
+        socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart, socketIDUserRoom);
+
+        expect(spyOnSocket).toHaveBeenCalledWith('createScrabbleGame', gameScrabbleInformation);
+    });
     it('should reset the room Information', () => {
         const roomInformationUpdated: RoomInformation = {
             playerName: ['Vincent', 'Marcel'],
