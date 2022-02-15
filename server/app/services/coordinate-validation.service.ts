@@ -48,7 +48,7 @@ export class GameboardCoordinateValidationService {
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
     }
 
-    isThereAdjacentLetters(letterCoord: GameboardCoordinate, gameboard: GameBoard) {
+    isThereAdjacentLetters(letterCoord: GameboardCoordinate, gameboard: Gameboard) {
         let isValid = false;
         // Verify upward
         if (letterCoord.y !== 0) {
@@ -68,7 +68,7 @@ export class GameboardCoordinateValidationService {
         }
         return isValid;
     }
-    verifyLettersContact(letterCoords: GameboardCoordinate[], gameboard: GameBoard) {
+    verifyLettersContact(letterCoords: GameboardCoordinate[], gameboard: Gameboard) {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) return true;
         for (const coord of letterCoords) {
             if (this.isThereAdjacentLetters(coord, gameboard)) return true;
