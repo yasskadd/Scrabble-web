@@ -10,9 +10,9 @@ import { BoxMultiplierService } from './box-multiplier.service';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 
 describe('Coordinate validation service', () => {
-    let gameboard: Gameboard;
     let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
     let coordinateValidation: GameboardCoordinateValidationService;
+    let gameboard: Gameboard;
     let letterA: Letter;
     let letterB: Letter;
 
