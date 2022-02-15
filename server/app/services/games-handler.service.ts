@@ -141,6 +141,7 @@ export class GamesHandler {
         if (socket.id === gameInfo.socketId[0]) {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
+        console.log('SUBSCRIBING :');
         newGameHolder.game.turn.endTurn.subscribe(() => {
             console.log('SUBSCRIBE 1');
             this.changeTurn(gameInfo.roomId);
@@ -230,13 +231,12 @@ export class GamesHandler {
         setInterval(() => {
             tempTime = tempTime - 1;
             if (tempTime === 0) {
-                let player: Player;
-                if (this.players.has(socket.id)) {
-                    player = this.players.get(socket.id) as Player;
-                    const room = player.room;
-                    socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
-                    socket.broadcast.to(room).emit(SocketEvents.GameEnd);
-                }
+                if (!this.players.has(socket.id)) return;
+
+                const player = this.players.get(socket.id) as Player;
+                const room = player.room;
+                socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
+                socket.broadcast.to(room).emit(SocketEvents.GameEnd);
             }
         }, SECOND);
     }
