@@ -39,10 +39,40 @@ export class GameboardCoordinateValidationService {
             const letter = { value: commandInfo.lettersPlaced.shift() as string } as Letter;
             coordOfLetters.push(new GameboardCoordinate(currentCoord.x, currentCoord.y, letter));
         }
+
+        if (!this.verifyLettersContact(coordOfLetters, gameboard)) return [];
         return coordOfLetters;
     }
     isFirstCoordValid(firstCoord: GameboardCoordinate, gameboard: Gameboard) {
         if (Object.keys(gameboard.getCoord(firstCoord)).length === 0 || gameboard.getCoord(firstCoord) === undefined) return false;
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
+    }
+
+    isThereAdjacentLetters(letterCoord: GameboardCoordinate, gameboard: Gameboard) {
+        let isValid = false;
+        // Verify upward
+        if (letterCoord.y !== 0) {
+            if (gameboard.getCoord(new GameboardCoordinate(letterCoord.x, letterCoord.y - 1, {} as Letter)).isOccupied) isValid = true;
+        }
+        // Verify downward
+        if (letterCoord.y !== 14) {
+            if (gameboard.getCoord(new GameboardCoordinate(letterCoord.x, letterCoord.y + 1, {} as Letter)).isOccupied) isValid = true;
+        }
+        // Verify right
+        if (letterCoord.x !== 14) {
+            if (gameboard.getCoord(new GameboardCoordinate(letterCoord.x - 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
+        }
+        // Verify left
+        if (letterCoord.x !== 0) {
+            if (gameboard.getCoord(new GameboardCoordinate(letterCoord.x + 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
+        }
+        return isValid;
+    }
+    verifyLettersContact(letterCoords: GameboardCoordinate[], gameboard: Gameboard) {
+        if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) return true;
+        for (const coord of letterCoords) {
+            if (this.isThereAdjacentLetters(coord, gameboard)) return true;
+        }
+        return false;
     }
 }

@@ -7,6 +7,7 @@ import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
+import { LetterTilesService } from './letter-tiles.service';
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
 type PlayInfo = { gameboard: Coordinate[]; activePlayer: string };
 type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: string };
@@ -71,9 +72,11 @@ describe('GameClientService', () => {
     let socketEmulator: SocketTestEmulator;
     let socketServiceMock: SocketClientServiceMock;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
+    let letterTilesServiceSpy: jasmine.SpyObj<LetterTilesService>;
     // TODO : TESTS
     beforeEach(() => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid']);
+        letterTilesServiceSpy = jasmine.createSpyObj('LetterTilesService', ['drawRack']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketEmulator as unknown as Socket;
@@ -81,6 +84,7 @@ describe('GameClientService', () => {
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },
                 { provide: GridService, useValue: gridServiceSpy },
+                { provide: LetterTilesService, useValue: letterTilesServiceSpy },
             ],
         });
         service = TestBed.inject(GameClientService);
@@ -94,6 +98,7 @@ describe('GameClientService', () => {
         expect(service.playerOne).toEqual(PLAYER_ONE);
     });
     it('should update the opponent information', () => {
+        service.playerOne = PLAYER_ONE;
         socketEmulator.peerSideEmit('UpdateOpponentInformation', PLAYER_TWO);
         expect(service.secondPlayer).toEqual(PLAYER_TWO);
     });
