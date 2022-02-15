@@ -41,15 +41,15 @@ export class GameClientService {
             this.updateGameboard();
         });
 
-        this.clientSocketService.on('letterReserveUpdated', (letterReserveUpdated: Letter[]) => {
+        this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
             console.log(letterReserveUpdated);
             this.letterReserve = letterReserveUpdated;
         });
-        this.clientSocketService.on('OpponentLeftTheGame', () => {
+        this.clientSocketService.on(SocketEvents.OpponentGameLeave, () => {
             this.playerOneTurn = false;
             this.isGameFinish = true;
         });
-        this.clientSocketService.on('endGame', () => {
+        this.clientSocketService.on(SocketEvents.GameEnd, () => {
             this.findWinner();
         });
 
@@ -100,7 +100,7 @@ export class GameClientService {
     private findWinnerByScore(): void {
         this.isGameFinish = true;
         if (this.playerOne.score === this.secondPlayer.score) {
-            this.winningMessage = 'Bravo au deux joueur, vous avez le même score';
+            this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
         } else if (this.playerOne.score > this.secondPlayer.score) {
             this.winningMessage = 'Bravo Vous avez gagné la partie de Scrabble';
         } else {

@@ -73,7 +73,6 @@ describe('GameClientService', () => {
     let socketServiceMock: SocketClientServiceMock;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
     let letterTilesServiceSpy: jasmine.SpyObj<LetterTilesService>;
-    // TODO : TESTS
     beforeEach(() => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid']);
         letterTilesServiceSpy = jasmine.createSpyObj('LetterTilesService', ['drawRack']);
@@ -194,7 +193,7 @@ describe('GameClientService', () => {
         expect(spy).toHaveBeenCalled();
     });
     it('should emit a winningMessage if the game is finish and the other player is not connected anymore', () => {
-        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire à quitter la partie";
+        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
         service.isGameFinish = true;
         // eslint-disable-next-line dot-notation
         service['findWinner']();
@@ -214,7 +213,7 @@ describe('GameClientService', () => {
         service.secondPlayer = PLAYER_TWO;
         service.playerOne.score = 32;
         service.secondPlayer.score = 32;
-        const messageWinner = 'Bravo au deux joueur, vous avez le même score';
+        const messageWinner = 'Bravo aux deux joueur, vous avez le même score';
 
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
@@ -238,7 +237,7 @@ describe('GameClientService', () => {
         service.secondPlayer = PLAYER_TWO;
         service.playerOne.score = 32;
         service.secondPlayer.score = 42;
-        const messageWinner = "L'adversaire à gagné la partie";
+        const messageWinner = "L'adversaire a gagné la partie";
 
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();

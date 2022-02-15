@@ -12,7 +12,6 @@ export class MultiplayerCreatePageComponent {
     navigator: Navigator;
     constructor(public gameConfiguration: GameConfigurationService, public router: Router) {}
     createGame() {
-        // TODO : add server verification of playername
         this.gameConfiguration.gameInitialization({ username: this.playerName, timer: 60, dictionary: 'francais', mode: 'classique' });
         this.resetInput();
         this.navigatePage();

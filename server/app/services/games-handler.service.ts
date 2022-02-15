@@ -52,10 +52,12 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
+        //
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
         });
-        this.socketManager.on('AbandonGame', (socket) => {
+        // NOT
+        this.socketManager.on(SocketEvents.AbandonGame, (socket) => {
             this.abandonGame(socket);
         });
     }
@@ -95,6 +97,8 @@ export class GamesHandler {
 
     private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
+        const firstCoordinateColumns = commandInfo.firstCoordinate.x + 1;
+        const firstCoordinateRows = commandInfo.firstCoordinate.y + 1;
         const letterPlaced = commandInfo.lettersPlaced.join('');
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
@@ -103,7 +107,7 @@ export class GamesHandler {
         const play = game.play(player.name, commandInfo) as [boolean, Gameboard] | string;
 
         if (typeof play[0] === 'string') {
-            socket.emit('impossibleCommandError', play);
+            socket.emit(SocketEvents.ImpossibleCommandError, play);
         } else if (typeof play !== 'string') {
             const playerInfo: PlayInfo = {
                 gameboard: play[1].gameboardCoords,
@@ -111,18 +115,19 @@ export class GamesHandler {
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, room, game);
-            const charASCII = 96;
-            socket.broadcast
-                .to(player.room)
-                .emit(
-                    SocketEvents.GameMessage,
-                    `!placer ${String.fromCharCode(charASCII + commandInfo.firstCoordinate.x + 1)}${commandInfo.firstCoordinate.y + 1}${
-                        commandInfo.direction
-                    } ${letterPlaced}`,
-                );
-        } else {
-            // socket.emit(SocketEvents.UpdatePlayerInformation, player);
-            // emit ds chatbox le 'play'
+            if (!play[0]) {
+                socket.emit('impossibleCommandError', 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
+            } else {
+                const charASCII = 96;
+                socket.broadcast
+                    .to(player.room)
+                    .emit(
+                        SocketEvents.GameMessage,
+                        `!placer ${String.fromCharCode(charASCII + firstCoordinateRows)}${firstCoordinateColumns}${
+                            commandInfo.direction
+                        } ${letterPlaced}`,
+                    );
+            }
         }
     }
 
@@ -148,7 +153,7 @@ export class GamesHandler {
             gameboard: newGameHolder.game.gameboard.gameboardCoords,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
-        this.socketManager.emitRoom(gameInfo.roomId, 'letterReserveUpdated', newGameHolder.game.letterReserve.lettersReserve);
+        this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
         console.log('START GAME : ');
         console.log(newGameHolder.game.turn.activePlayer);
 
@@ -188,7 +193,7 @@ export class GamesHandler {
             socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player1);
             socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player2);
         }
-        this.socketManager.emitRoom(roomId, 'letterReserveUpdated', game.letterReserve.lettersReserve);
+        this.socketManager.emitRoom(roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
     }
 
     private changeTurn(roomId: string) {
@@ -201,25 +206,26 @@ export class GamesHandler {
         console.log('CHANGE TURN : ');
         console.log(gameInfo.activePlayer);
         if (gameInfo.activePlayer === undefined) {
-            this.socketManager.emitRoom(roomId, 'endGame');
+            this.socketManager.emitRoom(roomId, SocketEvents.GameEnd);
         } else {
             this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
         }
     }
 
     private sendTimer(roomId: string, timer: number) {
-        console.log('HERE IT DIES');
         this.socketManager.emitRoom(roomId, SocketEvents.TimerClientUpdate, timer);
     }
 
     private abandonGame(socket: Socket) {
-        let player: Player;
-        if (this.players.has(socket.id)) {
-            player = this.players.get(socket.id) as Player;
-            const room = player.room;
-            socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
-            socket.broadcast.to(room).emit(SocketEvents.GameEnd);
-        }
+        if (!this.players.has(socket.id)) return;
+
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        // Passed 2 hours trying to test it and it was hell | it won't matter since the other would have left the room
+        // socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
+        // socket.broadcast.to(room).emit(SocketEvents.GameEnd);
+        this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
+        this.socketManager.emitRoom(room, SocketEvents.GameEnd);
     }
 
     private disconnect(socket: Socket) {

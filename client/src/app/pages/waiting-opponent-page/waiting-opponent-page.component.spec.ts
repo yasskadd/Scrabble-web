@@ -19,14 +19,12 @@ interface RoomInformation {
     statusGame: string;
 }
 const ROOM_INFORMATION: RoomInformation = {
-    playerName: ['Vincent', 'RICHARD'],
+    playerName: ['Vincent'],
     roomId: '1',
     isCreator: true,
     statusGame: 'En attente du joueur',
 };
 const TEST_ERROR = "La salle n'est plus disponible";
-// const TEST_ISCREATOR = true;
-// const TEST_ISNOTCREATOR = true;
 const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
 const MULTIPLAYER_CREATE_ROOM_ROUTE = 'classique/multijoueur/creer';
@@ -119,6 +117,54 @@ describe('WaitingOpponentPageComponent', () => {
         fixture.detectChanges();
         component.exitRoom(true);
         expect(gameConfigurationServiceSpy.exitWaitingRoom).toHaveBeenCalled();
+    });
+
+    it('should have a button to start the game when you created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        expect(button).toBeTruthy();
+    });
+
+    it('should not have a button to start the game when you did not created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        expect(button).toBeFalsy();
+    });
+    it('should have a button to reject the opponent when you created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.rejectButton');
+        expect(button).toBeTruthy();
+    });
+
+    it('should  not have a button to reject the opponent when you did not created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.rejectButton');
+        expect(button).toBeTruthy();
+    });
+    it('should have a mat progress bar when you are waiting for the other player to accept your invitation', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        const progressBar = fixture.debugElement.nativeElement.querySelector('mat-progress-bar');
+        expect(progressBar).toBeTruthy();
+    });
+    it('should have a mat progress bar when you are waiting for an other player to join your game', () => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = '';
+        fixture.detectChanges();
+        const progressBar = fixture.debugElement.nativeElement.querySelector('mat-progress-bar');
+
+        expect(progressBar).toBeTruthy();
+    });
+
+    it('should not have a mat progress bar when a second player join the waiting room', () => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const progressBar = fixture.debugElement.nativeElement.querySelector('mat-progress-bar');
+        expect(progressBar).toBeFalsy();
     });
 
     it('rejectOpponent should call gameconfiguration.rejectOponent()', () => {

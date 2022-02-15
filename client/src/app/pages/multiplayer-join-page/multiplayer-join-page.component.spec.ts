@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -75,16 +75,25 @@ describe('MultiplayerJoinPageComponent', () => {
             verticalPosition: 'top',
         });
     });
-    // TODO:Test to fix
-    // it('should call joinRoom() when the joinGameButton is pressed', fakeAsync(() => {
-    //     fixture.detectChanges();
-    //     const spy = spyOn(component, 'joinRoom');
-    //     const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
-    //     button.click();
-    //     tick();
-    //     fixture.detectChanges();
-    //     expect(spy).toHaveBeenCalled();
-    // }));
+    it('should call joinRoom() when the joinGameButton is pressed', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        fixture.detectChanges();
+        const spy = spyOn(component, 'joinRoom');
+        const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+    it('should not be able to call joinRoom() when the player did not enter his name', fakeAsync(() => {
+        fixture.detectChanges();
+        const spy = spyOn(component, 'joinRoom');
+        const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).not.toHaveBeenCalled();
+    }));
     it('joinRoom should call gameconfiguration.joinGame()', () => {
         const NAME_PLAYER = 'Marcel';
         component.playerName = NAME_PLAYER;
@@ -109,6 +118,16 @@ describe('MultiplayerJoinPageComponent', () => {
         expect(spy).not.toHaveBeenCalledWith();
     });
 
+    it('Should have a table when there is room availables', () => {
+        fixture.detectChanges();
+        const table = fixture.debugElement.nativeElement.querySelector('.roomAvailable');
+        expect(table).toBeTruthy();
+    });
+    it('Should  not have a paragraph saying there is no room available when there is room availables', () => {
+        fixture.detectChanges();
+        const text = fixture.debugElement.nativeElement.querySelector('.noRoomAvailable');
+        expect(text).toBeFalsy();
+    });
     it('Should open a snackBar when there an error while trying to join a multiplayer game', () => {
         const spy = spyOn(component, 'openSnackBar');
         gameConfigurationServiceSpy.errorReason.next(TEST_ERROR);

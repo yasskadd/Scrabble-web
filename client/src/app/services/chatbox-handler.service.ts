@@ -47,26 +47,24 @@ export class ChatboxHandlerService {
     }
 
     endGameMessage(): void {
-        // const letterReserve = this.getAllLetterReserve(this.gameClient.letterReserve);
         const myLetterLeft = this.getAllLetter(this.gameClient.playerOne.rack as never);
         const opponentLetterLeft = this.getAllLetter(this.gameClient.secondPlayer.rack as never);
         this.messages.push({ type: 'system-message', data: 'Fin de la partie : lettres restantes' });
         this.messages.push({ type: 'system-message', data: `${this.gameClient.playerOne.name} : ${myLetterLeft}` });
         this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
-        // this.messages.push({ type: 'system-message', data: `Lettre restante dans la réserve : ${letterReserve}` });
     }
 
     private configureBaseSocketFeatures(): void {
-        this.clientSocket.on('gameMessage', (broadcastMessage: string) => {
+        this.clientSocket.on(SocketEvents.GameMessage, (broadcastMessage: string) => {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
-        this.clientSocket.on('impossibleCommandError', (error: string) => {
+        this.clientSocket.on(SocketEvents.ImpossibleCommandError, (error: string) => {
             this.addMessage(this.configureImpossibleCommandError(error));
         });
-        this.clientSocket.on('user disconnect', () => {
+        this.clientSocket.on(SocketEvents.UserDisconnect, () => {
             this.addDisconnect();
         });
-        this.clientSocket.on('endGame', () => {
+        this.clientSocket.on(SocketEvents.GameEnd, () => {
             this.endGameMessage();
         });
     }
@@ -192,8 +190,6 @@ export class ChatboxHandlerService {
         return stringArr[position].split('');
     }
 
-    // TODO : come back to test and code
-
     private configureImpossibleCommandError(error: string): ChatboxMessage {
         return { type: 'system-message', data: `[Erreur] ${error}` };
     }
@@ -205,14 +201,4 @@ export class ChatboxHandlerService {
         });
         return letterString;
     }
-
-    // private getAllLetterReserve(letters: Letter[]): string {
-    //     let letterString = '';
-    //     letters?.forEach((letter) => {
-    //         for (let i = 1; i <= letter.quantity; i++) {
-    //             letterString = letterString + letter.value;
-    //         }
-    //     });
-    //     return letterString;
-    // }
 }
