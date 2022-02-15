@@ -14,9 +14,9 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordFinderService } from './word-finder.service';
 
 const ERROR_TYPE = {
-    invalidPlacement: 'Invalid placement',
-    lettersNotInRack: 'Letters not in rack',
-    invalidFirstPlacement: 'First placement is invalid',
+    invalidPlacement: 'Placement invalide',
+    lettersNotInRack: 'Lettres absents du chevalet',
+    invalidFirstPlacement: 'Placement du premier tour pas valide',
 };
 @Service()
 export class LetterPlacementService {
