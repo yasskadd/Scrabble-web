@@ -92,4 +92,18 @@ describe('InformationPanelComponent', () => {
         component.leaveGame();
         expect(gameClientSpy.quitGame).toHaveBeenCalled();
     });
+
+    it('formatLabel should ', () => {
+        const valueToFormat = 4;
+        const expectedValue = '4px';
+        const testedValue = component.formatLabel(valueToFormat);
+        expect(testedValue).toEqual(expectedValue);
+    });
+
+    // ???? not sure why this is not working
+    it('should call the method gameClientService.updateGameboard if updateFontSize is called', () => {
+        const drawWeightSpy = spyOn(gameClientSpy, 'updateGameboard' as never).and.callThrough();
+        component.updateFontSize();
+        expect(drawWeightSpy).toHaveBeenCalled();
+    });
 });
