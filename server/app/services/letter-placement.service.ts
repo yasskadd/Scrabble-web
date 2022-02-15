@@ -5,7 +5,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/command-info';
-import { Coordinate } from '@app/coordinate';
+import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';

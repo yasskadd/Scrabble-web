@@ -7,6 +7,9 @@ import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
 
+const ROW_NUMBER = 15;
+const COLUMN_NUMBER = 15;
+
 @Service()
 export class WordFinderService {
     findNewWords(gameboard: Gameboard, coordList: LetterTile[]) {
@@ -69,7 +72,7 @@ export class WordFinderService {
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const gameCoord: LetterTile = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (currentCoord.y !== 15) {
+            if (currentCoord.y !== ROW_NUMBER) {
                 currentCoord = new LetterTile(currentCoord.x, currentCoord.y + 1, {} as Letter);
             } else {
                 break;
@@ -105,7 +108,7 @@ export class WordFinderService {
             const y: number = currentCoord.y;
             const gameCoord: LetterTile = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (x !== 15) {
+            if (x !== COLUMN_NUMBER) {
                 currentCoord = new LetterTile(x + 1, y, {} as Letter);
             } else {
                 break;

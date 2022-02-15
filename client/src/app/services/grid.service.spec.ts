@@ -19,6 +19,8 @@ describe('GridService', () => {
             letter: { value: 'S', quantity: 2, points: 2 },
             letterMultiplier: 1,
             wordMultiplier: 2,
+            resetLetterMultiplier: () => {},
+            resetWordMultiplier: () => {},
         },
     ];
 

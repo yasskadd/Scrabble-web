@@ -14,8 +14,6 @@ describe('Chatbox handler service tests', () => {
     let httpServer: HttpServer;
     // let io: Server;
     // let clientSocket: Socket;
-    // let serverSocket: Socket;
-    // let port: number;
 
     beforeEach(() => {
         socketManagerStub = createStubInstance(SocketManager);
@@ -24,15 +22,6 @@ describe('Chatbox handler service tests', () => {
 
         httpServer = createServer();
         httpServer.listen();
-        // port = (httpServer.address() as AddressInfo).port;
-        // clientSocket = Client(`http://localhost:${port}`);
-        // io.on('connection', (socket) => {
-        //     serverSocket = socket;
-        // });
-        // clientSocket.on('connect', done);
-        // io.on('connection', (socket) => {
-        //     serverSocket = socket;
-        // });
     });
 
     it('initSocketsEvents() should call the subscribe from the socket Manager', () => {
@@ -45,7 +34,7 @@ describe('Chatbox handler service tests', () => {
         expect(socketManagerStub.on.calledOnceWithExactly(SocketEvents.Disconnect, chatboxHandlerService['disconnectEvent']));
     });
 
-    // it('sendMessage() should send a message to the socket with the socket.id', () => {
+    // TODO : it('sendMessage() should send a message to the socket with the socket.id', () => {
     //     const TEST_MESSAGE = '4AM here -_-';
     //     // Reason : checking if private method has been called
     //     // eslint-disable-next-line dot-notation
