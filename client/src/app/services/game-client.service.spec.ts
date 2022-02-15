@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { Coordinate } from '@common/coordinate.class';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile';
 import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
@@ -9,8 +9,8 @@ import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 import { LetterTilesService } from './letter-tiles.service';
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
-type PlayInfo = { gameboard: Coordinate[]; activePlayer: string };
-type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: string };
+type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,

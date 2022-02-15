@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { AbandonGameDialogBoxComponent } from '@app/components/abandon-game-dialog-box/abandon-game-dialog-box.component';
 import { GameClientService } from '@app/services/game-client.service';
+import { GridService } from '@app/services/grid.service';
 import { LetterTilesService } from '@app/services/letter-tiles.service';
 
 @Component({
@@ -15,6 +16,7 @@ export class InformationPanelComponent {
     private readonly dialogWidth: string = '25%';
 
     constructor(
+        public gridService: GridService,
         public letterTilesService: LetterTilesService,
         public gameClientService: GameClientService,
         public dialog: MatDialog,
@@ -31,7 +33,9 @@ export class InformationPanelComponent {
 
     updateFontSize() {
         // const newFont = this.formatLabel(font);
-        this.letterTilesService.changeFontSize(this.value);
+        this.gridService.letterSize = this.value;
+        this.letterTilesService.fontSize = this.value;
+        this.gameClientService.updateGameboard();
     }
 
     abandonGame(): void {
