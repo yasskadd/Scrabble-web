@@ -9,4 +9,8 @@ export class Player {
     constructor(name: string) {
         this.name = name;
     }
+
+    rackIsEmpty() {
+        return this.rack.length === 0;
+    }
 }

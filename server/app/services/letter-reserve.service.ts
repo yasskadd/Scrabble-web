@@ -137,4 +137,8 @@ export class LetterReserveService {
 
         return rack;
     }
+
+    isEmpty() {
+        return this.lettersReserve.length === 0;
+    }
 }

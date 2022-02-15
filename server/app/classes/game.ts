@@ -44,7 +44,7 @@ export class Game {
      * End a game.
      */
     end(): void {
-        this.turn.end(undefined);
+        this.turn.end(true);
         // console.log("Game has ended");
     }
 
@@ -76,7 +76,13 @@ export class Game {
             if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
             }
-            this.turn.end();
+
+            if (this.player1.rackIsEmpty() && this.letterReserve.isEmpty()) {
+                this.end();
+            } else {
+                this.turn.end();
+            }
+
             return gameboard;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
@@ -90,7 +96,11 @@ export class Game {
             if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);
             }
-            this.turn.end();
+            if (this.player2.rackIsEmpty() && this.letterReserve.isEmpty()) {
+                this.end();
+            } else {
+                this.turn.end();
+            }
             return gameboard as [boolean, Gameboard];
         }
 
