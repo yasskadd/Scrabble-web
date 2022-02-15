@@ -5,5 +5,5 @@
         <canvas id="canvas" #rackCanvas [attr.width]="width" [attr.height]="height"></canvas>
     </div>
     <button mat-raised-button disabled>valider le mot</button>
-    <button mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
+    <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
 </div>
