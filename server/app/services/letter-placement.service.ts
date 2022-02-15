@@ -53,12 +53,10 @@ export class LetterPlacementService {
         const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
         const wordValidationScore: number = this.dictionaryService.validateWords(words);
         if (wordValidationScore === 0) {
-            setTimeout(() => {
-                letterCoords.forEach((coord) => {
-                    gameboard.removeLetter(coord);
-                });
-            }, 3000);
-            return [false, gameboard];
+            letterCoords.forEach((coord) => {
+                gameboard.removeLetter(coord);
+                return [false, gameboard];
+            });
         }
         player.score += wordValidationScore;
         if (letterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
@@ -142,7 +140,7 @@ export class LetterPlacementService {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
             if (!coordList.some((element) => element.x === MIDDLE_X && element.y === MIDDLE_Y)) return false;
-        }
+        } else return false;
         return true;
     }
 

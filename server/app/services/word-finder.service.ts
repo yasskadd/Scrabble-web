@@ -57,7 +57,7 @@ export class WordFinderService {
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            if (y !== 0) {
+            if (y !== 1) {
                 const nextCoord = new LetterTile(x, y - 1, {} as Letter);
                 if (gameboard.getCoord(nextCoord).isOccupied) currentCoord = nextCoord;
                 else break;
@@ -86,7 +86,7 @@ export class WordFinderService {
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            if (x !== 0) {
+            if (x !== 1) {
                 const nextCoord = new LetterTile(x - 1, y, {} as Letter);
                 if (gameboard.getCoord(nextCoord).isOccupied) {
                     currentCoord = nextCoord;
