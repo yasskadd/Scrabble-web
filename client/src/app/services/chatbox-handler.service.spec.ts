@@ -206,7 +206,7 @@ describe('ChatboxHandlerService', () => {
         // eslint-disable-next-line dot-notation
         expect(service['validCommand'](INVALID_SYNTAX)).toBeFalsy();
 
-        const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de synthese' };
+        const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de syntaxe' };
         expect(service.messages.pop()).toEqual(EXPECTED_SYNTAX_ERROR);
     });
 
@@ -233,7 +233,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('configureSyntaxError() should return the valid ErrorMessage', () => {
-        const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de synthese' };
+        const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de syntaxe' };
 
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
@@ -394,7 +394,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('should emit 3 messages to show in the chatBox when the game is finish', () => {
-        const message1 = { type: 'system-message', data: 'Fin de la partie : ' };
+        const message1 = { type: 'system-message', data: 'Fin de la partie : lettres restantes' };
         const message2 = { type: 'system-message', data: `${gameClientServiceSpy.playerOne.name} : crp` };
         const message3 = { type: 'system-message', data: `${gameClientServiceSpy.secondPlayer.name} : wkt` };
 

@@ -138,7 +138,7 @@ export class ChatboxHandlerService {
     }
 
     private configureSyntaxError(): ChatboxMessage {
-        return { type: 'system-message', data: '[Erreur] Erreur de synthese' };
+        return { type: 'system-message', data: '[Erreur] Erreur de syntaxe' };
     }
 
     private configureInvalidError(): ChatboxMessage {
