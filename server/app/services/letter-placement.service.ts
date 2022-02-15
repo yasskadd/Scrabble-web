@@ -52,7 +52,13 @@ export class LetterPlacementService {
         const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
         console.log(words);
         const wordValidationScore: number = this.dictionaryService.validateWords(words);
-        if (wordValidationScore === 0) return [false, gameboard];
+        if (wordValidationScore === 0) {
+            letterCoords.forEach((coord) => {
+                console.log('PLACED LETTER');
+                gameboard.removeLetter(coord);
+            });
+            return [false, gameboard];
+        }
         player.score += wordValidationScore;
         if (letterCoords.length === 7) player.score += 50;
         this.updatePlayerRack(letterCoords, player);
@@ -82,11 +88,20 @@ export class LetterPlacementService {
         const letters = placedLettersCoord.map((coord) => {
             // BLANK LETTER IMPLEMENTATION
             if (coord.letter.value === coord.letter.value.toUpperCase()) {
-                coord.letter.value = '*';
+                console.log('UPPERCASE');
+                coord.letter.isBlankLetter = true;
+                coord.letter.points = 0;
+                coord.letter.value = coord.letter.value.toLowerCase();
+                console.log(coord.letter);
             }
             const index = tempRack.findIndex((letter) => {
+                if (coord.letter.isBlankLetter !== undefined) {
+                    console.log('TEST CALLED 1');
+                    if (coord.letter.isBlankLetter === true) return letter.value === '*';
+                }
                 return letter.value === coord.letter.value;
             });
+            console.log(index);
             if (index < 0) return;
             else {
                 const tempLetter = tempRack[index];
@@ -94,6 +109,7 @@ export class LetterPlacementService {
                 return tempLetter;
             }
         });
+        console.log(letters);
         return letters.filter((letter) => {
             return letter !== undefined;
         });

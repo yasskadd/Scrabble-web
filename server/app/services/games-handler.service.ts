@@ -36,6 +36,7 @@ export class GamesHandler {
         this.games = new Map();
     }
     initSocketsEvents(): void {
+        //
         this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) => {
             this.createGame(sio, socket, gameInfo);
         });
@@ -47,7 +48,7 @@ export class GamesHandler {
         this.socketManager.io(SocketEvents.Exchange, (sio, socket, letters: string[]) => {
             this.exchange(sio, socket, letters);
         });
-
+        //
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
@@ -89,8 +90,6 @@ export class GamesHandler {
             socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         }
         this.updatePlayerInfo(socket, room, game);
-        // socket.emit(SocketEvents.UpdatePlayerInformation, player);
-        // socket.broadcast.to(room).emit(SocketEvents.UpdateOpponentInformation, player);
         sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
@@ -112,11 +111,12 @@ export class GamesHandler {
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, room, game);
+            const charASCII = 96;
             socket.broadcast
                 .to(player.room)
                 .emit(
                     SocketEvents.GameMessage,
-                    `!placer ${String.fromCharCode(96 + commandInfo.firstCoordinate.x + 1)}${commandInfo.firstCoordinate.y + 1}${
+                    `!placer ${String.fromCharCode(charASCII + commandInfo.firstCoordinate.x + 1)}${commandInfo.firstCoordinate.y + 1}${
                         commandInfo.direction
                     } ${letterPlaced}`,
                 );
@@ -137,9 +137,11 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
+            console.log('SUBSCRIBE 1');
             this.changeTurn(gameInfo.roomId);
         });
         newGameHolder.game.turn.countdown.subscribe((timer: number) => {
+            console.log('SUBSCRIBE 2');
             this.sendTimer(gameInfo.roomId, timer);
         });
         sio.to(gameInfo.roomId).emit(SocketEvents.ViewUpdate, {
@@ -163,7 +165,14 @@ export class GamesHandler {
     }
 
     private createNewGame(gameParam: GameHolder) {
-        return new Game(gameParam.players[0], gameParam.players[1], new Turn(60), new LetterReserveService(), Container.get(LetterPlacementService));
+        const oneMinute = 60;
+        return new Game(
+            gameParam.players[0],
+            gameParam.players[1],
+            new Turn(oneMinute),
+            new LetterReserveService(),
+            Container.get(LetterPlacementService),
+        );
     }
 
     private updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
@@ -199,6 +208,7 @@ export class GamesHandler {
     }
 
     private sendTimer(roomId: string, timer: number) {
+        console.log('HERE IT DIES');
         this.socketManager.emitRoom(roomId, SocketEvents.TimerClientUpdate, timer);
     }
 
@@ -207,8 +217,8 @@ export class GamesHandler {
         if (this.players.has(socket.id)) {
             player = this.players.get(socket.id) as Player;
             const room = player.room;
-            socket.broadcast.to(room).emit('OpponentLeftTheGame');
-            socket.broadcast.to(room).emit('endGame');
+            socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
+            socket.broadcast.to(room).emit(SocketEvents.GameEnd);
         }
     }
 
@@ -221,8 +231,8 @@ export class GamesHandler {
                 if (this.players.has(socket.id)) {
                     player = this.players.get(socket.id) as Player;
                     const room = player.room;
-                    socket.broadcast.to(room).emit('OpponentLeftTheGame');
-                    socket.broadcast.to(room).emit('endGame');
+                    socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
+                    socket.broadcast.to(room).emit(SocketEvents.GameEnd);
                 }
             }
         }, SECOND);

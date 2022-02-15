@@ -27,7 +27,7 @@ export class Turn {
     start(): void {
         let tempTime = this.time;
         this.timeOut = setInterval(() => {
-            tempTime = tempTime - 1;
+            tempTime--;
             if (tempTime === 0) {
                 clearInterval(this.timeOut as number);
                 this.end();
@@ -55,7 +55,6 @@ export class Turn {
      */
     end(endGame?: boolean): void {
         clearInterval(this.timeOut as number);
-
         if (!endGame) {
             const tempInactivePlayer: string | undefined = this.inactivePlayer;
             this.inactivePlayer = this.activePlayer;
@@ -65,6 +64,7 @@ export class Turn {
             this.activePlayer = undefined;
             this.inactivePlayer = undefined;
         }
+
         this.endTurn.next(this.activePlayer);
     }
 
@@ -79,8 +79,9 @@ export class Turn {
     }
 
     skipTurn(): void {
+        const timesToEnd = 6;
         this.incrementSkipCounter();
-        if (this.skipCounter === 6) this.end(true);
+        if (this.skipCounter === timesToEnd) this.end(true);
         this.end();
     }
 
