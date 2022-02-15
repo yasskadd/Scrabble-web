@@ -38,6 +38,4 @@ export class PlayerRackComponent implements AfterViewInit {
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
     }
-
-    // addLetterToRack() {}
 }
