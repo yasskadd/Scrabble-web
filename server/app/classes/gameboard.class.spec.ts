@@ -10,7 +10,7 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
 import { Gameboard } from './gameboard.class';
 
-describe('gameboard', () => {
+describe.only('gameboard', () => {
     let gameboard: Gameboard;
     let boxMultiplierService: SinonStubbedInstance<BoxMultiplierService>;
 
@@ -60,13 +60,6 @@ describe('gameboard', () => {
         expect(gameboardTestCoord.isOccupied).to.be.true;
     });
 
-    it('should not place letter on board if GameboardCoordinate is occupied', () => {
-        const coord = new GameboardCoordinate(0, 0, {} as Letter);
-        const gameboardTestCoord = gameboard.gameboardCoords[0];
-        gameboardTestCoord.isOccupied = true;
-        expect(gameboard.placeLetter(coord)).to.be.false;
-    });
-
     it('should set isOccupied attribute to false if removeLetter is called', () => {
         const gameboardCoord = gameboard.gameboardCoords[0];
         gameboardCoord.isOccupied = true;
@@ -79,14 +72,31 @@ describe('gameboard', () => {
         expect(gameboardCoord.letter).to.eql({} as Letter);
     });
 
+    it('should not change isOccupied attribute if removeLetter is called on a coord that is not occupied', () => {
+        const coord: GameboardCoordinate = new GameboardCoordinate(5, 5, {} as Letter);
+        gameboard.removeLetter(coord);
+        expect(gameboard.getCoord(coord).isOccupied).to.equal(false);
+    });
+
     it('should return correct GameboardCoordinate when getCoord is called', () => {
-        const letter = {} as Letter;
-        letter.value = 'c';
+        const letter = { value: 'c' } as Letter;
         const coord = new GameboardCoordinate(1, 1, letter);
         gameboard.placeLetter(coord);
-        const newCoord = new GameboardCoordinate(0, 14, {} as Letter);
+        const newCoord = new GameboardCoordinate(1, 1, {} as Letter);
         expect(gameboard.getCoord(newCoord).letter.value).to.eql('c');
-        expect(gameboard.getCoord(newCoord).x).to.equal(0);
-        expect(gameboard.getCoord(newCoord).y).to.equal(14);
+        expect(gameboard.getCoord(newCoord).x).to.equal(1);
+        expect(gameboard.getCoord(newCoord).y).to.equal(1);
+    });
+
+    it('should return empty object when if coord.x or coord.y is less than 0', () => {
+        const coord = new GameboardCoordinate(-1, -1, {} as Letter);
+        gameboard.placeLetter(coord);
+        expect(gameboard.getCoord(coord)).to.eql({} as GameboardCoordinate);
+    });
+
+    it('should return empty object when if coord.x or coord.y is greater than 14', () => {
+        const coord = new GameboardCoordinate(15, 15, {} as Letter);
+        gameboard.placeLetter(coord);
+        expect(gameboard.getCoord(coord)).to.eql({} as GameboardCoordinate);
     });
 });
