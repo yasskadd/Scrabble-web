@@ -57,7 +57,7 @@ export class GamesHandler {
             this.disconnect(socket);
         });
         // NOT
-        this.socketManager.on('AbandonGame', (socket) => {
+        this.socketManager.on(SocketEvents.AbandonGame, (socket) => {
             this.abandonGame(socket);
         });
     }
@@ -150,7 +150,7 @@ export class GamesHandler {
             gameboard: newGameHolder.game.gameboard.gameboardCoords,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
-        this.socketManager.emitRoom(gameInfo.roomId, 'letterReserveUpdated', newGameHolder.game.letterReserve.lettersReserve);
+        this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
         console.log('START GAME : ');
         console.log(newGameHolder.game.turn.activePlayer);
 
@@ -190,7 +190,7 @@ export class GamesHandler {
             socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player1);
             socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player2);
         }
-        this.socketManager.emitRoom(roomId, 'letterReserveUpdated', game.letterReserve.lettersReserve);
+        this.socketManager.emitRoom(roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
     }
 
     private changeTurn(roomId: string) {

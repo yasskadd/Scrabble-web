@@ -32,4 +32,7 @@ export enum SocketEvents {
     TimerClientUpdate = 'timerUpdate',
     OpponentGameLeave = 'OpponentLeftTheGame',
     GameEnd = 'endGame',
+    AbandonGame = 'AbandonGame',
+    LetterReserveUpdated = 'letterReserveUpdated',
+    impossibleCommandError = 'impossibleCommandError',
 }

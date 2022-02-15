@@ -275,7 +275,6 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(EXPECTED_USER_DISCONNECTED_MESSAGE);
     });
 
-    // TODO: Test to check
     it('submitMessage() should call sendCommand() if the command is valid ', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const spyOnSendCommand = spyOn<ChatboxHandlerService>(service, 'sendCommand' as never);
@@ -424,33 +423,25 @@ describe('ChatboxHandlerService', () => {
     it('should add a message emit from the server when gameMessage event is emit', () => {
         const messageReceive = '!passer';
         const messageShow = { type: 'opponent-user', data: `${gameConfigurationServiceSpy.roomInformation.playerName[1]} : ${messageReceive}` };
-        socketEmulator.peerSideEmit('gameMessage', messageReceive);
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+        socketEmulator.peerSideEmit(SocketEvents.GameMessage, messageReceive);
         expect(service.messages.pop()).toEqual(messageShow);
     });
-    // TODO: Modifier le as never
-    it('should called the configureImpossibleCommandError if the server emit the Event', () => {
-        const spy = spyOn(service, 'configureImpossibleCommandError' as never);
-        socketEmulator.peerSideEmit('impossibleCommandError');
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        expect(spy).toHaveBeenCalled();
-    });
 
+    it('should called the configureImpossibleCommandError if the server emit the Event', () => {
+        const messageError = 'impossible de placer la lettre';
+        const spy = spyOn(service, 'configureImpossibleCommandError' as never);
+        socketEmulator.peerSideEmit(SocketEvents.impossibleCommandError, messageError);
+        expect(spy).toHaveBeenCalledWith(messageError as never);
+    });
     it('should called the addDisconnect  method if the server emit the Event', () => {
         const spy = spyOn(service, 'addDisconnect' as never);
         socketEmulator.peerSideEmit('user disconnect');
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(spy).toHaveBeenCalled();
     });
 
     it('should called the endGame Message method if the server emit the Event', () => {
         const spy = spyOn(service, 'endGameMessage' as never);
         socketEmulator.peerSideEmit('endGame');
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(spy).toHaveBeenCalled();
     });
 
@@ -467,11 +458,7 @@ describe('ChatboxHandlerService', () => {
         const spy = spyOn(service, 'sendCommand' as never);
         const spy2 = spyOn(service, 'addMessage' as never);
         service.submitMessage('');
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(spy).not.toHaveBeenCalled();
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(spy2).not.toHaveBeenCalled();
     });
 });
