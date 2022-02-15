@@ -2,42 +2,42 @@
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { Letter } from '@common/letter';
 import { Inject } from 'typedi';
-import { GameboardCoordinate } from './gameboard-coordinate.class';
+import { LetterTile } from '../../../common/letter-tile.class';
 
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
 
 export class Gameboard {
-    gameboardCoords: GameboardCoordinate[] = new Array();
+    gameboardCoords: LetterTile[] = new Array();
 
     constructor(@Inject() private boxMultiplierService: BoxMultiplierService) {
-        this.createGameboardCoordinates();
+        this.createLetterTiles();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }
 
-    createGameboardCoordinates() {
+    createLetterTiles() {
         for (let i = 1; i <= ROW_NUMBERS; i++) {
             for (let j = 1; j <= COLUMN_NUMBERS; j++) {
                 const letter: Letter = {} as Letter;
-                const coord: GameboardCoordinate = new GameboardCoordinate(j, i, letter);
+                const coord: LetterTile = new LetterTile(j, i, letter);
                 this.gameboardCoords.push(coord);
             }
         }
     }
 
-    getCoord(coord: GameboardCoordinate) {
-        if (coord.x > ROW_NUMBERS || coord.x < 1 || coord.y > ROW_NUMBERS || coord.y < 1) return {} as GameboardCoordinate;
+    getCoord(coord: LetterTile) {
+        if (coord.x > ROW_NUMBERS || coord.x < 1 || coord.y > ROW_NUMBERS || coord.y < 1) return {} as LetterTile;
         return this.gameboardCoords.filter((gameboardCoord) => {
             return gameboardCoord.x === coord.x && gameboardCoord.y === coord.y;
         })[0];
     }
 
-    placeLetter(letterCoord: GameboardCoordinate) {
+    placeLetter(letterCoord: LetterTile) {
         this.getCoord(letterCoord).letter = letterCoord.letter;
         this.getCoord(letterCoord).isOccupied = true;
     }
 
-    removeLetter(letterCoord: GameboardCoordinate) {
+    removeLetter(letterCoord: LetterTile) {
         this.getCoord(letterCoord).letter = {} as Letter;
         this.getCoord(letterCoord).isOccupied = false;
     }

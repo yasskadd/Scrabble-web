@@ -3,9 +3,9 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-restricted-imports */
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
@@ -24,9 +24,9 @@ describe('Dictionary Validation Service', () => {
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();
         const letterA = { points: 5 } as Letter;
-        validWord1 = new Word(true, [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterA)]);
+        validWord1 = new Word(true, [new LetterTile(0, 0, letterA), new LetterTile(0, 1, letterA)]);
         validWord1.stringFormat = 'bonjour';
-        validWord2 = new Word(true, [new GameboardCoordinate(1, 1, letterA), new GameboardCoordinate(1, 2, letterA)]);
+        validWord2 = new Word(true, [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterA)]);
         validWord2.stringFormat = 'chevalier';
         invalidWord1 = {} as Word;
         invalidWord1.stringFormat = 'dijasdijasd';

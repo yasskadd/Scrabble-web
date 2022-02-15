@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable dot-notation */
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { CommandInfo } from '@app/command-info';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { BoxMultiplierService } from './box-multiplier.service';
@@ -35,7 +35,7 @@ describe('Letter Placement Service', () => {
 
         player = { rack: [letterA, letterB], score: 0, name: 'test', room: 'testRoom' } as Player;
         commandInfo = {
-            firstCoordinate: { x: 1, y: 1 } as GameboardCoordinate,
+            firstCoordinate: { x: 1, y: 1 } as LetterTile,
             direction: 'h',
             lettersPlaced: ['a', 'l', 'l'],
         } as CommandInfo;
@@ -63,19 +63,19 @@ describe('Letter Placement Service', () => {
     });
 
     it('getLettersCoord() should return correct game Coordinates', () => {
-        const expectedCoords = [new GameboardCoordinate(4, 4, letterA), new GameboardCoordinate(5, 4, letterB)];
+        const expectedCoords = [new LetterTile(4, 4, letterA), new LetterTile(5, 4, letterB)];
         validateCoordService.validateGameboardCoordinate.withArgs(commandInfo, gameboard).returns(expectedCoords);
         const letterCoords = placementService['getLettersCoord'](commandInfo, gameboard);
         expect(letterCoords).to.equal(expectedCoords);
     });
 
     it('isPlacementValid should return false if letterCoords list is empty', () => {
-        const letterCoords: GameboardCoordinate[] = [];
+        const letterCoords: LetterTile[] = [];
         expect(placementService['isPlacementValid'](letterCoords)).to.equal(false);
     });
 
     it('isPlacementValid should return true if letterCoords list is not empty', () => {
-        const letterCoords: GameboardCoordinate[] = [new GameboardCoordinate(1, 1, letterA)];
+        const letterCoords: LetterTile[] = [new LetterTile(1, 1, letterA)];
         expect(placementService['isPlacementValid'](letterCoords)).to.equal(true);
     });
 
@@ -88,46 +88,42 @@ describe('Letter Placement Service', () => {
 
     context('associateLettersWithRack tests', () => {
         it('return a list of letters', () => {
-            const letters: GameboardCoordinate[] = [new GameboardCoordinate(1, 1, letterA)];
+            const letters: LetterTile[] = [new LetterTile(1, 1, letterA)];
             expect(placementService['associateLettersWithRack'](letters, player).length).to.eql(letters.length);
         });
 
         it('return empty list if letters are not in the rack', () => {
-            const letters: GameboardCoordinate[] = [new GameboardCoordinate(1, 1, letterC)];
+            const letters: LetterTile[] = [new LetterTile(1, 1, letterC)];
             expect(placementService['associateLettersWithRack'](letters, player)).to.eql([]);
         });
 
         it('return empty list if not every letters match the rack', () => {
-            const letters: GameboardCoordinate[] = [new GameboardCoordinate(1, 1, letterC)];
+            const letters: LetterTile[] = [new LetterTile(1, 1, letterC)];
             expect(placementService['associateLettersWithRack'](letters, player)).to.eql([]);
         });
     });
 
     context('createLetterPoints tests', () => {
-        let placedLettersCoords: GameboardCoordinate[];
+        let placedLettersCoords: LetterTile[];
         let lettersPlaced: Letter[];
 
         beforeEach(() => {
             placedLettersCoords = [
-                new GameboardCoordinate(1, 1, { value: 'a' } as Letter),
-                new GameboardCoordinate(1, 2, { value: 'b' } as Letter),
-                new GameboardCoordinate(1, 3, { value: 'b' } as Letter),
+                new LetterTile(1, 1, { value: 'a' } as Letter),
+                new LetterTile(1, 2, { value: 'b' } as Letter),
+                new LetterTile(1, 3, { value: 'b' } as Letter),
             ];
             lettersPlaced = [letterA, letterB];
         });
 
-        it('should return a list of gameboardCoordinate with correct points', () => {
+        it('should return a list of LetterTile with correct points', () => {
             const newPlacedLettersCoords = placementService['createLetterPoints'](placedLettersCoords, lettersPlaced as Letter[]);
-            const expectedLetters: GameboardCoordinate[] = [
-                new GameboardCoordinate(1, 1, letterA),
-                new GameboardCoordinate(1, 2, letterB),
-                new GameboardCoordinate(1, 3, letterB),
-            ];
+            const expectedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB), new LetterTile(1, 3, letterB)];
             expect(newPlacedLettersCoords).to.eql(expectedLetters);
         });
 
         it('should return an empty list if no placed letter coord match the letter placed', () => {
-            placedLettersCoords = [new GameboardCoordinate(1, 1, { value: 'c' } as Letter)];
+            placedLettersCoords = [new LetterTile(1, 1, { value: 'c' } as Letter)];
             expect(placementService['createLetterPoints'](placedLettersCoords, lettersPlaced)).to.eql([]);
         });
     });

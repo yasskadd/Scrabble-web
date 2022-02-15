@@ -1,7 +1,7 @@
-import { GameboardCoordinate } from './classes/gameboard-coordinate.class';
+import { LetterTile } from '@common/letter-tile.class';
 
 export interface CommandInfo {
-    firstCoordinate: GameboardCoordinate;
+    firstCoordinate: LetterTile;
     direction: string;
     lettersPlaced: string[];
 }

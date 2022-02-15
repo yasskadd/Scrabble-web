@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prettier/prettier */
-import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@app/coordinate';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
@@ -40,7 +40,7 @@ export class LetterPlacementService {
         return [letterCoords, null];
     }
 
-    placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: Gameboard): [boolean, Gameboard] {
+    placeLetter(letterCoords: LetterTile[], player: Player, gameboard: Gameboard): [boolean, Gameboard] {
         letterCoords.forEach((coord) => {
             gameboard.placeLetter(coord);
         });
@@ -62,7 +62,7 @@ export class LetterPlacementService {
         return this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
     }
 
-    private isPlacementValid(lettersCoords: GameboardCoordinate[]) {
+    private isPlacementValid(lettersCoords: LetterTile[]) {
         return lettersCoords.length > 0;
     }
 
@@ -74,7 +74,7 @@ export class LetterPlacementService {
         return tempPlayerRack;
     }
 
-    private associateLettersWithRack(placedLettersCoord: GameboardCoordinate[], player: Player): (Letter | undefined)[] {
+    private associateLettersWithRack(placedLettersCoord: LetterTile[], player: Player): (Letter | undefined)[] {
         const tempRack = this.createTempRack(player);
         const letters = placedLettersCoord.map((coord) => {
             // BLANK LETTER IMPLEMENTATION
@@ -100,7 +100,7 @@ export class LetterPlacementService {
         });
     }
 
-    private createLetterPoints(letterCoords: GameboardCoordinate[], lettersFromRack: Letter[]) {
+    private createLetterPoints(letterCoords: LetterTile[], lettersFromRack: Letter[]) {
         // create new letterCoords
         const newLetterCoords = letterCoords.map((coord) => {
             const index = lettersFromRack.findIndex((letter) => {
@@ -117,16 +117,16 @@ export class LetterPlacementService {
         });
     }
 
-    private areLettersInRack(letterCoords: GameboardCoordinate[], player: Player) {
+    private areLettersInRack(letterCoords: LetterTile[], player: Player) {
         const letters = this.associateLettersWithRack(letterCoords, player);
         if (letters.length !== letterCoords.length) return false;
         else {
-            letterCoords = this.createLetterPoints(letterCoords, letters as Letter[]) as GameboardCoordinate[];
+            letterCoords = this.createLetterPoints(letterCoords, letters as Letter[]) as LetterTile[];
             return true;
         }
     }
 
-    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: Gameboard) {
+    private verifyFirstTurn(lettersCoords: LetterTile[], gameboard: Gameboard) {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
             const coordList: Coordinate[] = new Array();
             lettersCoords.forEach((coord) => {
@@ -137,7 +137,7 @@ export class LetterPlacementService {
         return true;
     }
 
-    private updatePlayerRack(letterCoords: GameboardCoordinate[], player: Player) {
+    private updatePlayerRack(letterCoords: LetterTile[], player: Player) {
         letterCoords.forEach((letterCoord) => {
             const value = player.rack.filter((item) => item.value === letterCoord.letter.value)[0];
             if (player.rack.includes(value)) {

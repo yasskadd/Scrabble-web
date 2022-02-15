@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Coordinate } from '@app/coordinate';
 import { Letter } from '@common/letter';
+import { Coordinate } from './coordinate';
 
-export class GameboardCoordinate implements Coordinate {
+export class LetterTile implements Coordinate {
     x: number;
     y: number;
     isOccupied: boolean;
@@ -19,7 +19,7 @@ export class GameboardCoordinate implements Coordinate {
         this.wordMultiplier = 1;
     }
 
-    static findDirection(coordList: GameboardCoordinate[]) {
+    static findDirection(coordList: LetterTile[]) {
         const DIRECTIONS = {
             horizontal: 'Horizontal',
             vertical: 'Vertical',

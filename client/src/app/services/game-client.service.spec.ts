@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile';
+import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
@@ -37,12 +37,34 @@ const PLAYER_TWO: Player = {
 };
 
 const PLAYER_INFO: PlayInfo = {
-    gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { value: 'b', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
+    gameboard: [
+        {
+            x: 3,
+            y: 2,
+            isOccupied: true,
+            letter: { value: 'b', quantity: 2, points: 1 },
+            letterMultiplier: 2,
+            wordMultiplier: 1,
+            resetLetterMultiplier: () => {},
+            resetWordMultiplier: () => {},
+        },
+    ],
     activePlayer: 'Paul',
 };
 
 const GAME_INFO: GameInfo = {
-    gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { value: 'e', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
+    gameboard: [
+        {
+            x: 3,
+            y: 2,
+            isOccupied: true,
+            letter: { value: 'e', quantity: 2, points: 1 },
+            letterMultiplier: 2,
+            wordMultiplier: 1,
+            resetLetterMultiplier: () => {},
+            resetWordMultiplier: () => {},
+        },
+    ],
     players: [
         {
             name: 'Paul',
