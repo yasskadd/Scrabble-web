@@ -355,7 +355,7 @@ describe('ChatboxHandlerService', () => {
         const spy = spyOn(service['clientSocket'], 'send');
         const commandTest = '!placer e3v bonjour';
         const commandInformation = {
-            firstCoordinate: { x: 2, y: 4 },
+            firstCoordinate: { x: 3, y: 5 },
             direction: 'v',
             lettersPlaced: ['b', 'o', 'n', 'j', 'o', 'u', 'r'],
         };
@@ -384,7 +384,7 @@ describe('ChatboxHandlerService', () => {
 
     it('should return the coordination with a direction if want to place a word with more than one letter', () => {
         const commandArray = ['!placer', 'o2v', 'place'];
-        const placementInfo = [{ x: 1, y: 14 }, 'v'];
+        const placementInfo = [{ x: 2, y: 15 }, 'v'];
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['getCoordsAndDirection'](commandArray)).toEqual(placementInfo);
@@ -402,16 +402,16 @@ describe('ChatboxHandlerService', () => {
     });
     it('should return the coordination with a direction if the y factor is two digit', () => {
         const commandArray = ['!placer', 'o12v', 'place'];
-        const placementInfo = [{ x: 11, y: 14 }, 'v'];
+        const placementInfo = [{ x: 12, y: 15 }, 'v'];
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['getCoordsAndDirection'](commandArray)).toEqual(placementInfo);
     });
     it('should return the coordination with no direction if one letter wants to be placed', () => {
         const commandArray = ['!placer', 'o12', 'e'];
-        const placementInfo = [{ x: 11, y: 14 }, ''];
+        const placementInfo = [{ x: 12, y: 15 }, ''];
         const commandArray2 = ['!placer', 'o1', 'e'];
-        const placementInfo2 = [{ x: 0, y: 14 }, ''];
+        const placementInfo2 = [{ x: 1, y: 15 }, ''];
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['getCoordsAndDirection'](commandArray)).toEqual(placementInfo);

@@ -19,16 +19,14 @@ export class GameClientService {
     playerOne: Player;
     secondPlayer: Player;
     playerOneTurn: boolean;
-    letterReserve: Letter[];
+    letterReserveLength: number;
     isGameFinish: boolean;
     winningMessage: string;
 
     constructor(private gridService: GridService, private letterTilesService: LetterTilesService, private clientSocketService: ClientSocketService) {
-        // Used for testing
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
-        // setTimeout(this.stopTimer, 1000 * 5)
         this.configureBaseSocketFeatures();
     }
     configureBaseSocketFeatures() {
@@ -42,8 +40,7 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
-            console.log(letterReserveUpdated);
-            this.letterReserve = letterReserveUpdated;
+            this.letterReserveLength = this.getAllLetterReserve(letterReserveUpdated);
         });
         this.clientSocketService.on(SocketEvents.OpponentGameLeave, () => {
             this.playerOneTurn = false;
@@ -54,8 +51,6 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.ViewUpdate, (info: PlayInfo) => {
-            console.log(info.gameboard);
-            console.log(info.activePlayer);
             this.playerOneTurn = info.activePlayer === this.playerOne.name;
             this.updateNewGameboard(info.gameboard);
         });
@@ -106,5 +101,14 @@ export class GameClientService {
         } else {
             this.winningMessage = "L'adversaire a gagné la partie";
         }
+    }
+    private getAllLetterReserve(lettersReserveUpdated: Letter[]): number {
+        let letterString = '';
+        lettersReserveUpdated.forEach((letter) => {
+            for (let i = 1; i <= letter.quantity; i++) {
+                letterString = letterString + letter.value;
+            }
+        });
+        return letterString.length;
     }
 }
