@@ -3,6 +3,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
 import { GamesHandler } from '@app/services/games-handler.service';
+import { SocketEvents } from '@common/socket-events';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
@@ -17,7 +18,7 @@ interface GameHolder {
 }
 type SioSignature = SocketManager['sio'];
 
-describe('GamesHandler Service', () => {
+describe.only('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
@@ -94,6 +95,7 @@ describe('GamesHandler Service', () => {
         });
     });
     context('CreateGame tests', () => {
+        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager);
         // let game: sinon.SinonStubbedInstance<Game>;
         let GAME_INFO: { playerName: string[]; roomId: string; timer: number; socketId: string[] };
         beforeEach(() => {
@@ -114,15 +116,18 @@ describe('GamesHandler Service', () => {
             expect(createNewGameSpy.called).to.equal(true);
             done();
         });
-
-        // TODO : FINISH TESTS
-        // it('CreateGame() should emit information to the room', (done) => {
-        //     // eslint-disable-next-line dot-notation
-        //     gamesHandler['createGame'](sio, serverSocket, GAME_INFO);
-        //     clientSocket.on(SocketEvents.ViewUpdate, (information) => {
-        //         expect(information).to.not.equal(undefined);
-        //         done();
-        //     });
-        // });
     });
+    it('CreateGame() should emit game information to the room', (done) => {
+        const ROOM = '0';
+        const GAME_INFO = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id] };
+        serverSocket.join(ROOM);
+        clientSocket.on(SocketEvents.ViewUpdate, (information) => {
+            expect(information).to.not.equal(undefined);
+            done();
+        });
+        // eslint-disable-next-line dot-notation
+        gamesHandler['createGame'](sio, serverSocket, GAME_INFO);
+    });
+
+    // TODO : FINISH TESTS
 });
