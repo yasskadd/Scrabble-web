@@ -10,7 +10,6 @@ import { Service } from 'typedi';
 @Service()
 export class WordFinderService {
     findNewWords(gameboard: Gameboard, coordList: GameboardCoordinate[]) {
-        console.log('FIND NEW WORDS CALLED');
         const newWordsArray: Word[] = new Array();
         // Verify if only one letter is placed
         if (coordList.length === 1) {
@@ -68,12 +67,10 @@ export class WordFinderService {
         }
         const coordArray: GameboardCoordinate[] = new Array();
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
-            const x: number = currentCoord.x;
-            const y: number = currentCoord.y;
             const gameCoord: GameboardCoordinate = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (y !== 14) {
-                currentCoord = new GameboardCoordinate(x, y + 1, {} as Letter);
+            if (currentCoord.y !== 15) {
+                currentCoord = new GameboardCoordinate(currentCoord.x, currentCoord.y + 1, {} as Letter);
             } else {
                 break;
             }
@@ -108,7 +105,7 @@ export class WordFinderService {
             const y: number = currentCoord.y;
             const gameCoord: GameboardCoordinate = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (x !== 14) {
+            if (x !== 15) {
                 currentCoord = new GameboardCoordinate(x + 1, y, {} as Letter);
             } else {
                 break;
