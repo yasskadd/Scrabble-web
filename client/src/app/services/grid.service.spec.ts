@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import * as constants from '@app/constants';
+import * as gridConstants from '@app/grid-constants';
 import { DARK_BLUE, GridService, PINK } from '@app/services/grid.service';
 
 describe('GridService', () => {
@@ -34,11 +34,11 @@ describe('GridService', () => {
     });
 
     it(' squareWidth should return the width of the grid canvas', () => {
-        expect(GridService.squareWidth).toEqual(CANVAS_WIDTH / constants.TOTAL_COLUMNS);
+        expect(GridService.squareWidth).toEqual(CANVAS_WIDTH / gridConstants.TOTAL_COLUMNS);
     });
 
     it(' squareHeight should return the height of a single board tile the grid canvas', () => {
-        expect(GridService.squareHeight).toEqual(CANVAS_HEIGHT / constants.TOTAL_ROWS);
+        expect(GridService.squareHeight).toEqual(CANVAS_HEIGHT / gridConstants.TOTAL_ROWS);
     });
     // drawGrid tests
     it(' drawGrid should call drawRowNumbers', () => {

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
-import * as constants from '@app/constants';
+import * as gridConstants from '@app/grid-constants';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
 import { Coordinate as LetterTile } from '@common/coordinate.class';
@@ -26,8 +26,8 @@ export const RED = '#FE6E54';
     providedIn: 'root',
 })
 export class GridService {
-    static squareWidth = DEFAULT_WIDTH / constants.TOTAL_COLUMNS;
-    static squareHeight = DEFAULT_HEIGHT / constants.TOTAL_ROWS;
+    static squareWidth = DEFAULT_WIDTH / gridConstants.TOTAL_COLUMNS;
+    static squareHeight = DEFAULT_HEIGHT / gridConstants.TOTAL_ROWS;
     static letterTileWidth = GridService.squareWidth * LETTER_TILE_RATIO;
     static letterTileHeight = GridService.squareHeight * LETTER_TILE_RATIO;
     static halfSquareWidth = GridService.squareWidth / 2;
@@ -150,7 +150,7 @@ export class GridService {
 
     drawRowNumbers() {
         this.setFontSize(this.letterSize);
-        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
+        for (let i = 1; i < gridConstants.TOTAL_COLUMNS; i++) {
             const position: Coordinate = { x: i, y: 0 };
             this.gridContext.textBaseline = 'middle';
             this.drawText(position, String(i));
@@ -159,7 +159,7 @@ export class GridService {
 
     drawColumnLetters() {
         const chatCode = 64;
-        for (let i = 1; i < constants.TOTAL_ROWS; i++) {
+        for (let i = 1; i < gridConstants.TOTAL_ROWS; i++) {
             const char = String.fromCharCode(chatCode + i);
             const position: Coordinate = { x: 0, y: i };
             // this.gridContext.fillStyle = 'black'; // possible refactor. this is already called in drawText
@@ -174,8 +174,8 @@ export class GridService {
     }
 
     drawBasicTiles() {
-        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
-            for (let j = 1; j < constants.TOTAL_ROWS; j++) {
+        for (let i = 1; i < gridConstants.TOTAL_COLUMNS; i++) {
+            for (let j = 1; j < gridConstants.TOTAL_ROWS; j++) {
                 const position: Coordinate = { x: i, y: j };
                 this.gridContext.strokeStyle = '#f9f7f2';
                 this.drawBasicTile(position);

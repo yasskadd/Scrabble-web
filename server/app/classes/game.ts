@@ -66,13 +66,9 @@ export class Game {
         let gameboard: [boolean, Gameboard] = [false, this.gameboard];
         const numberOfLetterPlaced = commandInfo.lettersPlaced.length;
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
-            // validate Command
-            console.log('ENTERED PLAY');
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player1);
-            console.log(validationInfo);
             const letterCoords = validationInfo[0];
             const isValid = validationInfo[1];
-            console.log(`isValid : ${isValid}`);
             if (isValid !== null) {
                 return isValid as string;
             }
@@ -83,12 +79,9 @@ export class Game {
             this.turn.end();
             return gameboard;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-            console.log('ENTERED PLAY');
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
-            console.log(validationInfo);
             const letterCoords = validationInfo[0];
             const isValid = validationInfo[1];
-            console.log(`isValid : ${isValid}`);
             if (isValid !== null) {
                 return isValid as string;
             }
@@ -115,22 +108,18 @@ export class Game {
             this.player1.rack = this.letterReserve.exchangeLetter(letters, this.player1.rack);
             this.turn.resetSkipCounter();
             this.turn.end();
-
             return this.player1.rack;
         } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
             this.player2.rack = this.letterReserve.exchangeLetter(letters, this.player2.rack);
             this.turn.resetSkipCounter();
             this.turn.end();
-
             return this.player2.rack;
         }
-
         return [];
     }
 
     /**
      * Abandon a game, which will resume in a lost for the player who abandoned.
-     *
      */
     abandon(): void {
         this.end();
