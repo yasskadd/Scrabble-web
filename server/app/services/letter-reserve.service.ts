@@ -15,7 +15,7 @@ export class LetterReserveService {
      * @return Letter[] : Return the default list of letters.
      */
     getDefaultLetterReserve(): Letter[] {
-        let defaultLetterReserve: Letter[] = [];
+        const defaultLetterReserve: Letter[] = [];
         letterTypes.LETTERS.forEach((letter: Letter) => {
             defaultLetterReserve.push({ value: letter.value, quantity: letter.quantity, points: letter.points });
         });
@@ -63,12 +63,12 @@ export class LetterReserveService {
             return letter.value;
         });
 
-        const tempToBeRemoved: (string | Letter)[] = [];
+        const tempToBeRemoved: Letter[] = [];
 
-        tempRack = tempRack.filter((letter) => {
+        tempRack = tempRack.filter((letter, indx) => {
             const index = toBeRemoved.indexOf(letter);
             if (index >= 0) {
-                tempToBeRemoved.push(toBeRemoved[index]);
+                tempToBeRemoved.push(rack[indx]);
                 toBeRemoved.splice(index, 1);
                 // delete toBeRemoved[index];
             }
@@ -84,15 +84,7 @@ export class LetterReserveService {
             updatedRack.push(rack[index]);
         }
 
-        tempToBeRemoved.map((removedLetter) => {
-            const index = rack.findIndex((element) => {
-                return element.value === removedLetter;
-            });
-
-            return rack[index];
-        });
-
-        return [updatedRack, tempToBeRemoved as Letter[]];
+        return [updatedRack, tempToBeRemoved];
     }
 
     /**
@@ -113,7 +105,7 @@ export class LetterReserveService {
 
             // Update de letter reserve
             const updatedLetterReserve = this.lettersReserve;
-            for (const letter of this.removeLettersFromRack(toExchange, rack)[1]) {
+            for (const letter of removedLetter[1]) {
                 const index = this.lettersReserve.findIndex((element) => element.value === letter.value);
                 if (index < 0) {
                     const newLetter = { value: letter.value, quantity: 1, points: letter.points };
