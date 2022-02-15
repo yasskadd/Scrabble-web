@@ -97,8 +97,8 @@ export class GamesHandler {
 
     private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
-        const firstCoordinateColumns = commandInfo.firstCoordinate.x + 1;
-        const firstCoordinateRows = commandInfo.firstCoordinate.y + 1;
+        const firstCoordinateColumns = commandInfo.firstCoordinate.x;
+        const firstCoordinateRows = commandInfo.firstCoordinate.y;
         const letterPlaced = commandInfo.lettersPlaced.join('');
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
