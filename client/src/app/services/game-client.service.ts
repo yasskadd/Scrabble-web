@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Coordinate } from '@common/coordinate.class';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 import { LetterTilesService } from './letter-tiles.service';
 
-type PlayInfo = { gameboard: Coordinate[]; activePlayer: string };
+type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
-type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 @Injectable({
     providedIn: 'root',
 })
 export class GameClientService {
     static timerInterval: number;
     timer: number;
-    gameboard: Coordinate[];
+    gameboard: LetterTile[];
     playerOne: Player;
     secondPlayer: Player;
     playerOneTurn: boolean;
@@ -70,7 +70,7 @@ export class GameClientService {
             this.timer = newTimer;
         });
     }
-    updateNewGameboard(newGameboard: Coordinate[]) {
+    updateNewGameboard(newGameboard: LetterTile[]) {
         this.gameboard = newGameboard;
         this.updateGameboard();
     }
