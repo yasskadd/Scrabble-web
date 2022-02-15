@@ -36,6 +36,7 @@ export class GamesHandler {
         this.games = new Map();
     }
     initSocketsEvents(): void {
+        //
         this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) => {
             this.createGame(sio, socket, gameInfo);
         });
@@ -47,7 +48,7 @@ export class GamesHandler {
         this.socketManager.io(SocketEvents.Exchange, (sio, socket, letters: string[]) => {
             this.exchange(sio, socket, letters);
         });
-
+        //
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
@@ -216,8 +217,8 @@ export class GamesHandler {
         if (this.players.has(socket.id)) {
             player = this.players.get(socket.id) as Player;
             const room = player.room;
-            socket.broadcast.to(room).emit('OpponentLeftTheGame');
-            socket.broadcast.to(room).emit('endGame');
+            socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
+            socket.broadcast.to(room).emit(SocketEvents.GameEnd);
         }
     }
 
@@ -230,8 +231,8 @@ export class GamesHandler {
                 if (this.players.has(socket.id)) {
                     player = this.players.get(socket.id) as Player;
                     const room = player.room;
-                    socket.broadcast.to(room).emit('OpponentLeftTheGame');
-                    socket.broadcast.to(room).emit('endGame');
+                    socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
+                    socket.broadcast.to(room).emit(SocketEvents.GameEnd);
                 }
             }
         }, SECOND);
