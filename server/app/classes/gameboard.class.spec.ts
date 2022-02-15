@@ -72,6 +72,12 @@ describe.only('gameboard', () => {
         expect(gameboardCoord.letter).to.eql({} as Letter);
     });
 
+    it('should not change isOccupied attribute if removeLetter is called on a coord that is not occupied', () => {
+        const coord: GameboardCoordinate = new GameboardCoordinate(5, 5, {} as Letter);
+        gameboard.removeLetter(coord);
+        expect(gameboard.getCoord(coord).isOccupied).to.equal(false);
+    });
+
     it('should return correct GameboardCoordinate when getCoord is called', () => {
         const letter = { value: 'c' } as Letter;
         const coord = new GameboardCoordinate(1, 1, letter);
@@ -80,5 +86,17 @@ describe.only('gameboard', () => {
         expect(gameboard.getCoord(newCoord).letter.value).to.eql('c');
         expect(gameboard.getCoord(newCoord).x).to.equal(1);
         expect(gameboard.getCoord(newCoord).y).to.equal(1);
+    });
+
+    it('should return empty object when if coord.x or coord.y is less than 0', () => {
+        const coord = new GameboardCoordinate(-1, -1, {} as Letter);
+        gameboard.placeLetter(coord);
+        expect(gameboard.getCoord(coord)).to.eql({} as GameboardCoordinate);
+    });
+
+    it('should return empty object when if coord.x or coord.y is greater than 14', () => {
+        const coord = new GameboardCoordinate(15, 15, {} as Letter);
+        gameboard.placeLetter(coord);
+        expect(gameboard.getCoord(coord)).to.eql({} as GameboardCoordinate);
     });
 });
