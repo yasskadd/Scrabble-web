@@ -30,4 +30,6 @@ export enum SocketEvents {
     UpdateOpponentInformation = 'UpdateOpponentInformation',
     CreateScrabbleGame = 'createScrabbleGame',
     TimerClientUpdate = 'timerUpdate',
+    OpponentGameLeave = 'OpponentLeftTheGame',
+    GameEnd = 'endGame',
 }

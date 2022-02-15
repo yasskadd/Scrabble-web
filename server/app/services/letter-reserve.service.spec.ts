@@ -41,6 +41,26 @@ describe('LetterReserveService', () => {
         expect(letterReserveService.lettersReserve.length).to.equal(expectedLength);
     });
 
+    it('should insert the letter to the reserve if the letter is not in it and set its quantity to 1', () => {
+        letterReserveService.lettersReserve = [];
+        const expectedLength = letterReserveService.lettersReserve.length + 1;
+        const letterToInsert: Letter[] = [{ value: 'z', points: 10 } as Letter];
+        const expectedLetterReserve = letterReserveService.insertLetter(letterToInsert);
+
+        expect(expectedLetterReserve.length).to.equal(expectedLength);
+        expect(expectedLetterReserve[0].quantity).to.equal(1);
+    });
+
+    it('should increment letter quantity by 1 when a letter is inserted to the letter reserve', () => {
+        letterReserveService.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
+        const expectedLength = letterReserveService.lettersReserve.length;
+        const letterToInsert: Letter[] = [{ value: 'a', points: 1 } as Letter];
+        const expectedLetterReserve = letterReserveService.insertLetter(letterToInsert);
+
+        expect(expectedLetterReserve.length).to.equal(expectedLength);
+        expect(expectedLetterReserve[0].quantity).to.equal(2);
+    });
+
     it('should return random letter', () => {
         const expectedLength = sampleRack.length + 1;
         letterReserveService.distributeLetter(sampleRack);

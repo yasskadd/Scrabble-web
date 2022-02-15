@@ -171,19 +171,21 @@ export class ChatboxHandlerService {
     }
     private getCoordsAndDirection(stringArr: string[]) {
         const placementArray = stringArr[1].split('');
-        // TODO : Number magic to remove
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        const coordinateRatio = 10;
         if (this.isDigit(placementArray[2]) && placementArray[3] != null) {
             const coordinateX = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, placementArray[3] as string];
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, placementArray[3] as string];
         } else if (this.isDigit(placementArray[2])) {
             const coordinateX = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, '' as string];
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
         } else if (placementArray[2] == null) {
             const coordinateX = +placementArray[1];
-            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, '' as string];
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
         }
-        return [{ x: parseInt(placementArray[1], 10) - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, placementArray[2] as string];
+        return [
+            { x: parseInt(placementArray[1], 10) - 1, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate,
+            placementArray[2] as string,
+        ];
     }
 
     private getLetters(stringArr: string[], position: number) {
