@@ -115,7 +115,7 @@ export class GamesHandler {
                 .to(player.room)
                 .emit(
                     SocketEvents.GameMessage,
-                    `!placer ${String.fromCharCode(charASCII + commandInfo.firstCoordinate.x)}${commandInfo.firstCoordinate.y}${
+                    `!placer ${String.fromCharCode(charASCII + commandInfo.firstCoordinate.x + 1)}${commandInfo.firstCoordinate.y + 1}${
                         commandInfo.direction
                     } ${letterPlaced}`,
                 );

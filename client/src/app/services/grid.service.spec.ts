@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
-import * as gridConstants from '@app/grid-constants';
+import * as gridConstants from '@app/constants';
 import { DARK_BLUE, GridService, PINK } from '@app/services/grid.service';
 
 describe('GridService', () => {
