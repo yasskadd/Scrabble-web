@@ -9,12 +9,11 @@ import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
-import { Container } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
 
-describe('Dictionary Validation Service', () => {
+describe.only('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
     let validWord1: Word;
     let validWord2: Word;
@@ -23,9 +22,8 @@ describe('Dictionary Validation Service', () => {
     // let wordClass: Word;
 
     beforeEach(() => {
-        dictionaryValidationService = Container.get(DictionaryValidationService);
-        const letterA = {} as Letter;
-        letterA.points = 5;
+        dictionaryValidationService = new DictionaryValidationService();
+        const letterA = { points: 5 } as Letter;
         validWord1 = new Word(true, [new GameboardCoordinate(0, 0, letterA), new GameboardCoordinate(0, 1, letterA)]);
         validWord1.stringFormat = 'bonjour';
         validWord2 = new Word(true, [new GameboardCoordinate(1, 1, letterA), new GameboardCoordinate(1, 2, letterA)]);
@@ -34,7 +32,6 @@ describe('Dictionary Validation Service', () => {
         invalidWord1.stringFormat = 'dijasdijasd';
         invalidWord2 = {} as Word;
         invalidWord2.stringFormat = 'hhhhh';
-        // wordClass = new Word(true, []);
     });
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {

@@ -91,7 +91,6 @@ export class LetterPlacementService {
                 console.log('UPPERCASE');
                 coord.letter.isBlankLetter = true;
                 coord.letter.points = 0;
-                coord.letter.value = coord.letter.value.toLowerCase();
                 console.log(coord.letter);
             }
             const index = tempRack.findIndex((letter) => {
