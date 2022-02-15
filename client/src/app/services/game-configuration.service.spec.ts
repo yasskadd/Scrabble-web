@@ -150,6 +150,13 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.roomId).toEqual('');
     });
 
+    it('removeRoom() should call rejectOpponent when player is rejected ', () => {
+        const spyOnRejectOpponent = spyOn(service, 'rejectOpponent');
+        service.roomInformation.playerName[1] = 'Marcel';
+        service.removeRoom();
+        expect(spyOnRejectOpponent).toHaveBeenCalled();
+    });
+
     it('setErrorSubject() should  initialize the value of the error Reason ', () => {
         const spy = spyOn(service.errorReason, 'next');
         const roomNotAvailableError = "La salle n'est plus disponible";
