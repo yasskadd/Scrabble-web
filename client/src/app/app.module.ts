@@ -21,7 +21,6 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
-import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
@@ -46,7 +45,6 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         DialogBoxComponent,
         InformationPanelComponent,
         PlayerRackComponent,
-        NavBarComponent,
         AbandonGameDialogBoxComponent,
     ],
     imports: [
