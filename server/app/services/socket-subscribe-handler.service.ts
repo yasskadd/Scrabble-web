@@ -4,12 +4,12 @@ import { GameSessions } from './game-sessions.service';
 import { GamesHandler } from './games-handler.service';
 @Service()
 export class SocketSubscribeHandler {
-    constructor(private chatBoxHandlerService: ChatboxHandlerService, private gameSessions: GameSessions, private gameSockets: GamesHandler) {}
+    constructor(private chatBoxHandlerService: ChatboxHandlerService, private gameSessions: GameSessions, private gameHandler: GamesHandler) {}
 
     initSocketsEvents() {
         this.gameSessions.initSocketEvents();
         this.chatBoxHandlerService.initSocketsEvents();
-        this.gameSockets.initSocketsEvents();
+        this.gameHandler.initSocketsEvents();
         // Ajouter le reste des services qui utilisent des sockets ici!
     }
 }

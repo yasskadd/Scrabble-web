@@ -23,16 +23,11 @@ export class InformationPanelComponent {
         public router: Router,
     ) {}
 
-    // updateSetting(event) {
-    //     this.letterTilesService.changeFontSize(event.value);
-    // }
-
     formatLabel(value: number) {
         return value;
     }
 
     updateFontSize() {
-        // const newFont = this.formatLabel(font);
         this.gridService.letterSize = this.value;
         this.letterTilesService.fontSize = this.value;
         this.gameClientService.updateGameboard();
