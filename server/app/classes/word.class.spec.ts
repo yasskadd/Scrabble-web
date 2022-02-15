@@ -3,13 +3,13 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable prettier/prettier */
-import { BoxMultiplier } from '@app/services/box-multiplier.service';
+import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { Container } from 'typedi';
 import { GameboardCoordinate } from './gameboard-coordinate.class';
-import { GameBoard } from './gameboard.class';
+import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
@@ -20,20 +20,20 @@ describe('Word', () => {
     const letterB = {} as Letter;
     const letterC = {} as Letter;
     const letterD = {} as Letter;
-    let gameboard: GameBoard;
-    let boxMultiplierService: BoxMultiplier;
+    let gameboard: Gameboard;
+    let boxMultiplierService: BoxMultiplierService;
 
     beforeEach(async () => {
-        letterA.stringChar = 'a';
+        letterA.value = 'a';
         letterA.points = 1;
-        letterB.stringChar = 'b';
+        letterB.value = 'b';
         letterB.points = 2;
-        letterC.stringChar = 'c';
+        letterC.value = 'c';
         letterC.points = 5;
-        letterD.stringChar = 'd';
+        letterD.value = 'd';
         letterD.points = 4;
-        boxMultiplierService = Container.get(BoxMultiplier);
-        gameboard = new GameBoard(boxMultiplierService);
+        boxMultiplierService = Container.get(BoxMultiplierService);
+        gameboard = new Gameboard(boxMultiplierService);
     });
 
     it('stringFormat attribute should be the abc if constructed word is horizontal', () => {

@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/classes/chatbox-message';
 import { Coordinate } from '@common/coordinate';
+import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
+import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
 // const VALID_SYNTAX_REGEX_STRING = '^!aide|^!placer|^!(é|e)changer|^!passer';
@@ -21,7 +23,11 @@ export class ChatboxHandlerService {
     messages: ChatboxMessage[];
     private readonly validSyntaxRegex = RegExp(ChatboxHandlerService.syntaxRegexString);
 
-    constructor(private clientSocket: ClientSocketService, private gameConfiguration: GameConfigurationService) {
+    constructor(
+        private clientSocket: ClientSocketService,
+        private gameConfiguration: GameConfigurationService,
+        private gameClient: GameClientService,
+    ) {
         this.messages = [];
         this.configureBaseSocketFeatures();
     }
@@ -40,12 +46,28 @@ export class ChatboxHandlerService {
         }
     }
 
+    endGameMessage(): void {
+        // const letterReserve = this.getAllLetterReserve(this.gameClient.letterReserve);
+        const myLetterLeft = this.getAllLetter(this.gameClient.playerOne.rack as never);
+        const opponentLetterLeft = this.getAllLetter(this.gameClient.secondPlayer.rack as never);
+        this.messages.push({ type: 'system-message', data: 'Fin de la partie : lettres restantes' });
+        this.messages.push({ type: 'system-message', data: `${this.gameClient.playerOne.name} : ${myLetterLeft}` });
+        this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
+        // this.messages.push({ type: 'system-message', data: `Lettre restante dans la réserve : ${letterReserve}` });
+    }
+
     private configureBaseSocketFeatures(): void {
         this.clientSocket.on('gameMessage', (broadcastMessage: string) => {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
+        this.clientSocket.on('impossibleCommandError', (error: string) => {
+            this.addMessage(this.configureImpossibleCommandError(error));
+        });
         this.clientSocket.on('user disconnect', () => {
             this.addDisconnect();
+        });
+        this.clientSocket.on('endGame', () => {
+            this.endGameMessage();
         });
     }
 
@@ -78,7 +100,7 @@ export class ChatboxHandlerService {
     }
 
     private addDisconnect() {
-        this.messages.push({ type: 'system-message', data: "L'autre joueur s'est déconnecté" });
+        this.messages.push({ type: 'system-message', data: `${this.gameConfiguration.roomInformation.playerName[1]} a quitté le jeu` });
     }
 
     private isCommand(userInput: string): boolean {
@@ -86,15 +108,19 @@ export class ChatboxHandlerService {
     }
 
     private validCommand(userCommand: string): boolean {
-        if (this.validSyntax(userCommand)) {
-            if (this.validCommandParameters(userCommand)) {
-                this.addMessage(this.configureUserMessage(userCommand));
-                return true;
+        if (this.gameClient.playerOneTurn) {
+            if (this.validSyntax(userCommand)) {
+                if (this.validCommandParameters(userCommand)) {
+                    this.addMessage(this.configureUserMessage(userCommand));
+                    return true;
+                } else {
+                    this.addMessage(this.configureInvalidError());
+                }
             } else {
-                this.addMessage(this.configureInvalidError());
+                this.addMessage(this.configureSyntaxError());
             }
         } else {
-            this.addMessage(this.configureSyntaxError());
+            this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
         }
         return false;
     }
@@ -112,7 +138,7 @@ export class ChatboxHandlerService {
     }
 
     private configureSyntaxError(): ChatboxMessage {
-        return { type: 'system-message', data: '[Erreur] Erreur de synthese' };
+        return { type: 'system-message', data: '[Erreur] Erreur de syntaxe' };
     }
 
     private configureInvalidError(): ChatboxMessage {
@@ -130,9 +156,6 @@ export class ChatboxHandlerService {
     }
 
     private sendCommandEchanger(command: string[]) {
-        // const commandInformation = {
-        //     exchangeLetters: this.getLetters(command, 1),
-        // };
         this.clientSocket.send(SocketEvents.Exchange, this.getLetters(command, 1));
     }
 
@@ -140,6 +163,9 @@ export class ChatboxHandlerService {
         return command.split(' ');
     }
 
+    private isDigit(information: string) {
+        return information >= '0' && information <= '9';
+    }
     private getCommandType(stringArr: string[]) {
         return stringArr[0];
     }
@@ -148,28 +174,43 @@ export class ChatboxHandlerService {
         // TODO : Number magic to remove
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         if (this.isDigit(placementArray[2]) && placementArray[3] != null) {
-            const coordinateY = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateY, y: parseInt(placementArray[0], 36) - 9 } as Coordinate, placementArray[3] as string];
+            const coordinateX = +(placementArray[1] + placementArray[2]);
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, placementArray[3] as string];
         } else if (this.isDigit(placementArray[2])) {
-            const coordinateY = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateY, y: parseInt(placementArray[0], 36) - 9 } as Coordinate, '' as string];
+            const coordinateX = +(placementArray[1] + placementArray[2]);
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, '' as string];
         } else if (placementArray[2] == null) {
-            const coordinateY = +placementArray[1];
-            return [{ x: coordinateY, y: parseInt(placementArray[0], 36) - 9 } as Coordinate, '' as string];
+            const coordinateX = +placementArray[1];
+            return [{ x: coordinateX - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, '' as string];
         }
-        return [{ x: parseInt(placementArray[1], 10), y: parseInt(placementArray[0], 36) - 9 } as Coordinate, placementArray[2] as string];
+        return [{ x: parseInt(placementArray[1], 10) - 1, y: parseInt(placementArray[0], 36) - 10 } as Coordinate, placementArray[2] as string];
     }
 
-    private isDigit(information: string) {
-        return information >= '0' && information <= '9';
-    }
     private getLetters(stringArr: string[], position: number) {
         return stringArr[position].split('');
     }
 
     // TODO : come back to test and code
 
-    // private configureImpossibleCommandError(): ChatboxMessage {
-    //     return { type: 'system-message', data: '[Erreur] Commande impossible à réaliser' };
+    private configureImpossibleCommandError(error: string): ChatboxMessage {
+        return { type: 'system-message', data: `[Erreur] ${error}` };
+    }
+
+    private getAllLetter(letters: Letter[]): string {
+        let letterString = '';
+        letters?.forEach((letter) => {
+            letterString = letterString + letter.value;
+        });
+        return letterString;
+    }
+
+    // private getAllLetterReserve(letters: Letter[]): string {
+    //     let letterString = '';
+    //     letters?.forEach((letter) => {
+    //         for (let i = 1; i <= letter.quantity; i++) {
+    //             letterString = letterString + letter.value;
+    //         }
+    //     });
+    //     return letterString;
     // }
 }

@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { Injectable } from '@angular/core';
+import * as gridConstants from '@app/grid-constants';
 import * as multipliers from '@common/board-multiplier-coords';
-import * as constants from '@common/constants';
 import { Coordinate } from '@common/coordinate';
 import { Coordinate as LetterTile } from '@common/coordinate.class';
 // import { LetterTile } from '@common/letter-tile.class';
@@ -26,8 +26,8 @@ export const RED = '#FE6E54';
     providedIn: 'root',
 })
 export class GridService {
-    static squareWidth = DEFAULT_WIDTH / constants.TOTAL_COLUMNS;
-    static squareHeight = DEFAULT_HEIGHT / constants.TOTAL_ROWS;
+    static squareWidth = DEFAULT_WIDTH / gridConstants.TOTAL_COLUMNS;
+    static squareHeight = DEFAULT_HEIGHT / gridConstants.TOTAL_ROWS;
     static letterTileWidth = GridService.squareWidth * LETTER_TILE_RATIO;
     static letterTileHeight = GridService.squareHeight * LETTER_TILE_RATIO;
     static halfSquareWidth = GridService.squareWidth / 2;
@@ -55,10 +55,10 @@ export class GridService {
         this.drawBasicTiles();
         this.drawMultipliers();
         this.drawMiddleTile();
-        gameboard.forEach((letter) => {
-            if (letter.isOccupied) {
-                this.drawLetter({ x: letter.x, y: letter.y }, letter.letter.stringChar.toUpperCase());
-                this.drawLetterWeight({ x: letter.x, y: letter.y }, String(letter.letter.points));
+        gameboard.forEach((letterTile) => {
+            if (letterTile.isOccupied) {
+                this.drawLetter({ x: letterTile.x, y: letterTile.y }, letterTile.letter.value.toUpperCase());
+                this.drawLetterWeight({ x: letterTile.x, y: letterTile.y }, String(letterTile.letter.points));
             }
         });
     }
@@ -75,14 +75,14 @@ export class GridService {
         this.gridContext.fillText(letter, position.x + TILE_SIZE / 2, TILE_SIZE / 2);
     }
 
-    drawLetterPoints(x: number, y: number, string: string) {
+    drawLetterPoints(position: Coordinate, string: string) {
         this.gridContext.textBaseline = 'middle';
         this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
         const plusX = width * 0.9;
         const halfSize = 20 / 2;
         this.gridContext.font = 20 * 0.45 + 'px system-ui';
-        this.gridContext.fillText(string, x + TILE_SIZE / 2 + plusX, y + halfSize + TILE_SIZE / 2, 20);
+        this.gridContext.fillText(string, position.x + TILE_SIZE / 2 + plusX, position.y + halfSize + TILE_SIZE / 2, 20);
     }
 
     drawLetterTileOnBoard(position: Coordinate, char: string) {
@@ -150,7 +150,7 @@ export class GridService {
 
     drawRowNumbers() {
         this.setFontSize(this.letterSize);
-        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
+        for (let i = 1; i < gridConstants.TOTAL_COLUMNS; i++) {
             const position: Coordinate = { x: i, y: 0 };
             this.gridContext.textBaseline = 'middle';
             this.drawText(position, String(i));
@@ -159,7 +159,7 @@ export class GridService {
 
     drawColumnLetters() {
         const chatCode = 64;
-        for (let i = 1; i < constants.TOTAL_ROWS; i++) {
+        for (let i = 1; i < gridConstants.TOTAL_ROWS; i++) {
             const char = String.fromCharCode(chatCode + i);
             const position: Coordinate = { x: 0, y: i };
             // this.gridContext.fillStyle = 'black'; // possible refactor. this is already called in drawText
@@ -174,8 +174,8 @@ export class GridService {
     }
 
     drawBasicTiles() {
-        for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
-            for (let j = 1; j < constants.TOTAL_ROWS; j++) {
+        for (let i = 1; i < gridConstants.TOTAL_COLUMNS; i++) {
+            for (let j = 1; j < gridConstants.TOTAL_ROWS; j++) {
                 const position: Coordinate = { x: i, y: j };
                 this.gridContext.strokeStyle = '#f9f7f2';
                 this.drawBasicTile(position);

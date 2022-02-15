@@ -1,7 +1,7 @@
-import { Multiplier } from '@common/Multiplier';
 import { Coordinate } from './coordinate';
+import { Multiplier } from './multiplier';
 
-export class Letter {
+export class LetterTile {
     coordinate: Coordinate;
     isOccupied: boolean;
     value: string;

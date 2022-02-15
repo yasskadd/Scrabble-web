@@ -2,10 +2,10 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prettier/prettier */
 import { GameboardCoordinate } from '@app/classes/gameboard-coordinate.class';
-import { GameBoard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Player } from '@app/classes/player.class';
 import { Word } from '@app/classes/word.class';
-import { PlacementCommandInfo } from '@app/command-info';
+import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@app/coordinate';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';
@@ -26,7 +26,7 @@ export class LetterPlacementService {
         private dictionaryService: DictionaryValidationService,
     ) {}
 
-    globalCommandVerification(commandInfo: PlacementCommandInfo, gameboard: GameBoard, player: Player) {
+    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player) {
         const letterCoords = this.getLettersCoord(commandInfo, gameboard);
         if (!this.isPlacementValid(letterCoords)) {
             console.log('INVALID PLACEMENT');
@@ -44,7 +44,7 @@ export class LetterPlacementService {
         return [letterCoords, null];
     }
 
-    placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: GameBoard): [boolean, GameBoard] {
+    placeLetter(letterCoords: GameboardCoordinate[], player: Player, gameboard: Gameboard): [boolean, Gameboard] {
         letterCoords.forEach((coord) => {
             console.log('PLACED LETTER');
             gameboard.placeLetter(coord);
@@ -61,7 +61,7 @@ export class LetterPlacementService {
         return [true, gameboard];
     }
 
-    private getLettersCoord(commandInfo: PlacementCommandInfo, gameboard: GameBoard) {
+    private getLettersCoord(commandInfo: CommandInfo, gameboard: Gameboard) {
         return this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
     }
 
@@ -81,11 +81,11 @@ export class LetterPlacementService {
         const tempRack = this.createTempRack(player);
         const letters = placedLettersCoord.map((coord) => {
             // BLANK LETTER IMPLEMENTATION
-            if (coord.letter.stringChar === coord.letter.stringChar.toUpperCase()) {
-                coord.letter.stringChar = '*';
+            if (coord.letter.value === coord.letter.value.toUpperCase()) {
+                coord.letter.value = '*';
             }
             const index = tempRack.findIndex((letter) => {
-                return letter.stringChar === coord.letter.stringChar;
+                return letter.value === coord.letter.value;
             });
             if (index < 0) return;
             else {
@@ -103,7 +103,7 @@ export class LetterPlacementService {
         // create new letterCoords
         const newLetterCoords = letterCoords.map((coord) => {
             const index = lettersFromRack.findIndex((letter) => {
-                return letter.stringChar === coord.letter.stringChar;
+                return letter.value === coord.letter.value;
             });
             if (index < 0) return;
             else {
@@ -125,7 +125,7 @@ export class LetterPlacementService {
         }
     }
 
-    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: GameBoard) {
+    private verifyFirstTurn(lettersCoords: GameboardCoordinate[], gameboard: Gameboard) {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
             const coordList: Coordinate[] = new Array();
             lettersCoords.forEach((coord) => {
@@ -138,7 +138,7 @@ export class LetterPlacementService {
 
     private updatePlayerRack(letterCoords: GameboardCoordinate[], player: Player) {
         letterCoords.forEach((letterCoord) => {
-            const value = player.rack.filter((item) => item.stringChar === letterCoord.letter.stringChar)[0];
+            const value = player.rack.filter((item) => item.value === letterCoord.letter.value)[0];
             if (player.rack.includes(value)) {
                 const index = player.rack.indexOf(value);
                 player.rack.splice(index, 1);

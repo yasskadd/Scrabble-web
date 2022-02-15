@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,12 +21,12 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
+import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
-import { NavBarComponent } from './nav-bar/nav-bar.component';
-
+import { AbandonGameDialogBoxComponent } from './components/abandon-game-dialog-box/abandon-game-dialog-box.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -48,6 +49,7 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
         InformationPanelComponent,
         PlayerRackComponent,
         NavBarComponent,
+        AbandonGameDialogBoxComponent,
     ],
     imports: [
         AppMaterialModule,
@@ -63,6 +65,7 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
         BrowserModule,
         FormsModule,
         HttpClientModule,
+        MatSliderModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

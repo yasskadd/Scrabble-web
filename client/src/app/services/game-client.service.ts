@@ -20,10 +20,14 @@ export class GameClientService {
     secondPlayer: Player;
     playerOneTurn: boolean;
     letterReserve: Letter[];
+    isGameFinish: boolean;
+    winningMessage: string;
 
     constructor(private gridService: GridService, private letterTilesService: LetterTilesService, private clientSocketService: ClientSocketService) {
         // Used for testing
+        this.winningMessage = '';
         this.playerOneTurn = false;
+        this.isGameFinish = false;
         // setTimeout(this.stopTimer, 1000 * 5)
         this.configureBaseSocketFeatures();
     }
@@ -38,6 +42,19 @@ export class GameClientService {
             this.secondPlayer = player;
             this.updateGameboard();
         });
+
+        this.clientSocketService.on('letterReserveUpdated', (letterReserveUpdated: Letter[]) => {
+            console.log(letterReserveUpdated);
+            this.letterReserve = letterReserveUpdated;
+        });
+        this.clientSocketService.on('OpponentLeftTheGame', () => {
+            this.playerOneTurn = false;
+            this.isGameFinish = true;
+        });
+        this.clientSocketService.on('endGame', () => {
+            this.findWinner();
+        });
+
         this.clientSocketService.on(SocketEvents.ViewUpdate, (info: PlayInfo) => {
             console.log(info.gameboard);
             console.log(info.activePlayer);
@@ -62,5 +79,32 @@ export class GameClientService {
     updateGameboard() {
         this.gridService.drawGrid(this.gameboard);
         this.letterTilesService.drawRack(this.playerOne.rack as Letter[]);
+    }
+
+    abandonGame() {
+        this.clientSocketService.send('AbandonGame');
+        this.playerOneTurn = false;
+    }
+
+    quitGame() {
+        this.clientSocketService.disconnect();
+    }
+
+    private findWinner(): void {
+        if (this.isGameFinish) {
+            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire à quitter la partie";
+        } else {
+            this.findWinnerByScore();
+        }
+    }
+    private findWinnerByScore(): void {
+        this.isGameFinish = true;
+        if (this.playerOne.score === this.secondPlayer.score) {
+            this.winningMessage = 'Bravo au deux joueur, vous avez le même score';
+        } else if (this.playerOne.score > this.secondPlayer.score) {
+            this.winningMessage = 'Bravo Vous avez gagné la partie de Scrabble';
+        } else {
+            this.winningMessage = "L'adversaire à gagné la partie";
+        }
     }
 }

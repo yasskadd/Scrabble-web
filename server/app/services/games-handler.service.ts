@@ -1,8 +1,8 @@
 import { Game } from '@app/classes/game';
-import { GameBoard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
-import { PlacementCommandInfo } from '@app/command-info';
+import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@app/coordinate';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
@@ -11,6 +11,7 @@ import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
+const SECOND = 1000;
 type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
@@ -39,7 +40,7 @@ export class GamesHandler {
             this.createGame(sio, socket, gameInfo);
         });
 
-        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: PlacementCommandInfo) => {
+        this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: CommandInfo) => {
             this.playGame(sio, socket, commandInfo);
         });
 
@@ -49,6 +50,12 @@ export class GamesHandler {
 
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
+        });
+        this.socketManager.on(SocketEvents.Disconnect, (socket) => {
+            this.disconnect(socket);
+        });
+        this.socketManager.on('AbandonGame', (socket) => {
+            this.abandonGame(socket);
         });
     }
 
@@ -61,41 +68,58 @@ export class GamesHandler {
         console.log('Skip boolean :');
         // DO NOT REMOVE the skip when removing the console.log (it must be called to skip)
         console.log(gameHolder.game?.skip(player.name));
-
+        socket.broadcast.to(room).emit(SocketEvents.GameMessage, '!passer');
         this.changeTurn(room);
     }
 
     private exchange(this: this, sio: Server, socket: Socket, letters: string[]) {
         if (!this.players.has(socket.id)) return;
-
+        const lettersToExchange = letters.length;
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
+        const playerRack = player.rack;
         const gameParam = this.games.get(room) as GameHolder;
         const game = gameParam.game as Game;
         const newRack = game.exchange(letters, player.name);
         player.rack = newRack;
-
         if (newRack.length === 0) return;
-        socket.emit(SocketEvents.UpdatePlayerInformation, player);
-        socket.broadcast.to(room).emit(SocketEvents.UpdateOpponentInformation, player);
+        if (JSON.stringify(playerRack) === JSON.stringify(player.rack)) {
+            socket.emit('impossibleCommandError', 'Vous ne posséder pas toutes les lettres a échanger');
+        } else {
+            socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
+        }
+        this.updatePlayerInfo(socket, room, game);
+        // socket.emit(SocketEvents.UpdatePlayerInformation, player);
+        // socket.broadcast.to(room).emit(SocketEvents.UpdateOpponentInformation, player);
         sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
     }
 
-    private playGame(this: this, sio: Server, socket: Socket, commandInfo: PlacementCommandInfo) {
+    private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
+        const letterPlaced = commandInfo.lettersPlaced.join('');
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameParam = this.games.get(room) as GameHolder;
         const game = gameParam.game as Game;
-        const play = game.play(player.name, commandInfo) as [boolean, GameBoard] | string;
+        const play = game.play(player.name, commandInfo) as [boolean, Gameboard] | string;
 
-        if (typeof play !== 'string') {
+        if (typeof play[0] === 'string') {
+            socket.emit('impossibleCommandError', play);
+        } else if (typeof play !== 'string') {
             const playerInfo: PlayInfo = {
                 gameboard: play[1].gameboardCoords,
                 activePlayer: game.turn.activePlayer,
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, room, game);
+            socket.broadcast
+                .to(player.room)
+                .emit(
+                    SocketEvents.GameMessage,
+                    `!placer ${String.fromCharCode(96 + commandInfo.firstCoordinate.x)}${commandInfo.firstCoordinate.y}${
+                        commandInfo.direction
+                    } ${letterPlaced}`,
+                );
         } else {
             // socket.emit(SocketEvents.UpdatePlayerInformation, player);
             // emit ds chatbox le 'play'
@@ -122,7 +146,7 @@ export class GamesHandler {
             gameboard: newGameHolder.game.gameboard.gameboardCoords,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
-
+        this.socketManager.emitRoom(gameInfo.roomId, 'letterReserveUpdated', newGameHolder.game.letterReserve.lettersReserve);
         console.log('START GAME : ');
         console.log(newGameHolder.game.turn.activePlayer);
 
@@ -155,6 +179,7 @@ export class GamesHandler {
             socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, game.player1);
             socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, game.player2);
         }
+        this.socketManager.emitRoom(roomId, 'letterReserveUpdated', game.letterReserve.lettersReserve);
     }
 
     private changeTurn(roomId: string) {
@@ -166,10 +191,40 @@ export class GamesHandler {
         };
         console.log('CHANGE TURN : ');
         console.log(gameInfo.activePlayer);
-        this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
+        if (gameInfo.activePlayer === undefined) {
+            this.socketManager.emitRoom(roomId, 'endGame');
+        } else {
+            this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
+        }
     }
 
     private sendTimer(roomId: string, timer: number) {
         this.socketManager.emitRoom(roomId, SocketEvents.TimerClientUpdate, timer);
+    }
+
+    private abandonGame(socket: Socket) {
+        let player: Player;
+        if (this.players.has(socket.id)) {
+            player = this.players.get(socket.id) as Player;
+            const room = player.room;
+            socket.broadcast.to(room).emit('OpponentLeftTheGame');
+            socket.broadcast.to(room).emit('endGame');
+        }
+    }
+
+    private disconnect(socket: Socket) {
+        let tempTime = 5;
+        setInterval(() => {
+            tempTime = tempTime - 1;
+            if (tempTime === 0) {
+                let player: Player;
+                if (this.players.has(socket.id)) {
+                    player = this.players.get(socket.id) as Player;
+                    const room = player.room;
+                    socket.broadcast.to(room).emit('OpponentLeftTheGame');
+                    socket.broadcast.to(room).emit('endGame');
+                }
+            }
+        }, SECOND);
     }
 }
