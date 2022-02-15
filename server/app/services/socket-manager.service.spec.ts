@@ -47,11 +47,8 @@ describe('SocketManager service tests', () => {
         };
         service = Container.get(SocketManager);
 
-        //Creating a new Server
         httpServer = createServer();
-        //Connecting sockets to corresponding sockets when turning the server on |||
         service.init(httpServer);
-        // Reason :  to be able to use sio for tests
         // eslint-disable-next-line dot-notation
         sio = service['sio'];
         httpServer.listen(() => {

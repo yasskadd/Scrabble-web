@@ -12,6 +12,7 @@ import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
 const SECOND = 1000;
+const CHAR_ASCII = 96;
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
@@ -68,7 +69,6 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
-        console.log('Skip boolean :');
         // DO NOT REMOVE the skip when removing the console.log (it must be called to skip)
         console.log(gameHolder.game?.skip(player.name));
         socket.broadcast.to(room).emit(SocketEvents.GameMessage, '!passer');
@@ -118,12 +118,11 @@ export class GamesHandler {
             if (!play[0]) {
                 socket.emit('impossibleCommandError', 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
             } else {
-                const charASCII = 96;
                 socket.broadcast
                     .to(player.room)
                     .emit(
                         SocketEvents.GameMessage,
-                        `!placer ${String.fromCharCode(charASCII + firstCoordinateRows)}${firstCoordinateColumns}${
+                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${
                             commandInfo.direction
                         } ${letterPlaced}`,
                     );

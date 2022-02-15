@@ -48,7 +48,6 @@ describe('GamesHandler Service', () => {
             // (socketServer is the socket received on the server side, the one we do socket.emit() and stuff from the server)
             sio.on('connection', (socket) => {
                 serverSocket = socket;
-                console.log(`Server client connected : ${serverSocket.id}`);
                 gameInfo = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id] };
             });
             clientSocket.on('connect', done);
@@ -236,7 +235,6 @@ describe('GamesHandler Service', () => {
     it('updatePlayerInfo() should broadcast new player info to the correct player', () => {
         const newClient = Client(`http://localhost:${port}`);
         newClient.connect();
-        console.log('HERE CLIENT CONNECTED' + newClient.connected);
     });
 
     it('CreateGame() should call setAndGetPlayer()', (done) => {

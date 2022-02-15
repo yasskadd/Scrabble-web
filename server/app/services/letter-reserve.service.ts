@@ -2,6 +2,8 @@ import * as letterTypes from '@app/letter-reserve';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';
 
+const NUMBER_OF_LETTERS_ON_RACK = 7;
+
 @Service()
 export class LetterReserveService {
     lettersReserve: Letter[];
@@ -81,7 +83,7 @@ export class LetterReserveService {
 
     exchangeLetter(toExchange: string[], rack: Letter[]): Letter[] {
         // Remove the letters from the rack of the player
-        if (this.lettersReserve.length >= 7) {
+        if (this.lettersReserve.length >= NUMBER_OF_LETTERS_ON_RACK) {
             const removedLetter = this.removeLettersFromRack(toExchange, rack);
             rack = removedLetter[0];
 
