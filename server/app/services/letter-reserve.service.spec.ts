@@ -29,14 +29,14 @@ describe('LetterReserveService', () => {
     it('should subtract letter quantity by 1', () => {
         const expectedQuantity = letterReserveService.lettersReserve[0].quantity - 1;
         const letterToRemove: Letter = { value: 'a', quantity: 9, points: 3 };
-        letterReserveService.updateReserve(letterToRemove);
+        letterReserveService.removeLetter(letterToRemove);
         expect(letterReserveService.lettersReserve[0].quantity).to.equal(expectedQuantity);
     });
 
     it('should remove the letter form the reserve if the quantity of the letter is 0', () => {
         const expectedLength = letterReserveService.lettersReserve.length - 1;
         const letterToRemove: Letter = { value: 'z', quantity: 1, points: 10 };
-        letterReserveService.updateReserve(letterToRemove);
+        letterReserveService.removeLetter(letterToRemove);
 
         expect(letterReserveService.lettersReserve.length).to.equal(expectedLength);
     });
@@ -94,5 +94,16 @@ describe('LetterReserveService', () => {
         const randomQuantity = 7;
         const rack = letterReserveService.generateLetters(randomQuantity, emptyRack);
         expect(rack.length).to.equal(randomQuantity);
+    });
+
+    it('should return true if the reserve is empty', () => {
+        letterReserveService.lettersReserve = [];
+        const isEmpty = letterReserveService.isEmpty();
+        expect(isEmpty).to.eql(true);
+    });
+
+    it('should return false if the reserve is not empty', () => {
+        const isEmpty = letterReserveService.isEmpty();
+        expect(isEmpty).to.eql(false);
     });
 });

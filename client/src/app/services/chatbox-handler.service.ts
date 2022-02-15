@@ -198,7 +198,7 @@ export class ChatboxHandlerService {
 
     private getAllLetter(letters: Letter[]): string {
         let letterString = '';
-        letters?.forEach((letter) => {
+        letters.forEach((letter) => {
             letterString = letterString + letter.value;
         });
         return letterString;

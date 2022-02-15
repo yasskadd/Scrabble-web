@@ -3,7 +3,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';
-import { Coordinate } from '@app/coordinate';
+import { LetterTile } from '@common/letter-tile';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
@@ -12,7 +12,7 @@ import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
 const SECOND = 1000;
-type PlayInfo = { gameboard: Coordinate[]; activePlayer: string | undefined };
+type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
     players: Player[];
@@ -116,7 +116,7 @@ export class GamesHandler {
                 .to(player.room)
                 .emit(
                     SocketEvents.GameMessage,
-                    `!placer ${String.fromCharCode(96 + commandInfo.firstCoordinate.x)}${commandInfo.firstCoordinate.y}${
+                    `!placer ${String.fromCharCode(96 + commandInfo.firstCoordinate.x + 1)}${commandInfo.firstCoordinate.y + 1}${
                         commandInfo.direction
                     } ${letterPlaced}`,
                 );

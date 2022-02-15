@@ -4,7 +4,6 @@ import { Letter } from '@common/letter';
 const TILE_SIZE = 40;
 export const DEFAULT_TILE_HEIGHT = 75;
 
-const X_DIFFERENCE = 100;
 const CONTAINER_WIDTH = 300;
 @Injectable({
     providedIn: 'root',
@@ -17,16 +16,12 @@ export class LetterTilesService {
     fontSize: number;
 
     constructor() {
-        this.fontSize = 30;
-    }
-
-    changeFontSize(sizePx: number) {
-        this.fontSize = sizePx;
+        this.fontSize = 20;
     }
 
     drawRack(letters: Letter[]) {
         this.gridContext.fillStyle = '#f8ebd9';
-        this.gridContext.fillRect(X_DIFFERENCE, 0, CONTAINER_WIDTH, DEFAULT_TILE_HEIGHT);
+        this.gridContext.fillRect(0, 0, CONTAINER_WIDTH, DEFAULT_TILE_HEIGHT);
         this.gridContext.fillStyle = 'black';
         letters.forEach((letter, i) => {
             this.drawLetterTile(CONTAINER_WIDTH / TILE_SIZE + TILE_SIZE * i, 1, letter.value);

@@ -33,7 +33,7 @@ describe('Letter Placement Service', () => {
         letterB = { value: 'b', points: 2 } as Letter;
         letterC = { value: 'c', points: 3 } as Letter;
 
-        player = { rack: [letterA, letterB], score: 0, name: 'test', room: 'testRoom' };
+        player = { rack: [letterA, letterB], score: 0, name: 'test', room: 'testRoom' } as Player;
         commandInfo = {
             firstCoordinate: { x: 0, y: 0 } as GameboardCoordinate,
             direction: 'h',

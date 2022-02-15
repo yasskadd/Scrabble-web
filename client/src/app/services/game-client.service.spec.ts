@@ -1,15 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { Coordinate } from '@common/coordinate.class';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile';
 import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
+import { LetterTilesService } from './letter-tiles.service';
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
-type PlayInfo = { gameboard: Coordinate[]; activePlayer: string };
-type GameInfo = { gameboard: Coordinate[]; players: Player[]; activePlayer: string };
+type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,
@@ -17,7 +18,7 @@ const PLAYER_ONE: Player = {
     room: '1',
 };
 
-const Letter_Reserve = [
+const LETTER_RESERVE = [
     { value: 'c', quantity: 2, points: 1 },
     { value: 'r', quantity: 2, points: 1 },
     { value: 'p', quantity: 2, points: 1 },
@@ -25,7 +26,7 @@ const Letter_Reserve = [
     { value: 'w', quantity: 1, points: 7 },
 ];
 const PLAYER_TWO: Player = {
-    name: 'QLF',
+    name: 'Paul',
     score: 327,
     rack: [
         { value: 'c', quantity: 2, points: 1 },
@@ -37,7 +38,7 @@ const PLAYER_TWO: Player = {
 
 const PLAYER_INFO: PlayInfo = {
     gameboard: [{ x: 3, y: 2, isOccupied: true, letter: { value: 'b', quantity: 2, points: 1 }, letterMultiplier: 2, wordMultiplier: 1 }],
-    activePlayer: 'QLF',
+    activePlayer: 'Paul',
 };
 
 const GAME_INFO: GameInfo = {
@@ -71,9 +72,11 @@ describe('GameClientService', () => {
     let socketEmulator: SocketTestEmulator;
     let socketServiceMock: SocketClientServiceMock;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
+    let letterTilesServiceSpy: jasmine.SpyObj<LetterTilesService>;
     // TODO : TESTS
     beforeEach(() => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid']);
+        letterTilesServiceSpy = jasmine.createSpyObj('LetterTilesService', ['drawRack']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketEmulator as unknown as Socket;
@@ -81,6 +84,7 @@ describe('GameClientService', () => {
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },
                 { provide: GridService, useValue: gridServiceSpy },
+                { provide: LetterTilesService, useValue: letterTilesServiceSpy },
             ],
         });
         service = TestBed.inject(GameClientService);
@@ -94,17 +98,22 @@ describe('GameClientService', () => {
         expect(service.playerOne).toEqual(PLAYER_ONE);
     });
     it('should update the opponent information', () => {
+        service.playerOne = PLAYER_ONE;
         socketEmulator.peerSideEmit('UpdateOpponentInformation', PLAYER_TWO);
         expect(service.secondPlayer).toEqual(PLAYER_TWO);
     });
     it('the playerOneTurn should be false when ViewUpdate is called and it is not their turn to play', () => {
         service.playerOne = PLAYER_ONE;
+        console.log(service.playerOne);
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
+        console.log(service.playerOneTurn);
         expect(service.playerOneTurn).not.toBeTruthy();
     });
     it('playerOneTurn should be true when ViewUpdate is called and it is their turn to play', () => {
         service.playerOne = PLAYER_TWO;
+        console.log(service.playerOne);
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
+        console.log(service.playerOneTurn);
         expect(service.playerOneTurn).toBeTruthy();
     });
 
@@ -131,10 +140,18 @@ describe('GameClientService', () => {
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).toBeTruthy();
     });
-
+    it('should update the playOneTurn to false if it is not your turn to play', () => {
+        service.playerOne = PLAYER_TWO;
+        service.secondPlayer = PLAYER_ONE;
+        service.gameboard = PLAYER_INFO.gameboard;
+        expect(service.gameboard).not.toEqual(GAME_INFO.gameboard);
+        socketEmulator.peerSideEmit(SocketEvents.Skip, GAME_INFO);
+        expect(service.gameboard).toEqual(GAME_INFO.gameboard);
+        expect(service.playerOneTurn).not.toBeTruthy();
+    });
     it('should update the letter reserve if SocketEvents.letterReserveUpdated event is called from the server', () => {
-        socketEmulator.peerSideEmit('letterReserveUpdated', Letter_Reserve);
-        expect(service.letterReserve).toEqual(Letter_Reserve);
+        socketEmulator.peerSideEmit('letterReserveUpdated', LETTER_RESERVE);
+        expect(service.letterReserve).toEqual(LETTER_RESERVE);
     });
 
     it('should update the time when the SocketEvents.TimerClientUpdate event is called from the server', () => {
@@ -146,7 +163,7 @@ describe('GameClientService', () => {
         expect(service.timer).not.toEqual(TIME);
     });
     it('should  not update the letter reserve if SocketEvents.letterReserveUpdated  is not called from the server', () => {
-        expect(service.letterReserve).not.toEqual(Letter_Reserve);
+        expect(service.letterReserve).not.toEqual(LETTER_RESERVE);
     });
     it('should set the value of isGameFinish to true when the opponent left the game ', () => {
         service.isGameFinish = false;

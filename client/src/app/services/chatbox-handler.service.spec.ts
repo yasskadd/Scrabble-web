@@ -331,8 +331,6 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('sendCommand() should call sendCommandPlacer if the command valid is to place a word on the board', () => {
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         const spy = spyOn(service, 'sendCommandPlacer' as never);
         const TEST_COMMAND = '!placer e3v bonjour';
 
@@ -463,5 +461,17 @@ describe('ChatboxHandlerService', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['configureImpossibleCommandError'](errorMessage)).toEqual(EXPECTED_IMPOSSIBLE_ERROR);
+    });
+
+    it('SubmitMessage should send nothing if the user input is empty', () => {
+        const spy = spyOn(service, 'sendCommand' as never);
+        const spy2 = spyOn(service, 'addMessage' as never);
+        service.submitMessage('');
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(spy).not.toHaveBeenCalled();
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(spy2).not.toHaveBeenCalled();
     });
 });
