@@ -73,18 +73,16 @@ describe('MultiplayerCreatePageComponent', () => {
         const expectedURL = '/' + RETURN_ROUTE;
         expect(location.path()).toEqual(expectedURL);
     }));
-
-    // TODO: fix this test afterr
-    // it('should call createGame() when the startButton is pressed', fakeAsync(() => {
-    //     fixture.detectChanges();
-    //     const spy = spyOn(component, 'createGame');
-    //     const button = fixture.debugElement.nativeElement.querySelector('.startButton');
-    //     button.click();
-
-    //     tick();
-    //     fixture.detectChanges();
-    //     expect(spy).toHaveBeenCalled();
-    // }));
+    it('should call createGame() when the startButton is pressed', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        fixture.detectChanges();
+        const spy = spyOn(component, 'createGame');
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
 
     it('createGame should call gameConfiguration.gameInitialization', fakeAsync(() => {
         component.playerName = 'Vincent';

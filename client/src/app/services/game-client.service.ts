@@ -41,15 +41,15 @@ export class GameClientService {
             this.updateGameboard();
         });
 
-        this.clientSocketService.on('letterReserveUpdated', (letterReserveUpdated: Letter[]) => {
+        this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
             console.log(letterReserveUpdated);
             this.letterReserve = letterReserveUpdated;
         });
-        this.clientSocketService.on('OpponentLeftTheGame', () => {
+        this.clientSocketService.on(SocketEvents.OpponentGameLeave, () => {
             this.playerOneTurn = false;
             this.isGameFinish = true;
         });
-        this.clientSocketService.on('endGame', () => {
+        this.clientSocketService.on(SocketEvents.GameEnd, () => {
             this.findWinner();
         });
 

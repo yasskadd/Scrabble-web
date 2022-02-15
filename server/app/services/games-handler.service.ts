@@ -97,6 +97,8 @@ export class GamesHandler {
 
     private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
+        const firstCoordinateColumns = commandInfo.firstCoordinate.x + 1;
+        const firstCoordinateRows = commandInfo.firstCoordinate.y + 1;
         const letterPlaced = commandInfo.lettersPlaced.join('');
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
@@ -113,18 +115,19 @@ export class GamesHandler {
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, room, game);
-            const charASCII = 96;
-            socket.broadcast
-                .to(player.room)
-                .emit(
-                    SocketEvents.GameMessage,
-                    `!placer ${String.fromCharCode(charASCII + commandInfo.firstCoordinate.x + 1)}${commandInfo.firstCoordinate.y + 1}${
-                        commandInfo.direction
-                    } ${letterPlaced}`,
-                );
-        } else {
-            // socket.emit(SocketEvents.UpdatePlayerInformation, player);
-            // emit ds chatbox le 'play'
+            if (!play[0]) {
+                socket.emit('impossibleCommandError', 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
+            } else {
+                const charASCII = 96;
+                socket.broadcast
+                    .to(player.room)
+                    .emit(
+                        SocketEvents.GameMessage,
+                        `!placer ${String.fromCharCode(charASCII + firstCoordinateRows)}${firstCoordinateColumns}${
+                            commandInfo.direction
+                        } ${letterPlaced}`,
+                    );
+            }
         }
     }
 
