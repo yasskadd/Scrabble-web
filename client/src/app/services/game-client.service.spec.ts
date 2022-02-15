@@ -17,7 +17,7 @@ const PLAYER_ONE: Player = {
     rack: [{ value: 'b', quantity: 2, points: 1 }],
     room: '1',
 };
-
+const LETTER_RESERVE_LENGTH = 9;
 const LETTER_RESERVE = [
     { value: 'c', quantity: 2, points: 1 },
     { value: 'r', quantity: 2, points: 1 },
@@ -125,16 +125,12 @@ describe('GameClientService', () => {
     });
     it('the playerOneTurn should be false when ViewUpdate is called and it is not their turn to play', () => {
         service.playerOne = PLAYER_ONE;
-        console.log(service.playerOne);
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
-        console.log(service.playerOneTurn);
         expect(service.playerOneTurn).not.toBeTruthy();
     });
     it('playerOneTurn should be true when ViewUpdate is called and it is their turn to play', () => {
         service.playerOne = PLAYER_TWO;
-        console.log(service.playerOne);
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
-        console.log(service.playerOneTurn);
         expect(service.playerOneTurn).toBeTruthy();
     });
 
@@ -170,9 +166,9 @@ describe('GameClientService', () => {
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).not.toBeTruthy();
     });
-    it('should update the letter reserve if SocketEvents.letterReserveUpdated event is called from the server', () => {
+    it('should update the letter reserve length if SocketEvents.letterReserveUpdated event is called from the server', () => {
         socketEmulator.peerSideEmit('letterReserveUpdated', LETTER_RESERVE);
-        expect(service.letterReserve).toEqual(LETTER_RESERVE);
+        expect(service.letterReserveLength).toEqual(LETTER_RESERVE_LENGTH);
     });
 
     it('should update the time when the SocketEvents.TimerClientUpdate event is called from the server', () => {
@@ -184,7 +180,7 @@ describe('GameClientService', () => {
         expect(service.timer).not.toEqual(TIME);
     });
     it('should  not update the letter reserve if SocketEvents.letterReserveUpdated  is not called from the server', () => {
-        expect(service.letterReserve).not.toEqual(LETTER_RESERVE);
+        expect(service.letterReserveLength).not.toEqual(LETTER_RESERVE_LENGTH);
     });
     it('should set the value of isGameFinish to true when the opponent left the game ', () => {
         service.isGameFinish = false;
@@ -254,6 +250,10 @@ describe('GameClientService', () => {
         expect(service.winningMessage).toEqual(messageWinner);
     });
 
+    it(' getAllLetterReserve should return the length of the reserve', () => {
+        // eslint-disable-next-line dot-notation
+        expect(service['getAllLetterReserve'](LETTER_RESERVE)).toEqual(LETTER_RESERVE_LENGTH);
+    });
     it('should emit a message that say that the second player won the game because he has a higher score than the first one', () => {
         service.playerOne = PLAYER_ONE;
         service.secondPlayer = PLAYER_TWO;
