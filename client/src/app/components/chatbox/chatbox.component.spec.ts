@@ -134,4 +134,11 @@ describe('ChatboxComponent', () => {
         const matError = fixture.debugElement.nativeElement.querySelector('.error');
         expect(matError !== null).toBeTruthy();
     });
+
+    it("a mat error shouldn't be here when input is valid (less than 512 characters)", () => {
+        const VALID_INPUT = 'HELLO';
+        component.input.setValue(VALID_INPUT);
+        const matError = fixture.debugElement.nativeElement.querySelector('.error');
+        expect(matError === null).toBeTruthy();
+    });
 });
