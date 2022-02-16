@@ -55,8 +55,8 @@ export class LetterPlacementService {
         if (wordValidationScore === 0) {
             letterCoords.forEach((coord) => {
                 gameboard.removeLetter(coord);
-                return [false, gameboard];
             });
+            return [false, gameboard];
         }
         player.score += wordValidationScore;
         if (letterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
