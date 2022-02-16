@@ -132,8 +132,8 @@ export class GameSessions {
     }
 
     private startScrabbleGame(this: this, sio: Server, socket: Socket, roomId: string) {
-        const socketID = this.gameRooms.get(roomId).socketID;
-        sio.to(roomId).emit(SocketEvents.GameAboutToStart, socketID);
+        const room = this.gameRooms.get(roomId);
+        if (room !== undefined) sio.to(roomId).emit(SocketEvents.GameAboutToStart, room.socketID);
     }
 
     private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameParameters) {
@@ -147,18 +147,6 @@ export class GameSessions {
         const id = this.idCounter++;
         return id.toString();
     }
-
-    // TODO : Come back to this
-    // getGameRoom(socket: Socket, roomId: string): void {
-    //     const room = this.gameRooms.get(roomId);
-    //     if (room !== undefined) {
-    //         socket.emit('answer', room);
-    //     }
-    // }
-
-    // private getActiveUser(): Map<string, string> {
-    //     return this.activeUsers;
-    // }
 
     private getAvailableRooms(): GameRoom[] {
         const roomAvailableArray: GameRoom[] = [];
