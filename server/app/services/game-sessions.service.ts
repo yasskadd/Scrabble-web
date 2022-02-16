@@ -37,8 +37,7 @@ export class GameSessions {
         });
 
         this.socketManager.io(SocketEvents.RoomLobby, (sio, socket) => {
-            socket.join(PLAYERS_JOINING_ROOM);
-            sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
+            this.roomLobby(sio, socket);
         });
 
         this.socketManager.on(SocketEvents.ExitWaitingRoom, (socket, parameters: Parameters) => {
@@ -50,10 +49,10 @@ export class GameSessions {
         });
 
         this.socketManager.on(SocketEvents.RejectOpponent, (socket, roomId: string) => {
-            socket.broadcast.to(roomId).emit(SocketEvents.RejectByOtherPlayer, PLAYERS_REJECT_FROM_ROOM_ERROR);
+            this.rejectOpponent(socket, roomId);
         });
         this.socketManager.on(SocketEvents.JoinRoom, (socket, roomID: string) => {
-            socket.join(roomID);
+            this.joinRoom(socket, roomID);
         });
         this.socketManager.io(SocketEvents.RejectByOtherPlayer, (sio, socket, parameters: Parameters) => {
             this.rejectByOtherPlayer(sio, socket, parameters);
@@ -66,6 +65,19 @@ export class GameSessions {
         this.socketManager.io(SocketEvents.Disconnect, (sio, socket) => {
             this.disconnect(sio, socket);
         });
+    }
+
+    private joinRoom(this: this, socket: Socket, roomID: string) {
+        socket.join(roomID);
+    }
+
+    private rejectOpponent(this: this, socket: Socket, roomId: string) {
+        socket.broadcast.to(roomId).emit(SocketEvents.RejectByOtherPlayer, PLAYERS_REJECT_FROM_ROOM_ERROR);
+    }
+
+    private roomLobby(this: this, sio: Server, socket: Socket) {
+        socket.join(PLAYERS_JOINING_ROOM);
+        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }
 
     private disconnect(this: this, sio: Server, socket: Socket) {

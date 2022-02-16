@@ -53,9 +53,11 @@ export class LetterPlacementService {
         const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
         const wordValidationScore: number = this.dictionaryService.validateWords(words);
         if (wordValidationScore === 0) {
-            letterCoords.forEach((coord) => {
-                gameboard.removeLetter(coord);
-            });
+            setTimeout(() => {
+                letterCoords.forEach((coord) => {
+                    gameboard.removeLetter(coord);
+                });
+            }, 3000);
             return [false, gameboard];
         }
         player.score += wordValidationScore;
@@ -89,8 +91,9 @@ export class LetterPlacementService {
                 coord.letter.points = 0;
             }
             const index = tempRack.findIndex((letter) => {
-                if (coord.letter.isBlankLetter !== undefined) {
-                    if (coord.letter.isBlankLetter === true) return letter.value === '*';
+                if (coord.letter.isBlankLetter !== undefined && coord.letter.isBlankLetter) {
+                    console.log('TEST CALLED 1');
+                    return letter.value === '*';
                 }
                 return letter.value === coord.letter.value;
             });

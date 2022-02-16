@@ -12,6 +12,8 @@ import { AddressInfo } from 'net';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
+import { LetterPlacementService } from './letter-placement.service';
+import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 interface GameHolder {
     game: Game | undefined;
@@ -351,12 +353,18 @@ describe.only('GamesHandler Service', () => {
             }, timeOut5Seconds);
         });
     });
-    // it("exchange() shouldn't do anything if the player isn't in the map ()", () => {
-    //     // eslint-disable-next-line dot-notation
-    //     gamesHandler['abandonGame'](serverSocket);
-    //     expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
-    //     expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd)).to.not.be.equal(true);
-    // });
+    it("exchange() shouldn't do anything if the player isn't in the map ()", () => {
+        const player = { room: ROOM } as Player;
+        const letterReserveStub = {} as unknown as LetterReserveService;
+        const LetterPlacementService = {} as unknown as LetterPlacementService;
+
+        const gameStub = sinon.createStubInstance<Game>({ name: '' } as Player, { name: '' } as Player);
+        const gameHolder = { game: gameStub as unknown as Game };
+        // eslint-disable-next-line dot-notation
+        gamesHandler['exchange'](sio, serverSocket, []);
+        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
+        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd)).to.not.be.equal(true);
+    });
 
     // it('CreateGame() should call setAndGetPlayer()', (done) => {
     //     const setAndGetPlayer = sinon.spy(gamesHandler, 'setAndGetPlayer' as never);

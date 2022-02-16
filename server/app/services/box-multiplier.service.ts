@@ -1,97 +1,42 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { Gameboard } from '@app/classes/gameboard.class';
+import * as multipliers from '@common/board-multiplier-coords';
+import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
 
+let letterMultipliersByTwo: LetterTile[] = [];
+multipliers.letterMultipliersByTwo.forEach((coord: Coordinate) => letterMultipliersByTwo.push(new LetterTile(coord.x, coord.y, {} as Letter)));
+
+let letterMultipliersByThree: LetterTile[] = [];
+multipliers.letterMultipliersByThree.forEach((coord: Coordinate) => letterMultipliersByThree.push(new LetterTile(coord.x, coord.y, {} as Letter)));
+
+let wordMultipliersByTwo: LetterTile[] = [];
+multipliers.wordMultipliersByTwo.forEach((coord: Coordinate) => wordMultipliersByTwo.push(new LetterTile(coord.x, coord.y, {} as Letter)));
+
+let wordMultipliersByThree: LetterTile[] = [];
+multipliers.wordMultipliersByThree.forEach((coord: Coordinate) => wordMultipliersByThree.push(new LetterTile(coord.x, coord.y, {} as Letter)));
+
 @Service()
 export class BoxMultiplierService {
-    letterMultipliersByTwo: LetterTile[] = [
-        new LetterTile(4, 1, <Letter>{}),
-        new LetterTile(12, 1, <Letter>{}),
-        new LetterTile(7, 3, <Letter>{}),
-        new LetterTile(9, 3, <Letter>{}),
-        new LetterTile(1, 4, <Letter>{}),
-        new LetterTile(8, 4, <Letter>{}),
-        new LetterTile(15, 4, <Letter>{}),
-        new LetterTile(3, 7, <Letter>{}),
-        new LetterTile(7, 7, <Letter>{}),
-        new LetterTile(9, 7, <Letter>{}),
-        new LetterTile(13, 7, <Letter>{}),
-        new LetterTile(4, 8, <Letter>{}),
-        new LetterTile(12, 8, <Letter>{}),
-        new LetterTile(3, 9, <Letter>{}),
-        new LetterTile(7, 9, <Letter>{}),
-        new LetterTile(9, 9, <Letter>{}),
-        new LetterTile(13, 9, <Letter>{}),
-        new LetterTile(1, 12, <Letter>{}),
-        new LetterTile(8, 12, <Letter>{}),
-        new LetterTile(15, 12, <Letter>{}),
-        new LetterTile(7, 13, <Letter>{}),
-        new LetterTile(9, 13, <Letter>{}),
-        new LetterTile(4, 15, <Letter>{}),
-        new LetterTile(12, 15, <Letter>{}),
-    ];
-
-    letterMultipliersByThree: LetterTile[] = [
-        new LetterTile(6, 2, <Letter>{}),
-        new LetterTile(10, 2, <Letter>{}),
-        new LetterTile(11, 6, <Letter>{}),
-        new LetterTile(6, 6, <Letter>{}),
-        new LetterTile(10, 6, <Letter>{}),
-        new LetterTile(14, 6, <Letter>{}),
-        new LetterTile(2, 10, <Letter>{}),
-        new LetterTile(6, 10, <Letter>{}),
-        new LetterTile(10, 10, <Letter>{}),
-        new LetterTile(14, 10, <Letter>{}),
-        new LetterTile(6, 14, <Letter>{}),
-        new LetterTile(10, 14, <Letter>{}),
-    ];
-
-    wordMultipliersByTwo: LetterTile[] = [
-        new LetterTile(2, 2, <Letter>{}),
-        new LetterTile(3, 3, <Letter>{}),
-        new LetterTile(4, 4, <Letter>{}),
-        new LetterTile(5, 4, <Letter>{}),
-        new LetterTile(11, 5, <Letter>{}),
-        new LetterTile(12, 4, <Letter>{}),
-        new LetterTile(13, 3, <Letter>{}),
-        new LetterTile(14, 2, <Letter>{}),
-        new LetterTile(2, 14, <Letter>{}),
-        new LetterTile(3, 15, <Letter>{}),
-        new LetterTile(4, 12, <Letter>{}),
-        new LetterTile(5, 11, <Letter>{}),
-    ];
-
-    wordMultipliersByThree: LetterTile[] = [
-        new LetterTile(1, 1, <Letter>{}),
-        new LetterTile(8, 1, <Letter>{}),
-        new LetterTile(15, 1, <Letter>{}),
-        new LetterTile(1, 8, <Letter>{}),
-        new LetterTile(8, 8, <Letter>{}),
-        new LetterTile(15, 8, <Letter>{}),
-        new LetterTile(1, 15, <Letter>{}),
-        new LetterTile(8, 15, <Letter>{}),
-        new LetterTile(15, 15, <Letter>{}),
-    ];
-
     applyBoxMultipliers(gameboard: Gameboard) {
-        this.letterMultipliersByTwo.forEach((multiplyLetterByTwoPosition) => {
+        letterMultipliersByTwo.forEach((multiplyLetterByTwoPosition) => {
             const gameboardCoord = gameboard.getCoord(multiplyLetterByTwoPosition);
             gameboardCoord.letterMultiplier = 2;
         });
 
-        this.letterMultipliersByThree.forEach((multiplyLetterByThreePosition) => {
+        letterMultipliersByThree.forEach((multiplyLetterByThreePosition) => {
             const gameboardCoord = gameboard.getCoord(multiplyLetterByThreePosition);
             gameboardCoord.letterMultiplier = 3;
         });
 
-        this.wordMultipliersByTwo.forEach((multiplyWordByTwoPosition) => {
+        wordMultipliersByTwo.forEach((multiplyWordByTwoPosition) => {
             const gameboardCoord = gameboard.getCoord(multiplyWordByTwoPosition);
             gameboardCoord.wordMultiplier = 2;
         });
 
-        this.wordMultipliersByThree.forEach((multiplyWordByThreePosition) => {
+        wordMultipliersByThree.forEach((multiplyWordByThreePosition) => {
             const gameboardCoord = gameboard.getCoord(multiplyWordByThreePosition);
             gameboardCoord.wordMultiplier = 3;
         });

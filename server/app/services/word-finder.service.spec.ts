@@ -17,17 +17,17 @@ describe('WordFinderService', () => {
     let gameboard: Gameboard;
     let boxMultiplierService: BoxMultiplierService;
     let wordFinderService: WordFinderService;
-    const letterA: Letter = {} as Letter;
-    const letterB: Letter = {} as Letter;
-    const letterC: Letter = {} as Letter;
+    let letterA: Letter;
+    let letterB: Letter;
+    let letterC: Letter;
 
     beforeEach(() => {
         boxMultiplierService = Container.get(BoxMultiplierService);
         wordFinderService = Container.get(WordFinderService);
         gameboard = new Gameboard(boxMultiplierService);
-        letterA.value = 'a';
-        letterB.value = 'b';
-        letterC.value = 'c';
+        letterA = { value: 'a' } as Letter;
+        letterB = { value: 'b' } as Letter;
+        letterC = { value: 'c' } as Letter;
     });
 
     it('buildFirstWord should build word with string abc if all placedLetters form abc', () => {
@@ -177,5 +177,35 @@ describe('WordFinderService', () => {
             return word.stringFormat;
         });
         expect(stringList).to.include.members(['aa', 'ab']);
+    });
+
+    it('findNewWords() should return an array of 2 words if there is 2 horizontal placed Letters related to 2 words', () => {
+        const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(2, 1, letterB)];
+        gameboard.placeLetter(placedLetters[0]);
+        gameboard.placeLetter(placedLetters[1]);
+        gameboard.placeLetter(new LetterTile(1, 2, { value: 'c' } as Letter));
+        gameboard.placeLetter(new LetterTile(2, 2, { value: 'b' } as Letter));
+        const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
+        const stringList: string[] = words.map((word) => {
+            return word.stringFormat;
+        });
+        expect(stringList).to.include.members(['ab', 'ac', 'bb']);
+    });
+
+    it('findNewWords() should return an array of 2 words if there is 2 vertical placed Letters related to 2 words', () => {
+        const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB)];
+        gameboard.placeLetter(placedLetters[0]);
+        gameboard.placeLetter(placedLetters[1]);
+        gameboard.placeLetter(new LetterTile(2, 1, letterA));
+        gameboard.placeLetter(new LetterTile(2, 2, letterA));
+        const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
+        const stringList: string[] = words.map((word) => {
+            return word.stringFormat;
+        });
+        expect(stringList).to.include.members(['ab', 'aa', 'ba']);
+    });
+
+    it('findNewWords() should return empty array if coordList is empty', () => {
+        expect(wordFinderService.findNewWords(gameboard, [])).to.eql([]);
     });
 });
