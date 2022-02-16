@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { Inject } from 'typedi';
-import { LetterTile } from '../../../common/letter-tile.class';
 
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
