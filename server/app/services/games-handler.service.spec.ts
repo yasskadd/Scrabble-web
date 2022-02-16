@@ -1,7 +1,10 @@
+/* eslint-disable max-lines */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
+import { CommandInfo } from '@app/command-info';
 import { GamesHandler } from '@app/services/games-handler.service';
+import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -16,7 +19,6 @@ interface GameHolder {
     players: Player[];
     roomId: string;
 }
-// type SioSignature = SocketManager['sio'];
 
 const ROOM = '0';
 describe('GamesHandler Service', () => {
@@ -30,22 +32,17 @@ describe('GamesHandler Service', () => {
     let gameInfo: { playerName: string[]; roomId: string; timer: number; socketId: string[] };
 
     beforeEach((done) => {
-        // ||| Stubbing SocketManager |||
         socketManagerStub = sinon.createStubInstance(SocketManager);
         // We need emitRoom to do nothing
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         socketManagerStub.emitRoom.callsFake(() => {});
         gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager);
 
-        // ||| Creating a new Server |||
         httpServer = createServer();
         sio = new ioServer(httpServer);
-        // ||| Connecting sockets to corresponding sockets when turning the server on |||
         httpServer.listen(() => {
             port = (httpServer.address() as AddressInfo).port;
             clientSocket = Client(`http://localhost:${port}`);
-            // DO STUFF ON CLIENT CONNECT
-            // (socketServer is the socket received on the server side, the one we do socket.emit() and stuff from the server)
             sio.on('connection', (socket) => {
                 serverSocket = socket;
                 gameInfo = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id] };
@@ -231,66 +228,387 @@ describe('GamesHandler Service', () => {
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd)).to.not.be.equal(true);
     });
+    context('Two Clientsocket tests', () => {
+        let secondSocket: Socket;
 
-    it('updatePlayerInfo() should broadcast new player info to the correct player', () => {
-        const newClient = Client(`http://localhost:${port}`);
-        newClient.connect();
+        const PLAYER_ONE = { name: 'Cthulhu' } as Player;
+        const PLAYER_TWO = { name: '' } as Player;
+        const RESERVE = [] as Letter[];
+        const game = {
+            player1: PLAYER_ONE,
+            player2: PLAYER_TWO,
+            letterReserve: RESERVE,
+        } as unknown as Game;
+        beforeEach((done) => {
+            serverSocket.join(ROOM);
+            secondSocket = Client(`http://localhost:${port}`);
+            secondSocket.on('connect', done);
+        });
+        afterEach(() => {
+            secondSocket.close();
+        });
+        it('updatePlayerInfo() should broadcast correct info to the first Player', (done) => {
+            clientSocket.on(SocketEvents.UpdateOpponentInformation, (information) => {
+                expect(information).to.be.eql(PLAYER_ONE);
+                done();
+            });
+            clientSocket.on(SocketEvents.UpdatePlayerInformation, (information) => {
+                expect(information).to.be.eql(PLAYER_TWO);
+            });
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, PLAYER_ONE);
+
+            // eslint-disable-next-line dot-notation
+            gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
+        });
+        it('updatePlayerInfo() should broadcast correct info to the second Player', (done) => {
+            secondSocket.on(SocketEvents.UpdateOpponentInformation, (information) => {
+                expect(information).to.be.eql(PLAYER_TWO);
+                done();
+            });
+            secondSocket.on(SocketEvents.UpdatePlayerInformation, (information) => {
+                expect(information).to.be.eql(PLAYER_ONE);
+            });
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, PLAYER_ONE);
+
+            // eslint-disable-next-line dot-notation
+            gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
+        });
+        it("updatePlayerInfo() should broadcast correct info if it isn't the first player the second Player", (done) => {
+            game.player1 = PLAYER_TWO;
+            game.player2 = PLAYER_ONE;
+            secondSocket.on(SocketEvents.UpdateOpponentInformation, (information) => {
+                expect(information).to.be.eql(PLAYER_TWO);
+                done();
+            });
+            secondSocket.on(SocketEvents.UpdatePlayerInformation, (information) => {
+                expect(information).to.be.eql(PLAYER_ONE);
+            });
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, PLAYER_ONE);
+
+            // eslint-disable-next-line dot-notation
+            gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
+        });
+        it('updatePlayerInfo() should emit the letterReserve to the room', () => {
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, PLAYER_ONE);
+
+            // eslint-disable-next-line dot-notation
+            gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
+            expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.LetterReserveUpdated, RESERVE));
+        });
+        it('disconnect() should emit to the room that the opponent left/ game ended after 5 seconds of waiting for a reconnect', (done) => {
+            const timeOut5Seconds = 5500;
+            let testBoolean1 = false;
+            let testBoolean2 = false;
+            const player = { room: ROOM } as Player;
+            serverSocket.join(ROOM);
+            clientSocket.on(SocketEvents.OpponentGameLeave, () => {
+                testBoolean1 = true;
+            });
+            clientSocket.on(SocketEvents.GameEnd, () => {
+                testBoolean2 = true;
+            });
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, player);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['disconnect'](serverSocket);
+            // REASON : We ned to wait and check 5 seconds
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            setTimeout(() => {
+                expect(testBoolean1).to.be.equal(true);
+                expect(testBoolean2).to.be.equal(true);
+                done();
+            }, timeOut5Seconds);
+        });
+        it("disconnect() shouldn't emit to the room that the opponent left/ game ended after 5 seconds of waiting for a reconnect", (done) => {
+            const timeOut5Seconds = 5500;
+            let testBoolean1 = false;
+            let testBoolean2 = false;
+            serverSocket.join(ROOM);
+            clientSocket.on(SocketEvents.OpponentGameLeave, () => {
+                testBoolean1 = true;
+            });
+            clientSocket.on(SocketEvents.GameEnd, () => {
+                testBoolean2 = true;
+            });
+            // eslint-disable-next-line dot-notation
+            gamesHandler['disconnect'](serverSocket);
+            // REASON : We ned to wait and check 5 seconds
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            setTimeout(() => {
+                expect(testBoolean1).to.be.equal(false);
+                expect(testBoolean2).to.be.equal(false);
+                done();
+            }, timeOut5Seconds);
+        });
+        it('exchange() should emit to the room the player information and active player', (done) => {
+            const LETTER = { value: 'LaStructureDuServeur' } as Letter;
+            const player = { name: '', room: ROOM, rack: [LETTER] } as unknown as Player;
+            sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+            const gameStub = sinon.createStubInstance(Game);
+            gameStub.turn = { activePlayer: '' } as unknown as Turn;
+            gameStub.exchange.returns([{ value: 'estDegeulass' } as Letter]);
+            clientSocket.on(SocketEvents.GameMessage, (message) => {
+                expect(message).to.be.equal('!echanger 0 lettres');
+                done();
+            });
+            const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, player);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['games'].set(ROOM, gameHolder);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['exchange'](sio, serverSocket, []);
+        });
+        it('playGame() should send to the other player the command inputed', (done) => {
+            serverSocket.join(ROOM);
+            const RETURNED_BOOLEAN = true;
+            const EXPECTED_MESSAGE = '!placer `0v ';
+            sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+
+            const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[], direction: 'v' } as unknown as CommandInfo;
+            const player = { name: '', room: ROOM } as unknown as Player;
+            const gameStub = sinon.createStubInstance(Game);
+
+            clientSocket.on(SocketEvents.GameMessage, (message) => {
+                expect(message).to.equal(EXPECTED_MESSAGE);
+                done();
+            });
+
+            gameStub.turn = { activePlayer: '' } as unknown as Turn;
+            gameStub.play.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+            const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, player);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['games'].set(ROOM, gameHolder);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['playGame'](sio, serverSocket, commandInfo);
+        });
+    });
+    it('exchange() should emit to the room the player information and active player', () => {
+        const TESTLETTER = { value: 'BLOODFORTHEBLOODGOD' } as Letter;
+        const player = { room: ROOM, rack: [TESTLETTER] } as unknown as Player;
+        sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+
+        const gameStub = sinon.createStubInstance(Game);
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.exchange.returns([TESTLETTER]);
+
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['exchange'](sio, serverSocket, []);
+
+        expect(socketManagerStub.emitRoom.called).to.be.equal(true);
     });
 
-    it('CreateGame() should call setAndGetPlayer()', (done) => {
-        const setAndGetPlayer = sinon.spy(gamesHandler, 'setAndGetPlayer' as never);
+    it('exchange() should emit a message when a command error occurs', (done) => {
+        const LETTER = { value: 'LaStructureDuServeur' } as Letter;
+        const player = { name: '', room: ROOM, rack: [LETTER] } as unknown as Player;
+        sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+        const gameStub = sinon.createStubInstance(Game);
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.exchange.returns([LETTER]);
+        clientSocket.on(SocketEvents.ImpossibleCommandError, (message) => {
+            expect(message).to.be.equal('Vous ne posséder pas toutes les lettres a échanger');
+            done();
+        });
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
         // eslint-disable-next-line dot-notation
-        gamesHandler['createGame'](sio, serverSocket, gameInfo);
-        expect(setAndGetPlayer.called).to.equal(true);
-        done();
-    });
-    it('CreateGame() should call createNewGame()', (done) => {
-        const createNewGameSpy = sinon.spy(gamesHandler, 'createNewGame' as never);
+        gamesHandler['players'].set(serverSocket.id, player);
         // eslint-disable-next-line dot-notation
-        gamesHandler['createGame'](sio, serverSocket, gameInfo);
-        expect(createNewGameSpy.called).to.equal(true);
-        done();
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['exchange'](sio, serverSocket, []);
     });
-    it('CreateGame() should emit game information to the room', (done) => {
-        serverSocket.join(ROOM);
-        clientSocket.on(SocketEvents.ViewUpdate, (information) => {
-            expect(information).to.not.equal(undefined);
+    it('exchange() should call updatePlayerInfo()', () => {
+        const LETTER = { value: '' } as Letter;
+        const player = { name: '', room: ROOM, rack: [LETTER] } as unknown as Player;
+        const updatePlayerInfoStub = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+        const gameStub = sinon.createStubInstance(Game);
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.exchange.returns([LETTER]);
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['exchange'](sio, serverSocket, []);
+        expect(updatePlayerInfoStub.called).to.be.equal(true);
+    });
+    it("exchange() shouldn't do anything if the socket doesn't exist call updatePlayerInfo()", () => {
+        const LETTER = { value: '' } as Letter;
+        const updatePlayerInfoStub = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+        const gameStub = sinon.createStubInstance(Game);
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.exchange.returns([LETTER]);
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['exchange'](sio, serverSocket, []);
+        expect(updatePlayerInfoStub.called).to.be.equal(false);
+        expect(socketManagerStub.emitRoom.called).to.not.be.equal(true);
+    });
+
+    it('playGame() should emit an impossible command', (done) => {
+        const RETURNED_STRING = 'suffering';
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const player = { name: '', room: ROOM } as unknown as Player;
+        const gameStub = sinon.createStubInstance(Game);
+
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.play.returns([RETURNED_STRING as never, { gameboardCoords: [] } as unknown as Gameboard]);
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+        clientSocket.on(SocketEvents.ImpossibleCommandError, (information) => {
+            expect(information[0]).to.be.equal(RETURNED_STRING);
             done();
         });
         // eslint-disable-next-line dot-notation
-        gamesHandler['createGame'](sio, serverSocket, gameInfo);
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['playGame'](sio, serverSocket, commandInfo);
     });
-    it('CreateGame() should add the game to the game Map', () => {
+    it('playGame() should emit playerInfo', (done) => {
+        serverSocket.join(ROOM);
+        const RETURNED_BOOLEAN = true;
+        sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+        const EXPECTED_INFORMATION = {
+            gameboard: [],
+            activePlayer: '',
+        };
+
+        clientSocket.on(SocketEvents.ViewUpdate, (information) => {
+            expect(information.activePlayer).to.equal(EXPECTED_INFORMATION.activePlayer);
+            done();
+        });
+
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const player = { name: '', room: ROOM } as unknown as Player;
+        const gameStub = sinon.createStubInstance(Game);
+
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.play.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+
         // eslint-disable-next-line dot-notation
-        gamesHandler['createGame'](sio, serverSocket, gameInfo);
+        gamesHandler['players'].set(serverSocket.id, player);
         // eslint-disable-next-line dot-notation
-        expect(gamesHandler['games'].get(ROOM)).to.not.equal(undefined);
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['playGame'](sio, serverSocket, commandInfo);
     });
 
-    // TODO : FINISH TESTS for disconnect, updatePlayer, playGame, exchange
+    it('playGame() should call updatePlayerInfo', () => {
+        serverSocket.join(ROOM);
+        const RETURNED_BOOLEAN = true;
+        const updatePlayerInfo = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
-    // it('disconnect() should emit to the room that the opponent left and that the game ended after 5 seconds of waiting for a reconnect',
-    // (done) => {
-    //     const timeOut5Seconds = 5000;
-    //     let testBoolean = false;
-    //     const player = { room: ROOM } as Player;
-    //     serverSocket.join(ROOM);
-    //     clientSocket.on(SocketEvents.OpponentGameLeave, () => {
-    //         testBoolean = true;
-    //     });
-    //     clientSocket.on(SocketEvents.GameEnd, () => {
-    //         expect(testBoolean).to.be.equal(true);
-    //         console.log('HERE');
-    //         done();
-    //     });
-    //     Client(`http://localhost:${port}`);
-    //     serverSocket.join(ROOM);
-    //     // eslint-disable-next-line dot-notation
-    //     gamesHandler['players'].set(serverSocket.id, player);
-    //     // eslint-disable-next-line dot-notation
-    //     gamesHandler['disconnect'](serverSocket);
-    //     // REASON : We ned to wait and check 5 seconds
-    //     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    //     setTimeout(() => {}, timeOut5Seconds);
-    // });
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const player = { name: '', room: ROOM } as unknown as Player;
+        const gameStub = sinon.createStubInstance(Game);
+
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.play.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['playGame'](sio, serverSocket, commandInfo);
+        expect(updatePlayerInfo.called).to.be.equal(true);
+    });
+
+    it('playGame() should return an impossible command error if boolean is true', (done) => {
+        serverSocket.join(ROOM);
+        const RETURNED_BOOLEAN = false;
+        const EXPECTED_MESSAGE = 'Les lettres que vous essayer de mettre ne forme pas des mots valides';
+        sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const player = { name: '', room: ROOM } as unknown as Player;
+        const gameStub = sinon.createStubInstance(Game);
+
+        clientSocket.on(SocketEvents.ImpossibleCommandError, (message) => {
+            expect(message).to.equal(EXPECTED_MESSAGE);
+            done();
+        });
+
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.play.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['playGame'](sio, serverSocket, commandInfo);
+    });
+    it("playGame() shouldn't do anything if the socket.id isn't in players", () => {
+        const RETURNED_BOOLEAN = false;
+        const updatePlayerInfoSpy = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const player = { name: '', room: ROOM } as unknown as Player;
+        const gameStub = sinon.createStubInstance(Game);
+
+        gameStub.turn = { activePlayer: '' } as unknown as Turn;
+        gameStub.play.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+        const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['playGame'](sio, serverSocket, commandInfo);
+        expect(updatePlayerInfoSpy.called).to.be.equal(false);
+    });
+    context('CreateGame() Tests', () => {
+        it('CreateGame() should call setAndGetPlayer()', (done) => {
+            const setAndGetPlayer = sinon.spy(gamesHandler, 'setAndGetPlayer' as never);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](sio, serverSocket, gameInfo);
+            expect(setAndGetPlayer.called).to.equal(true);
+            done();
+        });
+        it('CreateGame() should call createNewGame()', (done) => {
+            const createNewGameSpy = sinon.spy(gamesHandler, 'createNewGame' as never);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](sio, serverSocket, gameInfo);
+            expect(createNewGameSpy.called).to.equal(true);
+            done();
+        });
+        it('CreateGame() should emit game information to the room', (done) => {
+            serverSocket.join(ROOM);
+            clientSocket.on(SocketEvents.ViewUpdate, (information) => {
+                expect(information).to.not.equal(undefined);
+                done();
+            });
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](sio, serverSocket, gameInfo);
+        });
+        it('CreateGame() should add the game to the game Map', () => {
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](sio, serverSocket, gameInfo);
+            // eslint-disable-next-line dot-notation
+            expect(gamesHandler['games'].get(ROOM)).to.not.equal(undefined);
+        });
+    });
+
+    // TODO : FINISH TESTS for  playGame
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { Letter } from '@common/letter';

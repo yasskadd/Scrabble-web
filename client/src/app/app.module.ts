@@ -15,7 +15,6 @@ import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
-import { MaterialPageComponent } from '@app/pages/material-page/material-page.component';
 import { AbandonGameDialogBoxComponent } from './components/abandon-game-dialog-box/abandon-game-dialog-box.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
@@ -36,7 +35,6 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         AppComponent,
         GamePageComponent,
         MainPageComponent,
-        MaterialPageComponent,
         PlayAreaComponent,
         MultiplayerJoinPageComponent,
         MultiplayerCreatePageComponent,

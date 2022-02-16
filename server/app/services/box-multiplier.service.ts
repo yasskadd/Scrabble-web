@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { Gameboard } from '@app/classes/gameboard.class';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
@@ -19,28 +18,23 @@ const wordMultipliersByThree: LetterTile[] = [];
 multipliers.wordMultipliersByThree.forEach((coord: Coordinate) => wordMultipliersByThree.push(new LetterTile(coord.x, coord.y, {} as Letter)));
 
 const MIDDLE_COORD: Coordinate = { x: 8, y: 8 };
-
 @Service()
 export class BoxMultiplierService {
     applyBoxMultipliers(gameboard: Gameboard) {
         letterMultipliersByTwo.forEach((multiplyLetterByTwoPosition) => {
-            const gameboardCoord = gameboard.getCoord(multiplyLetterByTwoPosition);
-            gameboardCoord.letterMultiplier = 2;
+            gameboard.getCoord(multiplyLetterByTwoPosition).letterMultiplier = 2;
         });
 
         letterMultipliersByThree.forEach((multiplyLetterByThreePosition) => {
-            const gameboardCoord = gameboard.getCoord(multiplyLetterByThreePosition);
-            gameboardCoord.letterMultiplier = 3;
+            gameboard.getCoord(multiplyLetterByThreePosition).letterMultiplier = 3;
         });
 
         wordMultipliersByTwo.forEach((multiplyWordByTwoPosition) => {
-            const gameboardCoord = gameboard.getCoord(multiplyWordByTwoPosition);
-            gameboardCoord.wordMultiplier = 2;
+            gameboard.getCoord(multiplyWordByTwoPosition).wordMultiplier = 2;
         });
 
         wordMultipliersByThree.forEach((multiplyWordByThreePosition) => {
-            const gameboardCoord = gameboard.getCoord(multiplyWordByThreePosition);
-            gameboardCoord.wordMultiplier = 3;
+            gameboard.getCoord(multiplyWordByThreePosition).wordMultiplier = 3;
         });
 
         gameboard.getCoord(new LetterTile(MIDDLE_COORD.x, MIDDLE_COORD.y, {} as Letter)).wordMultiplier = 2;
