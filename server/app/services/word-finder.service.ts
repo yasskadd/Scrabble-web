@@ -30,10 +30,14 @@ export class WordFinderService {
             coordList.forEach((coord) => {
                 if (!firstWord.isHorizontal) {
                     const horizontalWord: Word = this.buildHorizontalWord(gameboard, coord);
-                    newWordsArray.push(horizontalWord);
-                } else {
+                    if (horizontalWord.coords.length !== 0 && horizontalWord.coords.length !== 1) {
+                        newWordsArray.push(horizontalWord);
+                    }
+                } else if (firstWord.isHorizontal) {
                     const verticalWord: Word = this.buildVerticalWord(gameboard, coord);
-                    newWordsArray.push(verticalWord);
+                    if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
+                        newWordsArray.push(verticalWord);
+                    }
                 }
             });
             return newWordsArray;

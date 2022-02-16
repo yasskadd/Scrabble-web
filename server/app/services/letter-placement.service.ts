@@ -139,7 +139,7 @@ export class LetterPlacementService {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
             if (!coordList.some((element) => element.x === MIDDLE_X && element.y === MIDDLE_Y)) return false;
-        } else return false;
+        }
         return true;
     }
 
