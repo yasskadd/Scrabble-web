@@ -185,8 +185,8 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return false if there is placed letters on the gameboard', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(7, 7, letterA), new LetterTile(7, 8, letterB)];
-            gameboard.placeLetter(new LetterTile(0, 0, {} as Letter));
+            const letterCoords: LetterTile[] = [new LetterTile(8, 8, letterA), new LetterTile(8, 9, letterB)];
+            gameboard.placeLetter(new LetterTile(1, 1, {} as Letter));
             expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(false);
         });
     });

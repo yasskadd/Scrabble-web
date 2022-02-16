@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
-import { Game } from '@app/classes/game';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
+import { CommandInfo } from '@app/command-info';
 import { GamesHandler } from '@app/services/games-handler.service';
 import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
@@ -12,6 +12,7 @@ import { AddressInfo } from 'net';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
+import { Game } from './game.service';
 import { SocketManager } from './socket-manager.service';
 interface GameHolder {
     game: Game | undefined;
@@ -439,22 +440,55 @@ describe.only('GamesHandler Service', () => {
         expect(socketManagerStub.emitRoom.called).to.not.be.equal(true);
     });
 
-    it('playGame() should call updatePlayerInfo()', () => {
-        const LETTER = { value: '' } as Letter;
-        const player = { name: '', room: ROOM, rack: [LETTER] } as unknown as Player;
-        const updatePlayerInfoStub = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+    it('playGame() should emit an impossible command', (done) => {
+        const RETURNED_STRING = 'suffering';
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const player = { name: '', room: ROOM } as unknown as Player;
         const gameStub = sinon.createStubInstance(Game);
+
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
-        gameStub.exchange.returns([LETTER]);
+        gameStub.play.returns([RETURNED_STRING as never, { gameboardCoords: [] } as unknown as Gameboard]);
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+        clientSocket.on(SocketEvents.ImpossibleCommandError, (information) => {
+            expect(information[0]).to.be.equal(RETURNED_STRING);
+            done();
+        });
         // eslint-disable-next-line dot-notation
         gamesHandler['players'].set(serverSocket.id, player);
         // eslint-disable-next-line dot-notation
         gamesHandler['games'].set(ROOM, gameHolder);
         // eslint-disable-next-line dot-notation
-        gamesHandler['exchange'](sio, serverSocket, []);
-        expect(updatePlayerInfoStub.called).to.be.equal(true);
+        gamesHandler['playGame'](sio, serverSocket, commandInfo);
     });
+    // it('playGame() should emit playerInfo', (done) => {
+    //     serverSocket.join(ROOM);
+    //     const RETURNED_BOOLEAN = true;
+    //     sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+    //     const EXPECTED_INFORMATION = {
+    //         gameboard: [] as LetterTile[],
+    //         activePlayer: '',
+    //     };
+
+    //     clientSocket.on(SocketEvents.ViewUpdate, (information) => {
+    //         expect(information).to.equal(EXPECTED_INFORMATION);
+    //         done();
+    //     });
+
+    //     const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+    //     const player = { name: '', room: ROOM } as unknown as Player;
+    //     const gameStub = sinon.createStubInstance(Game);
+
+    //     gameStub.turn = { activePlayer: '' } as unknown as Turn;
+    //     gameStub.play.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+    //     const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
+
+    //     // eslint-disable-next-line dot-notation
+    //     gamesHandler['players'].set(serverSocket.id, player);
+    //     // eslint-disable-next-line dot-notation
+    //     gamesHandler['games'].set(ROOM, gameHolder);
+    //     // eslint-disable-next-line dot-notation
+    //     gamesHandler['playGame'](sio, serverSocket, commandInfo);
+    // });
 
     context('CreateGame() Tests', () => {
         it('CreateGame() should call setAndGetPlayer()', (done) => {

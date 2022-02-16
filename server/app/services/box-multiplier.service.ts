@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import { Gameboard } from '@app/classes/gameboard.class';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
