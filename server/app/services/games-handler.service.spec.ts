@@ -563,7 +563,6 @@ describe('GamesHandler Service', () => {
         const updatePlayerInfoSpy = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
         const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
-        const player = { name: '', room: ROOM } as unknown as Player;
         const gameStub = sinon.createStubInstance(Game);
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
@@ -571,12 +570,10 @@ describe('GamesHandler Service', () => {
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
 
         // eslint-disable-next-line dot-notation
-        gamesHandler['players'].set(serverSocket.id, player);
-        // eslint-disable-next-line dot-notation
         gamesHandler['games'].set(ROOM, gameHolder);
         // eslint-disable-next-line dot-notation
         gamesHandler['playGame'](sio, serverSocket, commandInfo);
-        expect(updatePlayerInfoSpy.called).to.be.equal(false);
+        expect(updatePlayerInfoSpy.called).to.not.be.equal(true);
     });
     context('CreateGame() Tests', () => {
         it('CreateGame() should call setAndGetPlayer()', (done) => {
@@ -609,6 +606,4 @@ describe('GamesHandler Service', () => {
             expect(gamesHandler['games'].get(ROOM)).to.not.equal(undefined);
         });
     });
-
-    // TODO : FINISH TESTS for  playGame
 });
