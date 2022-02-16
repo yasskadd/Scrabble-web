@@ -19,10 +19,10 @@ export class LetterReserveService {
         return defaultLetterReserve;
     }
 
-    removeLetter(letter: Letter): void {
-        this.lettersReserve.forEach((value) => {
-            if (value.value === letter.value) {
-                value.quantity--;
+    removeLetter(letterToRemove: Letter): void {
+        this.lettersReserve.forEach((letter) => {
+            if (letter.value === letterToRemove.value) {
+                letter.quantity--;
             }
         });
 
@@ -30,12 +30,12 @@ export class LetterReserveService {
         this.lettersReserve = this.lettersReserve.filter((letter) => letter.quantity !== 0);
     }
 
-    insertLetter(removedLetter: Letter[]): Letter[] {
+    insertLetter(removedLetters: Letter[]): Letter[] {
         const updatedLetterReserve = this.lettersReserve;
-        for (const letter of removedLetter) {
-            const index = this.lettersReserve.findIndex((element) => element.value === letter.value);
+        for (const letterToRemove of removedLetters) {
+            const index = this.lettersReserve.findIndex((letter) => letter.value === letterToRemove.value);
             if (index < 0) {
-                const newLetter = { value: letter.value, quantity: 1, points: letter.points };
+                const newLetter = { value: letterToRemove.value, quantity: 1, points: letterToRemove.points };
                 updatedLetterReserve.push(newLetter);
             } else {
                 updatedLetterReserve[index].quantity++;

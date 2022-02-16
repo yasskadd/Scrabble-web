@@ -18,6 +18,8 @@ multipliers.wordMultipliersByTwo.forEach((coord: Coordinate) => wordMultipliersB
 const wordMultipliersByThree: LetterTile[] = [];
 multipliers.wordMultipliersByThree.forEach((coord: Coordinate) => wordMultipliersByThree.push(new LetterTile(coord.x, coord.y, {} as Letter)));
 
+const MIDDLE_COORD: Coordinate = { x: 8, y: 8 };
+
 @Service()
 export class BoxMultiplierService {
     applyBoxMultipliers(gameboard: Gameboard) {
@@ -40,5 +42,7 @@ export class BoxMultiplierService {
             const gameboardCoord = gameboard.getCoord(multiplyWordByThreePosition);
             gameboardCoord.wordMultiplier = 3;
         });
+
+        gameboard.getCoord(new LetterTile(MIDDLE_COORD.x, MIDDLE_COORD.y, {} as Letter)).wordMultiplier = 2;
     }
 }
