@@ -215,6 +215,7 @@ export class GamesHandler {
         // socket.broadcast.to(room).emit(SocketEvents.GameEnd);
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         this.socketManager.emitRoom(room, SocketEvents.GameEnd);
+        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
     }
 
     private disconnect(socket: Socket) {
