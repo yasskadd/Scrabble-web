@@ -16,6 +16,8 @@ describe('Socket subscribe handler tests', () => {
         chatboxHandlerService.initSocketsEvents.resolves();
         gameSessionsHandlerService = createStubInstance(GameSessions);
         gameSessionsHandlerService.initSocketEvents.resolves();
+        gamesHandler = createStubInstance(GamesHandler);
+        gamesHandler.initSocketsEvents.resolves();
         socketSubscribeHandler = new SocketSubscribeHandler(
             chatboxHandlerService as unknown as ChatboxHandlerService,
             gameSessionsHandlerService as unknown as GameSessions,
