@@ -4,6 +4,8 @@ import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
 
+const COLUMN_NUMBER = 15;
+const ROW_NUMBER = 15;
 @Service()
 export class GameboardCoordinateValidationService {
     validateGameboardCoordinate(commandInfo: CommandInfo, gameboard: Gameboard) {
@@ -51,19 +53,19 @@ export class GameboardCoordinateValidationService {
     private isThereAdjacentLetters(letterCoord: LetterTile, gameboard: Gameboard) {
         let isValid = false;
         // Verify upward
-        if (letterCoord.y !== 0) {
+        if (letterCoord.y !== 1) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x, letterCoord.y - 1, {} as Letter)).isOccupied) isValid = true;
         }
         // Verify downward
-        if (letterCoord.y !== 14) {
+        if (letterCoord.y !== ROW_NUMBER) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x, letterCoord.y + 1, {} as Letter)).isOccupied) isValid = true;
         }
         // Verify right
-        if (letterCoord.x !== 14) {
+        if (letterCoord.x !== COLUMN_NUMBER) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x - 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
         // Verify left
-        if (letterCoord.x !== 0) {
+        if (letterCoord.x !== 1) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x + 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
         return isValid;

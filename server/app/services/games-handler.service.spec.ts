@@ -16,10 +16,9 @@ interface GameHolder {
     players: Player[];
     roomId: string;
 }
-type SioSignature = SocketManager['sio'];
+// type SioSignature = SocketManager['sio'];
 
 const ROOM = '0';
-
 describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
@@ -27,7 +26,7 @@ describe('GamesHandler Service', () => {
     let clientSocket: Socket;
     let serverSocket: ServerSocket;
     let port: number;
-    let sio: SioSignature;
+    let sio: ioServer;
     let gameInfo: { playerName: string[]; roomId: string; timer: number; socketId: string[] };
 
     beforeEach((done) => {
@@ -49,7 +48,6 @@ describe('GamesHandler Service', () => {
             // (socketServer is the socket received on the server side, the one we do socket.emit() and stuff from the server)
             sio.on('connection', (socket) => {
                 serverSocket = socket;
-                console.log(`Server client connected : ${serverSocket.id}`);
                 gameInfo = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id] };
             });
             clientSocket.on('connect', done);
@@ -63,7 +61,29 @@ describe('GamesHandler Service', () => {
     });
 
     it('InitSocketEvents() should call the on() and io() methods of socketManager', (done) => {
+        const createGameSpy = sinon.stub(gamesHandler, 'createGame' as never);
+        const playSpy = sinon.stub(gamesHandler, 'playGame' as never);
+        const exchangeSpy = sinon.stub(gamesHandler, 'exchange' as never);
+        const skipSpy = sinon.stub(gamesHandler, 'skip' as never);
+        const disconnectSpy = sinon.stub(gamesHandler, 'disconnect' as never);
+        const abandonGameSpy = sinon.stub(gamesHandler, 'abandonGame' as never);
+
         gamesHandler.initSocketsEvents();
+        socketManagerStub.io.getCall(0).args[1](sio, serverSocket);
+        socketManagerStub.io.getCall(1).args[1](sio, serverSocket);
+        socketManagerStub.io.getCall(2).args[1](sio, serverSocket);
+
+        socketManagerStub.on.getCall(0).args[1](serverSocket);
+        socketManagerStub.on.getCall(1).args[1](serverSocket);
+        socketManagerStub.on.getCall(2).args[1](serverSocket);
+
+        expect(createGameSpy.called).to.be.eql(true);
+        expect(playSpy.called).to.be.eql(true);
+        expect(exchangeSpy.called).to.be.eql(true);
+        expect(skipSpy.called).to.be.eql(true);
+        expect(disconnectSpy.called).to.be.eql(true);
+        expect(abandonGameSpy.called).to.be.eql(true);
+
         expect(socketManagerStub.io.called).to.equal(true);
         expect(socketManagerStub.on.called).to.equal(true);
         done();
@@ -210,6 +230,11 @@ describe('GamesHandler Service', () => {
         gamesHandler['abandonGame'](serverSocket);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd)).to.not.be.equal(true);
+    });
+
+    it('updatePlayerInfo() should broadcast new player info to the correct player', () => {
+        const newClient = Client(`http://localhost:${port}`);
+        newClient.connect();
     });
 
     it('CreateGame() should call setAndGetPlayer()', (done) => {

@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-restricted-imports */
-/* eslint-disable prettier/prettier */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
 
+const ROW_NUMBER = 15;
+const COLUMN_NUMBER = 15;
+
 @Service()
 export class WordFinderService {
     findNewWords(gameboard: Gameboard, coordList: LetterTile[]) {
         const newWordsArray: Word[] = new Array();
+        if (coordList.length === 0) return [];
         // Verify if only one letter is placed
         if (coordList.length === 1) {
             const verticalWord: Word = this.buildVerticalWord(gameboard, coordList[0]);
@@ -23,21 +25,15 @@ export class WordFinderService {
             }
             return newWordsArray;
         } else {
-            // Build first word
             const firstWord: Word = this.buildFirstWord(gameboard, coordList);
             newWordsArray.push(firstWord);
-            // Build other words
             coordList.forEach((coord) => {
                 if (!firstWord.isHorizontal) {
                     const horizontalWord: Word = this.buildHorizontalWord(gameboard, coord);
-                    if (horizontalWord.coords.length !== 0 && horizontalWord.coords.length !== 1) {
-                        newWordsArray.push(horizontalWord);
-                    }
-                } else if (firstWord.isHorizontal) {
+                    newWordsArray.push(horizontalWord);
+                } else {
                     const verticalWord: Word = this.buildVerticalWord(gameboard, coord);
-                    if (verticalWord.coords.length !== 0 && verticalWord.coords.length !== 1) {
-                        newWordsArray.push(verticalWord);
-                    }
+                    newWordsArray.push(verticalWord);
                 }
             });
             return newWordsArray;
@@ -59,7 +55,7 @@ export class WordFinderService {
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            if (y !== 0) {
+            if (y !== 1) {
                 const nextCoord = new LetterTile(x, y - 1, {} as Letter);
                 if (gameboard.getCoord(nextCoord).isOccupied) currentCoord = nextCoord;
                 else break;
@@ -69,7 +65,7 @@ export class WordFinderService {
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const gameCoord: LetterTile = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (currentCoord.y !== 15) {
+            if (currentCoord.y !== ROW_NUMBER) {
                 currentCoord = new LetterTile(currentCoord.x, currentCoord.y + 1, {} as Letter);
             } else {
                 break;
@@ -88,7 +84,7 @@ export class WordFinderService {
         while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
             const x: number = currentCoord.x;
             const y: number = currentCoord.y;
-            if (x !== 0) {
+            if (x !== 1) {
                 const nextCoord = new LetterTile(x - 1, y, {} as Letter);
                 if (gameboard.getCoord(nextCoord).isOccupied) {
                     currentCoord = nextCoord;
@@ -105,7 +101,7 @@ export class WordFinderService {
             const y: number = currentCoord.y;
             const gameCoord: LetterTile = gameboard.getCoord(currentCoord);
             coordArray.push(gameCoord);
-            if (x !== 15) {
+            if (x !== COLUMN_NUMBER) {
                 currentCoord = new LetterTile(x + 1, y, {} as Letter);
             } else {
                 break;

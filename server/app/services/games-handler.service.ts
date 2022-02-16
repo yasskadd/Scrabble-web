@@ -12,6 +12,7 @@ import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
 const SECOND = 1000;
+const CHAR_ASCII = 96;
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
@@ -37,9 +38,9 @@ export class GamesHandler {
     }
     initSocketsEvents(): void {
         //
-        this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) => {
-            this.createGame(sio, socket, gameInfo);
-        });
+        this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) =>
+            this.createGame(sio, socket, gameInfo),
+        );
 
         this.socketManager.io(SocketEvents.Play, (sio, socket, commandInfo: CommandInfo) => {
             this.playGame(sio, socket, commandInfo);
@@ -56,7 +57,7 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
         });
-        // NOT
+        //
         this.socketManager.on(SocketEvents.AbandonGame, (socket) => {
             this.abandonGame(socket);
         });
@@ -68,9 +69,7 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
-        console.log('Skip boolean :');
-        // DO NOT REMOVE the skip when removing the console.log (it must be called to skip)
-        console.log(gameHolder.game?.skip(player.name));
+        gameHolder.game?.skip(player.name);
         socket.broadcast.to(room).emit(SocketEvents.GameMessage, '!passer');
         this.changeTurn(room);
     }
@@ -118,12 +117,11 @@ export class GamesHandler {
             if (!play[0]) {
                 socket.emit('impossibleCommandError', 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
             } else {
-                const charASCII = 96;
                 socket.broadcast
                     .to(player.room)
                     .emit(
                         SocketEvents.GameMessage,
-                        `!placer ${String.fromCharCode(charASCII + firstCoordinateRows)}${firstCoordinateColumns}${
+                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${
                             commandInfo.direction
                         } ${letterPlaced}`,
                     );
@@ -142,11 +140,9 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
-            console.log('SUBSCRIBE 1');
             this.changeTurn(gameInfo.roomId);
         });
         newGameHolder.game.turn.countdown.subscribe((timer: number) => {
-            console.log('SUBSCRIBE 2');
             this.sendTimer(gameInfo.roomId, timer);
         });
         sio.to(gameInfo.roomId).emit(SocketEvents.ViewUpdate, {
@@ -154,8 +150,6 @@ export class GamesHandler {
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
-        console.log('START GAME : ');
-        console.log(newGameHolder.game.turn.activePlayer);
 
         this.games.set(newGameHolder.roomId, newGameHolder);
     }
@@ -203,13 +197,8 @@ export class GamesHandler {
             players: game?.players,
             activePlayer: game?.game?.turn.activePlayer,
         };
-        console.log('CHANGE TURN : ');
-        console.log(gameInfo.activePlayer);
-        if (gameInfo.activePlayer === undefined) {
-            this.socketManager.emitRoom(roomId, SocketEvents.GameEnd);
-        } else {
-            this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
-        }
+
+        this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
 
     private sendTimer(roomId: string, timer: number) {

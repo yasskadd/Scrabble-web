@@ -5,7 +5,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/command-info';
-import { Coordinate } from '@app/coordinate';
+import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
@@ -55,8 +55,8 @@ export class LetterPlacementService {
         if (wordValidationScore === 0) {
             letterCoords.forEach((coord) => {
                 gameboard.removeLetter(coord);
+                return [false, gameboard];
             });
-            return [false, gameboard];
         }
         player.score += wordValidationScore;
         if (letterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
@@ -89,8 +89,8 @@ export class LetterPlacementService {
                 coord.letter.points = 0;
             }
             const index = tempRack.findIndex((letter) => {
-                if (coord.letter.isBlankLetter !== undefined) {
-                    if (coord.letter.isBlankLetter === true) return letter.value === '*';
+                if (coord.letter.isBlankLetter !== undefined && coord.letter.isBlankLetter) {
+                    return letter.value === '*';
                 }
                 return letter.value === coord.letter.value;
             });
@@ -139,7 +139,7 @@ export class LetterPlacementService {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
             if (!coordList.some((element) => element.x === MIDDLE_X && element.y === MIDDLE_Y)) return false;
-        }
+        } else return false;
         return true;
     }
 
