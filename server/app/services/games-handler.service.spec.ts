@@ -521,6 +521,4 @@ describe('GamesHandler Service', () => {
             expect(gamesHandler['games'].get(ROOM)).to.not.equal(undefined);
         });
     });
-
-    // TODO : FINISH TESTS for  playGame
 });
