@@ -1,78 +1,252 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
+import * as constants from '@app/constants';
 import { GridService } from '@app/services/grid.service';
 
 describe('GridService', () => {
-    let service: GridService;
+    let gridService: GridService;
     let ctxStub: CanvasRenderingContext2D;
 
-    const CANVAS_WIDTH = 500;
-    const CANVAS_HEIGHT = 500;
+    const CANVAS_WIDTH = 600;
+    const CANVAS_HEIGHT = 600;
+    const POSITION_TEST = { x: 2, y: 11 };
+    const BOARD_SIZE = 15;
+    const GAMEBOARD_TEST = [
+        {
+            x: 2,
+            y: 5,
+            isOccupied: true,
+            letter: { value: 'S', quantity: 2, points: 2 },
+            letterMultiplier: 1,
+            wordMultiplier: 2,
+            resetLetterMultiplier: () => {},
+            resetWordMultiplier: () => {},
+        },
+    ];
 
     beforeEach(() => {
         TestBed.configureTestingModule({});
-        service = TestBed.inject(GridService);
+        gridService = TestBed.inject(GridService);
         ctxStub = CanvasTestHelper.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT).getContext('2d') as CanvasRenderingContext2D;
-        service.gridContext = ctxStub;
+        gridService.gridContext = ctxStub;
     });
 
     it('should be created', () => {
-        expect(service).toBeTruthy();
+        expect(gridService).toBeTruthy();
     });
 
-    // TODO : grid tests need to be done !!
+    it(' squareWidth should return the width of the grid canvas', () => {
+        expect(GridService.squareWidth).toEqual(CANVAS_WIDTH / constants.TOTAL_COLUMNS);
+    });
 
-    // it(' width should return the width of the grid canvas', () => {
-    //     expect(service.width).toEqual(CANVAS_WIDTH);
-    // });
+    it(' squareHeight should return the height of a single board tile the grid canvas', () => {
+        expect(GridService.squareHeight).toEqual(CANVAS_HEIGHT / constants.TOTAL_ROWS);
+    });
 
-    // it(' height should return the height of the grid canvas', () => {
-    //     expect(service.width).toEqual(CANVAS_HEIGHT);
-    // });
+    it(' drawGrid should call drawRowNumbers', () => {
+        const drawRowNumbersSpy = spyOn(gridService, 'drawRowNumbers').and.callThrough();
+        gridService.drawGrid([]);
+        expect(drawRowNumbersSpy).toHaveBeenCalled();
+    });
 
-    // it(' drawWord should call fillText on the canvas', () => {
-    //     const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-    //     service.drawWord('test');
-    //     expect(fillTextSpy).toHaveBeenCalled();
-    // });
+    it(' drawGrid should call drawColumnLetters', () => {
+        const drawColumnLetterSpy = spyOn(gridService, 'drawColumnLetters').and.callThrough();
+        gridService.drawGrid([]);
+        expect(drawColumnLetterSpy).toHaveBeenCalled();
+    });
 
-    // it(' drawWord should not call fillText if word is empty', () => {
-    //     const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-    //     service.drawWord('');
-    //     expect(fillTextSpy).toHaveBeenCalledTimes(0);
-    // });
+    it(' drawGrid should call drawBasicTiles', () => {
+        const drawBasicTilesSpy = spyOn(gridService, 'drawBasicTiles').and.callThrough();
+        gridService.drawGrid([]);
+        expect(drawBasicTilesSpy).toHaveBeenCalled();
+    });
 
-    // it(' drawWord should call fillText as many times as letters in a word', () => {
-    //     const fillTextSpy = spyOn(service.gridContext, 'fillText').and.callThrough();
-    //     const word = 'test';
-    //     service.drawWord(word);
-    //     expect(fillTextSpy).toHaveBeenCalledTimes(word.length);
-    // });
+    it(' drawGrid should call drawMultipliers', () => {
+        const drawMultipliersSpy = spyOn(gridService, 'drawMultipliers').and.callThrough();
+        gridService.drawGrid([]);
+        expect(drawMultipliersSpy).toHaveBeenCalled();
+    });
 
-    // it(' drawWord should color pixels on the canvas', () => {
-    //     let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const beforeSize = imageData.filter((x) => x !== 0).length;
-    //     service.drawWord('test');
-    //     imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const afterSize = imageData.filter((x) => x !== 0).length;
-    //     expect(afterSize).toBeGreaterThan(beforeSize);
-    // });
+    it(' drawGrid should call drawLetter when gameboard has occupied coordinate', () => {
+        const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
+        gridService.drawGrid(GAMEBOARD_TEST);
+        expect(drawLetterSpy).toHaveBeenCalled();
+        expect(GAMEBOARD_TEST[0].isOccupied).toBeTruthy();
+    });
 
-    // it(' drawGrid should call moveTo and lineTo 4 times', () => {
-    //     const expectedCallTimes = 4;
-    //     const moveToSpy = spyOn(service.gridContext, 'moveTo').and.callThrough();
-    //     const lineToSpy = spyOn(service.gridContext, 'lineTo').and.callThrough();
-    //     service.drawGrid();
-    //     expect(moveToSpy).toHaveBeenCalledTimes(expectedCallTimes);
-    //     expect(lineToSpy).toHaveBeenCalledTimes(expectedCallTimes);
-    // });
+    it(' drawGrid should call drawMiddleTile', () => {
+        const drawMiddleTileSpy = spyOn(gridService, 'drawMiddleTile').and.callThrough();
+        gridService.drawGrid([]);
+        expect(drawMiddleTileSpy).toHaveBeenCalled();
+    });
 
-    // it(' drawGrid should color pixels on the canvas', () => {
-    //     let imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const beforeSize = imageData.filter((x) => x !== 0).length;
-    //     service.drawGrid();
-    //     imageData = service.gridContext.getImageData(0, 0, service.width, service.height).data;
-    //     const afterSize = imageData.filter((x) => x !== 0).length;
-    //     expect(afterSize).toBeGreaterThan(beforeSize);
-    // });
+    it(' drawLetterPoints should have a middle baseline and center alignment ', () => {
+        gridService.drawLetterPoints(POSITION_TEST, '1');
+        expect(gridService.gridContext.textAlign).toEqual('center');
+        expect(gridService.gridContext.textBaseline).toEqual('middle');
+    });
+
+    it(' drawStar should call fill', () => {
+        const ctxfillSpy = spyOn(gridService.gridContext, 'fill').and.callThrough();
+        gridService.drawStar();
+        expect(ctxfillSpy).toHaveBeenCalled();
+    });
+
+    it(' drawStar should call lineTo 11 times', () => {
+        const expectedCalls = 11;
+        const lineToSpy = spyOn(gridService.gridContext, 'lineTo').and.callThrough();
+        gridService.drawStar();
+        expect(lineToSpy).toHaveBeenCalledTimes(expectedCalls);
+    });
+
+    it(' drawRowNumbers should call drawText 15 times', () => {
+        const rowNumbersSpy = spyOn(gridService, 'drawText').and.callThrough();
+        gridService.drawRowNumbers();
+        expect(rowNumbersSpy).toHaveBeenCalledTimes(BOARD_SIZE);
+    });
+
+    it(' drawColumnLetters should call drawLetter 15 times', () => {
+        const columnLettersSpy = spyOn(gridService, 'drawLetter').and.callThrough();
+        gridService.drawColumnLetters();
+        expect(columnLettersSpy).toHaveBeenCalledTimes(BOARD_SIZE);
+    });
+
+    it(' drawLetter should call drawText', () => {
+        const drawTextSpy = spyOn(gridService, 'drawText').and.callThrough();
+        gridService.drawLetter(POSITION_TEST, 'A');
+        expect(drawTextSpy).toHaveBeenCalled();
+    });
+
+    it(' drawBasicTiles should call drawBasicTile 225 times', () => {
+        const expectedCalls = 225;
+        const numberSpy = spyOn(gridService, 'drawBasicTile').and.callThrough();
+        gridService.drawBasicTiles();
+        expect(numberSpy).toHaveBeenCalledTimes(expectedCalls);
+    });
+
+    it(' drawBasicTile should call fillTile', () => {
+        const fillTileSpy = spyOn(gridService, 'fillTile').and.callThrough();
+        gridService.drawBasicTile(POSITION_TEST);
+        expect(fillTileSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultipliers should call drawMultiplier 60 times', () => {
+        const expectedCalls = 60;
+        const numberSpy = spyOn(gridService, 'drawMultiplier').and.callThrough();
+        gridService.drawMultipliers();
+        expect(numberSpy).toHaveBeenCalledTimes(expectedCalls);
+    });
+
+    it(' drawMultiplier should call setTileColor', () => {
+        const setTileSpy = spyOn(gridService, 'setTileColor').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(setTileSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultiplier should call fillTile', () => {
+        const fillTileSpy = spyOn(gridService, 'fillTile').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(fillTileSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultiplier should call drawMultiplierType', () => {
+        const typeSpy = spyOn(gridService, 'drawMultiplierType').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(typeSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultiplier should call drawMultiplierNumber', () => {
+        const numberSpy = spyOn(gridService, 'drawMultiplierNumber').and.callThrough();
+        gridService.drawMultiplier(POSITION_TEST, 2, 'MOT');
+        expect(numberSpy).toHaveBeenCalled();
+    });
+
+    it(' setTileColor should set a MOT type tile to pink when it is letter multiplier by two', () => {
+        gridService.gridContext = jasmine.createSpyObj('gridContext', ['fillStyle']);
+        const fillStyleSpy = spyOn(gridService, 'setTileColor').and.callThrough();
+        gridService.setTileColor('MOT', 2);
+        expect(fillStyleSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.fillStyle).toEqual(constants.PINK);
+    });
+
+    it(' setTileColor should set a LETTRE type tile to pink when it is letter multiplier by three', () => {
+        gridService.gridContext = jasmine.createSpyObj('gridContext', ['fillStyle']);
+        const fillStyleSpy = spyOn(gridService, 'setTileColor').and.callThrough();
+        gridService.setTileColor('LETTRE', 3);
+        expect(fillStyleSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.fillStyle).toEqual(constants.DARK_BLUE);
+    });
+
+    it(' drawMiddleTile should call drawStar', () => {
+        const drawStarSpy = spyOn(gridService, 'drawStar').and.callThrough();
+        gridService.drawMiddleTile();
+        expect(drawStarSpy).toHaveBeenCalled();
+    });
+
+    it(' fillTile should call fillRect', () => {
+        const fillRectSpy = spyOn(gridService.gridContext, 'fillRect').and.callThrough();
+        gridService.fillTile(POSITION_TEST);
+        expect(fillRectSpy).toHaveBeenCalled();
+    });
+
+    it(' fillTile should call strokeRect', () => {
+        const strokeRectSpy = spyOn(gridService.gridContext, 'strokeRect').and.callThrough();
+        gridService.fillTile(POSITION_TEST);
+        expect(strokeRectSpy).toHaveBeenCalled();
+    });
+
+    it(' drawMultiplierNumber should be centered and have a top baseline', () => {
+        const multiplierNumberSpy = spyOn(gridService, 'setFontSize').and.callThrough();
+        gridService.drawMultiplierNumber(POSITION_TEST, 2);
+        expect(multiplierNumberSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.textBaseline).toEqual('top');
+        expect(gridService.gridContext.textAlign).toEqual('center');
+    });
+
+    it(' drawMultiplierType should be centered and have a bottom baseline', () => {
+        const multiplierTypeSpy = spyOn(gridService, 'drawMultiplierType').and.callThrough();
+        gridService.drawMultiplierType(POSITION_TEST, 'LETTRE');
+        expect(multiplierTypeSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.textAlign).toEqual('center');
+        expect(gridService.gridContext.textBaseline).toEqual('bottom');
+    });
+
+    it(' drawText should call fillText when drawing a word', () => {
+        const position = { x: 0, y: 1 };
+        const fillTextSpy = spyOn(gridService.gridContext, 'fillText').and.callThrough();
+        gridService.drawText(position, 'drawTest');
+        expect(fillTextSpy).toHaveBeenCalled();
+    });
+
+    it(' drawText should call textAlign and be centered', () => {
+        const position = { x: 0, y: 1 };
+        const textAlignSpy = spyOn(gridService, 'drawText').and.callThrough();
+        gridService.drawText(position, 'drawTest');
+        expect(textAlignSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.textAlign).toEqual('center');
+    });
+
+    it(' drawText should call fillStyle and be black', () => {
+        const position = { x: 0, y: 1 };
+        const fillStyleSpy = spyOn(gridService, 'drawText').and.callThrough();
+        gridService.drawText(position, 'drawTest');
+        expect(fillStyleSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.fillStyle).toEqual('#000000');
+    });
+
+    it(' setFontSize should set the font', () => {
+        const testFontSize = 23;
+        gridService.gridContext = jasmine.createSpyObj('gridContext', ['font']);
+        const setFontSizeSpy = spyOn(gridService, 'setFontSize').and.callThrough();
+        gridService.setFontSize(testFontSize);
+        expect(setFontSizeSpy).toHaveBeenCalled();
+        expect(gridService.gridContext.font).toBe('23px system-ui');
+    });
+
+    it(' drawLetterWeight should call measureText once', () => {
+        const measureTextSpy = spyOn(gridService.gridContext, 'measureText').and.callThrough();
+        gridService.drawLetterWeight(POSITION_TEST, '6');
+        expect(measureTextSpy).toHaveBeenCalledTimes(1);
+    });
 });

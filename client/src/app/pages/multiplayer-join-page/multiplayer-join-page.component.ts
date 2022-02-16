@@ -17,6 +17,10 @@ export class MultiplayerJoinPageComponent implements OnInit {
         this.gameConfiguration.joinPage();
     }
 
+    get availableRooms() {
+        return this.gameConfiguration.availableRooms;
+    }
+
     joinRoom(roomId: string) {
         this.gameConfiguration.joinGame(roomId, this.playerName);
         this.playerName = '';

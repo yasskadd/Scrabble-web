@@ -5,7 +5,7 @@ import * as sinon from 'sinon';
 import * as io from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
 type SioSignature = SocketManager['sio'];
@@ -17,13 +17,11 @@ const TEST_ROOM = 'EldenRingHype';
 const TEST_MESSAGE = 'RipNoTime';
 const EVENT = 'eventTest';
 describe('SocketManager service tests', () => {
-    // let ioServer: io.Server;
     let service: SocketManager;
-    // eslint-disable-next-line no-unused-vars
-    // let serverSocket: io.Socket;
+    let serverSocket: io.Socket;
     let clientSocket: Socket;
-
     let sio: SioSignature;
+
     let joinCallbackOn: CallbackSignature;
     let emitMessageCallbackOn: CallbackSignature;
     let joinCallbackSio: OnSioCallbackSignature;
@@ -35,7 +33,7 @@ describe('SocketManager service tests', () => {
     let port: number;
     let httpServer: Server;
 
-    beforeEach(() => {
+    beforeEach((done) => {
         joinCallbackOn = (socket) => socket.join(TEST_ROOM);
         emitMessageCallbackOn = (socket) => socket.emit(TEST_MESSAGE);
         joinCallbackSio = (o, socket) => {
@@ -49,15 +47,20 @@ describe('SocketManager service tests', () => {
         service = Container.get(SocketManager);
 
         httpServer = createServer();
-        httpServer.listen();
         service.init(httpServer);
-        // Reason :  to be able to use sio for tests
         // eslint-disable-next-line dot-notation
         sio = service['sio'];
+        httpServer.listen(() => {
+            port = (httpServer.address() as AddressInfo).port;
+            clientSocket = Client(`http://localhost:${port}`);
+            sio.on('connection', (socket) => {
+                serverSocket = socket;
+            });
+            clientSocket.on('connect', done);
+        });
     });
 
     afterEach(() => {
-        // clientSocket.close();
         sio.close();
 
         sinon.restore();
@@ -66,7 +69,6 @@ describe('SocketManager service tests', () => {
     it('on() should create a callback array if empty and add a callback in the array in onEvents', () => {
         service.on('event', joinCallbackOn);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onEvents'].get('event');
         expect(callBackEventArray).to.not.equal(undefined);
@@ -77,7 +79,6 @@ describe('SocketManager service tests', () => {
         service.on('event', joinCallbackOn);
         service.on('event', emitMessageCallbackOn);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onEvents'].get('event');
         expect(callBackEventArray?.pop()).to.be.equal(emitMessageCallbackOn);
@@ -87,7 +88,6 @@ describe('SocketManager service tests', () => {
     it('io() should create a callback array if empty and add a callback in the array in onAndSioEvents', () => {
         service.io('event', joinCallbackSio);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onAndSioEvents'].get('event');
         expect(callBackEventArray).to.not.equal(undefined);
@@ -98,7 +98,6 @@ describe('SocketManager service tests', () => {
         service.io('event', joinCallbackSio);
         service.io('event', emitMessageCallbackSio);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onAndSioEvents'].get('event');
         expect(callBackEventArray?.pop()).to.be.equal(emitMessageCallbackSio);
@@ -110,13 +109,11 @@ describe('SocketManager service tests', () => {
         testBoolean2 = false;
         const timeoutWait = 200;
 
-        // Reason : we just need to check if the callBack is called, we don't need socket testing
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackOn = (_) => {
             testBoolean1 = true;
         };
 
-        // Reason : we just need to check if the callBack is called, we don't need socket testing
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackSio = (i, _) => {
             testBoolean2 = true;
@@ -138,7 +135,20 @@ describe('SocketManager service tests', () => {
             expect(testBoolean2).to.be.equal(true);
             clientSocket.close();
             done();
-            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         }, timeoutWait);
+    });
+    it('emitRoom() should send information to the room', (done) => {
+        const ROOM = '0';
+        const EVENT_TEST = 'TEST';
+        const INFORMATION = 'NO TIME';
+
+        serverSocket.join(ROOM);
+        clientSocket.on(EVENT_TEST, (information) => {
+            expect(information).to.be.equal(INFORMATION);
+            clientSocket.close();
+            done();
+        });
+        // eslint-disable-next-line dot-notation
+        service['emitRoom'](ROOM, EVENT_TEST, INFORMATION);
     });
 });

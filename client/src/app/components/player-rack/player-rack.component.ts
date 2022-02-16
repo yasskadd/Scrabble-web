@@ -1,7 +1,9 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
+import { GameClientService } from '@app/services/game-client.service';
 import { LetterTilesService } from '@app/services/letter-tiles.service';
 
-export const DEFAULT_WIDTH = 500;
+export const DEFAULT_WIDTH = 300;
 export const DEFAULT_HEIGHT = 45;
 
 @Component({
@@ -14,11 +16,14 @@ export class PlayerRackComponent implements AfterViewInit {
 
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private readonly letterTilesService: LetterTilesService) {}
+    constructor(
+        private readonly letterTilesService: LetterTilesService,
+        private chatBoxHandler: ChatboxHandlerService,
+        public gameClient: GameClientService,
+    ) {}
 
     ngAfterViewInit(): void {
         this.letterTilesService.gridContext = this.rackCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.letterTilesService.drawRack();
         this.rackCanvas.nativeElement.focus();
     }
 
@@ -30,5 +35,7 @@ export class PlayerRackComponent implements AfterViewInit {
         return this.canvasSize.y;
     }
 
-    // addLetterToRack() {}
+    skipTurn() {
+        this.chatBoxHandler.submitMessage('!passer');
+    }
 }

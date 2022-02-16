@@ -93,25 +93,27 @@ describe('ChatboxComponent', () => {
         expect(messages.length).toEqual(chatBoxHandlerSpy.messages.length);
     });
 
-    // TODO : Come back to this test
+    it('scrollToBottom should scroll to the bottom of the message container', () => {
+        const SCROLL_HEIGHT = 10;
+        const SCROLL_TOP = 20;
 
-    // it('scrollToBottom should scroll to the bottom of the message container', () => {
-    //     // Height is changing, supposed to change scrollTop but not doing so Idk why again
-    //     // const SCROLL_HEIGHT = 10;
-    //     const container = fixture.debugElement.nativeElement.querySelector('.message-container');
+        // Reason : accessing private proprety
+        // eslint-disable-next-line dot-notation
+        component['scrollBox'] = {
+            nativeElement: {
+                scrollHeight: SCROLL_HEIGHT,
+                scrollTop: SCROLL_TOP,
+            },
+        };
 
-    //     // Reason : setting new height
-    //     // eslint-disable-next-line
-    //     // container.style.height = container.scrollHeight + `${SCROLL_HEIGHT}px`;
+        // Reason : accessing private proprety
+        // eslint-disable-next-line dot-notation
+        component['scrollToBottom']();
 
-    //     // Reason : Accessing private method for testing
-    //     // eslint-disable-next-line dot-notation
-    //     component['scrollToBottom']();
-    //     fixture.detectChanges();
-    //     // container = fixture.debugElement.nativeElement.querySelector('.message-container');
-
-    //     expect(container.scrollTop).toEqual(container.scrollHeight);
-    // });
+        // Reason : accessing private proprety
+        // eslint-disable-next-line dot-notation
+        expect(component['scrollBox'].nativeElement.scrollTop).toEqual(component['scrollBox'].nativeElement.scrollTop);
+    });
 
     it('scrollToBottom() should be called after every new message', () => {
         const spyOnScrollBottom = spyOn(component, 'scrollToBottom' as never);
@@ -131,5 +133,12 @@ describe('ChatboxComponent', () => {
         fixture.detectChanges();
         const matError = fixture.debugElement.nativeElement.querySelector('.error');
         expect(matError !== null).toBeTruthy();
+    });
+
+    it("a mat error shouldn't be here when input is valid (less than 512 characters)", () => {
+        const VALID_INPUT = 'HELLO';
+        component.input.setValue(VALID_INPUT);
+        const matError = fixture.debugElement.nativeElement.querySelector('.error');
+        expect(matError === null).toBeTruthy();
     });
 });

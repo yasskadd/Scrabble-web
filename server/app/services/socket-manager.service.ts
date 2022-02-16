@@ -35,14 +35,17 @@ export class SocketManager {
             this.onAndSioEvents.set(event, []);
         }
         const onElement = this.onAndSioEvents.get(event);
-        if (onElement !== undefined) {
+        if (onElement) {
             onElement.push(callback);
         }
     }
 
+    emitRoom(room: string, event: string, ...args: unknown[]) {
+        this.sio.to(room).emit(event, ...args);
+    }
+
     handleSockets(): void {
         this.sio.on('connection', (socket) => {
-            // console.log(`Connexion par l'utilisateur avec id : ${socket.id}`);
             for (const [event, callbacks] of this.onEvents.entries()) {
                 for (const callback of callbacks) {
                     socket.on(event, (...args: unknown[]) => callback(socket, ...args));

@@ -1,0 +1,12 @@
+<div class="action-container" mat-dialog-actions>
+    <button class="button" mat-button mat-dialog-close>
+        <mat-icon>navigate_before</mat-icon>
+        retourner
+    </button>
+</div>
+<h1 mat-dialog-title>Etes vous sur de vouloir Abandonner?</h1>
+<div class="container" mat-dialog-content>
+    <button (click)="abandonGame()" mat-dialog-close>Oui</button>
+
+    <button id="multiplayer-join" class="button multiplayer" mat-raised-button color="primary" mat-dialog-close>Non</button>
+</div>
