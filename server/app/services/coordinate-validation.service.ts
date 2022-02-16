@@ -8,10 +8,10 @@ const COLUMN_NUMBER = 15;
 const ROW_NUMBER = 15;
 @Service()
 export class GameboardCoordinateValidationService {
-    validateGameboardCoordinate(commandInfo: CommandInfo, gameboard: Gameboard) {
+    validateGameboardCoordinate(commandInfo: CommandInfo, gameboard: Gameboard): LetterTile[] {
         // Validate firstCoord
         if (!this.isFirstCoordValid(commandInfo.firstCoordinate, gameboard)) return [];
-        const coordOfLetters = new Array();
+        const coordOfLetters: LetterTile[] = new Array();
         let stringLength: number = commandInfo.lettersPlaced.length;
         let currentCoord: LetterTile = gameboard.getCoord(commandInfo.firstCoordinate);
         const direction = commandInfo.direction;
@@ -45,32 +45,30 @@ export class GameboardCoordinateValidationService {
         if (!this.verifyLettersContact(coordOfLetters, gameboard)) return [];
         return coordOfLetters;
     }
-    private isFirstCoordValid(firstCoord: LetterTile, gameboard: Gameboard) {
+
+    private isFirstCoordValid(firstCoord: LetterTile, gameboard: Gameboard): boolean {
         if (Object.keys(gameboard.getCoord(firstCoord)).length === 0 || gameboard.getCoord(firstCoord) === undefined) return false;
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
     }
 
-    private isThereAdjacentLetters(letterCoord: LetterTile, gameboard: Gameboard) {
+    private isThereAdjacentLetters(letterCoord: LetterTile, gameboard: Gameboard): boolean {
         let isValid = false;
-        // Verify upward
         if (letterCoord.y !== 1) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x, letterCoord.y - 1, {} as Letter)).isOccupied) isValid = true;
         }
-        // Verify downward
         if (letterCoord.y !== ROW_NUMBER) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x, letterCoord.y + 1, {} as Letter)).isOccupied) isValid = true;
         }
-        // Verify right
         if (letterCoord.x !== COLUMN_NUMBER) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x - 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
-        // Verify left
         if (letterCoord.x !== 1) {
             if (gameboard.getCoord(new LetterTile(letterCoord.x + 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
         return isValid;
     }
-    private verifyLettersContact(letterCoords: LetterTile[], gameboard: Gameboard) {
+
+    private verifyLettersContact(letterCoords: LetterTile[], gameboard: Gameboard): boolean {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) return true;
         for (const coord of letterCoords) {
             if (this.isThereAdjacentLetters(coord, gameboard)) return true;
