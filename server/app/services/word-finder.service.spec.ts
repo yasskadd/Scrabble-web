@@ -214,6 +214,30 @@ describe('WordFinderService', () => {
         expect(stringList).to.include.members(['ab', 'aa', 'ba']);
     });
 
+    it('should return word array with only one word if letterCoords are vertical and there is no adjacent placed letters', () => {
+        const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB)];
+        gameboard.placeLetter(placedLetters[0]);
+        gameboard.placeLetter(placedLetters[1]);
+        const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
+        const stringList: string[] = words.map((word) => {
+            return word.stringFormat;
+        });
+        expect(words.length).to.equal(1);
+        expect(stringList).to.eql(['ab']);
+    });
+
+    it('should return word array with only one word if letterCoords are horizontal and there is no adjacent placed letters', () => {
+        const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(2, 1, letterB)];
+        gameboard.placeLetter(placedLetters[0]);
+        gameboard.placeLetter(placedLetters[1]);
+        const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetters);
+        const stringList: string[] = words.map((word) => {
+            return word.stringFormat;
+        });
+        expect(words.length).to.equal(1);
+        expect(stringList).to.eql(['ab']);
+    });
+
     it('findNewWords() should return empty array if coordList is empty', () => {
         expect(wordFinderService.findNewWords(gameboard, [])).to.eql([]);
     });
