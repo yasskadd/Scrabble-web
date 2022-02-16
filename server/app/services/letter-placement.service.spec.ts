@@ -184,10 +184,10 @@ describe('Letter Placement Service', () => {
             expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(true);
         });
 
-        it('should return false if there is placed letters on the gameboard', () => {
+        it('should return true if there is placed letters on the gameboard', () => {
             const letterCoords: LetterTile[] = [new LetterTile(8, 8, letterA), new LetterTile(8, 9, letterB)];
             gameboard.placeLetter(new LetterTile(1, 1, {} as Letter));
-            expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(false);
+            expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(true);
         });
     });
 
