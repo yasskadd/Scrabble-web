@@ -12,7 +12,6 @@ import { Container } from 'typedi';
 import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-// import sinon = require('sinon');
 
 describe('Word', () => {
     let word: Word;

@@ -154,10 +154,4 @@ export class GameConfigurationService {
         this.roomInformation.statusGame = '';
         this.roomInformation.isCreator = false;
     }
-    // Sprint 2
-    // joinRandomRoom(playerName: string) {
-    //     const random = Math.floor(Math.random() * this.availableRooms.length);
-    //     const roomToJoinId = this.availableRooms[random].id;
-    //     this.clientSocket.send('roomJoin', { roomToJoinId, playerName });
-    // }
 }

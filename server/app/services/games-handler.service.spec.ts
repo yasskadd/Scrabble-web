@@ -33,7 +33,6 @@ describe('GamesHandler Service', () => {
 
     beforeEach((done) => {
         socketManagerStub = sinon.createStubInstance(SocketManager);
-        // We need emitRoom to do nothing
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         socketManagerStub.emitRoom.callsFake(() => {});
         gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager);
@@ -315,7 +314,6 @@ describe('GamesHandler Service', () => {
             gamesHandler['players'].set(serverSocket.id, player);
             // eslint-disable-next-line dot-notation
             gamesHandler['disconnect'](serverSocket);
-            // REASON : We ned to wait and check 5 seconds
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             setTimeout(() => {
                 expect(testBoolean1).to.be.equal(true);
@@ -336,7 +334,6 @@ describe('GamesHandler Service', () => {
             });
             // eslint-disable-next-line dot-notation
             gamesHandler['disconnect'](serverSocket);
-            // REASON : We ned to wait and check 5 seconds
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             setTimeout(() => {
                 expect(testBoolean1).to.be.equal(false);

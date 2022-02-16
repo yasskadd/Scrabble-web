@@ -13,7 +13,6 @@ export class WordFinderService {
     findNewWords(gameboard: Gameboard, coordList: LetterTile[]) {
         const newWordsArray: Word[] = new Array();
         if (coordList.length === 0) return [];
-        // Verify if only one letter is placed
         if (coordList.length === 1) {
             const verticalWord: Word = this.buildVerticalWord(gameboard, coordList[0]);
             const horizontalWord: Word = this.buildHorizontalWord(gameboard, coordList[0]);

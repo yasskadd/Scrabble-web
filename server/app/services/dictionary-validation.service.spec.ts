@@ -20,7 +20,6 @@ describe('Dictionary Validation Service', () => {
     let validWord2: Word;
     let invalidWord1: Word;
     let invalidWord2: Word;
-    // let wordClass: Word;
 
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();

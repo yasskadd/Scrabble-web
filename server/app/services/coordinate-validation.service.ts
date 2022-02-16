@@ -9,7 +9,6 @@ const ROW_NUMBER = 15;
 @Service()
 export class GameboardCoordinateValidationService {
     validateGameboardCoordinate(commandInfo: CommandInfo, gameboard: Gameboard): LetterTile[] {
-        // Validate firstCoord
         if (!this.isFirstCoordValid(commandInfo.firstCoordinate, gameboard)) return [];
         const coordOfLetters: LetterTile[] = new Array();
         let stringLength: number = commandInfo.lettersPlaced.length;

@@ -15,7 +15,6 @@ import { LetterPlacementService } from './letter-placement.service';
 import { WordFinderService } from './word-finder.service';
 
 describe('Letter Placement Service', () => {
-    // Should we stub gameboard ???
     let player: Player;
     let commandInfo: CommandInfo;
     let letterA: Letter;
@@ -23,7 +22,6 @@ describe('Letter Placement Service', () => {
     let letterC: Letter;
     let gameboard: Gameboard;
     let placementService: LetterPlacementService;
-    // let gameboardCoordValidation: Sinon.SinonStubbedInstance<GameboardCoordinateValidationService>;
     let validateCoordService: Sinon.SinonStubbedInstance<GameboardCoordinateValidationService>;
     let wordFinderService: Sinon.SinonStubbedInstance<WordFinderService>;
     let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService>;
@@ -46,7 +44,6 @@ describe('Letter Placement Service', () => {
         boxMultiplierService = Sinon.createStubInstance(BoxMultiplierService);
         dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService);
         gameboard = new Gameboard(boxMultiplierService);
-        // gameboardCoordValidation = Sinon.createStubInstance(GameboardCoordinateValidationService);
         placementService = new LetterPlacementService(
             validateCoordService as unknown as GameboardCoordinateValidationService,
             wordFinderService as unknown as WordFinderService,
