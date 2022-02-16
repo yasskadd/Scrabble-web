@@ -114,6 +114,7 @@ export class GamesHandler {
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, room, game);
+
             if (!play[0]) {
                 socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
             } else {
@@ -139,7 +140,6 @@ export class GamesHandler {
         if (socket.id === gameInfo.socketId[0]) {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
-        console.log('SUBSCRIBING :');
         newGameHolder.game.turn.endTurn.subscribe(() => {
             this.changeTurn(gameInfo.roomId);
         });
