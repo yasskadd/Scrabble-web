@@ -6,16 +6,16 @@ import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
 
-let letterMultipliersByTwo: LetterTile[] = [];
+const letterMultipliersByTwo: LetterTile[] = [];
 multipliers.letterMultipliersByTwo.forEach((coord: Coordinate) => letterMultipliersByTwo.push(new LetterTile(coord.x, coord.y, {} as Letter)));
 
-let letterMultipliersByThree: LetterTile[] = [];
+const letterMultipliersByThree: LetterTile[] = [];
 multipliers.letterMultipliersByThree.forEach((coord: Coordinate) => letterMultipliersByThree.push(new LetterTile(coord.x, coord.y, {} as Letter)));
 
-let wordMultipliersByTwo: LetterTile[] = [];
+const wordMultipliersByTwo: LetterTile[] = [];
 multipliers.wordMultipliersByTwo.forEach((coord: Coordinate) => wordMultipliersByTwo.push(new LetterTile(coord.x, coord.y, {} as Letter)));
 
-let wordMultipliersByThree: LetterTile[] = [];
+const wordMultipliersByThree: LetterTile[] = [];
 multipliers.wordMultipliersByThree.forEach((coord: Coordinate) => wordMultipliersByThree.push(new LetterTile(coord.x, coord.y, {} as Letter)));
 
 @Service()
