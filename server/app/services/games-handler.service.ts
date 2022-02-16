@@ -1,4 +1,3 @@
-import { Game } from '@app/classes/game';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
@@ -7,6 +6,7 @@ import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
+import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
