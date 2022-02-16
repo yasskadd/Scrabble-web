@@ -9,7 +9,7 @@ import * as Sinon from 'sinon';
 import { BoxMultiplierService } from './box-multiplier.service';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 
-describe.only('Coordinate validation service', () => {
+describe('Coordinate validation service', () => {
     let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
     let coordinateValidation: GameboardCoordinateValidationService;
     let gameboard: Gameboard;
