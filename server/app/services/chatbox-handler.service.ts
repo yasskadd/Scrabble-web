@@ -9,7 +9,9 @@ export class ChatboxHandlerService {
     constructor(public socketManager: SocketManager) {}
 
     initSocketsEvents() {
-        this.socketManager.on(SocketEvents.SendMessage, this.sendMessage);
+        this.socketManager.on(SocketEvents.SendMessage, (socket, messageInfo: MessageParameters) => {
+            this.sendMessage(socket, messageInfo);
+        });
     }
 
     private sendMessage(socket: Socket, messageInfo: MessageParameters) {
