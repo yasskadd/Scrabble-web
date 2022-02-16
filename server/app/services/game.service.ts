@@ -1,13 +1,13 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
+import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
-import { Container } from 'typedi';
-import { Turn } from './turn';
+import { Container, Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
@@ -21,7 +21,7 @@ export class Game {
         player2: Player,
         public turn: Turn,
         public letterReserve: LetterReserveService,
-        private letterPlacement: LetterPlacementService,
+        @Inject() private letterPlacement: LetterPlacementService,
     ) {
         this.player1 = player1;
         this.player2 = player2;
@@ -30,9 +30,6 @@ export class Game {
         this.gameboard = new Gameboard(boxMultiplierService);
     }
 
-    /**
-     * Start a game.
-     */
     start(): void {
         this.letterReserve.generateLetters(MAX_QUANTITY, this.player1.rack);
         this.letterReserve.generateLetters(MAX_QUANTITY, this.player2.rack);
@@ -40,28 +37,17 @@ export class Game {
         this.turn.start();
     }
 
-    /**
-     * End a game.
-     */
     end(): void {
         this.turn.end(true);
         // console.log("Game has ended");
     }
 
-    /**
-     * Skip a turn.
-     */
     skip(playerName: string): boolean {
         if (!this.turn.validating(playerName)) return false;
         this.turn.skipTurn();
         return true;
     }
 
-    /**
-     * Play the turn by placing letters.
-     *
-     * @param playerName : The active player who will play.
-     */
     play(playerName: string, commandInfo: CommandInfo): [boolean, Gameboard] | string {
         let gameboard: [boolean, Gameboard] = [false, this.gameboard];
         const numberOfLetterPlaced = commandInfo.lettersPlaced.length;
@@ -70,6 +56,8 @@ export class Game {
             const letterCoords = validationInfo[0];
             const isValid = validationInfo[1];
             if (isValid !== null) {
+                this.turn.resetSkipCounter();
+                this.turn.end();
                 return isValid as string;
             }
             gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player1, this.gameboard);
@@ -81,6 +69,7 @@ export class Game {
             if (this.player1.rackIsEmpty() && this.letterReserve.isEmpty()) {
                 this.end();
             } else {
+                this.turn.resetSkipCounter();
                 this.turn.end();
             }
 
@@ -90,6 +79,8 @@ export class Game {
             const letterCoords = validationInfo[0];
             const isValid = validationInfo[1];
             if (isValid !== null) {
+                this.turn.resetSkipCounter();
+                this.turn.end();
                 return isValid as string;
             }
             gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
@@ -100,6 +91,7 @@ export class Game {
             if (this.player2.rackIsEmpty() && this.letterReserve.isEmpty()) {
                 this.end();
             } else {
+                this.turn.resetSkipCounter();
                 this.turn.end();
             }
             return gameboard as [boolean, Gameboard];
@@ -108,12 +100,6 @@ export class Game {
         return gameboard;
     }
 
-    /**
-     * Exchange letters.
-     *
-     * @param player1 : The active player who will exchange.
-     * @param letters : The letters to exchange.
-     */
     exchange(letters: string[], playerName: string): Letter[] {
         if (this.turn.validating(playerName) && this.player1.name === playerName) {
             this.player1.rack = this.letterReserve.exchangeLetter(letters, this.player1.rack);
@@ -129,9 +115,6 @@ export class Game {
         return [];
     }
 
-    /**
-     * Abandon a game, which will resume in a lost for the player who abandoned.
-     */
     abandon(): void {
         this.end();
     }
