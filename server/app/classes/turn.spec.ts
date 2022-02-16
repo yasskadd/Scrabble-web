@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { expect } from 'chai';
 import { SinonFakeTimers, spy, useFakeTimers } from 'sinon';
 import { Player } from './player.class';
