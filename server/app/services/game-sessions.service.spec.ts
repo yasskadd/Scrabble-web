@@ -11,7 +11,6 @@ import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { SocketManager } from './socket-manager.service';
 
-const TIMEOUT_WAIT = 200;
 type Parameters = { id: string; name: string };
 type SioSignature = SocketManager['sio'];
 
@@ -227,6 +226,13 @@ describe('GameSession Service', () => {
         done();
     });
 
+    it('getOpponentName should return empty string if the room is undefined', (done: Mocha.Done) => {
+        // eslint-disable-next-line dot-notation
+        expect(gameSessions['getOpponentName'](PLAYER_NAME, ROOM_ID)).equal('');
+        // eslint-disable-next-line dot-notation
+        done();
+    });
+
     it("getOpponentName should return a empty string if the room doesn't exist", (done: Mocha.Done) => {
         const GAME_ROOM_2: GameRoom = {
             socketID: [SOCKET_ID, 'sfdg78fdsg'],
@@ -242,7 +248,6 @@ describe('GameSession Service', () => {
         gameSessions['gameRooms'].set(ROOM_ID, GAME_ROOM_2);
         // eslint-disable-next-line dot-notation
         expect(gameSessions['getOpponentName'](PLAYER_NAME, undefinedRoomID)).equal('');
-        // eslint-disable-next-line dot-notation
         done();
     });
     it('sameUsernameExists should return true if the user in the room Has the same name that the player in the room', (done: Mocha.Done) => {
@@ -334,8 +339,6 @@ describe('GameSession Service', () => {
     });
 
     it('createGame should return confirmation that the game was created with the id of the room', (done: Mocha.Done) => {
-        // EXEMPLE HERE !!
-
         serverSocket.on('createGame', (gameInfo) => {
             // eslint-disable-next-line dot-notation
             gameSessions['createGame'](sio, serverSocket, gameInfo);
@@ -345,20 +348,6 @@ describe('GameSession Service', () => {
             expect(roomId).to.contain((--gameSessions.idCounter).toString());
             done();
         });
-    });
-    it('startScrabbleGame should emit an event to the player in the room where a game is about to start', (done: Mocha.Done) => {
-        // eslint-disable-next-line dot-notation
-        gameSessions['gameRooms'].set(ROOM_ID, GAME_ROOM_2_PLAYER);
-        serverSocket.on(SocketEvents.StartScrabbleGame, (roomId) => {
-            // eslint-disable-next-line dot-notation
-            gameSessions[SocketEvents.StartScrabbleGame](sio, serverSocket, roomId);
-        });
-        clientSocket.emit(SocketEvents.StartScrabbleGame, ROOM_ID);
-        clientSocket.on(SocketEvents.GameAboutToStart, (socketId: string[]) => {
-            expect(socketId).to.equal(GAME_ROOM_2_PLAYER.socketID);
-            done();
-        });
-        setTimeout(done, TIMEOUT_WAIT);
     });
 
     it('rejectByOtherPlayer should call removeUserFromRoom', (done: Mocha.Done) => {
@@ -375,20 +364,6 @@ describe('GameSession Service', () => {
 
         assert(spy.called);
         done();
-    });
-
-    it('rejectOpponent should emit an a message to the other player because he is being rejected from the game  ', (done: Mocha.Done) => {
-        const playerRejectFromRoomError = "L'adversaire à rejeter votre demande";
-        const clientSocket2 = Client(`http://localhost:${port}`);
-
-        clientSocket.emit(SocketEvents.JoinRoom, ROOM_ID);
-        clientSocket2.emit(SocketEvents.JoinRoom, ROOM_ID);
-        clientSocket.emit(SocketEvents.RejectOpponent, ROOM_ID);
-
-        clientSocket2.on(SocketEvents.RejectByOtherPlayer, (reason: string) => {
-            expect(reason).to.contain(playerRejectFromRoomError);
-        });
-        setTimeout(done, TIMEOUT_WAIT);
     });
 
     it('removeRoom should delete the room from the list ', (done: Mocha.Done) => {
@@ -449,8 +424,7 @@ describe('GameSession Service', () => {
             done();
         }, timeout6seconds);
     });
-
-    it('disconnect should call the removeUserFromActiveUser method', (done: Mocha.Done) => {
+    it('disconnect should call the removeRoom method after 6 seconds ', (done: Mocha.Done) => {
         const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
@@ -461,8 +435,7 @@ describe('GameSession Service', () => {
             timer: 1,
             mode: 'classique',
         };
-
-        const spy = sinon.spy(gameSessions, 'removeUserFromActiveUsers' as never);
+        const spy = sinon.spy(gameSessions, 'removeRoom' as never);
         // eslint-disable-next-line dot-notation
         gameSessions['gameRooms'].set(ROOM_ID, gameRoomAvailable);
 
@@ -470,6 +443,19 @@ describe('GameSession Service', () => {
         gameSessions['disconnect'](sio, serverSocket);
         setTimeout(() => {
             assert(spy.called);
+            done();
+        }, timeout6seconds);
+    });
+    it('disconnect should call the removeUserFromActiveUser method after 6 seconds but not the removeRoom', (done: Mocha.Done) => {
+        const timeout6seconds = 6000;
+        const spy = sinon.spy(gameSessions, 'removeRoom' as never);
+        const spy1 = sinon.spy(gameSessions, 'removeUserFromActiveUsers' as never);
+
+        // eslint-disable-next-line dot-notation
+        gameSessions['disconnect'](sio, serverSocket);
+        setTimeout(() => {
+            assert(spy.notCalled);
+            assert(spy1.called);
             done();
         }, timeout6seconds);
     });
@@ -615,8 +601,25 @@ describe('GameSession Service', () => {
         gameSessions['gameRooms'].set(ROOM_ID, gameRoomTest2);
         // eslint-disable-next-line dot-notation
         const key = gameSessions['getRoomId'](SOCKET_ID);
-        // eslint-disable-next-line dot-notation
         expect(key).to.equal(ROOM_ID);
+        done();
+    });
+    it('getRoomId should return null if the socket ID is not in a room', (done: Mocha.Done) => {
+        const fakeSocket = 'adsfds345';
+        const gameRoomTest2: GameRoom = {
+            socketID: [SOCKET_ID],
+            id: '2',
+            isAvailable: false,
+            users: ['Vincent'],
+            dictionary: 'Francais',
+            timer: 1,
+            mode: 'classique',
+        };
+        // eslint-disable-next-line dot-notation
+        gameSessions['gameRooms'].set(ROOM_ID, gameRoomTest2);
+        // eslint-disable-next-line dot-notation
+        const key = gameSessions['getRoomId'](fakeSocket);
+        expect(key).to.equal(null);
         done();
     });
 
@@ -636,6 +639,20 @@ describe('GameSession Service', () => {
             });
             // eslint-disable-next-line dot-notation
             gameSessions['rejectOpponent'](serverSocket, ROOM_ID);
+        });
+
+        it('startScrabbleGame should emit an event to the player in the room with the socketID of the players', (done: Mocha.Done) => {
+            // eslint-disable-next-line dot-notation
+
+            // eslint-disable-next-line dot-notation
+            gameSessions['gameRooms'].set(ROOM_ID, GAME_ROOM_2_PLAYER);
+
+            clientSocket.on(SocketEvents.GameAboutToStart, (socketId: string[]) => {
+                expect(socketId).to.be.eql(GAME_ROOM_2_PLAYER.socketID);
+                done();
+            });
+            // eslint-disable-next-line dot-notation
+            gameSessions['startScrabbleGame'](sio, serverSocket, ROOM_ID);
         });
 
         afterEach(() => {

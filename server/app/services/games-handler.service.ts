@@ -69,8 +69,7 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
-        // DO NOT REMOVE the skip when removing the console.log (it must be called to skip)
-        console.log(gameHolder.game?.skip(player.name));
+        gameHolder.game?.skip(player.name);
         socket.broadcast.to(room).emit(SocketEvents.GameMessage, '!passer');
         this.changeTurn(room);
     }

@@ -30,11 +30,9 @@ export class WordFinderService {
             coordList.forEach((coord) => {
                 if (!firstWord.isHorizontal) {
                     const horizontalWord: Word = this.buildHorizontalWord(gameboard, coord);
-                    console.log('CALLED HORIZONTAL');
                     newWordsArray.push(horizontalWord);
                 } else {
                     const verticalWord: Word = this.buildVerticalWord(gameboard, coord);
-                    console.log('CALLED Vertical');
                     newWordsArray.push(verticalWord);
                 }
             });

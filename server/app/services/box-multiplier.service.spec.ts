@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';

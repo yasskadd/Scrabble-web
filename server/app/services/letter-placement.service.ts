@@ -90,7 +90,6 @@ export class LetterPlacementService {
             }
             const index = tempRack.findIndex((letter) => {
                 if (coord.letter.isBlankLetter !== undefined && coord.letter.isBlankLetter) {
-                    console.log('TEST CALLED 1');
                     return letter.value === '*';
                 }
                 return letter.value === coord.letter.value;

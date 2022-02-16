@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
