@@ -29,4 +29,8 @@ describe('BoxMultiplier', () => {
     it('should modify wordMultiplier to three for coordinate (6,2)', () => {
         expect(gameboard.getCoord(new LetterTile(1, 1, {} as Letter)).wordMultiplier).to.equal(3);
     });
+
+    it('should modify wordMultiplier to two for middle coordinate (8,8)', () => {
+        expect(gameboard.getCoord(new LetterTile(8, 8, {} as Letter)).wordMultiplier).to.equal(2);
+    });
 });
