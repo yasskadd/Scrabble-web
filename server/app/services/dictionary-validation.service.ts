@@ -38,7 +38,7 @@ export class DictionaryValidationService {
         });
     }
 
-    private isolateInvalidWords(enteredWords: Word[]) {
+    private isolateInvalidWords(enteredWords: Word[]): Word[] {
         return enteredWords.filter((word) => word.isValid === false);
     }
 }
