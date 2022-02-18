@@ -1,32 +1,39 @@
-// TODO : TESTS
-import * as multipliers from '@common/board-multiplier-coords';
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+import { Gameboard } from '@app/classes/gameboard.class';
 import { expect } from 'chai';
-// import { Service } from 'typedi';
+import { BoxMultiplierService } from './box-multiplier.service';
 
 describe('BoxMultiplier', () => {
-    // let boxMultiplierService: BoxMultiplierService;
+    let gameboard: Gameboard;
+    let boxMultiplierService: BoxMultiplierService;
 
-    beforeEach(async () => {});
-
-    it(' {12, 6} board coordinate should belong in letterMultipliersByTwo', () => {
-        const testCoordinate = { x: 12, y: 6 };
-        expect(multipliers.letterMultipliersByTwo).to.include(testCoordinate);
+    beforeEach(async () => {
+        boxMultiplierService = new BoxMultiplierService();
+        gameboard = new Gameboard(boxMultiplierService);
     });
 
-    it(' {5, 9} board coordinate should belong in letterMultipliersByThree', () => {
-        const testCoordinate = { x: 5, y: 9 };
-        expect(multipliers.letterMultipliersByThree).to.include(testCoordinate);
+    it('should modify letterMultiplier to two for coordinate (4,1)', () => {
+        expect(gameboard.getLetterTile({ x: 4, y: 1 }).multiplier.number).to.equal(2);
+        expect(gameboard.getLetterTile({ x: 4, y: 1 }).multiplier.type).to.equal('LETTRE');
     });
 
-    it(' {10, 4} board coordinate should belong in wordMultipliersByTwo', () => {
-        const testCoordinate = { x: 10, y: 4 };
-        expect(multipliers.wordMultipliersByTwo).to.include(testCoordinate);
+    it('should modify letterMultiplier to three for coordinate (6,2)', () => {
+        expect(gameboard.getLetterTile({ x: 6, y: 2 }).multiplier.number).to.equal(3);
+        expect(gameboard.getLetterTile({ x: 6, y: 2 }).multiplier.type).to.equal('LETTRE');
     });
 
-    it(' {0, 0} board coordinate should belong in wordMultipliersByThree', () => {
-        const testCoordinate = { x: 0, y: 0 };
-        expect(multipliers.wordMultipliersByThree).to.include(testCoordinate);
+    it('should modify wordMultiplier to two for coordinate (2,2)', () => {
+        expect(gameboard.getLetterTile({ x: 2, y: 2 }).multiplier.number).to.equal(2);
+        expect(gameboard.getLetterTile({ x: 2, y: 2 }).multiplier.type).to.equal('MOT');
     });
 
-    it(' ');
+    it('should modify wordMultiplier to three for coordinate (6,2)', () => {
+        expect(gameboard.getLetterTile({ x: 1, y: 1 }).multiplier.number).to.equal(3);
+        expect(gameboard.getLetterTile({ x: 1, y: 1 }).multiplier.type).to.equal('MOT');
+    });
+
+    it('should modify wordMultiplier to two for middle coordinate (8,8)', () => {
+        expect(gameboard.getLetterTile({ x: 8, y: 8 }).multiplier.number).to.equal(2);
+        expect(gameboard.getLetterTile({ x: 8, y: 8 }).multiplier.type).to.equal('MOT');
+    });
 });

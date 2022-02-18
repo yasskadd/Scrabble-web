@@ -9,17 +9,19 @@ describe('Socket subscribe handler tests', () => {
     let chatboxHandlerService: SinonStubbedInstance<ChatboxHandlerService>;
     let gameSessionsHandlerService: SinonStubbedInstance<GameSessions>;
     let socketSubscribeHandler: SocketSubscribeHandler;
-    let gameSockets: SinonStubbedInstance<GamesHandler>;
+    let gamesHandler: SinonStubbedInstance<GamesHandler>;
 
     beforeEach(async () => {
         chatboxHandlerService = createStubInstance(ChatboxHandlerService);
         chatboxHandlerService.initSocketsEvents.resolves();
         gameSessionsHandlerService = createStubInstance(GameSessions);
         gameSessionsHandlerService.initSocketEvents.resolves();
+        gamesHandler = createStubInstance(GamesHandler);
+        gamesHandler.initSocketsEvents.resolves();
         socketSubscribeHandler = new SocketSubscribeHandler(
             chatboxHandlerService as unknown as ChatboxHandlerService,
             gameSessionsHandlerService as unknown as GameSessions,
-            gameSockets as unknown as GamesHandler,
+            gamesHandler as unknown as GamesHandler,
         );
     });
 
@@ -27,5 +29,6 @@ describe('Socket subscribe handler tests', () => {
         socketSubscribeHandler.initSocketsEvents();
         assert(chatboxHandlerService.initSocketsEvents.calledOnce);
         assert(gameSessionsHandlerService.initSocketEvents.calledOnce);
+        assert(gamesHandler.initSocketsEvents.calledOnce);
     });
 });

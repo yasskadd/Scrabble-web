@@ -8,7 +8,7 @@
         </mat-form-field>
         <mat-card-title>Liste des Partie Disponible</mat-card-title>
         <mat-card class="list-container">
-            <table *ngIf="this.gameConfiguration.availableRooms.length > 0">
+            <table class="roomAvailable" *ngIf="availableRooms.length > 0">
                 <thead class="tableContainer">
                     <tr>
                         <th>Nom Utilisateur</th>
@@ -18,7 +18,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let gameRoom of this.gameConfiguration.availableRooms">
+                    <tr *ngFor="let gameRoom of availableRooms">
                         <td>{{ gameRoom.users }}</td>
                         <td>{{ gameRoom.dictionary }}</td>
                         <td>{{ gameRoom.timer }}</td>
@@ -27,8 +27,7 @@
                     </tr>
                 </tbody>
             </table>
-
-            <a *ngIf="this.gameConfiguration.availableRooms.length === 0">Aucune Partie Disponible à joindre</a>
+            <a class="noRoomAvailable" *ngIf="availableRooms.length === 0">Aucune Partie Disponible à joindre</a>
         </mat-card>
 
         <div class="containerButton">

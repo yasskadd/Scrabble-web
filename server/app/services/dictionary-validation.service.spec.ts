@@ -1,16 +1,21 @@
-import { Gameboard } from '@app/classes/gameboard.class';
+/* eslint-disable prettier/prettier */
+/* eslint-disable dot-notation */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable no-restricted-imports */
 import { Word } from '@app/classes/word.class';
+import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
-import { Container } from 'typedi';
-import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { ScoreService } from './score.service';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
+const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
 
-describe.only('Dictionary Validation Service', () => {
+describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
     let boxMultiplierService: BoxMultiplierService;
     let scoreService: ScoreService;
@@ -23,17 +28,16 @@ describe.only('Dictionary Validation Service', () => {
     let invalidWord2: Word;
 
     beforeEach(() => {
-        dictionaryValidationService = Container.get(DictionaryValidationService);
-        gameboard = new Gameboard(boxMultiplierService);
-
-        validWord1 = new Word({ isHorizontal: false, firstCoordinate: { x: 1, y: 1 }, letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'] }, gameboard);
-        validWord2 = new Word(
-            { isHorizontal: false, firstCoordinate: { x: 3, y: 3 }, letters: ['c', 'h', 'e', 'v', 'a', 'l', 'i', 'e', 'r'] },
-            gameboard,
-        );
-
-        invalidWord1 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 13 }, letters: ['c', 'e', 'v', 'l', 'i', 'e', 'r'] }, gameboard);
-        invalidWord2 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 15 }, letters: ['h', 'h', 'h', 'h', 'h'] }, gameboard);
+        dictionaryValidationService = new DictionaryValidationService();
+        const letterA = { points: 5 } as Letter;
+        validWord1 = new Word(true, [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterA)]);
+        validWord1.stringFormat = 'bonjour';
+        validWord2 = new Word(true, [new LetterTile(2, 2, letterA), new LetterTile(2, 3, letterA)]);
+        validWord2.stringFormat = 'chevalier';
+        invalidWord1 = {} as Word;
+        invalidWord1.stringFormat = 'dijasdijasd';
+        invalidWord2 = {} as Word;
+        invalidWord2.stringFormat = 'hhhhh';
     });
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {

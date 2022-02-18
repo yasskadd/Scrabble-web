@@ -13,6 +13,13 @@ interface RoomInformation {
     statusGame: string;
     timer: number;
 }
+
+interface GameScrabbleInformation {
+    playerName: string[];
+    roomId: string;
+    timer: number;
+    socketId: string[];
+}
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
     roomId: '',
@@ -21,7 +28,6 @@ const ROOM_INFORMATION: RoomInformation = {
     timer: 0,
 };
 export class SocketClientServiceMock extends ClientSocketService {
-    // Reason : connect shouldn't actually connect
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     override connect() {}
 }
@@ -48,7 +54,6 @@ describe('GameConfigurationService', () => {
     });
 
     it('beginScrabbleGame() send a message to the server with a room id to start the game of this room', () => {
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         const roomID = '1';
@@ -57,7 +62,6 @@ describe('GameConfigurationService', () => {
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.StartScrabbleGame, roomID);
     });
     it('joinPage() send a command to the server to tell that a player wants to join a multiplayer game', () => {
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
 
@@ -69,7 +73,6 @@ describe('GameConfigurationService', () => {
         const roomTest = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' }];
 
         expect(service.availableRooms.length).toEqual(0);
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         service['updateAvailableRooms'](roomTest);
         expect(service.availableRooms.length).toEqual(1);
@@ -77,7 +80,6 @@ describe('GameConfigurationService', () => {
 
     it('updateAvailableRooms() should  not add  games available for a player to join if there is not more room available', () => {
         expect(service.availableRooms.length).toEqual(0);
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         service['updateAvailableRooms']([]);
         expect(service.availableRooms.length).not.toEqual(1);
@@ -86,7 +88,6 @@ describe('GameConfigurationService', () => {
     it('joinGame() should  send the id of the room the player wants to join and is username', () => {
         const roomID = '1';
         const usernamePlayer = 'Maurice';
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.joinGame(roomID, usernamePlayer);
@@ -98,7 +99,6 @@ describe('GameConfigurationService', () => {
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
         const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique' };
         const testStatusGame = "En Attente d'un Adversaire ...";
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.gameInitialization(testGameConfiguration);
@@ -111,7 +111,6 @@ describe('GameConfigurationService', () => {
     it('rejectOpponent() should  send a command to the server to reject the opponent that wanted to join the multiplayer game', () => {
         const testStatusGame = "En Attente d'un Adversaire ...";
         const roomID = '1';
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.roomInformation.roomId = roomID;
@@ -123,8 +122,6 @@ describe('GameConfigurationService', () => {
     it('exitWaitingRoom should send to the server that the player joining wants to exit', () => {
         const playerName = 'Maurice';
         const roomID = '1';
-
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.roomInformation.roomId = roomID;
@@ -134,13 +131,19 @@ describe('GameConfigurationService', () => {
     });
     it('removeRoom() should  send a command to the server to removeRoom from the the games when a player decide to return to the create page', () => {
         const roomID = '1';
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.roomInformation.roomId = roomID;
         service.removeRoom();
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.RemoveRoom, roomID);
         expect(service.roomInformation.roomId).toEqual('');
+    });
+
+    it('removeRoom() should call rejectOpponent when player is rejected ', () => {
+        const spyOnRejectOpponent = spyOn(service, 'rejectOpponent');
+        service.roomInformation.playerName[1] = 'Marcel';
+        service.removeRoom();
+        expect(spyOnRejectOpponent).toHaveBeenCalled();
     });
 
     it('setErrorSubject() should  initialize the value of the error Reason ', () => {
@@ -238,6 +241,24 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.statusGame).toEqual(searchingOpponent);
     });
 
+    it('should handle OpponentLeave event to remove the player name of the second player ', () => {
+        const socketIDUserRoom = ['346574gdvb', 'dsfhg56ter'];
+        const gameScrabbleInformation: GameScrabbleInformation = {
+            playerName: ROOM_INFORMATION.playerName,
+            roomId: ROOM_INFORMATION.roomId,
+            timer: ROOM_INFORMATION.timer,
+            socketId: socketIDUserRoom,
+        };
+        service.roomInformation.playerName = ROOM_INFORMATION.playerName;
+        service.roomInformation.roomId = ROOM_INFORMATION.roomId;
+        service.roomInformation.timer = ROOM_INFORMATION.timer;
+        service.roomInformation.isCreator = true;
+        // eslint-disable-next-line dot-notation
+        const spyOnSocket = spyOn(service['clientSocket'], 'send');
+        socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart, socketIDUserRoom);
+
+        expect(spyOnSocket).toHaveBeenCalledWith('createScrabbleGame', gameScrabbleInformation);
+    });
     it('should reset the room Information', () => {
         const roomInformationUpdated: RoomInformation = {
             playerName: ['Vincent', 'Marcel'],
@@ -251,7 +272,6 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.roomId).toEqual('1');
         expect(service.roomInformation.statusGame).toEqual('Adversaire Trouvé');
         expect(service.roomInformation.isCreator).toEqual(true);
-        // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         service['resetRoomInformation']();
         expect(service.roomInformation.playerName).toEqual([]);

@@ -1,40 +1,42 @@
+/* eslint-disable prettier/prettier */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { Coordinate } from '@common/coordinate';
 import { LetterTile } from '@common/letter-tile.class';
-export class Gameboard {
-    gameboardTiles: LetterTile[] = [];
+import { Inject } from 'typedi';
 
-    constructor(private boxMultiplierService: BoxMultiplierService) {
+const ROW_NUMBERS = 15;
+const COLUMN_NUMBERS = 15;
+
+export class Gameboard {
+    gameboardTiles: LetterTile[] = new Array();
+
+    constructor(@Inject() private boxMultiplierService: BoxMultiplierService) {
         this.createLetterTiles();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }
 
-    placeLetter(position: Coordinate, letter: string) {
-        // TODO : remove letter to chevalet
-        this.getLetterTile(position).setLetter(letter);
-        this.getLetterTile(position).isOccupied = true;
-        return true;
+    createLetterTiles() {
+        for (let i = 1; i <= ROW_NUMBERS; i++) {
+            for (let j = 1; j <= COLUMN_NUMBERS; j++) {
+                const letterTile: LetterTile = new LetterTile({ x: i, y: j });
+                this.gameboardTiles.push(letterTile);
+            }
+        }
     }
 
-    removeLetter(letterCoord: Coordinate) {
-        const gameboardCoord = this.getLetterTile(letterCoord);
-        gameboardCoord.setLetter('');
-        gameboardCoord.isOccupied = false;
-    }
-
-    getLetterTile(coordinate: Coordinate): LetterTile {
-        return this.gameboardTiles.filter((letterTile) => {
-            return letterTile.coordinate === coordinate;
+    getLetterTile(coord: Coordinate) {
+        return this.gameboardTiles.filter((gameboardTile) => {
+            return gameboardTile.coordinate === coord;
         })[0];
     }
 
-    private createLetterTiles(): void {
-        for (let i = 1; i < 15; i++) {
-            for (let j = 1; j < 15; j++) {
-                const position: Coordinate = { x: i, y: j };
-                const coord: LetterTile = new LetterTile(position);
-                this.gameboardTiles.push(coord);
-            }
-        }
+    placeLetter(position: Coordinate, letter: string) {
+        this.getLetterTile(position).setLetter(letter);
+        this.getLetterTile(position).isOccupied = true;
+    }
+
+    removeLetter(position: Coordinate) {
+        this.getLetterTile(position).setLetter('');
+        this.getLetterTile(position).isOccupied = false;
     }
 }

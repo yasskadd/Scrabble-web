@@ -6,8 +6,10 @@
         <div>score : {{ this.gameClientService.playerOne.score }}</div>
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
-    <div>x lettres disponibles sur le chevalet</div>
-    <div class="time" *ngIf="this.gameClientService.playerOneTurn">
+    <div id="playerNumberLettersRack" *nfIf="!this.gameClientService.playerOne.rack?.length < 7">
+        {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet
+    </div>
+    <div class="time" id="playerOneTimer" *ngIf="this.gameClientService.playerOneTurn">
         {{ this.gameClientService.timer }}
     </div>
     <div class="time" *ngIf="!this.gameClientService.playerOneTurn">--:--</div>
@@ -19,11 +21,25 @@
         <div>score : {{ this.gameClientService.secondPlayer.score }}</div>
     </div>
     <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
-    <div>x lettres disponibles sur le chevalet</div>
-    <div class="time" *ngIf="!this.gameClientService.playerOneTurn">
+    <div *nfIf="!this.gameClientService.secondPlayer.rack?.length < 7">
+        {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
+    </div>
+    <div class="time" id="playerTwoTimer" *ngIf="!this.gameClientService.playerOneTurn">
         {{ this.gameClientService.timer }}
     </div>
     <div class="time" *ngIf="this.gameClientService.playerOneTurn">--:--</div>
 </section>
-<div>x lettres disponibles dans la réserve</div>
-<p><button mat-raised-button>abandonner</button></p>
+<div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>
+<p><button id="abandonButton" *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button>abandonner</button></p>
+<p><button id="quitGame" *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button></p>
+<p id="winningMessage" *ngIf="this.gameClientService.isGameFinish">{{ this.gameClientService.winningMessage }}</p>
+<mat-slider
+    id="updateFontSlider"
+    thumbLabel
+    [displayWith]="formatLabel"
+    [(ngModel)]="value"
+    (click)="updateFontSize()"
+    step="1"
+    min="20"
+    max="30"
+></mat-slider>

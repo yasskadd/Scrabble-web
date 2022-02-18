@@ -23,6 +23,12 @@ describe('ClientSocketService', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('establishConnection should not call connect if the socket is not alive', () => {
+        const spy = spyOn(service, 'connect');
+        service.socket.connected = true;
+        service.establishConnection();
+        expect(spy).not.toHaveBeenCalled();
+    });
     it('isSocketAlive should return true if the socket is still connected', () => {
         service.socket.connected = true;
         const isAlive = service.isSocketAlive();
@@ -43,7 +49,6 @@ describe('ClientSocketService', () => {
 
     it('should call socket.on with an event', () => {
         const event = 'helloWorld';
-        // Reason : used for testing
         // eslint-disable-next-line
         const action = () => {};
         const spy = spyOn(service.socket, 'on');

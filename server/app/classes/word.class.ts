@@ -38,7 +38,7 @@ export class Word {
             gameboard.getLetterTile({ x: firstCoord.x++, y: firstCoord.y }).isOccupied
         )
             this.isHorizontal = true;
-        else this.isValid = false; // TODO : message d'erreur!!
+        else this.isValid = false;
     }
 
     private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {

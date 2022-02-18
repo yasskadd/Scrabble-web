@@ -1,4 +1,6 @@
-export const LETTERS = [
+import { Letter } from '@common/letter';
+
+export const LETTERS: Letter[] = [
     {
         value: 'a',
         quantity: 9,

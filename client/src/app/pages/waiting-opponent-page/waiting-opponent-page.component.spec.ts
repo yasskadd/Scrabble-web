@@ -1,6 +1,7 @@
-// import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,14 +19,12 @@ interface RoomInformation {
     statusGame: string;
 }
 const ROOM_INFORMATION: RoomInformation = {
-    playerName: ['Vincent', 'RICHARD'],
+    playerName: ['Vincent'],
     roomId: '1',
     isCreator: true,
     statusGame: 'En attente du joueur',
 };
 const TEST_ERROR = "La salle n'est plus disponible";
-// const TEST_ISCREATOR = true;
-// const TEST_ISNOTCREATOR = true;
 const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
 const MULTIPLAYER_CREATE_ROOM_ROUTE = 'classique/multijoueur/creer';
@@ -43,14 +42,20 @@ describe('WaitingOpponentPageComponent', () => {
     };
 
     beforeEach(async () => {
-        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['removeRoom', 'rejectOpponent', 'beginScrabbleGame'], {
-            roomInformation: ROOM_INFORMATION,
-            errorReason: TEST_ERROR_REASON,
-            isGameStarted: TEST_ISGAMESTARTED,
-        });
+        gameConfigurationServiceSpy = jasmine.createSpyObj(
+            'GameConfigurationService',
+            ['removeRoom', 'rejectOpponent', 'beginScrabbleGame', 'exitWaitingRoom'],
+            {
+                roomInformation: ROOM_INFORMATION,
+                errorReason: TEST_ERROR_REASON,
+                isGameStarted: TEST_ISGAMESTARTED,
+            },
+        );
 
         await TestBed.configureTestingModule({
             imports: [
+                MatIconModule,
+                MatCardModule,
                 MatSnackBarModule,
                 RouterTestingModule.withRoutes([
                     { path: MULTIPLAYER_CREATE_ROOM_ROUTE, component: StubComponent },
@@ -91,32 +96,100 @@ describe('WaitingOpponentPageComponent', () => {
     }));
 
     it('exitRoom() should navigate to /classique/multijoueur/creer if isCreated is true', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
         const spyRouter = spyOn(router, 'navigate');
         const expectedURL = '/' + MULTIPLAYER_CREATE_ROOM_ROUTE;
         component.exitRoom();
         expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
     });
 
-    // TODO: Fix this test later
-    // it('exitRoom() should navigate to /classique/multijoueur/rejoindre if isCreated is false', () => {
-    //     const roomInformationMock: RoomInformation = {
-    //         playerName: ['Vincent', 'RICHARD'],
-    //         roomId: '1',
-    //         isCreator: false,
-    //         statusGame: 'En attente du joueur',
-    //     };
-    //     gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['rejectOpponent', 'beginScrabbleGame'], {
-    //         roomInformation: roomInformationMock,
-    //         errorReason: TEST_ERROR_REASON,
-    //         isGameStarted: TEST_ISGAMESTARTED,
-    //     });
-    //     fixture.detectChanges();
-    //     const spyRouter = spyOn(router, 'navigate');
-    //     const expectedURL = '/' + MULTIPLAYER_JOIN_ROOM_ROUTE;
-    //     component.exitRoom();
-    //     expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
-    // });
+    it('exitRoom() should navigate to /classique/multijoueur/rejoindre if isCreated is false', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        const spyRouter = spyOn(router, 'navigate');
+        const expectedURL = '/' + MULTIPLAYER_JOIN_ROOM_ROUTE;
+        component.exitRoom();
+        expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
+    });
 
+    it('exitRoom() should call gameConfiguration.exitWaitingRoom if you exit the waiting room while waiting for the other player to accept', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        component.exitRoom(true);
+        expect(gameConfigurationServiceSpy.exitWaitingRoom).toHaveBeenCalled();
+    });
+
+    it('should have a button to start the game when you created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        expect(button).toBeTruthy();
+    });
+
+    it('should not have a button to start the game when you did not created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        expect(button).toBeFalsy();
+    });
+    it('should have a button to reject the opponent when you created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.rejectButton');
+        expect(button).toBeTruthy();
+    });
+
+    it('should  not have a button to reject the opponent when you did not created the game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.rejectButton');
+        expect(button).toBeTruthy();
+    });
+    it('should have a mat progress bar when you are waiting for the other player to accept your invitation', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        const progressBar = fixture.debugElement.nativeElement.querySelector('mat-progress-bar');
+        expect(progressBar).toBeTruthy();
+    });
+    it('should have a mat progress bar when you are waiting for an other player to join your game', () => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = '';
+        fixture.detectChanges();
+        const progressBar = fixture.debugElement.nativeElement.querySelector('mat-progress-bar');
+
+        expect(progressBar).toBeTruthy();
+    });
+
+    it('should not have a mat progress bar when a second player join the waiting room', () => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const progressBar = fixture.debugElement.nativeElement.querySelector('mat-progress-bar');
+        expect(progressBar).toBeFalsy();
+    });
+
+    it('should call startGame() when the startButton is pressed', fakeAsync(() => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const spy = spyOn(component, 'startGame');
+        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should call rejectOpponent() when the rejectButton is pressed', fakeAsync(() => {
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const spy = spyOn(component, 'rejectOpponent');
+        const button = fixture.debugElement.nativeElement.querySelector('.rejectButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
     it('rejectOpponent should call gameconfiguration.rejectOponent()', () => {
         component.rejectOpponent();
         fixture.detectChanges();
