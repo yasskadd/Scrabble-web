@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
+import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Inject } from 'typedi';
@@ -25,7 +26,7 @@ export class Gameboard {
         }
     }
 
-    getCoord(coord: LetterTile) {
+    getCoord(coord: Coordinate) {
         if (coord.x > ROW_NUMBERS || coord.x < 1 || coord.y > ROW_NUMBERS || coord.y < 1) return {} as LetterTile;
         return this.gameboardCoords.filter((gameboardCoord) => {
             return gameboardCoord.x === coord.x && gameboardCoord.y === coord.y;

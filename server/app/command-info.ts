@@ -1,7 +1,7 @@
-import { LetterTile } from '@common/letter-tile.class';
+import { Coordinate } from '@common/coordinate';
 
 export interface CommandInfo {
-    firstCoordinate: LetterTile;
+    firstCoordinate: Coordinate;
     direction: string;
     lettersPlaced: string[];
 }
