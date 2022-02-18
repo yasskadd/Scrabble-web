@@ -1,21 +1,24 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/command-info';
+import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
+
+/* Service that verifies wether the letter placement on the board is valid from the infos of the command and returns an array of the LetterTiles: 
+- If the coordinate from the command is not occupied
+- If there is no letters out of bound */
 
 const COLUMN_NUMBER = 15;
 const ROW_NUMBER = 15;
 @Service()
 export class GameboardCoordinateValidationService {
     validateGameboardCoordinate(commandInfo: CommandInfo, gameboard: Gameboard): LetterTile[] {
-        // Validate firstCoord
         if (!this.isFirstCoordValid(commandInfo.firstCoordinate, gameboard)) return [];
         const coordOfLetters: LetterTile[] = new Array();
         let stringLength: number = commandInfo.lettersPlaced.length;
         let currentCoord: LetterTile = gameboard.getCoord(commandInfo.firstCoordinate);
-        const direction = commandInfo.direction;
-        if (direction === 'h') {
+        if (commandInfo.direction === 'h') {
             while (stringLength !== 0) {
                 if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
@@ -23,10 +26,9 @@ export class GameboardCoordinateValidationService {
                     coordOfLetters.push(new LetterTile(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }
-                const coordinate: LetterTile = new LetterTile(currentCoord.x + 1, currentCoord.y, currentCoord.letter);
-                currentCoord = coordinate;
+                currentCoord = new LetterTile(currentCoord.x + 1, currentCoord.y, currentCoord.letter);
             }
-        } else if (direction === 'v') {
+        } else if (commandInfo.direction === 'v') {
             while (stringLength !== 0) {
                 if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
@@ -34,19 +36,17 @@ export class GameboardCoordinateValidationService {
                     coordOfLetters.push(new LetterTile(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }
-                const coordinate: LetterTile = new LetterTile(currentCoord.x, currentCoord.y + 1, currentCoord.letter);
-                currentCoord = coordinate;
+                currentCoord = new LetterTile(currentCoord.x, currentCoord.y + 1, currentCoord.letter);
             }
         } else {
             const letter = { value: commandInfo.lettersPlaced.shift() as string } as Letter;
             coordOfLetters.push(new LetterTile(currentCoord.x, currentCoord.y, letter));
         }
-
         if (!this.verifyLettersContact(coordOfLetters, gameboard)) return [];
         return coordOfLetters;
     }
 
-    private isFirstCoordValid(firstCoord: LetterTile, gameboard: Gameboard): boolean {
+    private isFirstCoordValid(firstCoord: Coordinate, gameboard: Gameboard): boolean {
         if (Object.keys(gameboard.getCoord(firstCoord)).length === 0 || gameboard.getCoord(firstCoord) === undefined) return false;
         return gameboard.getCoord(firstCoord).isOccupied ? false : true;
     }
