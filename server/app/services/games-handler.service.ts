@@ -211,9 +211,6 @@ export class GamesHandler {
 
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
-        // Passed 2 hours trying to test it and it was hell | it won't matter since the other would have left the room
-        // socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
-        // socket.broadcast.to(room).emit(SocketEvents.GameEnd);
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         this.socketManager.emitRoom(room, SocketEvents.GameEnd);
         this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);

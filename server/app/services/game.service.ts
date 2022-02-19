@@ -39,7 +39,6 @@ export class Game {
 
     end(): void {
         this.turn.end(true);
-        // console.log("Game has ended");
     }
 
     skip(playerName: string): boolean {

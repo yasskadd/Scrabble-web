@@ -86,7 +86,6 @@ const GAME_INFO: GameInfo = {
 const TIME = 12;
 
 export class SocketClientServiceMock extends ClientSocketService {
-    // Reason : connect shouldn't actually connect
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     override connect() {}
 }
@@ -194,7 +193,6 @@ describe('GameClientService', () => {
         const spy = spyOn(service, 'findWinner' as never);
         service.isGameFinish = false;
         socketEmulator.peerSideEmit('endGame');
-        // expect(service.isGameFinish).toBeTruthy();
         expect(spy).toHaveBeenCalled();
     });
 
