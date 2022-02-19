@@ -13,7 +13,7 @@ export const MULTIPLIER_NUMBER_RATIO = 0.45;
 export const MULTIPLIER_TYPE_RATIO = 0.55;
 export const LETTER_TILE_RATIO = 0.8;
 export const LETTER_TILE_SIZE = 40;
-export const LETTER_WEIGHT_RATIO = 0.9;
+export const LETTER_WEIGHT_RATIO = 0.75;
 export const LETTER_CANVAS_HEIGHT = 75;
 export const LETTER_CANVAS_WIDTH = 300;
 

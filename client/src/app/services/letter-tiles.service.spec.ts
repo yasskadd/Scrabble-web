@@ -91,9 +91,9 @@ describe('LetterTilesService', () => {
         expect(measureTextSpy).toHaveBeenCalledTimes(1);
     });
 
-    it(' drawLetterWeight should have a middle baseline and center alignment ', () => {
+    it(' drawLetterWeight should have a middle baseline and left alignment ', () => {
         letterTilesService.drawLetterWeight(0, 1, '7');
-        expect(letterTilesService.gridContext.textAlign).toEqual('center');
+        expect(letterTilesService.gridContext.textAlign).toEqual('left');
         expect(letterTilesService.gridContext.textBaseline).toEqual('middle');
     });
 });

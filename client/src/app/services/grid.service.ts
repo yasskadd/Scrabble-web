@@ -21,8 +21,6 @@ export class GridService {
     boardTileSize: number;
     letterPointsSize: number;
 
-    size: number;
-    weightSize: number;
     gridContext: CanvasRenderingContext2D;
     constructor() {
         this.letterSize = constants.FONT_SIZE;
@@ -41,19 +39,9 @@ export class GridService {
             if (letterTile.isOccupied) {
                 this.drawBasicTile({ x: letterTile.x, y: letterTile.y });
                 this.drawLetter({ x: letterTile.x, y: letterTile.y }, letterTile.letter.value.toUpperCase());
-                this.drawLetterWeight({ x: letterTile.x, y: letterTile.y }, String(letterTile.letter.points));
+                this.drawLetterPoints({ x: letterTile.x, y: letterTile.y }, String(letterTile.letter.points));
             }
         });
-    }
-
-    drawLetterPoints(position: Coordinate, string: string) {
-        this.gridContext.textBaseline = 'middle';
-        this.gridContext.textAlign = 'center';
-        const width = this.gridContext.measureText(string).width;
-        const plusX = width * constants.POINTS_RATIO * 2;
-        const halfSize = this.letterSize / 2;
-        this.gridContext.font = this.letterSize * constants.POINTS_RATIO + 'px system-ui';
-        this.gridContext.fillText(string, position.x + this.letterSize / 2 + plusX, position.y + halfSize + this.letterSize / 2);
     }
 
     drawStar() {
@@ -214,18 +202,20 @@ export class GridService {
         this.gridContext.font = size + 'px system-ui';
     }
 
-    drawLetterWeight(position: Coordinate, string: string) {
+    drawLetterPoints(position: Coordinate, string: string) {
+        const weightSize = this.letterSize * constants.LETTER_WEIGHT_RATIO;
+        this.setFontSize(weightSize);
+        this.gridContext.fillStyle = 'black';
+        this.gridContext.textAlign = 'left';
         this.gridContext.textBaseline = 'middle';
-        this.gridContext.textAlign = 'center';
         const width = this.gridContext.measureText(string).width;
         const plusX = width * constants.LETTER_WEIGHT_RATIO;
-        const halfSize = this.size / 2;
-        this.gridContext.font = this.weightSize + 'px system-ui';
+        const halfSize = weightSize / 2;
         this.gridContext.fillText(
             string,
             GridService.squareWidth * position.x + GridService.halfSquareWidth + plusX,
             GridService.squareHeight * position.y + halfSize + GridService.halfSquareHeight,
-            this.size,
+            weightSize,
         );
     }
 }

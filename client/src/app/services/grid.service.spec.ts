@@ -81,9 +81,9 @@ describe('GridService', () => {
         expect(drawMiddleTileSpy).toHaveBeenCalled();
     });
 
-    it(' drawLetterPoints should have a middle baseline and center alignment ', () => {
+    it(' drawLetterPoints should have a middle baseline and left alignment ', () => {
         gridService.drawLetterPoints(POSITION_TEST, '1');
-        expect(gridService.gridContext.textAlign).toEqual('center');
+        expect(gridService.gridContext.textAlign).toEqual('left');
         expect(gridService.gridContext.textBaseline).toEqual('middle');
     });
 
@@ -244,9 +244,9 @@ describe('GridService', () => {
         expect(gridService.gridContext.font).toBe('23px system-ui');
     });
 
-    it(' drawLetterWeight should call measureText once', () => {
+    it(' drawLetterPoints should call measureText once', () => {
         const measureTextSpy = spyOn(gridService.gridContext, 'measureText').and.callThrough();
-        gridService.drawLetterWeight(POSITION_TEST, '6');
+        gridService.drawLetterPoints(POSITION_TEST, '6');
         expect(measureTextSpy).toHaveBeenCalledTimes(1);
     });
 });
