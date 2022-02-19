@@ -46,9 +46,11 @@ export class LetterTilesService {
 
     drawLetterWeight(x: number, y: number, string: string) {
         this.gridContext.textBaseline = 'middle';
-        this.gridContext.textAlign = 'center';
+        this.gridContext.textAlign = 'left';
         const width = this.gridContext.measureText(string).width;
-        const plusX = width * constants.LETTER_WEIGHT_RATIO;
+        const a = constants.LETTER_TILE_SIZE / 2;
+        const plusX = Math.abs(a - width);
+        // const plusX = width * ratio;
         const halfSize = this.fontSize / 2;
         this.gridContext.font = this.fontSize * constants.MULTIPLIER_NUMBER_RATIO + 'px system-ui';
         this.gridContext.fillText(string, x + constants.LETTER_TILE_SIZE / 2 + plusX, y + halfSize + constants.LETTER_TILE_SIZE / 2);
