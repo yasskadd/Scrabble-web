@@ -9,7 +9,7 @@ const COLUMN_NUMBER = 15;
 
 @Service()
 export class WordFinderService {
-    findNewWords(gameboard: Gameboard, coordList: LetterTile[]) {
+    findNewWords(gameboard: Gameboard, coordList: LetterTile[]): Word[] {
         const newWordsArray: Word[] = new Array();
         if (coordList.length === 0) return [];
         if (coordList.length === 1) {
@@ -28,7 +28,7 @@ export class WordFinderService {
         return newWordsArray;
     }
 
-    buildFirstWord(coordList: LetterTile[], gameboard: Gameboard): Word {
+    private buildFirstWord(coordList: LetterTile[], gameboard: Gameboard): Word {
         const isHorizontal: boolean | null = LetterTile.findDirection(coordList) as boolean | null;
         const currentCoord = coordList[0];
         let word: Word;
