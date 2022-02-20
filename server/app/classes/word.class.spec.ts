@@ -16,7 +16,7 @@ import { Word } from './word.class';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
 
-describe.only('Word', () => {
+describe('Word', () => {
     let word: Word;
     const letterA = {} as Letter;
     const letterB = {} as Letter;
