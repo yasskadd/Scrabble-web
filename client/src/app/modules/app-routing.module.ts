@@ -10,9 +10,9 @@ const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GamePageComponent },
-    { path: 'classique/multijoueur/rejoindre', component: MultiplayerJoinPageComponent },
-    { path: 'classique/multijoueur/creer', component: MultiplayerCreatePageComponent },
-    { path: 'classique/multijoueur/salleAttente', component: WaitingOpponentPageComponent },
+    { path: 'multijoueur/rejoindre/:id', component: MultiplayerJoinPageComponent },
+    { path: 'multijoueur/creer/:id', component: MultiplayerCreatePageComponent },
+    { path: 'multijoueur/salleAttente/:id', component: WaitingOpponentPageComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

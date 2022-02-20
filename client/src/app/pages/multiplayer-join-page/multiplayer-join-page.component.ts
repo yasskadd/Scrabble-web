@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
 @Component({
@@ -10,7 +10,15 @@ import { GameConfigurationService } from '@app/services/game-configuration.servi
 })
 export class MultiplayerJoinPageComponent implements OnInit {
     playerName: string;
-    constructor(public gameConfiguration: GameConfigurationService, public router: Router, public snackBar: MatSnackBar) {}
+    gameMode: string;
+    constructor(
+        public gameConfiguration: GameConfigurationService,
+        public router: Router,
+        public snackBar: MatSnackBar,
+        private activatedRoute: ActivatedRoute,
+    ) {
+        this.gameMode = this.activatedRoute.snapshot.params.id;
+    }
 
     ngOnInit(): void {
         this.listenToServerResponse();
@@ -27,9 +35,8 @@ export class MultiplayerJoinPageComponent implements OnInit {
         this.playerName = '';
     }
     joinRandomGame() {
-        // For Sprint 2
-        // this.gameConfiguration.joinRandomRoom(this.playerName);
-        // this.playerName = '';
+        this.gameConfiguration.joinRandomRoom(this.playerName);
+        this.playerName = '';
     }
 
     listenToServerResponse() {
@@ -44,7 +51,7 @@ export class MultiplayerJoinPageComponent implements OnInit {
     }
 
     navigatePage() {
-        this.router.navigate(['/classique/multijoueur/salleAttente']);
+        this.router.navigate([`/multijoueur/salleAttente/${this.gameMode}`]);
     }
     openSnackBar(reason: string): void {
         this.snackBar.open(reason, 'fermer', {

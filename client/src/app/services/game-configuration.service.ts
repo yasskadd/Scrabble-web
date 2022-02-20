@@ -152,6 +152,15 @@ export class GameConfigurationService {
         this.roomInformation.isCreator = false;
         this.availableRooms = [];
     }
+
+    joinRandomRoom(playerName: string) {
+        const random = Math.floor(Math.random() * this.availableRooms.length);
+        const roomToJoinId = this.availableRooms[random].id;
+        this.roomInformation.playerName[0] = playerName;
+        this.roomInformation.roomId = roomToJoinId;
+        this.clientSocket.send(SocketEvents.PlayerJoinGameAvailable, { id: roomToJoinId, name: playerName });
+    }
+
     private updateAvailableRooms(availableRooms: GameRoomClient[]) {
         this.availableRooms = availableRooms;
     }
