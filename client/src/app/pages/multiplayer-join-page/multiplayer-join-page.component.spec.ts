@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { ReplaySubject } from 'rxjs';
@@ -41,7 +41,19 @@ describe('MultiplayerJoinPageComponent', () => {
                 RouterTestingModule.withRoutes([{ path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent }]),
             ],
             declarations: [MultiplayerJoinPageComponent],
-            providers: [{ provide: GameConfigurationService, useValue: gameConfigurationServiceSpy }],
+            providers: [
+                { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            params: {
+                                id: 'classique',
+                            },
+                        },
+                    },
+                },
+            ],
         }).compileComponents();
     });
 
@@ -51,7 +63,6 @@ describe('MultiplayerJoinPageComponent', () => {
         fixture.detectChanges();
         router = TestBed.inject(Router);
         matSnackBar = TestBed.inject(MatSnackBar);
-        component.gameMode = 'classique';
     });
 
     it('should create', () => {
@@ -59,7 +70,6 @@ describe('MultiplayerJoinPageComponent', () => {
     });
 
     it('navigatePage should navigate to /multijoueur/salleAttente/classique', () => {
-        component.gameMode = 'classique';
         const spyRouter = spyOn(router, 'navigate');
         const expectedURL = '/' + MULTIPLAYER_WAITING_ROOM_ROUTE;
         component.navigatePage();

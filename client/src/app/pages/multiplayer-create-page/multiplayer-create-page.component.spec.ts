@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { MultiplayerCreatePageComponent } from './multiplayer-create-page.component';
@@ -42,7 +43,19 @@ describe('MultiplayerCreatePageComponent', () => {
             ],
 
             declarations: [MultiplayerCreatePageComponent],
-            providers: [{ provide: GameConfigurationService, useValue: gameConfigurationServiceSpy }],
+            providers: [
+                { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            params: {
+                                id: 'classique',
+                            },
+                        },
+                    },
+                },
+            ],
         }).compileComponents();
     });
 
@@ -51,7 +64,6 @@ describe('MultiplayerCreatePageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         location = TestBed.inject(Location);
-        component.gameMode = 'classique';
     });
 
     it('should create', () => {
@@ -59,7 +71,6 @@ describe('MultiplayerCreatePageComponent', () => {
     });
 
     it('navigatePage should redirect to salleAttente', fakeAsync(() => {
-        component.gameMode = 'classique';
         const expectedURL = '/' + MULTIPLAYER_WAITING_ROOM_ROUTE;
         component.navigatePage();
         tick();
@@ -96,14 +107,12 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).not.toHaveBeenCalled();
     }));
     it('createGame should call gameConfiguration.gameInitialization', fakeAsync(() => {
-        component.gameMode = 'classique';
         component.playerName = 'Vincent';
         component.createGame();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
     }));
 
     it('createGame should call gameConfiguration.gameInitialization with the good Value', fakeAsync(() => {
-        component.gameMode = 'classique';
         component.playerName = 'Vincent';
         const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: 'francais', mode: 'classique' };
         component.createGame();
@@ -111,7 +120,6 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
     }));
     it('createGame should call navigatePage', fakeAsync(() => {
-        component.gameMode = 'classique';
         const spy = spyOn(component, 'navigatePage');
         component.createGame();
 
@@ -121,7 +129,7 @@ describe('MultiplayerCreatePageComponent', () => {
         // Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const spy = spyOn<any>(component, 'resetInput');
-        component.gameMode = 'classique';
+
         component.createGame();
         expect(spy).toHaveBeenCalled();
     }));
