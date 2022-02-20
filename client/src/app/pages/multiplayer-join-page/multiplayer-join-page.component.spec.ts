@@ -135,22 +135,22 @@ describe('MultiplayerJoinPageComponent', () => {
         expect(spy).not.toHaveBeenCalled();
     }));
     it('joinRoom should call gameconfiguration.joinGame()', () => {
-        const NAME_PLAYER = 'Marcel';
-        component.playerName = NAME_PLAYER;
+        const playerName = 'Marcel';
+        component.playerName = playerName;
         fixture.detectChanges();
         component.joinRoom(gameConfigurationServiceSpy.availableRooms[0].id);
         fixture.detectChanges();
-        expect(gameConfigurationServiceSpy.joinGame).toHaveBeenCalledWith(gameConfigurationServiceSpy.availableRooms[0].id, NAME_PLAYER);
+        expect(gameConfigurationServiceSpy.joinGame).toHaveBeenCalledWith(gameConfigurationServiceSpy.availableRooms[0].id, playerName);
         expect(component.playerName).toEqual('');
     });
 
     it('joinRandomGame should call gameconfiguration.joinRandomRoom() with the player name', () => {
-        const NAME_PLAYER = 'Marcel';
-        component.playerName = NAME_PLAYER;
+        const playerName = 'Marcel';
+        component.playerName = playerName;
         fixture.detectChanges();
         component.joinRandomGame();
         fixture.detectChanges();
-        expect(gameConfigurationServiceSpy.joinRandomRoom).toHaveBeenCalledWith(NAME_PLAYER);
+        expect(gameConfigurationServiceSpy.joinRandomRoom).toHaveBeenCalledWith(playerName);
         expect(component.playerName).toEqual('');
     });
     it('Should call navigatePage when the room is Joinable', () => {
