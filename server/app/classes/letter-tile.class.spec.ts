@@ -35,19 +35,19 @@ describe('Coordinate', () => {
 
     it('findDirection should return Horizontal if all the coordinates are in the same line', () => {
         const coordList: LetterTile[] = [new LetterTile(0, 0, {} as Letter), new LetterTile(7, 0, {} as Letter), new LetterTile(9, 0, {} as Letter)];
-        const direction: string = LetterTile.findDirection(coordList);
+        const direction: boolean | null = LetterTile.findDirection(coordList);
         expect(direction).to.eql('Horizontal');
     });
 
     it('findDirection should return Vertical if all the coordinates are in the same column', () => {
         const coordList: LetterTile[] = [new LetterTile(0, 0, {} as Letter), new LetterTile(0, 7, {} as Letter), new LetterTile(0, 9, {} as Letter)];
-        const direction: string = LetterTile.findDirection(coordList);
+        const direction: boolean | null = LetterTile.findDirection(coordList);
         expect(direction).to.eql('Vertical');
     });
 
     it('findDirection should return None if all the coordinates not in the same line or column', () => {
         const coordList: LetterTile[] = [new LetterTile(0, 3, {} as Letter), new LetterTile(2, 8, {} as Letter), new LetterTile(5, 6, {} as Letter)];
-        const direction: string = LetterTile.findDirection(coordList);
+        const direction: boolean | null = LetterTile.findDirection(coordList);
         expect(direction).to.eql('None');
     });
 });

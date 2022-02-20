@@ -32,8 +32,8 @@ export class Word {
             const firstWord: Word = this.buildFirstWord(placedLettersCoords, gameboard);
             newWordsArray.push(firstWord);
             placedLettersCoords.forEach((coord) => {
-                const word: Word = this.buildWord(firstWord.isHorizontal, coord, gameboard);
-                if (word.coords?.length !== 0 && word.coords?.length !== 1) newWordsArray.push(word);
+                const word: Word = this.buildWord(!firstWord.isHorizontal, coord, gameboard);
+                if (word.coords?.length > 1) newWordsArray.push(word);
             });
         }
         return newWordsArray;
@@ -58,8 +58,8 @@ export class Word {
             else if (!isHorizontal && currentCoord.y !== ROW_NUMBER) currentCoord = { x: currentCoord.x, y: currentCoord.y + 1 } as Coordinate;
             else break;
         }
-        if (coordArray.length > 1) return new Word(true, coordArray);
-        else return new Word(true, []);
+        if (coordArray.length > 1) return new Word(isHorizontal, coordArray);
+        else return new Word(isHorizontal, []);
     }
 
     private static findFirstCoord(isHorizontal: boolean, coord: Coordinate, gameboard: Gameboard): Coordinate {
