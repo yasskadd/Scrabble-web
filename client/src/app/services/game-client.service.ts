@@ -42,14 +42,18 @@ export class GameClientService {
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
             this.letterReserveLength = this.getAllLetterReserve(letterReserveUpdated);
         });
+        this.clientSocketService.on(SocketEvents.GameEnd, () => {
+            if (this.winningMessage === '') {
+                this.findWinnerByScore();
+                this.isGameFinish = true;
+            }
+        });
+
         this.clientSocketService.on(SocketEvents.OpponentGameLeave, () => {
             this.playerOneTurn = false;
             this.isGameFinish = true;
+            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
         });
-        this.clientSocketService.on(SocketEvents.GameEnd, () => {
-            this.findWinner();
-        });
-
         this.clientSocketService.on(SocketEvents.ViewUpdate, (info: PlayInfo) => {
             this.playerOneTurn = info.activePlayer === this.playerOne.name;
             this.updateNewGameboard(info.gameboard);
@@ -78,6 +82,7 @@ export class GameClientService {
 
     abandonGame() {
         this.clientSocketService.send('AbandonGame');
+        this.clientSocketService.disconnect();
         this.playerOneTurn = false;
     }
 
@@ -85,15 +90,7 @@ export class GameClientService {
         this.clientSocketService.disconnect();
     }
 
-    private findWinner(): void {
-        if (this.isGameFinish) {
-            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
-        } else {
-            this.findWinnerByScore();
-        }
-    }
     private findWinnerByScore(): void {
-        this.isGameFinish = true;
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
         } else if (this.playerOne.score > this.secondPlayer.score) {

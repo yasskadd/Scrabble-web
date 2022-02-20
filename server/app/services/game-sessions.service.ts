@@ -87,7 +87,6 @@ export class GameSessions {
             if (tempTime === 0) {
                 const roomId = this.getRoomId(socket.id);
                 if (roomId !== null) {
-                    socket.broadcast.to(roomId).emit('user disconnect');
                     this.removeRoom(sio, roomId);
                 }
                 this.removeUserFromActiveUsers(socket.id);

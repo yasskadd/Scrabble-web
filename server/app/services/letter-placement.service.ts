@@ -44,7 +44,7 @@ export class LetterPlacementService {
         letterCoords.forEach((coord) => {
             gameboard.placeLetter(coord);
         });
-        const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
+        const words: Word[] = Word.findNewWords(gameboard, letterCoords);
         const wordValidationScore: number = this.dictionaryService.validateWords(words);
         if (wordValidationScore === 0) {
             letterCoords.forEach((coord) => {
@@ -59,7 +59,7 @@ export class LetterPlacementService {
     }
 
     private getLettersCoord(commandInfo: CommandInfo, gameboard: Gameboard): LetterTile[] {
-        return this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
+        return gameboard.validateGameboardCoordinate(commandInfo);
     }
 
     private isPlacementValid(lettersCoords: LetterTile[]): boolean {
@@ -73,6 +73,7 @@ export class LetterPlacementService {
     private associateLettersWithRack(placedLettersCoord: LetterTile[], player: Player): (Letter | undefined)[] {
         const tempRack = this.createTempRack(player);
         const letters = placedLettersCoord.map((coord) => {
+            // BLANK LETTER IMPLEMENTATION
             if (coord.letter.value === coord.letter.value.toUpperCase()) {
                 coord.letter.isBlankLetter = true;
                 coord.letter.points = 0;
@@ -94,6 +95,7 @@ export class LetterPlacementService {
     }
 
     private createLetterPoints(letterCoords: LetterTile[], lettersFromRack: Letter[]): (LetterTile | undefined)[] {
+        // create new letterCoords
         const newLetterCoords = letterCoords.map((coord) => {
             const index = lettersFromRack.findIndex((letter) => {
                 return letter.value === coord.letter.value;
