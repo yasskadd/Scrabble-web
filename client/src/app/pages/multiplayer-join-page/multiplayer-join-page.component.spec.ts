@@ -13,7 +13,10 @@ import { MultiplayerJoinPageComponent } from './multiplayer-join-page.component'
     template: '',
 })
 export class StubComponent {}
-const TEST_ROOM = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' }];
+const TEST_ROOM = [
+    { id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' },
+    { id: '2', users: ['Paul', 'Jean'], dictionary: 'francais', timer: 1, mode: 'classique' },
+];
 const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const TEST_ERROR = "La salle n'est plus disponible";
 const TEST_ERROR_REASON = new ReplaySubject<string>(1);
@@ -26,12 +29,16 @@ describe('MultiplayerJoinPageComponent', () => {
     let router: Router;
     let matSnackBar: MatSnackBar;
     beforeEach(async () => {
-        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['joinGame', 'joinPage', 'resetRoomInformation'], {
-            availableRooms: TEST_ROOM,
-            errorReason: TEST_ERROR_REASON,
-            isGameStarted: TEST_ISGAMESTARTED,
-            isRoomJoinable: TEST_ISROOMJOINABLE,
-        });
+        gameConfigurationServiceSpy = jasmine.createSpyObj(
+            'GameConfigurationService',
+            ['joinGame', 'joinPage', 'resetRoomInformation', 'joinRandomRoom'],
+            {
+                availableRooms: TEST_ROOM,
+                errorReason: TEST_ERROR_REASON,
+                isGameStarted: TEST_ISGAMESTARTED,
+                isRoomJoinable: TEST_ISROOMJOINABLE,
+            },
+        );
         await TestBed.configureTestingModule({
             imports: [
                 BrowserAnimationsModule,
@@ -97,6 +104,27 @@ describe('MultiplayerJoinPageComponent', () => {
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
     }));
+
+    it('should call joinRandomGame() when the joinRandomGame is pressed', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        fixture.detectChanges();
+        const spy = spyOn(component, 'joinRandomGame');
+        const button = fixture.debugElement.nativeElement.querySelector('.joinRandomGameButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should not be able to call joinRandomGame()when the player did not enter his name', fakeAsync(() => {
+        fixture.detectChanges();
+        const spy = spyOn(component, 'joinRandomGame');
+        const button = fixture.debugElement.nativeElement.querySelector('.joinRandomGameButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).not.toHaveBeenCalled();
+    }));
     it('should not be able to call joinRoom() when the player did not enter his name', fakeAsync(() => {
         fixture.detectChanges();
         const spy = spyOn(component, 'joinRoom');
@@ -116,6 +144,15 @@ describe('MultiplayerJoinPageComponent', () => {
         expect(component.playerName).toEqual('');
     });
 
+    it('joinRandomGame should call gameconfiguration.joinRandomRoom() with the player name', () => {
+        const NAME_PLAYER = 'Marcel';
+        component.playerName = NAME_PLAYER;
+        fixture.detectChanges();
+        component.joinRandomGame();
+        fixture.detectChanges();
+        expect(gameConfigurationServiceSpy.joinRandomRoom).toHaveBeenCalledWith(NAME_PLAYER);
+        expect(component.playerName).toEqual('');
+    });
     it('Should call navigatePage when the room is Joinable', () => {
         const spy = spyOn(component, 'navigatePage');
         gameConfigurationServiceSpy.isRoomJoinable.next(true);
@@ -139,6 +176,12 @@ describe('MultiplayerJoinPageComponent', () => {
         fixture.detectChanges();
         const text = fixture.debugElement.nativeElement.querySelector('.noRoomAvailable');
         expect(text).toBeFalsy();
+    });
+
+    it('Should have a button to join RandomGame if there is room available', () => {
+        fixture.detectChanges();
+        const text = fixture.debugElement.nativeElement.querySelector('.joinRandomGameButton');
+        expect(text).toBeTruthy();
     });
     it('Should open a snackBar when there an error while trying to join a multiplayer game', () => {
         const spy = spyOn(component, 'openSnackBar');
