@@ -17,7 +17,7 @@ import { MultiplayerCreatePageComponent } from './multiplayer-create-page.compon
 })
 export class StubComponent {}
 
-const MULTIPLAYER_CREATE_ROOM_ROUTE = 'classique/multijoueur/salleAttente';
+const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const RETURN_ROUTE = 'home';
 describe('MultiplayerCreatePageComponent', () => {
     let component: MultiplayerCreatePageComponent;
@@ -25,7 +25,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let location: Location;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     beforeEach(async () => {
-        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['gameInitialization']);
+        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['gameInitialization', 'resetRoomInformation']);
         await TestBed.configureTestingModule({
             imports: [
                 BrowserAnimationsModule,
@@ -36,7 +36,7 @@ describe('MultiplayerCreatePageComponent', () => {
                 MatIconModule,
                 MatCardModule,
                 RouterTestingModule.withRoutes([
-                    { path: MULTIPLAYER_CREATE_ROOM_ROUTE, component: StubComponent },
+                    { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
                     { path: RETURN_ROUTE, component: StubComponent },
                 ]),
             ],
@@ -51,6 +51,7 @@ describe('MultiplayerCreatePageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         location = TestBed.inject(Location);
+        component.gameMode = 'classique';
     });
 
     it('should create', () => {
@@ -58,7 +59,8 @@ describe('MultiplayerCreatePageComponent', () => {
     });
 
     it('navigatePage should redirect to salleAttente', fakeAsync(() => {
-        const expectedURL = '/' + MULTIPLAYER_CREATE_ROOM_ROUTE;
+        component.gameMode = 'classique';
+        const expectedURL = '/' + MULTIPLAYER_WAITING_ROOM_ROUTE;
         component.navigatePage();
         tick();
         fixture.detectChanges();
@@ -94,12 +96,14 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).not.toHaveBeenCalled();
     }));
     it('createGame should call gameConfiguration.gameInitialization', fakeAsync(() => {
+        component.gameMode = 'classique';
         component.playerName = 'Vincent';
         component.createGame();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
     }));
 
     it('createGame should call gameConfiguration.gameInitialization with the good Value', fakeAsync(() => {
+        component.gameMode = 'classique';
         component.playerName = 'Vincent';
         const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: 'francais', mode: 'classique' };
         component.createGame();
@@ -107,6 +111,7 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
     }));
     it('createGame should call navigatePage', fakeAsync(() => {
+        component.gameMode = 'classique';
         const spy = spyOn(component, 'navigatePage');
         component.createGame();
 
@@ -116,7 +121,7 @@ describe('MultiplayerCreatePageComponent', () => {
         // Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const spy = spyOn<any>(component, 'resetInput');
-
+        component.gameMode = 'classique';
         component.createGame();
         expect(spy).toHaveBeenCalled();
     }));

@@ -14,7 +14,7 @@ import { MultiplayerJoinPageComponent } from './multiplayer-join-page.component'
 })
 export class StubComponent {}
 const TEST_ROOM = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' }];
-const MULTIPLAYER_CREATE_ROOM_ROUTE = 'classique/multijoueur/salleAttente';
+const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const TEST_ERROR = "La salle n'est plus disponible";
 const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<boolean>(1);
@@ -26,7 +26,7 @@ describe('MultiplayerJoinPageComponent', () => {
     let router: Router;
     let matSnackBar: MatSnackBar;
     beforeEach(async () => {
-        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['joinGame', 'joinPage'], {
+        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['joinGame', 'joinPage', 'resetRoomInformation'], {
             availableRooms: TEST_ROOM,
             errorReason: TEST_ERROR_REASON,
             isGameStarted: TEST_ISGAMESTARTED,
@@ -38,7 +38,7 @@ describe('MultiplayerJoinPageComponent', () => {
                 MatCardModule,
                 FormsModule,
                 MatSnackBarModule,
-                RouterTestingModule.withRoutes([{ path: MULTIPLAYER_CREATE_ROOM_ROUTE, component: StubComponent }]),
+                RouterTestingModule.withRoutes([{ path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent }]),
             ],
             declarations: [MultiplayerJoinPageComponent],
             providers: [{ provide: GameConfigurationService, useValue: gameConfigurationServiceSpy }],
@@ -51,15 +51,17 @@ describe('MultiplayerJoinPageComponent', () => {
         fixture.detectChanges();
         router = TestBed.inject(Router);
         matSnackBar = TestBed.inject(MatSnackBar);
+        component.gameMode = 'classique';
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
     });
 
-    it('navigatePage should navigate to /classique/multijoueur/salleAttente', () => {
+    it('navigatePage should navigate to /multijoueur/salleAttente/classique', () => {
+        component.gameMode = 'classique';
         const spyRouter = spyOn(router, 'navigate');
-        const expectedURL = '/' + MULTIPLAYER_CREATE_ROOM_ROUTE;
+        const expectedURL = '/' + MULTIPLAYER_WAITING_ROOM_ROUTE;
         component.navigatePage();
         expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
     });

@@ -189,8 +189,8 @@ describe('GameClientService', () => {
         expect(service.isGameFinish).toBeTruthy();
     });
 
-    it('should call findWinner when the endGame event is emit', () => {
-        const spy = spyOn(service, 'findWinner' as never);
+    it('should call findWinnerByScore when the endGame event is emit and the game is not finish already', () => {
+        const spy = spyOn(service, 'findWinnerByScore' as never);
         service.isGameFinish = false;
         socketEmulator.peerSideEmit('endGame');
         expect(spy).toHaveBeenCalled();
@@ -201,13 +201,6 @@ describe('GameClientService', () => {
         const spy = spyOn(service['clientSocketService'], 'send');
         service.abandonGame();
         expect(spy).toHaveBeenCalledOnceWith('AbandonGame');
-    });
-
-    it('should disconnect the player if he quit the game', () => {
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocketService'], 'disconnect');
-        service.quitGame();
-        expect(spy).toHaveBeenCalled();
     });
     // it('should emit a winningMessage if the game is finish and the other player is not connected anymore', () => {
     //     const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";

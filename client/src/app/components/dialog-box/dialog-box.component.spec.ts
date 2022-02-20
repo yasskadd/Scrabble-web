@@ -11,9 +11,9 @@ import { DialogBoxComponent } from './dialog-box.component';
     template: '',
 })
 class StubComponent {}
-const DATA_GAME_MODE = 'Classique';
-const MULTIPLAYER_CREATE_ROUTE = DATA_GAME_MODE + '/multijoueur/creer';
-const MULTIPLAYER_JOIN_ROUTE = DATA_GAME_MODE + '/multijoueur/rejoindre';
+const DATA_GAME_MODE = 'classique';
+const MULTIPLAYER_CREATE_ROUTE = 'multijoueur/creer/' + DATA_GAME_MODE;
+const MULTIPLAYER_JOIN_ROUTE = 'multijoueur/rejoindre/' + DATA_GAME_MODE;
 
 describe('DialogBoxComponent', () => {
     let component: DialogBoxComponent;

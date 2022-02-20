@@ -27,8 +27,9 @@ const ROOM_INFORMATION: RoomInformation = {
 const TEST_ERROR = "La salle n'est plus disponible";
 const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
-const MULTIPLAYER_CREATE_ROOM_ROUTE = 'classique/multijoueur/creer';
-const MULTIPLAYER_JOIN_ROOM_ROUTE = 'classique/multijoueur/rejoindre';
+const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
+const MULTIPLAYER_CREATE_ROOM_ROUTE = 'multijoueur/creer/classique';
+const MULTIPLAYER_JOIN_ROOM_ROUTE = 'multijoueur/rejoindre/classique';
 const MULTIPLAYER_GAME_PAGE = 'game';
 describe('WaitingOpponentPageComponent', () => {
     let component: WaitingOpponentPageComponent;
@@ -61,6 +62,7 @@ describe('WaitingOpponentPageComponent', () => {
                     { path: MULTIPLAYER_CREATE_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_JOIN_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_GAME_PAGE, component: StubComponent },
+                    { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
                 ]),
             ],
 
@@ -78,6 +80,7 @@ describe('WaitingOpponentPageComponent', () => {
         fixture.detectChanges();
         router = TestBed.inject(Router);
         matSnackBar = TestBed.inject(MatSnackBar);
+        component.gameMode = 'classique';
     });
 
     it('should create', () => {
@@ -95,7 +98,8 @@ describe('WaitingOpponentPageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('exitRoom() should navigate to /classique/multijoueur/creer if isCreated is true', () => {
+    it('exitRoom() should navigate to multijoueur/creer/classique if isCreated is true', () => {
+        component.gameMode = 'classique';
         gameConfigurationServiceSpy.roomInformation.isCreator = true;
         const spyRouter = spyOn(router, 'navigate');
         const expectedURL = '/' + MULTIPLAYER_CREATE_ROOM_ROUTE;
@@ -103,7 +107,8 @@ describe('WaitingOpponentPageComponent', () => {
         expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
     });
 
-    it('exitRoom() should navigate to /classique/multijoueur/rejoindre if isCreated is false', () => {
+    it('exitRoom() should navigate to /multijoueur/rejoindre/classique if isCreated is false', () => {
+        component.gameMode = 'classique';
         gameConfigurationServiceSpy.roomInformation.isCreator = false;
         fixture.detectChanges();
         const spyRouter = spyOn(router, 'navigate');
@@ -160,6 +165,7 @@ describe('WaitingOpponentPageComponent', () => {
     });
 
     it('should not have a mat progress bar when a second player join the waiting room', () => {
+        component.gameMode = 'classique';
         gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
         gameConfigurationServiceSpy.roomInformation.isCreator = true;
         fixture.detectChanges();
