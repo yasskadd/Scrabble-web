@@ -144,14 +144,15 @@ export class GameConfigurationService {
     beginScrabbleGame() {
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
-    private updateAvailableRooms(availableRooms: GameRoomClient[]) {
-        this.availableRooms = availableRooms;
-    }
 
-    private resetRoomInformation() {
+    resetRoomInformation() {
         this.roomInformation.roomId = '';
         this.roomInformation.playerName = [];
         this.roomInformation.statusGame = '';
         this.roomInformation.isCreator = false;
+        this.availableRooms = [];
+    }
+    private updateAvailableRooms(availableRooms: GameRoomClient[]) {
+        this.availableRooms = availableRooms;
     }
 }
