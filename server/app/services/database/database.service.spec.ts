@@ -1,30 +1,24 @@
-// import { expect } from 'chai';
-// import { SinonFakeTimers, useFakeTimers } from 'sinon';
+import { MongoMemoryServer } from 'mongodb-memory-server-core';
+import { DatabaseService } from './database.service';
 
-// describe('Date Service', () => {
-//     let dateService: DateService;
-//     let clock: SinonFakeTimers;
+describe.only('Database Service', () => {
+    let databaseService: DatabaseService;
+    let mongod: MongoMemoryServer;
 
-//     beforeEach(async () => {
-//         dateService = Container.get(DateService);
-//         clock = useFakeTimers();
-//     });
+    beforeEach(async () => {
+        mongod = await MongoMemoryServer.create();
+        mongod.start();
+        databaseService = new DatabaseService();
+        // eslint-disable-next-line dot-notation
+        DatabaseService['dbName'] = mongod.instanceInfo?.dbName as string;
+        // eslint-disable-next-line dot-notation
+        DatabaseService['dbUrl'] = mongod.getUri();
+    });
 
-//     afterEach(() => {
-//         clock.restore();
-//     });
-
-//     it('currentTime should return a valid message', async () => {
-//         const result = await dateService.currentTime();
-//         expect(result.title).to.equal('Time');
-//         expect(result.body).to.equal(new Date(0).toString());
-//     });
-
-//     it('currentTime should return different dates if called later', async () => {
-//         const { body: currentTime } = await dateService.currentTime();
-//         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-//         clock.tick(5000);
-//         const { body: now } = await dateService.currentTime();
-//         expect(new Date(currentTime)).to.be.below(new Date(now));
-//     });
-// });
+    // it('the first connect() should connect to the server', async () => {
+    //     // eslint-disable-next-line dot-notation
+    //     databaseService['addDocument']({ godOfWar: 'kratos' });
+    //     // eslint-disable-next-line dot-notation
+    //     expect(databaseService['collection'] !== undefined).to.be.equal(true);
+    // });
+});
