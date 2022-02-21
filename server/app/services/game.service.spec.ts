@@ -138,6 +138,7 @@ describe('Game tests', () => {
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
             letterReserveService.totalQuantity.returns(1);
             letterReserveService.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
+            letterReserveService.generateLetters.returns([letterA]);
             game.play(player1.name, commandInfo);
             expect(letterReserveService.generateLetters.calledWith(1)).to.be.true;
         });
@@ -147,6 +148,7 @@ describe('Game tests', () => {
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
             letterReserveService.totalQuantity.returns(commandInfo.lettersPlaced.length);
+            letterReserveService.generateLetters.returns([letterA, letterA]);
             game.play(player1.name, commandInfo);
             expect(letterReserveService.generateLetters.calledWith(commandInfo.lettersPlaced.length)).to.be.true;
         });
@@ -177,6 +179,7 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
+            letterReserveService.generateLetters.returns([letterA, letterA]);
             letterReserveService.isEmpty.returns(false);
             game.play(player1.name, commandInfo);
             expect(turn.end.called).to.be.true;
@@ -187,7 +190,7 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
-            player2.rack = [];
+            letterReserveService.generateLetters.returns([letterA, letterA]);
             game.play(player2.name, commandInfo);
             expect(turn.end.called).to.be.true;
             expect(turn.resetSkipCounter.called).to.be.true;
