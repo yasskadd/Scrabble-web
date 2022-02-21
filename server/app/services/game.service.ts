@@ -63,7 +63,11 @@ export class Game {
             gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player1, this.gameboard);
             // TODO: test to do
             if (gameboard[0] === true) {
-                this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
+                if (this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
+                    this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, this.player1.rack);
+                } else {
+                    this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
+                }
             }
 
             if (this.player1.rackIsEmpty() && this.letterReserve.isEmpty()) {
@@ -86,8 +90,13 @@ export class Game {
             gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
             // TODO: test to do
             if (gameboard[0] === true) {
-                this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);
+                if (this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
+                    this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, this.player1.rack);
+                } else {
+                    this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
+                }
             }
+
             if (this.player2.rackIsEmpty() && this.letterReserve.isEmpty()) {
                 this.end();
             } else {

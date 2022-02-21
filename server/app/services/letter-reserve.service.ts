@@ -109,4 +109,13 @@ export class LetterReserveService {
     isEmpty(): boolean {
         return this.lettersReserve.length === 0;
     }
+
+    totalQuantity(): number {
+        const total = this.lettersReserve.map((letter) => {
+            return letter.quantity;
+        });
+        return total.reduce((acc, quantity) => {
+            return acc + quantity;
+        });
+    }
 }
