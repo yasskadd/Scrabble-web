@@ -12,7 +12,7 @@ import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 
-describe('Game tests', () => {
+describe.only('Game tests', () => {
     let player1: Player;
     let player2: Player;
     let turn: SinonStubbedInstance<Turn> & Turn;
@@ -246,5 +246,13 @@ describe('Game tests', () => {
         game.abandon();
         expect(endSpy.called).to.be.true;
         expect(turn.end.called).to.be.true;
+    });
+
+    it('getPlayer() should called return the player1 if the name entered as argument is player1', () => {
+        expect(game.getPlayer('player1')).to.be.equal(player1);
+    });
+
+    it('getPlayer() should called return the player2 if the name entered as argument is player2', () => {
+        expect(game.getPlayer('player2')).to.be.equal(player2);
     });
 });

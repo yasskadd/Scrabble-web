@@ -131,7 +131,8 @@ export class Game {
         this.end();
     }
 
-    getPlayer(playerName: string): Player | undefined {
-        return this.player1.name === playerName ? this.player1 : this.player2.name === playerName ? this.player2 : undefined;
+    getPlayer(playerName: string): Player {
+        if (this.player1.name === playerName) return this.player1;
+        else return this.player2;
     }
 }
