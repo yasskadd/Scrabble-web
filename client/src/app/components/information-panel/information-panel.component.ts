@@ -14,12 +14,7 @@ export class InformationPanelComponent {
     value: number;
     private readonly dialogWidth: string = '25%';
 
-    constructor(
-        public gridService: GridService,
-        public gameClientService: GameClientService,
-        public dialog: MatDialog,
-        public router: Router,
-    ) {}
+    constructor(public gridService: GridService, public gameClientService: GameClientService, public dialog: MatDialog, public router: Router) {}
 
     formatLabel(value: number): string {
         return value + 'px';

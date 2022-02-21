@@ -54,6 +54,10 @@ export class ChatboxHandlerService {
         this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
     }
 
+    resetMessage() {
+        this.messages = [];
+    }
+
     private configureBaseSocketFeatures(): void {
         this.clientSocket.on(SocketEvents.GameMessage, (broadcastMessage: string) => {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
