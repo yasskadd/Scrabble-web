@@ -10,7 +10,8 @@ import { GameConfigurationService } from './game-configuration.service';
 // const VALID_SYNTAX_REGEX_STRING = '^!aide|^!placer|^!(é|e)changer|^!passer';
 // const VALID_SYNTAX_REGEX = new RegExp(VALID_SYNTAX_REGEX_STRING);
 const VALID_COMMAND_REGEX_STRING =
-    '^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
+    // eslint-disable-next-line max-len
+    '^!r(é|e)serve$|^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
 const VALID_COMMAND_REGEX = new RegExp(VALID_COMMAND_REGEX_STRING);
 const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
@@ -19,7 +20,7 @@ const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
     providedIn: 'root',
 })
 export class ChatboxHandlerService {
-    private static readonly syntaxRegexString = '^!aide|^!placer|^!(é|e)changer|^!passer';
+    private static readonly syntaxRegexString = '^!r(é|e)serve|^!aide|^!placer|^!(é|e)changer|^!passer';
     messages: ChatboxMessage[];
     private readonly validSyntaxRegex = RegExp(ChatboxHandlerService.syntaxRegexString);
 
@@ -71,6 +72,10 @@ export class ChatboxHandlerService {
         this.clientSocket.on(SocketEvents.GameEnd, () => {
             this.endGameMessage();
         });
+
+        this.clientSocket.on('allReserveLetters', (letterReserveUpdated: Letter[]) => {
+            console.log(letterReserveUpdated);
+        });
     }
 
     private sendMessage(message: string): void {
@@ -91,6 +96,10 @@ export class ChatboxHandlerService {
             }
             case '!passer': {
                 this.clientSocket.send(SocketEvents.Skip);
+                break;
+            }
+            case '!reserve': {
+                this.clientSocket.send('reserveCommande');
                 break;
             }
             // No default
