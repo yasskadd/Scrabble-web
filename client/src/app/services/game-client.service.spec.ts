@@ -8,7 +8,6 @@ import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
-import { LetterTilesService } from './letter-tiles.service';
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
@@ -94,10 +93,8 @@ describe('GameClientService', () => {
     let socketEmulator: SocketTestEmulator;
     let socketServiceMock: SocketClientServiceMock;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
-    let letterTilesServiceSpy: jasmine.SpyObj<LetterTilesService>;
     beforeEach(() => {
-        gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid']);
-        letterTilesServiceSpy = jasmine.createSpyObj('LetterTilesService', ['drawRack']);
+        gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid', 'drawRack']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketEmulator as unknown as Socket;
@@ -105,7 +102,6 @@ describe('GameClientService', () => {
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },
                 { provide: GridService, useValue: gridServiceSpy },
-                { provide: LetterTilesService, useValue: letterTilesServiceSpy },
             ],
         });
         service = TestBed.inject(GameClientService);
@@ -189,8 +185,8 @@ describe('GameClientService', () => {
         expect(service.isGameFinish).toBeTruthy();
     });
 
-    it('should call findWinner when the endGame event is emit', () => {
-        const spy = spyOn(service, 'findWinner' as never);
+    it('should call findWinnerByScore when the endGame event is emit and the game is not finish already', () => {
+        const spy = spyOn(service, 'findWinnerByScore' as never);
         service.isGameFinish = false;
         socketEmulator.peerSideEmit('endGame');
         expect(spy).toHaveBeenCalled();
@@ -203,27 +199,19 @@ describe('GameClientService', () => {
         expect(spy).toHaveBeenCalledOnceWith('AbandonGame');
     });
 
-    it('should disconnect the player if he quit the game', () => {
+    it('should emit quitGame to the server if the player quit the game', () => {
         // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocketService'], 'disconnect');
+        const spy = spyOn(service['clientSocketService'], 'send');
         service.quitGame();
-        expect(spy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledOnceWith('quitGame');
     });
-    it('should emit a winningMessage if the game is finish and the other player is not connected anymore', () => {
-        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
-        service.isGameFinish = true;
-        // eslint-disable-next-line dot-notation
-        service['findWinner']();
-        expect(service.winningMessage).toEqual(messageWinner);
-    });
-    it('should call findWinnerByScore if it is the end of the game and the two player are still in the game', () => {
-        service.playerOne = PLAYER_ONE;
-        service.secondPlayer = PLAYER_TWO;
+    it('should not call findWinnerByScore if the game is already finish', () => {
         const spy = spyOn(service, 'findWinnerByScore' as never);
-        // eslint-disable-next-line dot-notation
-        service['findWinner']();
-        // eslint-disable-next-line dot-notation
-        expect(spy).toHaveBeenCalled();
+        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
+        service.winningMessage = messageWinner;
+        service.isGameFinish = true;
+        socketEmulator.peerSideEmit(SocketEvents.GameEnd);
+        expect(spy).not.toHaveBeenCalled();
     });
     it('should emit a message that say that the two player have the same score', () => {
         service.playerOne = PLAYER_ONE;

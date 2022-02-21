@@ -338,6 +338,13 @@ describe('ChatboxHandlerService', () => {
         service['sendCommand'](TEST_COMMAND);
         expect(spy).toHaveBeenCalled();
     });
+
+    it('resetMessage should reset the array of message', () => {
+        service.messages = [{ type: 'system-message', data: 'Fin de la partie : lettres restantes' }];
+        expect(service.messages.length).toEqual(1);
+        service.resetMessage();
+        expect(service.messages.length).toEqual(0);
+    });
     it('sendCommand() should call emit an event to the server if the command valid is to skip the turn', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation

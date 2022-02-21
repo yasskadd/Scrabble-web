@@ -4,7 +4,6 @@ import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
-import { LetterTilesService } from './letter-tiles.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
@@ -23,7 +22,7 @@ export class GameClientService {
     isGameFinish: boolean;
     winningMessage: string;
 
-    constructor(private gridService: GridService, private letterTilesService: LetterTilesService, private clientSocketService: ClientSocketService) {
+    constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
@@ -42,14 +41,18 @@ export class GameClientService {
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
             this.letterReserveLength = this.getAllLetterReserve(letterReserveUpdated);
         });
+        this.clientSocketService.on(SocketEvents.GameEnd, () => {
+            if (this.winningMessage === '') {
+                this.findWinnerByScore();
+                this.isGameFinish = true;
+            }
+        });
+
         this.clientSocketService.on(SocketEvents.OpponentGameLeave, () => {
             this.playerOneTurn = false;
             this.isGameFinish = true;
+            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
         });
-        this.clientSocketService.on(SocketEvents.GameEnd, () => {
-            this.findWinner();
-        });
-
         this.clientSocketService.on(SocketEvents.ViewUpdate, (info: PlayInfo) => {
             this.playerOneTurn = info.activePlayer === this.playerOne.name;
             this.updateNewGameboard(info.gameboard);
@@ -73,7 +76,7 @@ export class GameClientService {
     }
     updateGameboard() {
         this.gridService.drawGrid(this.gameboard);
-        this.letterTilesService.drawRack(this.playerOne.rack as Letter[]);
+        this.gridService.drawRack(this.playerOne.rack as Letter[]);
     }
 
     abandonGame() {
@@ -82,18 +85,21 @@ export class GameClientService {
     }
 
     quitGame() {
-        this.clientSocketService.disconnect();
+        this.clientSocketService.send('quitGame');
     }
 
-    private findWinner(): void {
-        if (this.isGameFinish) {
-            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
-        } else {
-            this.findWinnerByScore();
-        }
+    resetGameInformation() {
+        this.timer = 0;
+        this.gameboard = [];
+        this.playerOne = { name: '', score: 0, rack: [], room: '' };
+        this.secondPlayer = { name: '', score: 0, rack: [], room: '' };
+        this.playerOneTurn = false;
+        this.letterReserveLength = 0;
+        this.isGameFinish = false;
+        this.winningMessage = '';
     }
+
     private findWinnerByScore(): void {
-        this.isGameFinish = true;
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
         } else if (this.playerOne.score > this.secondPlayer.score) {

@@ -2,8 +2,8 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import { Vec2 } from '@app/classes/vec2';
 import { GridService } from '@app/services/grid.service';
 
-export const DEFAULT_WIDTH = 600;
-export const DEFAULT_HEIGHT = 600;
+export const DEFAULT_WIDTH = 610;
+export const DEFAULT_HEIGHT = 750;
 
 export enum MouseButton {
     Left = 0,

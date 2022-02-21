@@ -50,7 +50,6 @@ export class Turn {
             this.activePlayer = undefined;
             this.inactivePlayer = undefined;
         }
-
         this.endTurn.next(this.activePlayer);
     }
 
@@ -62,7 +61,7 @@ export class Turn {
         const timesToEnd = 6;
         this.incrementSkipCounter();
         if (this.skipCounter === timesToEnd) this.end(true);
-        this.end();
+        else this.end();
     }
 
     resetSkipCounter(): void {
