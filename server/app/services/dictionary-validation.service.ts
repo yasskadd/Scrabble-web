@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterTree } from '@app/classes/trie/letter-node.class';
+import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import * as fs from 'fs';
 import { Container, Service } from 'typedi';

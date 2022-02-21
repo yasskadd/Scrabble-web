@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-restricted-imports */
-import { LetterTree } from '@app/classes/trie/letter-node.class';
+import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
@@ -15,7 +15,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
 
-describe.only('Dictionary Validation Service', () => {
+describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
     let validWord1: Word;
     let validWord2: Word;
@@ -117,7 +117,7 @@ describe.only('Dictionary Validation Service', () => {
         expect(dictionaryValidationService.validateWords(wordList)).to.equal(0);
     });
 
-    context.only('Trie Dictionary tests', () => {
+    context('Trie Dictionary tests', () => {
         let trie: LetterTree;
         before(() => {
             dictionaryValidationService = new DictionaryValidationService();
@@ -125,21 +125,21 @@ describe.only('Dictionary Validation Service', () => {
             trie = dictionaryValidationService.trie;
         });
 
-        it.only('should initialize trie', () => {
+        it('should initialize trie', () => {
             expect(trie).to.not.equal(null);
         });
 
-        it.only('trie should contain existing word from French dictionary', () => {
+        it('trie should contain existing word from French dictionary', () => {
             expect(trie.isWord('conforme')).to.equal(true);
             expect(trie.isWord('matrice')).to.equal(true);
         });
 
-        it.only('trie should not contain non-existing word from the French dictionary', () => {
+        it('trie should not contain non-existing word from the French dictionary', () => {
             expect(trie.isWord('dijasdij')).to.equal(false);
             expect(trie.isWord('ocas')).to.equal(false);
         });
 
-        it.only('should insert word into trie', () => {
+        it('should insert word into trie', () => {
             trie.insertWord('dijasdij');
             expect(trie.isWord('dijasdij')).to.equal(true);
         });
