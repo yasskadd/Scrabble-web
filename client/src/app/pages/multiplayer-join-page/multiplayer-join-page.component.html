@@ -27,7 +27,6 @@
                     </tr>
                 </tbody>
             </table>
-            <!-- TODO: do a other describe -->
             <a class="noRoomAvailable" *ngIf="availableRooms.length === 0">Aucune Partie Disponible à joindre</a>
         </mat-card>
 
@@ -35,7 +34,15 @@
             <button class="returnButton" mat-icon-button routerLink="/home">
                 <mat-icon>navigate_before</mat-icon>
             </button>
-            <button class="joinRandomGameButton" (click)="joinRandomGame()" mat-raised-button disabled>Aléatoire</button>
+            <button
+                *ngIf="availableRooms.length !== 0"
+                class="joinRandomGameButton"
+                (click)="joinRandomGame()"
+                mat-raised-button
+                [disabled]="!playerName || availableRooms.length <= 1"
+            >
+                Aléatoire
+            </button>
         </div>
     </div>
 </mat-card>

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';

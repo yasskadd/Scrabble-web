@@ -1,4 +1,3 @@
-// import { Letter } from '@app/letter';
 import * as letterTypes from '@app/letter-reserve';
 import { Letter } from '@common/letter';
 import { expect } from 'chai';

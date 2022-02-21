@@ -49,7 +49,6 @@ describe('ClientSocketService', () => {
 
     it('should call socket.on with an event', () => {
         const event = 'helloWorld';
-        // Reason : used for testing
         // eslint-disable-next-line
         const action = () => {};
         const spy = spyOn(service.socket, 'on');

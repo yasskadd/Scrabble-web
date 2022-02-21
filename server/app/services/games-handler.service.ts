@@ -18,6 +18,7 @@ interface GameHolder {
     game: Game | undefined;
     players: Player[];
     roomId: string;
+    isGameFinish: boolean;
 }
 
 interface GameScrabbleInformation {
@@ -37,7 +38,6 @@ export class GamesHandler {
         this.games = new Map();
     }
     initSocketsEvents(): void {
-        //
         this.socketManager.io(SocketEvents.CreateScrabbleGame, (sio, socket, gameInfo: GameScrabbleInformation) =>
             this.createGame(sio, socket, gameInfo),
         );
@@ -49,17 +49,21 @@ export class GamesHandler {
         this.socketManager.io(SocketEvents.Exchange, (sio, socket, letters: string[]) => {
             this.exchange(sio, socket, letters);
         });
-        //
+
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
-        //
+
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
         });
-        //
+
         this.socketManager.on(SocketEvents.AbandonGame, (socket) => {
             this.abandonGame(socket);
+        });
+
+        this.socketManager.on('quitGame', (socket) => {
+            this.disconnect(socket);
         });
     }
 
@@ -71,7 +75,6 @@ export class GamesHandler {
         const gameHolder = this.games.get(room) as GameHolder;
         gameHolder.game?.skip(player.name);
         socket.broadcast.to(room).emit(SocketEvents.GameMessage, '!passer');
-        this.changeTurn(room);
     }
 
     private exchange(this: this, sio: Server, socket: Socket, letters: string[]) {
@@ -84,14 +87,15 @@ export class GamesHandler {
         const game = gameParam.game as Game;
         const newRack = game.exchange(letters, player.name);
         player.rack = newRack;
+
         if (newRack.length === 0) return;
         if (JSON.stringify(playerRack) === JSON.stringify(player.rack)) {
-            socket.emit('impossibleCommandError', 'Vous ne posséder pas toutes les lettres a échanger');
+            socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne posséder pas toutes les lettres a échanger');
         } else {
             socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         }
         this.updatePlayerInfo(socket, room, game);
-        sio.to(room).emit(SocketEvents.Play, player, game.turn.activePlayer);
+        this.socketManager.emitRoom(room, SocketEvents.Play, player, game.turn.activePlayer);
     }
 
     private playGame(this: this, sio: Server, socket: Socket, commandInfo: CommandInfo) {
@@ -114,8 +118,9 @@ export class GamesHandler {
             };
             sio.to(room).emit(SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, room, game);
+
             if (!play[0]) {
-                socket.emit('impossibleCommandError', 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
+                socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
             } else {
                 socket.broadcast
                     .to(player.room)
@@ -131,7 +136,7 @@ export class GamesHandler {
 
     private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
-        const newGameHolder: GameHolder = { game: undefined, players: [playerOne], roomId: gameInfo.roomId };
+        const newGameHolder: GameHolder = { game: undefined, players: [playerOne], roomId: gameInfo.roomId, isGameFinish: false };
         const playerTwo = this.setAndGetPlayer(gameInfo);
 
         newGameHolder.players.push(playerTwo);
@@ -141,6 +146,9 @@ export class GamesHandler {
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
             this.changeTurn(gameInfo.roomId);
+            if (newGameHolder.game?.turn.activePlayer === undefined) {
+                this.endGame(socket);
+            }
         });
         newGameHolder.game.turn.countdown.subscribe((timer: number) => {
             this.sendTimer(gameInfo.roomId, timer);
@@ -197,7 +205,6 @@ export class GamesHandler {
             players: game?.players,
             activePlayer: game?.game?.turn.activePlayer,
         };
-
         this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
 
@@ -210,26 +217,51 @@ export class GamesHandler {
 
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
-        // Passed 2 hours trying to test it and it was hell | it won't matter since the other would have left the room
-        // socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
-        // socket.broadcast.to(room).emit(SocketEvents.GameEnd);
+        const game = this.games.get(room);
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
-        this.socketManager.emitRoom(room, SocketEvents.GameEnd);
+        game?.game?.abandon();
+        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+        socket.leave(room);
+        this.players.delete(socket.id);
     }
 
     private disconnect(socket: Socket) {
-        let tempTime = 5;
-        setInterval(() => {
-            tempTime = tempTime - 1;
-            if (tempTime === 0) {
-                let player: Player;
-                if (this.players.has(socket.id)) {
-                    player = this.players.get(socket.id) as Player;
-                    const room = player.room;
-                    socket.broadcast.to(room).emit(SocketEvents.OpponentGameLeave);
-                    socket.broadcast.to(room).emit(SocketEvents.GameEnd);
+        if (!this.players.has(socket.id)) return;
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const roomInfomation = this.games.get(room);
+        if (roomInfomation?.players !== undefined && !roomInfomation.isGameFinish) {
+            let tempTime = 5;
+            setInterval(() => {
+                tempTime = tempTime - 1;
+                if (tempTime === 0) {
+                    if (!this.players.has(socket.id)) return;
+                    this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
+                    roomInfomation.game?.abandon();
+                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
                 }
-            }
-        }, SECOND);
+            }, SECOND);
+        } else {
+            this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+        }
+        socket.leave(room);
+        this.players.delete(socket.id);
+    }
+
+    private endGame(socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const roomInfomation = this.games.get(room);
+        if (roomInfomation?.players !== undefined && !roomInfomation.isGameFinish) {
+            const newGameHolder: GameHolder = {
+                game: roomInfomation.game,
+                players: roomInfomation.players,
+                roomId: roomInfomation.roomId,
+                isGameFinish: true,
+            };
+            this.games.set(room, newGameHolder);
+            this.socketManager.emitRoom(room, SocketEvents.GameEnd);
+        }
     }
 }

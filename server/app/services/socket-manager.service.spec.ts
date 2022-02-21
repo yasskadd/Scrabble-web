@@ -18,7 +18,6 @@ const TEST_MESSAGE = 'RipNoTime';
 const EVENT = 'eventTest';
 describe('SocketManager service tests', () => {
     let service: SocketManager;
-    // let serverSocket: io.Socket;
     let serverSocket: io.Socket;
     let clientSocket: Socket;
     let sio: SioSignature;
@@ -62,7 +61,6 @@ describe('SocketManager service tests', () => {
     });
 
     afterEach(() => {
-        // clientSocket.close();
         sio.close();
 
         sinon.restore();
@@ -71,7 +69,6 @@ describe('SocketManager service tests', () => {
     it('on() should create a callback array if empty and add a callback in the array in onEvents', () => {
         service.on('event', joinCallbackOn);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onEvents'].get('event');
         expect(callBackEventArray).to.not.equal(undefined);
@@ -82,7 +79,6 @@ describe('SocketManager service tests', () => {
         service.on('event', joinCallbackOn);
         service.on('event', emitMessageCallbackOn);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onEvents'].get('event');
         expect(callBackEventArray?.pop()).to.be.equal(emitMessageCallbackOn);
@@ -92,7 +88,6 @@ describe('SocketManager service tests', () => {
     it('io() should create a callback array if empty and add a callback in the array in onAndSioEvents', () => {
         service.io('event', joinCallbackSio);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onAndSioEvents'].get('event');
         expect(callBackEventArray).to.not.equal(undefined);
@@ -103,7 +98,6 @@ describe('SocketManager service tests', () => {
         service.io('event', joinCallbackSio);
         service.io('event', emitMessageCallbackSio);
 
-        // Reason: Accessing private property for test
         // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onAndSioEvents'].get('event');
         expect(callBackEventArray?.pop()).to.be.equal(emitMessageCallbackSio);
@@ -115,13 +109,11 @@ describe('SocketManager service tests', () => {
         testBoolean2 = false;
         const timeoutWait = 200;
 
-        // Reason : we just need to check if the callBack is called, we don't need socket testing
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackOn = (_) => {
             testBoolean1 = true;
         };
 
-        // Reason : we just need to check if the callBack is called, we don't need socket testing
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackSio = (i, _) => {
             testBoolean2 = true;

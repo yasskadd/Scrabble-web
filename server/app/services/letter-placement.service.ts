@@ -9,9 +9,7 @@ import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Service } from 'typedi';
-import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
-import { WordFinderService } from './word-finder.service';
 
 const ERROR_TYPE = {
     invalidPlacement: 'Placement invalide',
@@ -26,13 +24,9 @@ const MIDDLE_Y = 8;
 
 @Service()
 export class LetterPlacementService {
-    constructor(
-        private validateCoordService: GameboardCoordinateValidationService,
-        private wordFinderService: WordFinderService,
-        private dictionaryService: DictionaryValidationService,
-    ) {}
+    constructor(private dictionaryService: DictionaryValidationService) {}
 
-    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player) {
+    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [LetterTile[], string | null] {
         const letterCoords = this.getLettersCoord(commandInfo, gameboard);
         if (!this.isPlacementValid(letterCoords)) {
             return [letterCoords, ERROR_TYPE.invalidPlacement];
@@ -50,13 +44,13 @@ export class LetterPlacementService {
         letterCoords.forEach((coord) => {
             gameboard.placeLetter(coord);
         });
-        const words: Word[] = this.wordFinderService.findNewWords(gameboard, letterCoords);
+        const words: Word[] = Word.findNewWords(gameboard, letterCoords);
         const wordValidationScore: number = this.dictionaryService.validateWords(words);
         if (wordValidationScore === 0) {
             letterCoords.forEach((coord) => {
                 gameboard.removeLetter(coord);
-                return [false, gameboard];
             });
+            return [false, gameboard];
         }
         player.score += wordValidationScore;
         if (letterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
@@ -64,11 +58,11 @@ export class LetterPlacementService {
         return [true, gameboard];
     }
 
-    private getLettersCoord(commandInfo: CommandInfo, gameboard: Gameboard) {
-        return this.validateCoordService.validateGameboardCoordinate(commandInfo, gameboard);
+    private getLettersCoord(commandInfo: CommandInfo, gameboard: Gameboard): LetterTile[] {
+        return gameboard.validateGameboardCoordinate(commandInfo);
     }
 
-    private isPlacementValid(lettersCoords: LetterTile[]) {
+    private isPlacementValid(lettersCoords: LetterTile[]): boolean {
         return lettersCoords.length > 0;
     }
 
@@ -106,7 +100,7 @@ export class LetterPlacementService {
         });
     }
 
-    private createLetterPoints(letterCoords: LetterTile[], lettersFromRack: Letter[]) {
+    private createLetterPoints(letterCoords: LetterTile[], lettersFromRack: Letter[]): (LetterTile | undefined)[] {
         // create new letterCoords
         const newLetterCoords = letterCoords.map((coord) => {
             const index = lettersFromRack.findIndex((letter) => {
@@ -123,7 +117,7 @@ export class LetterPlacementService {
         });
     }
 
-    private areLettersInRack(letterCoords: LetterTile[], player: Player) {
+    private areLettersInRack(letterCoords: LetterTile[], player: Player): boolean {
         const letters = this.associateLettersWithRack(letterCoords, player);
         if (letters.length !== letterCoords.length) return false;
         else {
@@ -132,7 +126,7 @@ export class LetterPlacementService {
         }
     }
 
-    private verifyFirstTurn(lettersCoords: LetterTile[], gameboard: Gameboard) {
+    private verifyFirstTurn(lettersCoords: LetterTile[], gameboard: Gameboard): boolean {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) {
             const coordList: Coordinate[] = new Array();
             lettersCoords.forEach((coord) => {
@@ -143,7 +137,7 @@ export class LetterPlacementService {
         return true;
     }
 
-    private updatePlayerRack(letterCoords: LetterTile[], player: Player) {
+    private updatePlayerRack(letterCoords: LetterTile[], player: Player): void {
         letterCoords.forEach((letterCoord) => {
             const value = player.rack.filter((item) => item.value === letterCoord.letter.value)[0];
             if (player.rack.includes(value)) {

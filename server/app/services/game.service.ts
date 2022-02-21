@@ -39,7 +39,6 @@ export class Game {
 
     end(): void {
         this.turn.end(true);
-        // console.log("Game has ended");
     }
 
     skip(playerName: string): boolean {
@@ -61,7 +60,7 @@ export class Game {
                 return isValid as string;
             }
             gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player1, this.gameboard);
-            // TODO: test to do
+
             if (gameboard[0] === true) {
                 if (this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
                     this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, this.player1.rack);
@@ -88,7 +87,7 @@ export class Game {
                 return isValid as string;
             }
             gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
-            // TODO: test to do
+
             if (gameboard[0] === true) {
                 if (this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
                     this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, this.player1.rack);

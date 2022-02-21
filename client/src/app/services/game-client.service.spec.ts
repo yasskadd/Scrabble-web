@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { Letter } from '@common/letter';
@@ -85,7 +86,6 @@ const GAME_INFO: GameInfo = {
 const TIME = 12;
 
 export class SocketClientServiceMock extends ClientSocketService {
-    // Reason : connect shouldn't actually connect
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     override connect() {}
 }
@@ -189,11 +189,10 @@ describe('GameClientService', () => {
         expect(service.isGameFinish).toBeTruthy();
     });
 
-    it('should call findWinner when the endGame event is emit', () => {
-        const spy = spyOn(service, 'findWinner' as never);
+    it('should call findWinnerByScore when the endGame event is emit and the game is not finish already', () => {
+        const spy = spyOn(service, 'findWinnerByScore' as never);
         service.isGameFinish = false;
         socketEmulator.peerSideEmit('endGame');
-        // expect(service.isGameFinish).toBeTruthy();
         expect(spy).toHaveBeenCalled();
     });
 
@@ -204,27 +203,19 @@ describe('GameClientService', () => {
         expect(spy).toHaveBeenCalledOnceWith('AbandonGame');
     });
 
-    it('should disconnect the player if he quit the game', () => {
+    it('should emit quitGame to the server if the player quit the game', () => {
         // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocketService'], 'disconnect');
+        const spy = spyOn(service['clientSocketService'], 'send');
         service.quitGame();
-        expect(spy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledOnceWith('quitGame');
     });
-    it('should emit a winningMessage if the game is finish and the other player is not connected anymore', () => {
-        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
-        service.isGameFinish = true;
-        // eslint-disable-next-line dot-notation
-        service['findWinner']();
-        expect(service.winningMessage).toEqual(messageWinner);
-    });
-    it('should call findWinnerByScore if it is the end of the game and the two player are still in the game', () => {
-        service.playerOne = PLAYER_ONE;
-        service.secondPlayer = PLAYER_TWO;
+    it('should not call findWinnerByScore if the game is already finish', () => {
         const spy = spyOn(service, 'findWinnerByScore' as never);
-        // eslint-disable-next-line dot-notation
-        service['findWinner']();
-        // eslint-disable-next-line dot-notation
-        expect(spy).toHaveBeenCalled();
+        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
+        service.winningMessage = messageWinner;
+        service.isGameFinish = true;
+        socketEmulator.peerSideEmit(SocketEvents.GameEnd);
+        expect(spy).not.toHaveBeenCalled();
     });
     it('should emit a message that say that the two player have the same score', () => {
         service.playerOne = PLAYER_ONE;

@@ -82,15 +82,12 @@ export class LetterReserveService {
     }
 
     exchangeLetter(toExchange: string[], rack: Letter[]): Letter[] {
-        // Remove the letters from the rack of the player
         if (this.lettersReserve.length >= NUMBER_OF_LETTERS_ON_RACK) {
             const removedLetter = this.removeLettersFromRack(toExchange, rack);
             rack = removedLetter[0];
 
-            // Exchange X quantity of letters
             const newRack = this.generateLetters(removedLetter[1].length, rack);
 
-            // Update de letter reserve
             this.lettersReserve = this.insertLetter(removedLetter[1]);
             return newRack;
         } else {

@@ -20,12 +20,7 @@ export class LetterTile implements Coordinate {
     }
 
     static findDirection(coordList: LetterTile[]) {
-        const DIRECTIONS = {
-            horizontal: 'Horizontal',
-            vertical: 'Vertical',
-            none: 'None',
-        };
-        let direction: string = DIRECTIONS.none;
+        let isHorizontal: boolean | null = null;
         const allEqual = (arr: number[]) => arr.every((v) => v === arr[0]);
         const tempHorizontalCoords: number[] = [];
         const tempVerticalCoord: number[] = [];
@@ -33,15 +28,9 @@ export class LetterTile implements Coordinate {
             tempHorizontalCoords.push(coord.x);
             tempVerticalCoord.push(coord.y);
         });
-        if (tempHorizontalCoords.length > 1 && allEqual(tempHorizontalCoords)) {
-            direction = DIRECTIONS.vertical;
-            return direction;
-        } else if (tempVerticalCoord.length > 1 && allEqual(tempVerticalCoord)) {
-            direction = DIRECTIONS.horizontal;
-            return direction;
-        } else {
-            return direction;
-        }
+        if (tempHorizontalCoords.length > 1 && allEqual(tempHorizontalCoords)) isHorizontal = false;
+        else if (tempVerticalCoord.length > 1 && allEqual(tempVerticalCoord)) isHorizontal = true;
+        return isHorizontal;
     }
 
     resetLetterMultiplier() {

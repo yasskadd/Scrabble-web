@@ -13,7 +13,7 @@ const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', '
 @Service()
 export class DictionaryValidationService {
     dictionary: Set<string> = new Set();
-    gameboard: Gameboard = new Gameboard(Container.get(BoxMultiplierService)); // not sure if this is good
+    gameboard: Gameboard = new Gameboard(Container.get(BoxMultiplierService));
 
     constructor() {
         jsonDictionary.words.forEach((word: string) => {
@@ -38,7 +38,7 @@ export class DictionaryValidationService {
         });
     }
 
-    private isolateInvalidWords(enteredWords: Word[]) {
+    private isolateInvalidWords(enteredWords: Word[]): Word[] {
         return enteredWords.filter((word) => word.isValid === false);
     }
 }

@@ -7,7 +7,7 @@ import { expect } from 'chai';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
 
-describe('Coordinate', () => {
+describe.only('Letter Tile', () => {
     let coordinateClass: LetterTile;
 
     beforeEach(async () => {
@@ -33,21 +33,21 @@ describe('Coordinate', () => {
         expect(coordinateClass.letter).to.eql({} as Letter);
     });
 
-    it('findDirection should return Horizontal if all the coordinates are in the same line', () => {
+    it('findDirection should return true if all the coordinates are in the same line', () => {
         const coordList: LetterTile[] = [new LetterTile(0, 0, {} as Letter), new LetterTile(7, 0, {} as Letter), new LetterTile(9, 0, {} as Letter)];
-        const direction: string = LetterTile.findDirection(coordList);
-        expect(direction).to.eql('Horizontal');
+        const direction: boolean | null = LetterTile.findDirection(coordList);
+        expect(direction).to.eql(true);
     });
 
-    it('findDirection should return Vertical if all the coordinates are in the same column', () => {
+    it('findDirection should return false if all the coordinates are in the same column', () => {
         const coordList: LetterTile[] = [new LetterTile(0, 0, {} as Letter), new LetterTile(0, 7, {} as Letter), new LetterTile(0, 9, {} as Letter)];
-        const direction: string = LetterTile.findDirection(coordList);
-        expect(direction).to.eql('Vertical');
+        const direction: boolean | null = LetterTile.findDirection(coordList);
+        expect(direction).to.eql(false);
     });
 
-    it('findDirection should return None if all the coordinates not in the same line or column', () => {
+    it('findDirection should return null if all the coordinates not in the same line or column', () => {
         const coordList: LetterTile[] = [new LetterTile(0, 3, {} as Letter), new LetterTile(2, 8, {} as Letter), new LetterTile(5, 6, {} as Letter)];
-        const direction: string = LetterTile.findDirection(coordList);
-        expect(direction).to.eql('None');
+        const direction: boolean | null = LetterTile.findDirection(coordList);
+        expect(direction).to.eql(null);
     });
 });
