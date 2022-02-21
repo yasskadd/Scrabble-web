@@ -1,6 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
-import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GridService } from '@app/services/grid.service';
 
 export const DEFAULT_WIDTH = 610;
@@ -26,7 +25,7 @@ export class PlayAreaComponent implements AfterViewInit {
     buttonPressed = '';
     private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
 
-    constructor(private readonly gridService: GridService, private chatBoxHandler: ChatboxHandlerService) {}
+    constructor(private readonly gridService: GridService) {}
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
@@ -47,10 +46,6 @@ export class PlayAreaComponent implements AfterViewInit {
 
     get height(): number {
         return this.canvasSize.y;
-    }
-
-    skipTurn() {
-        this.chatBoxHandler.submitMessage('!passer');
     }
 
     mouseHitDetect(event: MouseEvent) {

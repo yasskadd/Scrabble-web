@@ -11,7 +11,7 @@ describe('ChatboxComponent', () => {
     let chatBoxHandlerSpy: jasmine.SpyObj<ChatboxHandlerService>;
 
     beforeEach(async () => {
-        chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage'], { messages: [TEST_MESSAGE] });
+        chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage', 'resetMessage'], { messages: [TEST_MESSAGE] });
         await TestBed.configureTestingModule({
             imports: [],
             declarations: [ChatboxComponent],
