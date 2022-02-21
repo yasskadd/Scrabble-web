@@ -22,6 +22,7 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     }
 
     ngAfterViewInit() {
+        this.chatboxHandler.resetMessage();
         this.chatbox.nativeElement.focus();
     }
 

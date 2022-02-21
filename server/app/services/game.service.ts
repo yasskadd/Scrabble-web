@@ -63,7 +63,15 @@ export class Game {
             gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], player, this.gameboard);
 
             if (gameboard[0] === true) {
+<<<<<<< HEAD
                 this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
+=======
+                if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
+                    player.rack = this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, player.rack);
+                } else if (!this.letterReserve.isEmpty()) {
+                    player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
+                }
+>>>>>>> feature/game-service
             }
 
             if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
@@ -87,8 +95,18 @@ export class Game {
         //     gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
 
         //     if (gameboard[0] === true) {
+<<<<<<< HEAD
         //         this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);
         //     }
+=======
+        //         if (this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
+        //             this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, this.player1.rack);
+        //         } else {
+        //             this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
+        //         }
+        //     }
+
+>>>>>>> feature/game-service
         //     if (this.player2.rackIsEmpty() && this.letterReserve.isEmpty()) {
         //         this.end();
         //     } else {
@@ -122,7 +140,13 @@ export class Game {
         this.end();
     }
 
+<<<<<<< HEAD
     getPlayer(playerName: string): Player | undefined {
         return this.player1.name === playerName ? this.player1 : this.player2.name === playerName ? this.player2 : undefined;
+=======
+    getPlayer(playerName: string): Player {
+        if (this.player1.name === playerName) return this.player1;
+        else return this.player2;
+>>>>>>> feature/game-service
     }
 }

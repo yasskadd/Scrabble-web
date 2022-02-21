@@ -61,6 +61,10 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.AbandonGame, (socket) => {
             this.abandonGame(socket);
         });
+
+        this.socketManager.on('quitGame', (socket) => {
+            this.disconnect(socket);
+        });
     }
 
     private skip(this: this, socket: Socket) {
@@ -216,6 +220,9 @@ export class GamesHandler {
         const game = this.games.get(room);
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         game?.game?.abandon();
+        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+        socket.leave(room);
+        this.players.delete(socket.id);
     }
 
     private disconnect(socket: Socket) {
@@ -237,6 +244,8 @@ export class GamesHandler {
         } else {
             this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
         }
+        socket.leave(room);
+        this.players.delete(socket.id);
     }
 
     private endGame(socket: Socket) {

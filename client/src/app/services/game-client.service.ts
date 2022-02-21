@@ -82,12 +82,22 @@ export class GameClientService {
 
     abandonGame() {
         this.clientSocketService.send('AbandonGame');
-        this.clientSocketService.disconnect();
         this.playerOneTurn = false;
     }
 
     quitGame() {
-        this.clientSocketService.disconnect();
+        this.clientSocketService.send('quitGame');
+    }
+
+    resetGameInformation() {
+        this.timer = 0;
+        this.gameboard = [];
+        this.playerOne = { name: '', score: 0, rack: [], room: '' };
+        this.secondPlayer = { name: '', score: 0, rack: [], room: '' };
+        this.playerOneTurn = false;
+        this.letterReserveLength = 0;
+        this.isGameFinish = false;
+        this.winningMessage = '';
     }
 
     private findWinnerByScore(): void {
