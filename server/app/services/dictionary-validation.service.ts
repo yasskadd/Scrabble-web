@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable no-console */
-/* eslint-disable no-restricted-imports */
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterTree } from '@app/classes/trie/letter-node.class';
 import { Word } from '@app/classes/word.class';
 import * as fs from 'fs';
 import { Container, Service } from 'typedi';
@@ -13,6 +12,7 @@ const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', '
 @Service()
 export class DictionaryValidationService {
     dictionary: Set<string> = new Set();
+    trie: LetterTree;
     gameboard: Gameboard = new Gameboard(Container.get(BoxMultiplierService));
 
     constructor() {
@@ -30,6 +30,10 @@ export class DictionaryValidationService {
             roundPoints += word.calculatePoints(this.gameboard);
         });
         return roundPoints;
+    }
+
+    createTrieDictionary() {
+        this.trie = new LetterTree(jsonDictionary.words);
     }
 
     private checkWordInDictionary(wordList: Word[]): void {
