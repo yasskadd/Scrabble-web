@@ -23,19 +23,18 @@ export class DatabaseService {
     }
 
     async addDocument(object: MongoDocument) {
-        this.connect().then(() => {
-            this.collection.insertOne(object);
-        });
+        await this.connect();
+        await this.collection.insertOne(object);
     }
+
     async removeDocument(parameters: Filter<Document>) {
-        this.connect().then(() => {
-            this.collection.deleteOne(parameters);
-        });
+        await this.connect();
+        await this.collection.deleteOne(parameters);
     }
+
     async resetDatabase() {
-        this.connect().then(() => {
-            this.collection.deleteMany({});
-        });
+        await this.connect();
+        await this.collection.deleteMany({});
     }
 
     private async connect() {
