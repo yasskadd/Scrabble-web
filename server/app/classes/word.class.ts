@@ -8,7 +8,7 @@ const ROW_NUMBER = 15;
 const COLUMN_NUMBER = 15;
 export class Word {
     isValid: boolean;
-    isHorizontal: boolean;
+    isHorizontal: boolean | undefined;
     points: number;
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
@@ -117,18 +117,18 @@ export class Word {
     private static findFirstCoord(isHorizontal: boolean, coord: Coordinate, gameboard: Gameboard): Coordinate {
         let currentCoord: Coordinate = coord;
         if (isHorizontal) {
-            while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
+            while (gameboard.getLetterTile(currentCoord).isOccupied && gameboard.getLetterTile(currentCoord) !== undefined) {
                 if (currentCoord.x !== 1) {
                     const nextCoord: Coordinate = { x: currentCoord.x - 1, y: currentCoord.y } as Coordinate;
-                    if (gameboard.getCoord(nextCoord).isOccupied) currentCoord = nextCoord;
+                    if (gameboard.getLetterTile(nextCoord).isOccupied) currentCoord = nextCoord;
                     else break;
                 } else break;
             }
         } else {
-            while (gameboard.getCoord(currentCoord).isOccupied && gameboard.getCoord(currentCoord) !== undefined) {
+            while (gameboard.getLetterTile(currentCoord).isOccupied && gameboard.getLetterTile(currentCoord) !== undefined) {
                 if (currentCoord.y !== 1) {
                     const nextCoord: Coordinate = { x: currentCoord.x, y: currentCoord.y - 1 } as Coordinate;
-                    if (gameboard.getCoord(nextCoord).isOccupied) currentCoord = nextCoord;
+                    if (gameboard.getLetterTile(nextCoord).isOccupied) currentCoord = nextCoord;
                     else break;
                 } else break;
             }
@@ -145,7 +145,7 @@ export class Word {
 
     private addLetterPoints(letterCoords: LetterTile[], gameboard: Gameboard): void {
         letterCoords.forEach((letterCoord: LetterTile) => {
-            const gameboardCoord = gameboard.getCoord(letterCoord);
+            const gameboardCoord = gameboard.getLetterTile(letterCoord);
             if (gameboardCoord.letterMultiplier > 1) {
                 this.points += letterCoord.letter.points * gameboardCoord.letterMultiplier;
                 gameboardCoord.resetLetterMultiplier();
