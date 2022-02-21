@@ -50,8 +50,9 @@ export class Game {
     play(playerName: string, commandInfo: CommandInfo): [boolean, Gameboard] | string {
         let gameboard: [boolean, Gameboard] = [false, this.gameboard];
         const numberOfLetterPlaced = commandInfo.lettersPlaced.length;
-        if (this.turn.validating(playerName) && this.player1.name === playerName) {
-            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player1);
+        if (this.turn.validating(playerName)) {
+            const player = this.getPlayer(playerName) as Player;
+            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
             const letterCoords = validationInfo[0];
             const isValid = validationInfo[1];
             if (isValid !== null) {
@@ -59,13 +60,13 @@ export class Game {
                 this.turn.end();
                 return isValid as string;
             }
-            gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player1, this.gameboard);
+            gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], player, this.gameboard);
 
             if (gameboard[0] === true) {
-                this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
+                this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
             }
 
-            if (this.player1.rackIsEmpty() && this.letterReserve.isEmpty()) {
+            if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
                 this.end();
             } else {
                 this.turn.resetSkipCounter();
@@ -73,48 +74,55 @@ export class Game {
             }
 
             return gameboard;
-        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
-            const letterCoords = validationInfo[0];
-            const isValid = validationInfo[1];
-            if (isValid !== null) {
-                this.turn.resetSkipCounter();
-                this.turn.end();
-                return isValid as string;
-            }
-            gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
-
-            if (gameboard[0] === true) {
-                this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);
-            }
-            if (this.player2.rackIsEmpty() && this.letterReserve.isEmpty()) {
-                this.end();
-            } else {
-                this.turn.resetSkipCounter();
-                this.turn.end();
-            }
-            return gameboard as [boolean, Gameboard];
         }
+        // else if (this.turn.validating(playerName) && this.player2.name === playerName) {
+        //     const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
+        //     const letterCoords = validationInfo[0];
+        //     const isValid = validationInfo[1];
+        //     if (isValid !== null) {
+        //         this.turn.resetSkipCounter();
+        //         this.turn.end();
+        //         return isValid as string;
+        //     }
+        //     gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
+
+        //     if (gameboard[0] === true) {
+        //         this.letterReserve.generateLetters(numberOfLetterPlaced, this.player2.rack);
+        //     }
+        //     if (this.player2.rackIsEmpty() && this.letterReserve.isEmpty()) {
+        //         this.end();
+        //     } else {
+        //         this.turn.resetSkipCounter();
+        //         this.turn.end();
+        //     }
+        //     return gameboard as [boolean, Gameboard];
+        // }
 
         return gameboard;
     }
 
     exchange(letters: string[], playerName: string): Letter[] {
-        if (this.turn.validating(playerName) && this.player1.name === playerName) {
-            this.player1.rack = this.letterReserve.exchangeLetter(letters, this.player1.rack);
+        if (this.turn.validating(playerName)) {
+            const player = this.getPlayer(playerName) as Player;
+            player.rack = this.letterReserve.exchangeLetter(letters, player.rack);
             this.turn.resetSkipCounter();
             this.turn.end();
-            return this.player1.rack;
-        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-            this.player2.rack = this.letterReserve.exchangeLetter(letters, this.player2.rack);
-            this.turn.resetSkipCounter();
-            this.turn.end();
-            return this.player2.rack;
+            return player.rack;
         }
+        // else if (this.turn.validating(playerName) && this.player2.name === playerName) {
+        //     this.player2.rack = this.letterReserve.exchangeLetter(letters, this.player2.rack);
+        //     this.turn.resetSkipCounter();
+        //     this.turn.end();
+        //     return this.player2.rack;
+        // }
         return [];
     }
 
     abandon(): void {
         this.end();
+    }
+
+    getPlayer(playerName: string): Player | undefined {
+        return this.player1.name === playerName ? this.player1 : this.player2.name === playerName ? this.player2 : undefined;
     }
 }
