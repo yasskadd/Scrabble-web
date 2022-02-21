@@ -4,7 +4,6 @@ import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
-import { LetterTilesService } from './letter-tiles.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type Player = { name: string; score: number; rack?: Letter[]; room: string };
@@ -23,7 +22,7 @@ export class GameClientService {
     isGameFinish: boolean;
     winningMessage: string;
 
-    constructor(private gridService: GridService, private letterTilesService: LetterTilesService, private clientSocketService: ClientSocketService) {
+    constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
@@ -72,8 +71,9 @@ export class GameClientService {
         this.updateGameboard();
     }
     updateGameboard() {
+        this.gridService.drawEmptyCanvas();
         this.gridService.drawGrid(this.gameboard);
-        this.letterTilesService.drawRack(this.playerOne.rack as Letter[]);
+        this.gridService.drawRack(this.playerOne.rack as Letter[]);
     }
 
     abandonGame() {
