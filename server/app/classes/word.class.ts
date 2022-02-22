@@ -1,7 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@common/coordinate';
-import { LetterTile } from '@common/letter-tile.class';
 import { Gameboard } from './gameboard.class';
 
 const ROW_NUMBER = 15;
@@ -27,7 +26,7 @@ export class Word {
         }
 
         const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
-        this.findWordCoords(firstCoord, commandInfo.letters, gameboard);
+        this.buildWord(firstCoord, commandInfo.letters, gameboard);
     }
     isWithinBoardLimits(coord: Coordinate): boolean {
         return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
@@ -63,26 +62,6 @@ export class Word {
         }
         return coord;
     }
-
-    static findNewWords(gameboard: Gameboard, placedLettersCoords: LetterTile[]): Word[] {
-        const newWordsArray: Word[] = new Array();
-        if (placedLettersCoords.length === 0) return [];
-        if (placedLettersCoords.length === 1) {
-            const verticalWord: Word = this.buildWord(false, placedLettersCoords[0], gameboard);
-            const horizontalWord: Word = this.buildWord(true, placedLettersCoords[0], gameboard);
-            if (verticalWord.coords.length > 1) newWordsArray.push(verticalWord);
-            if (horizontalWord.coords.length > 1) newWordsArray.push(horizontalWord);
-        } else {
-            const firstWord: Word = this.buildFirstWord(placedLettersCoords, gameboard);
-            newWordsArray.push(firstWord);
-            placedLettersCoords.forEach((coord) => {
-                const word: Word = this.buildWord(!firstWord.isHorizontal, coord, gameboard);
-                if (word.coords?.length > 1) newWordsArray.push(word);
-            });
-        }
-        return newWordsArray;
-    }
-
    
     private buildWord(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
         const position = firstCoord;
@@ -98,8 +77,8 @@ export class Word {
             } else {
                 this.wordCoords.push(position);
                 this.stringFormat += gameboard.getLetterTile(position).getLetter();
-    
-
+            } 
+        }
         if (commandLettersCopy.length !== 0) this.isValid == false;
     }
 
@@ -121,6 +100,25 @@ export class Word {
         allWords.forEach((word)=>{if(word.wordCoords.length == 1)})
         return allWords;
     }
+
+        // static findNewWords(gameboard: Gameboard, placedLettersCoords: LetterTile[]): Word[] {
+    //     const newWordsArray: Word[] = new Array();
+    //     if (placedLettersCoords.length === 0) return [];
+    //     if (placedLettersCoords.length === 1) {
+    //         const verticalWord: Word = this.buildWord(false, placedLettersCoords[0], gameboard);
+    //         const horizontalWord: Word = this.buildWord(true, placedLettersCoords[0], gameboard);
+    //         if (verticalWord.coords.length > 1) newWordsArray.push(verticalWord);
+    //         if (horizontalWord.coords.length > 1) newWordsArray.push(horizontalWord);
+    //     } else {
+    //         const firstWord: Word = this.buildFirstWord(placedLettersCoords, gameboard);
+    //         newWordsArray.push(firstWord);
+    //         placedLettersCoords.forEach((coord) => {
+    //             const word: Word = this.buildWord(!firstWord.isHorizontal, coord, gameboard);
+    //             if (word.coords?.length > 1) newWordsArray.push(word);
+    //         });
+    //     }
+    //     return newWordsArray;
+    // }
 
     // CALCULATE POINTS ----------------------------------------------------------------------------------------------------
     calculateWordPoints(word: Word, gameboard: Gameboard): number {
