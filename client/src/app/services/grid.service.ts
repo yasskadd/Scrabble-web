@@ -29,9 +29,9 @@ export class GridService {
         this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
-    drawEmptyCanvas() {
-        this.gridContext.clearRect(0, 0, 600, 750);
-    }
+    // drawEmptyCanvas() {
+    //     this.gridContext.clearRect(0, 0, 600, 750);
+    // }
 
     drawGrid(gameboard: LetterTile[]) {
         this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
