@@ -85,7 +85,7 @@ describe('LetterTile', () => {
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 // import sinon = require('sinon');
 
-describe.only('Letter Tile', () => {
+describe('Letter Tile', () => {
     let coordinateClass: LetterTile;
 
     beforeEach(async () => {

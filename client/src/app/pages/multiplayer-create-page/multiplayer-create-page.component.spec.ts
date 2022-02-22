@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { MultiplayerCreatePageComponent } from './multiplayer-create-page.component';
@@ -17,7 +18,7 @@ import { MultiplayerCreatePageComponent } from './multiplayer-create-page.compon
 })
 export class StubComponent {}
 
-const MULTIPLAYER_CREATE_ROOM_ROUTE = 'classique/multijoueur/salleAttente';
+const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const RETURN_ROUTE = 'home';
 describe('MultiplayerCreatePageComponent', () => {
     let component: MultiplayerCreatePageComponent;
@@ -25,7 +26,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let location: Location;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     beforeEach(async () => {
-        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['gameInitialization']);
+        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['gameInitialization', 'resetRoomInformation']);
         await TestBed.configureTestingModule({
             imports: [
                 BrowserAnimationsModule,
@@ -36,13 +37,25 @@ describe('MultiplayerCreatePageComponent', () => {
                 MatIconModule,
                 MatCardModule,
                 RouterTestingModule.withRoutes([
-                    { path: MULTIPLAYER_CREATE_ROOM_ROUTE, component: StubComponent },
+                    { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
                     { path: RETURN_ROUTE, component: StubComponent },
                 ]),
             ],
 
             declarations: [MultiplayerCreatePageComponent],
-            providers: [{ provide: GameConfigurationService, useValue: gameConfigurationServiceSpy }],
+            providers: [
+                { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            params: {
+                                id: 'classique',
+                            },
+                        },
+                    },
+                },
+            ],
         }).compileComponents();
     });
 
@@ -58,7 +71,7 @@ describe('MultiplayerCreatePageComponent', () => {
     });
 
     it('navigatePage should redirect to salleAttente', fakeAsync(() => {
-        const expectedURL = '/' + MULTIPLAYER_CREATE_ROOM_ROUTE;
+        const expectedURL = '/' + MULTIPLAYER_WAITING_ROOM_ROUTE;
         component.navigatePage();
         tick();
         fixture.detectChanges();

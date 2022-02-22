@@ -70,6 +70,14 @@ export class LetterPlacementService {
         return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15;
     }
 
+    private createTempRack(player: Player): Letter[] {
+        const tempPlayerRack: Letter[] = [];
+        for (const letter of player.rack) {
+            tempPlayerRack.push(letter);
+        }
+        return tempPlayerRack;
+    }
+
     private associateLettersWithRack(placedLettersCoord: LetterTile[], player: Player): (Letter | undefined)[] {
         const tempRack = this.createTempRack(player);
         const letters = placedLettersCoord.map((coord) => {

@@ -125,4 +125,9 @@ describe('LetterReserveService', () => {
         const isEmpty = letterReserveService.isEmpty();
         expect(isEmpty).to.eql(false);
     });
+
+    it('should return the total of letter in the letter reserve', () => {
+        const expectedTotal = 102;
+        expect(letterReserveService.totalQuantity()).to.equal(expectedTotal);
+    });
 });

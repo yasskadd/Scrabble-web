@@ -103,11 +103,11 @@ export class Word {
         if (commandLettersCopy.length !== 0) this.isValid == false;
     }
 
-    static findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
+    public findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
         const allWords : Word[] = [];
         allWords.push(word);
         word.newLetterCoords.forEach((coord : Coordinate)=>
-                allWords.push(
+            allWords.push( 
                 new Word(
                     {
                         firstCoordinate: coord,
@@ -116,7 +116,9 @@ export class Word {
                     },
                     gameboard,
                 ),
-        ));
+            )
+        );
+        allWords.forEach((word)=>{if(word.wordCoords.length == 1)})
         return allWords;
     }
 

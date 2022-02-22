@@ -146,6 +146,12 @@ describe('GameConfigurationService', () => {
         expect(spyOnRejectOpponent).toHaveBeenCalled();
     });
 
+    it('removeRoom() should not call rejectOpponent when there is not an other player in the waiting room ', () => {
+        const spyOnRejectOpponent = spyOn(service, 'rejectOpponent');
+        service.removeRoom();
+        expect(spyOnRejectOpponent).not.toHaveBeenCalled();
+    });
+
     it('setErrorSubject() should  initialize the value of the error Reason ', () => {
         const spy = spyOn(service.errorReason, 'next');
         const roomNotAvailableError = "La salle n'est plus disponible";
@@ -210,7 +216,6 @@ describe('GameConfigurationService', () => {
         socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart);
         expect(spyONResetIsGameStarted).toHaveBeenCalled();
     });
-
     it('should handle rejectByOtherPlayer event with a reason why he was rejected from the other player ', () => {
         const playerRejectFromRoomError = "L'adversaire à rejeter votre demande";
         const spyOnResetErrorSubject = spyOn(service, 'setErrorSubject');
@@ -241,7 +246,7 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.statusGame).toEqual(searchingOpponent);
     });
 
-    it('should handle OpponentLeave event to remove the player name of the second player ', () => {
+    it('should handle createScrabbleGame event if you are the creator of the game ', () => {
         const socketIDUserRoom = ['346574gdvb', 'dsfhg56ter'];
         const gameScrabbleInformation: GameScrabbleInformation = {
             playerName: ROOM_INFORMATION.playerName,
@@ -258,6 +263,19 @@ describe('GameConfigurationService', () => {
         socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart, socketIDUserRoom);
 
         expect(spyOnSocket).toHaveBeenCalledWith('createScrabbleGame', gameScrabbleInformation);
+    });
+
+    it('should  not handle createScrabbleGame event if you are not the creator of the game ', () => {
+        const socketIDUserRoom = ['346574gdvb', 'dsfhg56ter'];
+        service.roomInformation.playerName = ROOM_INFORMATION.playerName;
+        service.roomInformation.roomId = ROOM_INFORMATION.roomId;
+        service.roomInformation.timer = ROOM_INFORMATION.timer;
+        service.roomInformation.isCreator = false;
+        // eslint-disable-next-line dot-notation
+        const spyOnSocket = spyOn(service['clientSocket'], 'send');
+        socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart, socketIDUserRoom);
+
+        expect(spyOnSocket).not.toHaveBeenCalled();
     });
     it('should reset the room Information', () => {
         const roomInformationUpdated: RoomInformation = {
@@ -278,5 +296,19 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.roomId).toEqual('');
         expect(service.roomInformation.statusGame).toEqual('');
         expect(service.roomInformation.isCreator).toEqual(false);
+    });
+
+    it('joinRandomRoom should send a event to the server with the room Id that he will randomly join', () => {
+        const playerName = 'Pierre';
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        const testRoom = [
+            { id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' },
+            { id: '2', users: ['Poulin', 'George'], dictionary: 'francais', timer: 1, mode: 'classique' },
+        ];
+        service.availableRooms = testRoom;
+        service.joinRandomRoom(playerName);
+        const information = { id: service.roomInformation.roomId, name: playerName };
+        expect(spy).toHaveBeenCalledWith(SocketEvents.PlayerJoinGameAvailable, information);
     });
 });

@@ -3,7 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { ReplaySubject } from 'rxjs';
@@ -27,8 +27,9 @@ const ROOM_INFORMATION: RoomInformation = {
 const TEST_ERROR = "La salle n'est plus disponible";
 const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
-const MULTIPLAYER_CREATE_ROOM_ROUTE = 'classique/multijoueur/creer';
-const MULTIPLAYER_JOIN_ROOM_ROUTE = 'classique/multijoueur/rejoindre';
+const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
+const MULTIPLAYER_CREATE_ROOM_ROUTE = 'multijoueur/creer/classique';
+const MULTIPLAYER_JOIN_ROOM_ROUTE = 'multijoueur/rejoindre/classique';
 const MULTIPLAYER_GAME_PAGE = 'game';
 describe('WaitingOpponentPageComponent', () => {
     let component: WaitingOpponentPageComponent;
@@ -61,6 +62,7 @@ describe('WaitingOpponentPageComponent', () => {
                     { path: MULTIPLAYER_CREATE_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_JOIN_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_GAME_PAGE, component: StubComponent },
+                    { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
                 ]),
             ],
 
@@ -68,6 +70,16 @@ describe('WaitingOpponentPageComponent', () => {
             providers: [
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
                 { provide: MatSnackBar, useValue: mockMatSnackBar },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            params: {
+                                id: 'classique',
+                            },
+                        },
+                    },
+                },
             ],
         }).compileComponents();
     });
@@ -78,6 +90,7 @@ describe('WaitingOpponentPageComponent', () => {
         fixture.detectChanges();
         router = TestBed.inject(Router);
         matSnackBar = TestBed.inject(MatSnackBar);
+        component.gameMode = 'classique';
     });
 
     it('should create', () => {
@@ -95,7 +108,7 @@ describe('WaitingOpponentPageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('exitRoom() should navigate to /classique/multijoueur/creer if isCreated is true', () => {
+    it('exitRoom() should navigate to multijoueur/creer/classique if isCreated is true', () => {
         gameConfigurationServiceSpy.roomInformation.isCreator = true;
         const spyRouter = spyOn(router, 'navigate');
         const expectedURL = '/' + MULTIPLAYER_CREATE_ROOM_ROUTE;
@@ -103,7 +116,7 @@ describe('WaitingOpponentPageComponent', () => {
         expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
     });
 
-    it('exitRoom() should navigate to /classique/multijoueur/rejoindre if isCreated is false', () => {
+    it('exitRoom() should navigate to /multijoueur/rejoindre/classique if isCreated is false', () => {
         gameConfigurationServiceSpy.roomInformation.isCreator = false;
         fixture.detectChanges();
         const spyRouter = spyOn(router, 'navigate');

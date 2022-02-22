@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
 @Component({
@@ -9,7 +9,15 @@ import { GameConfigurationService } from '@app/services/game-configuration.servi
     styleUrls: ['./waiting-opponent-page.component.scss'],
 })
 export class WaitingOpponentPageComponent implements OnInit {
-    constructor(public gameConfiguration: GameConfigurationService, public router: Router, public snackBar: MatSnackBar) {}
+    gameMode: string;
+    constructor(
+        public gameConfiguration: GameConfigurationService,
+        public router: Router,
+        public snackBar: MatSnackBar,
+        private activatedRoute: ActivatedRoute,
+    ) {
+        this.gameMode = this.activatedRoute.snapshot.params.id;
+    }
 
     ngOnInit(): void {
         this.listenToServerResponse();
@@ -46,10 +54,10 @@ export class WaitingOpponentPageComponent implements OnInit {
     }
     exitRoom(exitByIsOwn?: boolean) {
         if (this.gameConfiguration.roomInformation.isCreator) {
-            this.router.navigate(['/classique/multijoueur/creer']);
+            this.router.navigate([`/multijoueur/creer/${this.gameMode}`]);
             this.gameConfiguration.removeRoom();
         } else {
-            this.router.navigate(['/classique/multijoueur/rejoindre']);
+            this.router.navigate([`/multijoueur/rejoindre/${this.gameMode}`]);
             if (!exitByIsOwn) return;
             this.gameConfiguration.exitWaitingRoom();
         }
