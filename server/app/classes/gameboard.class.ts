@@ -51,8 +51,8 @@ export class Gameboard {
             this.getCoord({ x: tile.x, y: tile.y - 1 } as Coordinate).isOccupied ||
             this.getCoord({ x: tile.x, y: tile.y + 1 } as Coordinate).isOccupied
         )
-            return false;
-        return true;
+            return true;
+        return false;
     }
 
     findAnchors(): LetterTile[] {
