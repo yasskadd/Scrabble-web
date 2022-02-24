@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
 import { DatabaseService } from './database.service';
 
-describe('Database Service', () => {
+describe.only('Database Service', () => {
     let databaseService: DatabaseService;
     let mongod: MongoMemoryServer;
 
@@ -68,5 +68,15 @@ describe('Database Service', () => {
         // eslint-disable-next-line dot-notation
         const currentCount = await databaseService['collection'].countDocuments({});
         expect(currentCount).to.be.equal(0);
+    });
+    it('fetchDocuments() should return all documents with the correct parameters', async () => {
+        const TEST_DOCUMENT = { tests: 'I hate tests', helloWorld: 'WorldHello' };
+        // eslint-disable-next-line dot-notation
+        await databaseService['addDocument'](TEST_DOCUMENT);
+        // eslint-disable-next-line dot-notation
+        await databaseService['addDocument']({ tests: 'I hate 2 tests' });
+        // eslint-disable-next-line dot-notation
+        const currentDocuments = await databaseService['fetchDocuments']({ tests: 'I hate tests' }, { projection: { tests: 1, _id: 0 } });
+        expect(currentDocuments).to.be.deep.equal([{ tests: 'I hate tests' }]);
     });
 });
