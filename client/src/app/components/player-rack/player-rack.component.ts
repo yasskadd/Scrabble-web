@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
+import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
-
-export const DEFAULT_WIDTH = 300;
-export const DEFAULT_HEIGHT = 45;
 
 @Component({
     selector: 'app-player-rack',
@@ -11,6 +9,8 @@ export const DEFAULT_HEIGHT = 45;
     styleUrls: ['./player-rack.component.scss'],
 })
 export class PlayerRackComponent {
+    width = constants.RACK_WIDTH;
+    height = constants.RACK_HEIGHT;
     constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService) {}
 
     skipTurn() {
