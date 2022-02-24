@@ -8,7 +8,7 @@ import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
-type Player = { name: string; score: number; rack?: Letter[]; room: string };
+type Player = { name: string; score: number; rack: Letter[]; room: string };
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 const PLAYER_ONE: Player = {

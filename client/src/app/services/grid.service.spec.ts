@@ -25,29 +25,6 @@ describe('GridService', () => {
         },
     ];
 
-    const RACK_TEST = [
-        {
-            value: 'P',
-            quantity: 1,
-            points: 2,
-            isBlankLetter: false,
-        },
-
-        {
-            value: 'N',
-            quantity: 1,
-            points: 2,
-            isBlankLetter: false,
-        },
-
-        {
-            value: 'L',
-            quantity: 1,
-            points: 2,
-            isBlankLetter: false,
-        },
-    ];
-
     beforeEach(() => {
         TestBed.configureTestingModule({});
         gridService = TestBed.inject(GridService);
@@ -71,18 +48,6 @@ describe('GridService', () => {
         const drawRowNumbersSpy = spyOn(gridService, 'drawRowNumbers').and.callThrough();
         gridService.drawGrid([]);
         expect(drawRowNumbersSpy).toHaveBeenCalled();
-    });
-
-    it(' drawRack should call drawLetterWeight', () => {
-        const drawLetterWeightSpy = spyOn(gridService, 'drawLetterWeight').and.callThrough();
-        gridService.drawRack(RACK_TEST);
-        expect(drawLetterWeightSpy).toHaveBeenCalled();
-    });
-
-    it(' drawRack should call drawLetterTile', () => {
-        const drawLetterTileSpy = spyOn(gridService, 'drawLetterTile').and.callThrough();
-        gridService.drawRack(RACK_TEST);
-        expect(drawLetterTileSpy).toHaveBeenCalled();
     });
 
     it(' drawGrid should call drawColumnLetters', () => {

@@ -6,7 +6,7 @@ import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type Player = { name: string; score: number; rack?: Letter[]; room: string };
+type Player = { name: string; score: number; rack: Letter[]; room: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 @Injectable({
     providedIn: 'root',
@@ -76,7 +76,6 @@ export class GameClientService {
     }
     updateGameboard() {
         this.gridService.drawGrid(this.gameboard);
-        this.gridService.drawRack(this.playerOne.rack as Letter[]);
     }
 
     abandonGame() {
