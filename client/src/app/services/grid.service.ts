@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
-// import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 
 @Injectable({
@@ -29,10 +28,6 @@ export class GridService {
         this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
-    // drawEmptyCanvas() {
-    //     this.gridContext.clearRect(0, 0, 600, 750);
-    // }
-
     drawGrid(gameboard: LetterTile[]) {
         this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
         this.drawRowNumbers();
@@ -48,24 +43,6 @@ export class GridService {
             }
         });
     }
-
-    // drawRack(letters: Letter[]) {
-    //     this.gridContext.fillStyle = '#f8ebd9';
-    //     this.gridContext.fillRect(GridService.letterTileWidth, 625, constants.LETTER_CANVAS_WIDTH, constants.LETTER_CANVAS_HEIGHT);
-    //     this.gridContext.fillStyle = 'black';
-    //     letters.forEach((letter, i) => {
-    //         this.drawLetterTile(
-    //             constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
-    //             625,
-    //             letter.value.toUpperCase(),
-    //         );
-    //         this.drawLetterWeight(
-    //             constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
-    //             625,
-    //             String(letter.points),
-    //         );
-    //     });
-    // }
 
     drawStar() {
         let rotation = (Math.PI / 2) * 3;
