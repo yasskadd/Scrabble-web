@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
-import { Letter } from '@common/letter';
+// import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 
 @Injectable({
@@ -49,23 +49,23 @@ export class GridService {
         });
     }
 
-    drawRack(letters: Letter[]) {
-        this.gridContext.fillStyle = '#f8ebd9';
-        this.gridContext.fillRect(GridService.letterTileWidth, 625, constants.LETTER_CANVAS_WIDTH, constants.LETTER_CANVAS_HEIGHT);
-        this.gridContext.fillStyle = 'black';
-        letters.forEach((letter, i) => {
-            this.drawLetterTile(
-                constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
-                625,
-                letter.value.toUpperCase(),
-            );
-            this.drawLetterWeight(
-                constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
-                625,
-                String(letter.points),
-            );
-        });
-    }
+    // drawRack(letters: Letter[]) {
+    //     this.gridContext.fillStyle = '#f8ebd9';
+    //     this.gridContext.fillRect(GridService.letterTileWidth, 625, constants.LETTER_CANVAS_WIDTH, constants.LETTER_CANVAS_HEIGHT);
+    //     this.gridContext.fillStyle = 'black';
+    //     letters.forEach((letter, i) => {
+    //         this.drawLetterTile(
+    //             constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
+    //             625,
+    //             letter.value.toUpperCase(),
+    //         );
+    //         this.drawLetterWeight(
+    //             constants.LETTER_CANVAS_WIDTH / constants.LETTER_TILE_SIZE + constants.LETTER_TILE_SIZE * i,
+    //             625,
+    //             String(letter.points),
+    //         );
+    //     });
+    // }
 
     drawStar() {
         let rotation = (Math.PI / 2) * 3;
@@ -240,27 +240,5 @@ export class GridService {
             GridService.squareHeight * position.y + halfSize + GridService.halfSquareHeight,
             weightSize,
         );
-    }
-
-    drawLetterTile(x: number, y: number, letter: string) {
-        this.gridContext.strokeStyle = '#C7A121';
-        this.gridContext.lineWidth = 1;
-        this.gridContext.strokeRect(x, y, constants.LETTER_TILE_SIZE, constants.LETTER_TILE_SIZE);
-        this.gridContext.font = this.letterSize + 'px system-ui';
-        this.gridContext.textBaseline = 'middle';
-        this.gridContext.textAlign = 'center';
-        this.gridContext.fillText(letter, x + constants.LETTER_TILE_SIZE / 2, 625);
-    }
-
-    drawLetterWeight(x: number, y: number, string: string) {
-        this.gridContext.textBaseline = 'middle';
-        this.gridContext.textAlign = 'left';
-        const width = this.gridContext.measureText(string).width;
-        const a = constants.LETTER_TILE_SIZE / 2;
-        const plusX = Math.abs(a - width);
-        // const plusX = width * ratio;
-        const halfSize = this.letterSize / 2;
-        this.gridContext.font = this.letterSize * constants.MULTIPLIER_NUMBER_RATIO + 'px system-ui';
-        this.gridContext.fillText(string, x + constants.LETTER_TILE_SIZE / 2 + plusX, y + halfSize + constants.LETTER_TILE_SIZE / 2);
     }
 }

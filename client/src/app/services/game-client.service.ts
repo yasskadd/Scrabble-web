@@ -76,7 +76,6 @@ export class GameClientService {
     }
     updateGameboard() {
         this.gridService.drawGrid(this.gameboard);
-        this.gridService.drawRack(this.playerOne.rack as Letter[]);
     }
 
     abandonGame() {
