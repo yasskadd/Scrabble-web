@@ -24,7 +24,7 @@ const TOP_SCORES = [
     },
 ];
 
-describe.only('scoreStorage Service', () => {
+describe('scoreStorage Service', () => {
     let databaseServiceStub: Sinon.SinonStubbedInstance<DatabaseService>;
     let scoreStorageService: ScoreStorageService;
 

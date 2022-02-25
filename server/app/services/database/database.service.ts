@@ -37,7 +37,7 @@ export class DatabaseService {
         await this.connect();
         await this.collection.deleteOne(parameters);
     }
-    // TODO: test
+
     async replaceDocument(parameters: Filter<Document>, document: Document) {
         await this.connect();
         await this.collection.replaceOne(parameters, document);
