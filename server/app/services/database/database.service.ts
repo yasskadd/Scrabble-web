@@ -1,4 +1,4 @@
-import { Collection, Document, Filter, MongoClient, ObjectId } from 'mongodb';
+import { Collection, Document, Filter, FindOptions, MongoClient, ObjectId } from 'mongodb';
 import { Service } from 'typedi';
 
 const DB_USERNAME = 'ProjectAdmin';
@@ -22,6 +22,12 @@ export class DatabaseService {
         DatabaseService.dbUrl = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@cluster0.hxlnx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
     }
 
+    async fetchDocuments(query: Filter<Document>, projection?: FindOptions<Document> | undefined): Promise<Document[]> {
+        await this.connect();
+        const documents = await this.collection.find(query, projection).toArray();
+        return documents;
+    }
+
     async addDocument(object: MongoDocument) {
         await this.connect();
         await this.collection.insertOne(object);
@@ -30,6 +36,11 @@ export class DatabaseService {
     async removeDocument(parameters: Filter<Document>) {
         await this.connect();
         await this.collection.deleteOne(parameters);
+    }
+
+    async replaceDocument(parameters: Filter<Document>, document: Document) {
+        await this.connect();
+        await this.collection.replaceOne(parameters, document);
     }
 
     async resetDatabase() {
