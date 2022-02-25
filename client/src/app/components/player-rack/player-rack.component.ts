@@ -13,12 +13,12 @@ import { Letter } from '@common/letter';
 export class PlayerRackComponent {
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
-    constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService, private tmpService: GridService) {}
+    constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService, private gridService: GridService) {}
     get letterSize(): number {
-        return this.tmpService.letterSize;
+        return this.gridService.letterSize;
     }
     get pointsSize(): number {
-        return this.tmpService.letterSize * constants.LETTER_WEIGHT_RATIO;
+        return this.gridService.letterSize * constants.LETTER_WEIGHT_RATIO;
     }
     get rack(): Letter[] {
         return this.gameClient.playerOne.rack;
