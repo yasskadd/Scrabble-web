@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
 import { DatabaseService } from './database.service';
 
-describe.only('Database Service', () => {
+describe('Database Service', () => {
     let databaseService: DatabaseService;
     let mongod: MongoMemoryServer;
 

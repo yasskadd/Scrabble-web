@@ -2,7 +2,7 @@ import { Document } from 'mongodb';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 
-type ScoreInfo = { username: string; type: string; score: number };
+type ScoreInfo = { player: string; type: string; score: number };
 
 @Service()
 export class ScoreStorageService {
@@ -12,7 +12,6 @@ export class ScoreStorageService {
         ScoreStorageService.maxLength = 5;
         ScoreStorageService.lastElement = ScoreStorageService.maxLength + 1;
     }
-    // TODO : TEST THIS METHOD
     async addTopScores(scoreInfo: ScoreInfo) {
         await this.populateDb();
         const currentTopScores = await this.database.fetchDocuments({ type: scoreInfo.type });
@@ -20,7 +19,7 @@ export class ScoreStorageService {
         if (scorePlace === ScoreStorageService.lastElement) return;
         this.database.replaceDocument(
             { position: scorePlace },
-            { position: scorePlace, player: scoreInfo.username, type: scoreInfo.type, score: scoreInfo.score },
+            { position: scorePlace, player: scoreInfo.player, type: scoreInfo.type, score: scoreInfo.score },
         );
     }
     async getLOG2990TopScores(): Promise<Document[]> {
