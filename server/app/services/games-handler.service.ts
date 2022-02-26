@@ -77,7 +77,7 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
-        socket.emit('allReserveLetters', gameHolder.game?.letterReserve);
+        socket.emit('allReserveLetters', gameHolder.game?.letterReserve.lettersReserve);
     }
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
