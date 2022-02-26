@@ -1,5 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player.class';
+import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';
 import { LetterTile } from '@common/letter-tile.class';
