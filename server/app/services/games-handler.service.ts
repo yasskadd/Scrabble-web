@@ -50,7 +50,7 @@ export class GamesHandler {
             this.exchange(sio, socket, letters);
         });
 
-        this.socketManager.io('reserveCommande', (sio, socket) => {
+        this.socketManager.io(SocketEvents.ReserveCommand, (sio, socket) => {
             this.reserveCommand(socket);
         });
 
@@ -77,7 +77,7 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
-        socket.emit('allReserveLetters', gameHolder.game?.letterReserve.lettersReserve);
+        socket.emit(SocketEvents.AllReserveLetters, gameHolder.game?.letterReserve.lettersReserve);
     }
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;

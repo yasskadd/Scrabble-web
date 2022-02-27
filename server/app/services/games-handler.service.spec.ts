@@ -13,6 +13,7 @@ import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { Game } from './game.service';
+import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 interface GameHolder {
     game: Game | undefined;
@@ -64,11 +65,13 @@ describe('GamesHandler Service', () => {
         const skipSpy = sinon.stub(gamesHandler, 'skip' as never);
         const disconnectSpy = sinon.stub(gamesHandler, 'disconnect' as never);
         const abandonGameSpy = sinon.stub(gamesHandler, 'abandonGame' as never);
+        const reserveCommandSpy = sinon.stub(gamesHandler, 'reserveCommand' as never);
 
         gamesHandler.initSocketsEvents();
         socketManagerStub.io.getCall(0).args[1](sio, serverSocket);
         socketManagerStub.io.getCall(1).args[1](sio, serverSocket);
         socketManagerStub.io.getCall(2).args[1](sio, serverSocket);
+        socketManagerStub.io.getCall(3).args[1](sio, serverSocket);
 
         socketManagerStub.on.getCall(0).args[1](serverSocket);
         socketManagerStub.on.getCall(1).args[1](serverSocket);
@@ -81,10 +84,38 @@ describe('GamesHandler Service', () => {
         expect(skipSpy.called).to.be.eql(true);
         expect(disconnectSpy.called).to.be.eql(true);
         expect(abandonGameSpy.called).to.be.eql(true);
+        expect(reserveCommandSpy.called).to.be.eql(true);
 
         expect(socketManagerStub.io.called).to.equal(true);
         expect(socketManagerStub.on.called).to.equal(true);
         done();
+    });
+
+    it('reserveCommand() should emit the reserve to the client ', (done) => {
+        const player = { room: ROOM } as Player;
+        const game = sinon.createStubInstance(Game);
+        game.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+        game.turn = { activePlayer: '' } as Turn;
+        game.letterReserve = {
+            lettersReserve: [
+                { value: 'c', quantity: 2, points: 1 },
+                { value: 'r', quantity: 2, points: 1 },
+                { value: 'p', quantity: 2, points: 1 },
+            ],
+        } as LetterReserveService;
+        game.skip.returns(true);
+        const gameHolder = { game, players: [], isGameFinish: false };
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
+
+        clientSocket.on(SocketEvents.AllReserveLetters, (information) => {
+            expect(information).to.be.eql(game.letterReserve.lettersReserve);
+            done();
+        });
+        // eslint-disable-next-line dot-notation
+        gamesHandler['reserveCommand'](serverSocket);
     });
 
     it('skip() should call game.skip()', (done) => {
