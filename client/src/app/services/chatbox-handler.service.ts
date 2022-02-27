@@ -33,13 +33,13 @@ export class ChatboxHandlerService {
 
     submitMessage(userInput: string): void {
         if (userInput !== '') {
+            this.addMessage(this.configureUserMessage(userInput));
             if (this.isCommand(userInput)) {
                 if (this.validCommand(userInput)) {
                     const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                     this.sendCommand(commandValid);
                 }
             } else {
-                this.addMessage(this.configureUserMessage(userInput));
                 this.sendMessage(userInput);
             }
         }
@@ -120,7 +120,6 @@ export class ChatboxHandlerService {
         if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) {
             if (this.validSyntax(userCommand)) {
                 if (this.validCommandParameters(userCommand)) {
-                    this.addMessage(this.configureUserMessage(userCommand));
                     return true;
                 } else {
                     this.addMessage(this.configureInvalidError());

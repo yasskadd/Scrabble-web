@@ -188,15 +188,12 @@ describe('ChatboxHandlerService', () => {
         expect(service['isCommand'](NOT_A_COMMAND)).toBeFalsy();
     });
 
-    it('validCommand() should add command to the displayed messages and return true on a valid command', () => {
+    it('validCommand() should return true on a valid command', () => {
         const VALID_COMMAND = '!aide';
         gameClientServiceSpy.playerOneTurn = true;
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['validCommand'](VALID_COMMAND)).toBeTruthy();
-
-        const EXPECTED_COMMAND_MESSAGE = { type: 'current-user', data: `Toi : ${VALID_COMMAND}` };
-        expect(service.messages.pop()).toEqual(EXPECTED_COMMAND_MESSAGE);
     });
 
     it('validCommand() should add the corresponding error to the displayed messages and return false on an invalid syntax', () => {
