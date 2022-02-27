@@ -32,13 +32,13 @@ describe('LetterReserveService', () => {
         expect(letterReserveService.lettersReserve[0].quantity).to.equal(expectedQuantity);
     });
 
-    it('should remove the letter form the reserve if the quantity of the letter is 0', () => {
-        const expectedLength = letterReserveService.lettersReserve.length - 1;
-        const letterToRemove: Letter = { value: 'z', quantity: 1, points: 10 };
-        letterReserveService.removeLetter(letterToRemove);
+    // it('should remove the letter form the reserve if the quantity of the letter is 0', () => {
+    //     const expectedLength = letterReserveService.lettersReserve.length - 1;
+    //     const letterToRemove: Letter = { value: 'z', quantity: 1, points: 10 };
+    //     letterReserveService.removeLetter(letterToRemove);
 
-        expect(letterReserveService.lettersReserve.length).to.equal(expectedLength);
-    });
+    //     expect(letterReserveService.lettersReserve.length).to.equal(expectedLength);
+    // });
 
     it('should insert the letter to the reserve if the letter is not in it and set its quantity to 1', () => {
         letterReserveService.lettersReserve = [];

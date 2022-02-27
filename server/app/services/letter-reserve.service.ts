@@ -27,7 +27,7 @@ export class LetterReserveService {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-shadow
-        this.lettersReserve = this.lettersReserve.filter((letter) => letter.quantity !== 0);
+        // this.lettersReserve = this.lettersReserve.filter((letter) => letter.quantity !== 0);
     }
 
     insertLetter(removedLetters: Letter[]): Letter[] {
@@ -47,8 +47,12 @@ export class LetterReserveService {
 
     distributeLetter(rack: Letter[]): void {
         const nLetters = this.lettersReserve.length;
-        const random = Math.floor(Math.random() * nLetters);
-        const letter = this.lettersReserve[random];
+        let random = Math.floor(Math.random() * nLetters);
+        let letter = this.lettersReserve[random];
+        while (this.lettersReserve[random].quantity === 0) {
+            random = Math.floor(Math.random() * nLetters);
+            letter = this.lettersReserve[random];
+        }
         this.removeLetter(letter);
         rack.push(letter);
     }

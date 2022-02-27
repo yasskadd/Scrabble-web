@@ -50,6 +50,10 @@ export class GamesHandler {
             this.exchange(sio, socket, letters);
         });
 
+        this.socketManager.io(SocketEvents.ReserveCommand, (sio, socket) => {
+            this.reserveCommand(socket);
+        });
+
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
@@ -67,6 +71,14 @@ export class GamesHandler {
         });
     }
 
+    private reserveCommand(this: this, socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const gameHolder = this.games.get(room) as GameHolder;
+        socket.emit(SocketEvents.AllReserveLetters, gameHolder.game?.letterReserve.lettersReserve);
+    }
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
 
