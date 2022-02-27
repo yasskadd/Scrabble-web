@@ -12,7 +12,7 @@ import { GridService } from '@app/services/grid.service';
 })
 export class InformationPanelComponent {
     value: number;
-    private readonly dialogWidth: string = '25%';
+    private readonly dialogWidth: string = '40%';
 
     constructor(public gridService: GridService, public gameClientService: GameClientService, public dialog: MatDialog, public router: Router) {}
 
@@ -28,6 +28,9 @@ export class InformationPanelComponent {
     abandonGame(): void {
         this.dialog.open(AbandonGameDialogBoxComponent, {
             width: this.dialogWidth,
+            backdropClass: 'abandonDialogComponent',
+            panelClass: 'abandonDialogComponent',
+            disableClose: true,
         });
     }
     leaveGame(): void {
