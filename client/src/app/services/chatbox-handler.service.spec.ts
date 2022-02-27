@@ -329,6 +329,16 @@ describe('ChatboxHandlerService', () => {
         expect(spy).toHaveBeenCalledWith(SocketEvents.Exchange, exchangeLetters);
     });
 
+    it('sendCommand() with the command !reserve should send a  command to the server with an event', () => {
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        const TEST_COMMAND = '!reserve';
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['sendCommand'](TEST_COMMAND);
+        expect(spy).toHaveBeenCalledWith(SocketEvents.ReserveCommand);
+    });
     it('sendCommand() should call sendCommandPlacer if the command valid is to place a word on the board', () => {
         const spy = spyOn(service, 'sendCommandPlacer' as never);
         const TEST_COMMAND = '!placer e3v bonjour';
@@ -389,6 +399,22 @@ describe('ChatboxHandlerService', () => {
         expect(service['getAllLetter'](gameClientServiceSpy.playerOne.rack as never)).toEqual(rackLetter);
     });
 
+    it('configureReserveLetterCommand should push message with the amount of letter left', () => {
+        const letterReserve = [
+            { value: 'c', quantity: 2, points: 1 },
+            { value: 'r', quantity: 2, points: 1 },
+            { value: 'p', quantity: 2, points: 1 },
+        ];
+        const message1 = { type: 'system-message', data: `${letterReserve[0].value}: ${letterReserve[0].quantity}` };
+        const message2 = { type: 'system-message', data: `${letterReserve[1].value}: ${letterReserve[1].quantity}` };
+        const message3 = { type: 'system-message', data: `${letterReserve[2].value}: ${letterReserve[2].quantity}` };
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['configureReserveLetterCommand'](letterReserve as never);
+        expect(service.messages.pop()).toEqual(message3);
+        expect(service.messages.pop()).toEqual(message2);
+        expect(service.messages.pop()).toEqual(message1);
+    });
     it('should return the coordination with a direction if want to place a word with more than one letter', () => {
         const commandArray = ['!placer', 'o2v', 'place'];
         const placementInfo = [{ x: 2, y: 15 }, 'v'];
@@ -414,6 +440,7 @@ describe('ChatboxHandlerService', () => {
         // eslint-disable-next-line dot-notation
         expect(service['getCoordsAndDirection'](commandArray)).toEqual(placementInfo);
     });
+
     it('should return the coordination with no direction if one letter wants to be placed', () => {
         const commandArray = ['!placer', 'o12', 'e'];
         const placementInfo = [{ x: 12, y: 15 }, ''];
@@ -440,6 +467,7 @@ describe('ChatboxHandlerService', () => {
         socketEmulator.peerSideEmit(SocketEvents.ImpossibleCommandError, messageError);
         expect(spy).toHaveBeenCalledWith(messageError as never);
     });
+
     it('should called the addDisconnect  method if the server emit the Event', () => {
         const spy = spyOn(service, 'addDisconnect' as never);
         socketEmulator.peerSideEmit('user disconnect');
@@ -449,6 +477,12 @@ describe('ChatboxHandlerService', () => {
     it('should called the endGame Message method if the server emit the Event', () => {
         const spy = spyOn(service, 'endGameMessage' as never);
         socketEmulator.peerSideEmit('endGame');
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should called configureReserveLetterCommand  method if the server emit the Event', () => {
+        const spy = spyOn(service, 'configureReserveLetterCommand' as never);
+        socketEmulator.peerSideEmit(SocketEvents.AllReserveLetters);
         expect(spy).toHaveBeenCalled();
     });
 

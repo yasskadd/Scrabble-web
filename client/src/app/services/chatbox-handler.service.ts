@@ -71,7 +71,7 @@ export class ChatboxHandlerService {
             this.endGameMessage();
         });
 
-        this.clientSocket.on('allReserveLetters', (letterReserveUpdated: Letter[]) => {
+        this.clientSocket.on(SocketEvents.AllReserveLetters, (letterReserveUpdated: Letter[]) => {
             this.configureReserveLetterCommand(letterReserveUpdated);
         });
     }
@@ -97,7 +97,7 @@ export class ChatboxHandlerService {
                 break;
             }
             case '!reserve': {
-                this.clientSocket.send('reserveCommande');
+                this.clientSocket.send(SocketEvents.ReserveCommand);
                 break;
             }
             // No default
