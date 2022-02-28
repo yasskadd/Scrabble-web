@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/classes/chatbox-message';
-import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
+import { CommandHandlerService } from './command-handler.service';
 import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
@@ -26,6 +26,7 @@ export class ChatboxHandlerService {
         private clientSocket: ClientSocketService,
         private gameConfiguration: GameConfigurationService,
         private gameClient: GameClientService,
+        private commandHandler: CommandHandlerService,
     ) {
         this.messages = [];
         this.configureBaseSocketFeatures();
@@ -37,7 +38,7 @@ export class ChatboxHandlerService {
             if (this.isCommand(userInput)) {
                 if (this.validCommand(userInput)) {
                     const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                    this.sendCommand(commandValid);
+                    this.commandHandler.sendCommand(commandValid);
                 }
             } else {
                 this.sendMessage(userInput);
@@ -78,30 +79,6 @@ export class ChatboxHandlerService {
 
     private sendMessage(message: string): void {
         this.clientSocket.send(SocketEvents.SendMessage, { roomId: this.gameConfiguration.roomInformation.roomId, message });
-    }
-
-    private sendCommand(command: string): void {
-        const splitCommand = this.splitCommand(command);
-        const commandType = this.getCommandType(splitCommand);
-        switch (commandType) {
-            case '!placer': {
-                this.sendCommandPlacer(splitCommand);
-                break;
-            }
-            case '!echanger': {
-                this.sendCommandEchanger(splitCommand);
-                break;
-            }
-            case '!passer': {
-                this.clientSocket.send(SocketEvents.Skip);
-                break;
-            }
-            case '!reserve': {
-                this.clientSocket.send(SocketEvents.ReserveCommand);
-                break;
-            }
-            // No default
-        }
     }
 
     private addMessage(message: ChatboxMessage): void {
@@ -157,53 +134,6 @@ export class ChatboxHandlerService {
 
     private configureInvalidError(): ChatboxMessage {
         return { type: 'system-message', data: '[Erreur] La commande saisie est invalide' };
-    }
-
-    private sendCommandPlacer(command: string[]) {
-        const coordsAndDirection = this.getCoordsAndDirection(command);
-        const commandInformation = {
-            firstCoordinate: coordsAndDirection[0],
-            direction: coordsAndDirection[1],
-            lettersPlaced: this.getLetters(command, 2),
-        };
-        this.clientSocket.send(SocketEvents.Play, commandInformation);
-    }
-
-    private sendCommandEchanger(command: string[]) {
-        this.clientSocket.send(SocketEvents.Exchange, this.getLetters(command, 1));
-    }
-
-    private splitCommand(command: string) {
-        return command.split(' ');
-    }
-
-    private isDigit(information: string) {
-        return information >= '0' && information <= '9';
-    }
-    private getCommandType(stringArr: string[]) {
-        return stringArr[0];
-    }
-    private getCoordsAndDirection(stringArr: string[]) {
-        const placementArray = stringArr[1].split('');
-        const coordinateRatio = 9;
-        if (this.isDigit(placementArray[2]) && placementArray[3] != null) {
-            const coordinateX = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, placementArray[3] as string];
-        } else if (this.isDigit(placementArray[2])) {
-            const coordinateX = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
-        } else if (placementArray[2] == null) {
-            const coordinateX = +placementArray[1];
-            return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
-        }
-        return [
-            { x: parseInt(placementArray[1], 10), y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate,
-            placementArray[2] as string,
-        ];
-    }
-
-    private getLetters(stringArr: string[], position: number) {
-        return stringArr[position].split('');
     }
 
     private configureImpossibleCommandError(error: string): ChatboxMessage {
