@@ -12,8 +12,8 @@ export class RealPlayer extends Player {
         this.isPlayerOne = isPlayerOne;
     }
 
-    placeLetter(commandInfo: CommandInfo): [boolean, Gameboard] | string | void {
-        if (this.game === undefined) return;
+    placeLetter(commandInfo: CommandInfo): [boolean, Gameboard] | string {
+        if (this.game === undefined) return 'error';
         return this.game.play(this, commandInfo);
     }
 

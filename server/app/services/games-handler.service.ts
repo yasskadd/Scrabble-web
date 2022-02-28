@@ -98,21 +98,18 @@ export class GamesHandler {
         const firstCoordinateColumns = commandInfo.firstCoordinate.x;
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
         const letterPlaced = commandInfo.lettersPlaced.join('');
-        const player = this.players.get(socket.id) as Player;
-        const room = player.room;
-        const gameParam = this.games.get(room) as GameHolder;
-        const game = gameParam.game as Game;
-        const play = game.play(player, commandInfo) as [boolean, Gameboard] | string;
+        const player = this.players.get(socket.id) as RealPlayer;
+        const play = player.placeLetter(commandInfo) as [boolean, Gameboard] | string;
 
         if (typeof play[0] === 'string') {
             socket.emit(SocketEvents.ImpossibleCommandError, play);
         } else if (typeof play !== 'string') {
             const playerInfo: PlayInfo = {
                 gameboard: play[1].gameboardCoords,
-                activePlayer: game.turn.activePlayer,
+                activePlayer: player.game.turn.activePlayer,
             };
-            this.socketManager.emitRoom(room, SocketEvents.ViewUpdate, playerInfo);
-            this.updatePlayerInfo(socket, room, game);
+            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playerInfo);
+            this.updatePlayerInfo(socket, player.room, player.game);
 
             if (!play[0]) {
                 socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
