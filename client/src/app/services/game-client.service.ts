@@ -6,8 +6,10 @@ import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type Player = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
+type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
+type Player = { name: string; score: number; rack: Letter[]; room: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+
 @Injectable({
     providedIn: 'root',
 })
@@ -29,13 +31,12 @@ export class GameClientService {
         this.configureBaseSocketFeatures();
     }
     configureBaseSocketFeatures() {
-        this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: Player) => {
+        this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: PlayerInformation) => {
             this.playerOne = player;
             this.updateNewGameboard(player.gameboard);
         });
-        this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
+        this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: PlayerInformation) => {
             this.secondPlayer = player;
-            this.updateNewGameboard(player.gameboard);
         });
 
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
@@ -90,8 +91,8 @@ export class GameClientService {
     resetGameInformation() {
         this.timer = 0;
         this.gameboard = [];
-        this.playerOne = { name: '', score: 0, rack: [], room: '', gameboard: [] };
-        this.secondPlayer = { name: '', score: 0, rack: [], room: '', gameboard: [] };
+        this.playerOne = { name: '', score: 0, rack: [], room: '' };
+        this.secondPlayer = { name: '', score: 0, rack: [], room: '' };
         this.playerOneTurn = false;
         this.letterReserveLength = 0;
         this.isGameFinish = false;

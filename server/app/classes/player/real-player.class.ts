@@ -31,7 +31,7 @@ export class RealPlayer extends Player {
             score: this.score,
             rack: this.rack,
             room: this.room,
-            gameboard: this.game.gameboard,
+            gameboard: this.game.gameboard.gameboardCoords,
         };
     }
 }
