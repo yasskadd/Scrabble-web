@@ -15,15 +15,15 @@ describe.only('Word solver service', () => {
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();
         dictionaryValidationService.createTrieDictionary();
-        wordSolverService = new WordSolverService(dictionaryValidationService.trie);
         boxMultiplierService = new BoxMultiplierService();
         gameboard = new Gameboard(boxMultiplierService);
+        wordSolverService = new WordSolverService(dictionaryValidationService.trie, gameboard);
     });
 
     it.only('test', () => {
-        const rack: string[] = ['n', 'i'];
-        gameboard.placeLetter(new LetterTile(8, 7, { value: 'a' } as Letter));
-        gameboard.placeLetter(new LetterTile(8, 9, { value: 'e' } as Letter));
-        wordSolverService.findAllOptions(gameboard, rack);
+        const rack: string[] = ['b', 'e', 'a', 'l', 'l', 'i', 'o'];
+        gameboard.placeLetter(new LetterTile(8, 8, { value: 'l' } as Letter));
+        gameboard.placeLetter(new LetterTile(2, 1, { value: 'a' } as Letter));
+        wordSolverService.findAllOptions(rack);
     });
 });
