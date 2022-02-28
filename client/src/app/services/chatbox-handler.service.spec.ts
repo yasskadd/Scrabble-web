@@ -6,6 +6,7 @@ import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { ClientSocketService } from './client-socket.service';
+import { CommandHandlerService } from './command-handler.service';
 import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
@@ -55,6 +56,7 @@ describe('ChatboxHandlerService', () => {
     let socketEmulator: SocketTestEmulator;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
+    let commandHandlerSpy: jasmine.SpyObj<CommandHandlerService>;
     beforeEach(() => {
         gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['removeRoom', 'rejectOpponent', 'beginScrabbleGame'], {
             roomInformation: ROOM_INFORMATION,
@@ -63,6 +65,7 @@ describe('ChatboxHandlerService', () => {
             playerOne: PLAYER1_INFORMATION,
             secondPlayer: SECOND_PLAYER_INFORMATION,
         });
+        commandHandlerSpy = jasmine.createSpyObj('CommandHandlerService', ['sendCommand']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketEmulator as unknown as Socket;
@@ -72,6 +75,7 @@ describe('ChatboxHandlerService', () => {
                 { provide: ClientSocketService, useValue: socketServiceMock },
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
                 { provide: GameClientService, useValue: gameClientServiceSpy },
+                { provide: CommandHandlerService, useValue: commandHandlerSpy },
             ],
         });
         // socketServiceMock = new SocketClientServiceMock();
@@ -274,11 +278,10 @@ describe('ChatboxHandlerService', () => {
 
     it('submitMessage() should call sendCommand() if the command is valid ', () => {
         gameClientServiceSpy.playerOneTurn = true;
-        const spyOnSendCommand = spyOn<ChatboxHandlerService>(service, 'sendCommand' as never);
         const VALID_COMMAND = '!passer';
 
         service.submitMessage(VALID_COMMAND);
-        expect(spyOnSendCommand).toHaveBeenCalled();
+        expect(commandHandlerSpy.sendCommand).toHaveBeenCalled();
     });
 
     it('submitMessage() should call sendMessage() if the command is valid ', () => {
@@ -290,13 +293,12 @@ describe('ChatboxHandlerService', () => {
     });
 
     it("submitMessage() shouldn't send anything", () => {
-        const spyOnSendCommand = spyOn<ChatboxHandlerService>(service, 'sendCommand' as never);
         const spyOnSendMessage = spyOn<ChatboxHandlerService>(service, 'sendMessage' as never);
 
         const INVALID_COMMAND = '!|!|PokemonMasterXX20|!|';
 
         service.submitMessage(INVALID_COMMAND);
-        expect(spyOnSendCommand).not.toHaveBeenCalled();
+        expect(commandHandlerSpy.sendCommand).not.toHaveBeenCalled();
         expect(spyOnSendMessage).not.toHaveBeenCalled();
     });
 
@@ -314,70 +316,13 @@ describe('ChatboxHandlerService', () => {
         expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, TEST_MESSAGE_OBJECT);
     });
 
-    it('sendCommand() send a command to the server with a message event', () => {
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        const TEST_COMMAND = '!echanger avd';
-        const exchangeLetters = ['a', 'v', 'd'];
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        service['sendCommand'](TEST_COMMAND);
-        expect(spy).toHaveBeenCalledWith(SocketEvents.Exchange, exchangeLetters);
-    });
-
-    it('sendCommand() with the command !reserve should send a  command to the server with an event', () => {
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        const TEST_COMMAND = '!reserve';
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        service['sendCommand'](TEST_COMMAND);
-        expect(spy).toHaveBeenCalledWith(SocketEvents.ReserveCommand);
-    });
-    it('sendCommand() should call sendCommandPlacer if the command valid is to place a word on the board', () => {
-        const spy = spyOn(service, 'sendCommandPlacer' as never);
-        const TEST_COMMAND = '!placer e3v bonjour';
-
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        service['sendCommand'](TEST_COMMAND);
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('resetMessage should reset the array of message', () => {
         service.messages = [{ type: 'system-message', data: 'Fin de la partie : lettres restantes' }];
         expect(service.messages.length).toEqual(1);
         service.resetMessage();
         expect(service.messages.length).toEqual(0);
     });
-    it('sendCommand() should call emit an event to the server if the command valid is to skip the turn', () => {
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        const TEST_COMMAND = '!passer';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        service['sendCommand'](TEST_COMMAND);
-        expect(spy).toHaveBeenCalledWith(SocketEvents.Skip);
-    });
-    it('sendCommandPlacer() should send to the server all the information of the command in an object', () => {
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        const commandTest = '!placer e3v bonjour';
-        const commandInformation = {
-            firstCoordinate: { x: 3, y: 5 },
-            direction: 'v',
-            lettersPlaced: ['b', 'o', 'n', 'j', 'o', 'u', 'r'],
-        };
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        service['sendCommand'](commandTest);
-        expect(spy).toHaveBeenCalledWith(SocketEvents.Play, commandInformation);
-    });
     it('configureBaseSocketFeatures() should add the listeners to the socket', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
@@ -412,13 +357,6 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);
     });
-    it('should return the coordination with a direction if want to place a word with more than one letter', () => {
-        const commandArray = ['!placer', 'o2v', 'place'];
-        const placementInfo = [{ x: 2, y: 15 }, 'v'];
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        expect(service['getCoordsAndDirection'](commandArray)).toEqual(placementInfo);
-    });
 
     it('should emit 3 messages to show in the chatBox when the game is finish', () => {
         const message1 = { type: 'system-message', data: 'Fin de la partie : lettres restantes' };
@@ -429,26 +367,6 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);
-    });
-    it('should return the coordination with a direction if the y factor is two digit', () => {
-        const commandArray = ['!placer', 'o12v', 'place'];
-        const placementInfo = [{ x: 12, y: 15 }, 'v'];
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        expect(service['getCoordsAndDirection'](commandArray)).toEqual(placementInfo);
-    });
-
-    it('should return the coordination with no direction if one letter wants to be placed', () => {
-        const commandArray = ['!placer', 'o12', 'e'];
-        const placementInfo = [{ x: 12, y: 15 }, ''];
-        const commandArray2 = ['!placer', 'o1', 'e'];
-        const placementInfo2 = [{ x: 1, y: 15 }, ''];
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        expect(service['getCoordsAndDirection'](commandArray)).toEqual(placementInfo);
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
-        expect(service['getCoordsAndDirection'](commandArray2)).toEqual(placementInfo2);
     });
 
     it('should add a message emit from the server when gameMessage event is emit', () => {
@@ -493,10 +411,9 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('SubmitMessage should send nothing if the user input is empty', () => {
-        const spy = spyOn(service, 'sendCommand' as never);
         const spy2 = spyOn(service, 'addMessage' as never);
         service.submitMessage('');
-        expect(spy).not.toHaveBeenCalled();
+        expect(commandHandlerSpy.sendCommand).not.toHaveBeenCalled();
         expect(spy2).not.toHaveBeenCalled();
     });
 });
