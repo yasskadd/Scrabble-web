@@ -25,21 +25,13 @@ export class LetterReserveService {
                 letter.quantity--;
             }
         });
-
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        // this.lettersReserve = this.lettersReserve.filter((letter) => letter.quantity !== 0);
     }
 
     insertLetter(removedLetters: Letter[]): Letter[] {
         const updatedLetterReserve = this.lettersReserve;
         for (const letterToRemove of removedLetters) {
             const index = this.lettersReserve.findIndex((letter) => letter.value === letterToRemove.value);
-            if (index < 0) {
-                const newLetter = { value: letterToRemove.value, quantity: 1, points: letterToRemove.points };
-                updatedLetterReserve.push(newLetter);
-            } else {
-                updatedLetterReserve[index].quantity++;
-            }
+            updatedLetterReserve[index].quantity++;
         }
 
         return updatedLetterReserve;
