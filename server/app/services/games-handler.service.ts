@@ -69,11 +69,9 @@ export class GamesHandler {
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
 
-        const player = this.players.get(socket.id) as Player;
-        const room = player.room;
-        const gameHolder = this.games.get(room) as GameHolder;
-        gameHolder.game?.skip(player.name);
-        socket.broadcast.to(room).emit(SocketEvents.GameMessage, '!passer');
+        const player = this.players.get(socket.id) as RealPlayer;
+        player.skipTurn();
+        socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, '!passer');
     }
 
     private exchange(this: this, socket: Socket, letters: string[]) {

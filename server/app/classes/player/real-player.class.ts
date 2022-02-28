@@ -21,6 +21,10 @@ export class RealPlayer extends Player {
         if (this.game === undefined) return;
         this.rack = this.game.exchange(letters, this);
     }
+    skipTurn() {
+        if (this.game === undefined) return;
+        this.game.skip(this.name);
+    }
     getInformation() {
         return {
             name: this.name,
