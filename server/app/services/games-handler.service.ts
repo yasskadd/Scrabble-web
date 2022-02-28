@@ -230,9 +230,10 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const game = this.games.get(room);
+        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         game?.game?.abandon();
-        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+
         socket.leave(room);
         this.players.delete(socket.id);
     }
@@ -248,9 +249,9 @@ export class GamesHandler {
                 tempTime = tempTime - 1;
                 if (tempTime === 0) {
                     if (!this.players.has(socket.id)) return;
+                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
                     this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
                     roomInfomation.game?.abandon();
-                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
                     socket.leave(room);
                     this.players.delete(socket.id);
                 }
