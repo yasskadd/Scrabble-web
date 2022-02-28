@@ -87,7 +87,7 @@ describe('GamesHandler Service', () => {
         done();
     });
 
-    it('skip() should call game.skip()', (done) => {
+    it('skip() should call player.skipTurn()', (done) => {
         const player = { room: ROOM } as Player;
         const game = sinon.createStubInstance(Game);
         game.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
