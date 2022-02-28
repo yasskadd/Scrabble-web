@@ -1,5 +1,6 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
+import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';
 import { LetterTile } from '@common/letter-tile.class';
@@ -16,7 +17,7 @@ const CHAR_ASCII = 96;
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
-    players: Player[];
+    players: RealPlayer[];
     roomId: string;
     isGameFinish: boolean;
 }
@@ -78,7 +79,7 @@ export class GamesHandler {
     private exchange(this: this, socket: Socket, letters: string[]) {
         if (!this.players.has(socket.id)) return;
         const lettersToExchange = letters.length;
-        const player = this.players.get(socket.id) as Player;
+        const player = this.players.get(socket.id) as RealPlayer;
         const playerRack = player.rack;
         const game = player.game;
         player.exchangeLetter(letters);
@@ -91,7 +92,7 @@ export class GamesHandler {
             socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         }
         this.updatePlayerInfo(socket, player.room, game);
-        this.socketManager.emitRoom(player.room, SocketEvents.Play, player, game.turn.activePlayer);
+        this.socketManager.emitRoom(player.room, SocketEvents.Play, player.getInformation(), game.turn.activePlayer);
     }
 
     private playGame(this: this, socket: Socket, commandInfo: CommandInfo) {
@@ -141,6 +142,7 @@ export class GamesHandler {
         playerOne.setGame(newGameHolder.game, true);
         playerTwo.setGame(newGameHolder.game, false);
 
+        this.games.set(newGameHolder.roomId, newGameHolder);
         if (socket.id === gameInfo.socketId[0]) {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
@@ -158,12 +160,11 @@ export class GamesHandler {
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
-        this.games.set(newGameHolder.roomId, newGameHolder);
     }
 
-    private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {
+    private setAndGetPlayer(gameInfo: GameScrabbleInformation): RealPlayer {
         const player = this.players.has(gameInfo.socketId[0]) ? 1 : 0;
-        const newPlayer = new Player(gameInfo.playerName[player]);
+        const newPlayer = new RealPlayer(gameInfo.playerName[player]);
 
         newPlayer.room = gameInfo.roomId;
         this.players.set(gameInfo.socketId[player], newPlayer);
@@ -186,11 +187,12 @@ export class GamesHandler {
         const players = this.games.get(player.room)?.players;
         if (players === undefined) return;
         const playerIndex = player.isPlayerOne ? 0 : 1;
+        const secondPlayerIndex = Math.abs(playerIndex - 1);
 
-        socket.emit(SocketEvents.UpdatePlayerInformation, players[playerIndex]);
-        socket.emit(SocketEvents.UpdateOpponentInformation, players[Math.abs(playerIndex)]);
-        socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, players[playerIndex]);
-        socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, players[Math.abs(playerIndex)]);
+        socket.emit(SocketEvents.UpdatePlayerInformation, players[playerIndex].getInformation());
+        socket.emit(SocketEvents.UpdateOpponentInformation, players[secondPlayerIndex].getInformation());
+        socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, players[secondPlayerIndex].getInformation());
+        socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, players[playerIndex].getInformation());
 
         this.socketManager.emitRoom(roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
     }
@@ -199,7 +201,7 @@ export class GamesHandler {
         const game = this.games.get(roomId);
         const gameInfo = {
             gameboard: game?.game?.gameboard.gameboardCoords,
-            players: game?.players,
+            players: game?.players.map((x) => x.getInformation()),
             activePlayer: game?.game?.turn.activePlayer,
         };
         this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
