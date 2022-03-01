@@ -37,4 +37,16 @@ export class InformationPanelComponent {
         this.router.navigate(['/home']);
         this.gameClientService.quitGame();
     }
+
+    timerToMinute(time: number): number {
+        const second = 60;
+        return Math.floor(time / second);
+    }
+
+    timerToSecond(timer: number): number {
+        const minute = 60;
+        const second = 60;
+        const hour = minute * second;
+        return timer - Math.floor(timer / hour) * hour - Math.floor((timer - Math.floor(timer / hour) * hour) / second) * minute;
+    }
 }

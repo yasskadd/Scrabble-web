@@ -10,7 +10,7 @@
         {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet
     </div>
     <div class="time" id="playerOneTimer" *ngIf="this.gameClientService.playerOneTurn">
-        {{ this.gameClientService.timer }}
+        {{ this.timerToMinute(this.gameClientService.timer) }}:{{ this.timerToSecond(this.gameClientService.timer) }}
     </div>
     <div class="time" *ngIf="!this.gameClientService.playerOneTurn">--:--</div>
 </section>
@@ -25,7 +25,7 @@
         {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
     </div>
     <div class="time" id="playerTwoTimer" *ngIf="!this.gameClientService.playerOneTurn">
-        {{ this.gameClientService.timer }}
+        {{ this.timerToMinute(this.gameClientService.timer) }}:{{ this.timerToSecond(this.gameClientService.timer) }}
     </div>
     <div class="time" *ngIf="this.gameClientService.playerOneTurn">--:--</div>
 </section>
