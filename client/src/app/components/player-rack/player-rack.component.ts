@@ -50,7 +50,11 @@ export class PlayerRackComponent {
                 }
             }
         }
-        this.lettersToExchange = [];
+        this.cancel();
         this.chatBoxHandler.submitMessage('!échanger ' + letters);
+    }
+
+    cancel() {
+        this.lettersToExchange = [];
     }
 }
