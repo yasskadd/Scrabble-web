@@ -1,38 +1,27 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
+import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
-import { LetterTilesService } from '@app/services/letter-tiles.service';
-
-export const DEFAULT_WIDTH = 300;
-export const DEFAULT_HEIGHT = 45;
+import { GridService } from '@app/services/grid.service';
+import { Letter } from '@common/letter';
 
 @Component({
     selector: 'app-player-rack',
     templateUrl: './player-rack.component.html',
     styleUrls: ['./player-rack.component.scss'],
 })
-export class PlayerRackComponent implements AfterViewInit {
-    @ViewChild('rackCanvas', { static: false }) private rackCanvas!: ElementRef<HTMLCanvasElement>;
-
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
-
-    constructor(
-        private readonly letterTilesService: LetterTilesService,
-        private chatBoxHandler: ChatboxHandlerService,
-        public gameClient: GameClientService,
-    ) {}
-
-    ngAfterViewInit(): void {
-        this.letterTilesService.gridContext = this.rackCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.rackCanvas.nativeElement.focus();
+export class PlayerRackComponent {
+    width = constants.RACK_WIDTH;
+    height = constants.RACK_HEIGHT;
+    constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService, private tmpService: GridService) {}
+    get letterSize(): number {
+        return this.tmpService.letterSize;
     }
-
-    get width(): number {
-        return this.canvasSize.x;
+    get pointsSize(): number {
+        return this.tmpService.letterSize * constants.LETTER_WEIGHT_RATIO;
     }
-
-    get height(): number {
-        return this.canvasSize.y;
+    get rack(): Letter[] {
+        return this.gameClient.playerOne.rack;
     }
 
     skipTurn() {

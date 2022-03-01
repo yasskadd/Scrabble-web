@@ -1,9 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
+import * as constants from '@app/constants';
 import { GridService } from '@app/services/grid.service';
-
-export const DEFAULT_WIDTH = 600;
-export const DEFAULT_HEIGHT = 600;
 
 export enum MouseButton {
     Left = 0,
@@ -23,7 +21,7 @@ export class PlayAreaComponent implements AfterViewInit {
 
     mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize = { x: constants.GRID_CANVAS_WIDTH, y: constants.GRID_CANVAS_HEIGHT };
 
     constructor(private readonly gridService: GridService) {}
 
@@ -34,10 +32,7 @@ export class PlayAreaComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        this.gridService.drawGrid([]);
-        // this.gridService.drawWord('Scrabble');
-
-        this.gridCanvas.nativeElement.focus();
+        // this.gridCanvas.nativeElement.focus();
     }
 
     get width(): number {

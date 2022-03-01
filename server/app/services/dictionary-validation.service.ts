@@ -1,21 +1,18 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable no-console */
-/* eslint-disable no-restricted-imports */
+import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { Gameboard } from 'app/classes/gameboard.class';
 import * as fs from 'fs';
 import { Service } from 'typedi';
-import { ScoreService } from './score.service';
-import { WordFinderService } from './word-finder.service';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
 @Service()
 export class DictionaryValidationService {
     dictionary: Set<string> = new Set();
-    scoreService: ScoreService;
-    wordFinderService: WordFinderService;
+    trie: LetterTree;
+    gameboard: Gameboard = new Gameboard(Container.get(BoxMultiplierService));
 
     constructor() {
         jsonDictionary.words.forEach((word: string) => {
@@ -29,11 +26,13 @@ export class DictionaryValidationService {
         return this.calculateTurnPoints(word, foundWords, gameboard);
     }
 
-    private checkWordInDictionary(foundWords: Word[]): void {
-        foundWords.forEach((word) => {
-            console.log(word.stringFormat);
-            console.log(this.dictionary.has(word.stringFormat));
-            if (!this.dictionary.has(word.stringFormat)) word.isValid = false;
+    createTrieDictionary() {
+        this.trie = new LetterTree(jsonDictionary.words);
+    }
+
+    private checkWordInDictionary(wordList: Word[]): void {
+        wordList.forEach((word) => {
+            !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
         });
     }
 

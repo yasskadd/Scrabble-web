@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable prettier/prettier */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Word } from '@app/classes/word.class';

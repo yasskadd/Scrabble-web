@@ -8,8 +8,7 @@ import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
-import { LetterTilesService } from './letter-tiles.service';
-type Player = { name: string; score: number; rack?: Letter[]; room: string };
+type Player = { name: string; score: number; rack: Letter[]; room: string };
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 const PLAYER_ONE: Player = {
@@ -94,10 +93,8 @@ describe('GameClientService', () => {
     let socketEmulator: SocketTestEmulator;
     let socketServiceMock: SocketClientServiceMock;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
-    let letterTilesServiceSpy: jasmine.SpyObj<LetterTilesService>;
     beforeEach(() => {
-        gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid']);
-        letterTilesServiceSpy = jasmine.createSpyObj('LetterTilesService', ['drawRack']);
+        gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid', 'drawRack']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
         socketServiceMock.socket = socketEmulator as unknown as Socket;
@@ -105,7 +102,6 @@ describe('GameClientService', () => {
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },
                 { provide: GridService, useValue: gridServiceSpy },
-                { provide: LetterTilesService, useValue: letterTilesServiceSpy },
             ],
         });
         service = TestBed.inject(GameClientService);

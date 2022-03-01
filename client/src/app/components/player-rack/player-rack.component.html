@@ -1,8 +1,9 @@
 <div class="rack-info">
-    <!-- <li><button mat-raised-button>augmenter taille (+)</button></li> -->
-    <!-- <li><button mat-raised-button>réduire taille (-)</button></li> -->
-    <div mat-dialog-title id="player-letters">
-        <canvas id="rackCanvas" #rackCanvas [attr.width]="width" [attr.height]="height"></canvas>
+    <div id="player-letters">
+        <div *ngFor="let letter of rack" class="rack-Letter">
+            <div class="letter-value" [style.font-size]="letterSize + 'px'">{{ letter.value.toUpperCase() }}</div>
+            <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
+        </div>
     </div>
     <button mat-raised-button disabled>valider le mot</button>
     <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>

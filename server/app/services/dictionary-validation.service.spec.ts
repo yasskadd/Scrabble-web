@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-restricted-imports */
+import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
@@ -120,5 +121,33 @@ describe('Dictionary Validation Service', () => {
 
     it('should return 0 points when validateWord() is called and wordList is invalid', () => {
         expect(dictionaryValidationService.validateWord(invalidWord1, gameboard)).to.equal(0);
+    });
+
+    context('Trie Dictionary tests', () => {
+        let trie: LetterTree;
+        before(() => {
+            dictionaryValidationService = new DictionaryValidationService();
+            dictionaryValidationService['createTrieDictionary']();
+            trie = dictionaryValidationService.trie;
+        });
+
+        it('should initialize trie', () => {
+            expect(trie).to.not.equal(null);
+        });
+
+        it('trie should contain existing word from French dictionary', () => {
+            expect(trie.isWord('conforme')).to.equal(true);
+            expect(trie.isWord('matrice')).to.equal(true);
+        });
+
+        it('trie should not contain non-existing word from the French dictionary', () => {
+            expect(trie.isWord('dijasdij')).to.equal(false);
+            expect(trie.isWord('ocas')).to.equal(false);
+        });
+
+        it('should insert word into trie', () => {
+            trie.insertWord('dijasdij');
+            expect(trie.isWord('dijasdij')).to.equal(true);
+        });
     });
 });

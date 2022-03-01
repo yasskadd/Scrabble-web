@@ -19,6 +19,7 @@ interface GameHolder {
     players: Player[];
     roomId: string;
     isGameFinish: boolean;
+    timer: number;
 }
 
 interface GameScrabbleInformation {
@@ -50,6 +51,10 @@ export class GamesHandler {
             this.exchange(sio, socket, letters);
         });
 
+        this.socketManager.io(SocketEvents.ReserveCommand, (sio, socket) => {
+            this.reserveCommand(socket);
+        });
+
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
@@ -62,11 +67,19 @@ export class GamesHandler {
             this.abandonGame(socket);
         });
 
-        this.socketManager.on('quitGame', (socket) => {
+        this.socketManager.on(SocketEvents.QuitGame, (socket) => {
             this.disconnect(socket);
         });
     }
 
+    private reserveCommand(this: this, socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const gameHolder = this.games.get(room) as GameHolder;
+        socket.emit(SocketEvents.AllReserveLetters, gameHolder.game?.letterReserve.lettersReserve);
+    }
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
 
@@ -136,7 +149,13 @@ export class GamesHandler {
 
     private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
-        const newGameHolder: GameHolder = { game: undefined, players: [playerOne], roomId: gameInfo.roomId, isGameFinish: false };
+        const newGameHolder: GameHolder = {
+            game: undefined,
+            players: [playerOne],
+            roomId: gameInfo.roomId,
+            isGameFinish: false,
+            timer: gameInfo.timer,
+        };
         const playerTwo = this.setAndGetPlayer(gameInfo);
 
         newGameHolder.players.push(playerTwo);
@@ -172,11 +191,10 @@ export class GamesHandler {
     }
 
     private createNewGame(gameParam: GameHolder) {
-        const oneMinute = 60;
         return new Game(
             gameParam.players[0],
             gameParam.players[1],
-            new Turn(oneMinute),
+            new Turn(gameParam.timer),
             new LetterReserveService(),
             Container.get(LetterPlacementService),
         );
@@ -218,9 +236,10 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const game = this.games.get(room);
+        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         game?.game?.abandon();
-        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+
         socket.leave(room);
         this.players.delete(socket.id);
     }
@@ -236,16 +255,18 @@ export class GamesHandler {
                 tempTime = tempTime - 1;
                 if (tempTime === 0) {
                     if (!this.players.has(socket.id)) return;
+                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
                     this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
                     roomInfomation.game?.abandon();
-                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+                    socket.leave(room);
+                    this.players.delete(socket.id);
                 }
             }, SECOND);
         } else {
             this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+            socket.leave(room);
+            this.players.delete(socket.id);
         }
-        socket.leave(room);
-        this.players.delete(socket.id);
     }
 
     private endGame(socket: Socket) {
@@ -259,6 +280,7 @@ export class GamesHandler {
                 players: roomInfomation.players,
                 roomId: roomInfomation.roomId,
                 isGameFinish: true,
+                timer: roomInfomation.timer,
             };
             this.games.set(room, newGameHolder);
             this.socketManager.emitRoom(room, SocketEvents.GameEnd);
