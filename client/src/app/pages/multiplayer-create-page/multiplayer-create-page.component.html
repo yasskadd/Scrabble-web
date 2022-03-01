@@ -10,8 +10,11 @@
         <mat-card-title>Minuterie</mat-card-title>
         <mat-form-field appearance="fill">
             <mat-label>Temps</mat-label>
-            <mat-select disabled required> </mat-select>
-            <mat-option value="1" disabled>1 minute</mat-option>
+            <mat-select id="timer-select" [(value)]="timer">
+                <mat-option id="timer-options" *ngFor="let time of this.timerList" value="{{ time }}">
+                    {{ this.secondToMinute(time) }}
+                </mat-option>
+            </mat-select>
         </mat-form-field>
 
         <mat-card-title>Dictionnaire</mat-card-title>
