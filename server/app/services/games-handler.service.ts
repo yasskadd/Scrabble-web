@@ -19,6 +19,7 @@ interface GameHolder {
     players: Player[];
     roomId: string;
     isGameFinish: boolean;
+    timer: number;
 }
 
 interface GameScrabbleInformation {
@@ -148,7 +149,13 @@ export class GamesHandler {
 
     private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
-        const newGameHolder: GameHolder = { game: undefined, players: [playerOne], roomId: gameInfo.roomId, isGameFinish: false };
+        const newGameHolder: GameHolder = {
+            game: undefined,
+            players: [playerOne],
+            roomId: gameInfo.roomId,
+            isGameFinish: false,
+            timer: gameInfo.timer,
+        };
         const playerTwo = this.setAndGetPlayer(gameInfo);
 
         newGameHolder.players.push(playerTwo);
@@ -184,11 +191,10 @@ export class GamesHandler {
     }
 
     private createNewGame(gameParam: GameHolder) {
-        const oneMinute = 60;
         return new Game(
             gameParam.players[0],
             gameParam.players[1],
-            new Turn(oneMinute),
+            new Turn(gameParam.timer),
             new LetterReserveService(),
             Container.get(LetterPlacementService),
         );
@@ -274,6 +280,7 @@ export class GamesHandler {
                 players: roomInfomation.players,
                 roomId: roomInfomation.roomId,
                 isGameFinish: true,
+                timer: roomInfomation.timer,
             };
             this.games.set(room, newGameHolder);
             this.socketManager.emitRoom(room, SocketEvents.GameEnd);
