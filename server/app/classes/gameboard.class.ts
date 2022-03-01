@@ -1,18 +1,18 @@
 /* eslint-disable prettier/prettier */
-import { BoxMultiplierService } from '@app/services/box-multiplier.service';
+import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
 import { LetterTile } from '@common/letter-tile.class';
-import { Inject } from 'typedi';
 
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
+const MIDDLE_COORD = { x: 8, y: 8 };
 
 export class Gameboard {
     gameboardTiles: LetterTile[] = new Array();
 
-    constructor(@Inject() private boxMultiplierService: BoxMultiplierService) {
+    constructor() {
         this.createLetterTiles();
-        this.boxMultiplierService.applyBoxMultipliers(this);
+        this.applyBoxMultipliers(this);
     }
 
     createLetterTiles() {
@@ -21,6 +21,26 @@ export class Gameboard {
                 this.gameboardTiles.push(new LetterTile({ x: i, y: j }));
             }
         }
+    }
+
+    applyBoxMultipliers(gameboard: Gameboard) {
+        multipliers.letterMultipliersByTwo.forEach((coord) => {
+            gameboard.getLetterTile(coord).multiplier = { type: 'LETTRE', number: 2 };
+        });
+
+        multipliers.letterMultipliersByThree.forEach((coord) => {
+            gameboard.getLetterTile(coord).multiplier = { type: 'LETTRE', number: 3 };
+        });
+
+        multipliers.wordMultipliersByTwo.forEach((coord) => {
+            gameboard.getLetterTile(coord).multiplier = { type: 'MOT', number: 2 };
+        });
+
+        multipliers.wordMultipliersByThree.forEach((coord) => {
+            gameboard.getLetterTile(coord).multiplier = { type: 'MOT', number: 3 };
+        });
+
+        gameboard.getLetterTile(MIDDLE_COORD).multiplier = { type: 'MOT', number: 2 };
     }
 
     getLetterTile(position: Coordinate): LetterTile {

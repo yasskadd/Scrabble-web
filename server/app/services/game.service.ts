@@ -2,12 +2,11 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/command-info';
-import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
-import { Container, Inject } from 'typedi';
+import { Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
@@ -26,8 +25,7 @@ export class Game {
         this.player1 = player1;
         this.player2 = player2;
         this.start();
-        const boxMultiplierService = Container.get(BoxMultiplierService);
-        this.gameboard = new Gameboard(boxMultiplierService);
+        this.gameboard = new Gameboard();
     }
 
     start(): void {

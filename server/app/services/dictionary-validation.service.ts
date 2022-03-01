@@ -12,7 +12,7 @@ const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'u
 export class DictionaryValidationService {
     dictionary: Set<string> = new Set();
     trie: LetterTree;
-    gameboard: Gameboard = new Gameboard(Container.get(BoxMultiplierService));
+    gameboard: Gameboard = new Gameboard();
 
     constructor() {
         jsonDictionary.words.forEach((word: string) => {
@@ -21,7 +21,7 @@ export class DictionaryValidationService {
     }
 
     validateWord(word: Word, gameboard: Gameboard): number {
-        const foundWords = this.wordFinderService.findAdjacentWords(word, gameboard);
+        const foundWords = word.findAdjacentWords(word, gameboard); // TODO: take out repitition of word
         this.checkWordInDictionary(foundWords);
         return this.calculateTurnPoints(word, foundWords, gameboard);
     }
@@ -41,7 +41,7 @@ export class DictionaryValidationService {
         if (this.isolateInvalidWords(foundWords).length !== 0) totalPointsForTurn = 0;
         else
             foundWords.forEach((enteredWord: Word) => {
-                totalPointsForTurn += this.scoreService.calculateWordPoints(enteredWord, gameboard);
+                totalPointsForTurn += enteredWord.calculateWordPoints(enteredWord, gameboard);
             });
 
         return totalPointsForTurn;
