@@ -2,6 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
+const enum TimeOptions {
+    ThirtySecond = 30,
+    OneMinute = 60,
+    OneMinuteAndThirty = 90,
+    TwoMinute = 120,
+    TwoMinuteAndThirty = 150,
+    ThreeMinute = 180,
+    ThreeMinuteAndThirty = 210,
+    FourMinute = 240,
+    FourMinuteAndThirty = 270,
+    FiveMinute = 300,
+}
+
 @Component({
     selector: 'app-multiplayer-create-page',
     templateUrl: './multiplayer-create-page.component.html',
@@ -9,10 +22,21 @@ import { GameConfigurationService } from '@app/services/game-configuration.servi
 })
 export class MultiplayerCreatePageComponent implements OnInit {
     playerName: string;
-    timer: number = 60;
+    timer: number = TimeOptions.OneMinute;
     navigator: Navigator;
     gameMode: string;
-    timerList = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+    timerList = [
+        TimeOptions.ThirtySecond,
+        TimeOptions.OneMinute,
+        TimeOptions.OneMinuteAndThirty,
+        TimeOptions.TwoMinute,
+        TimeOptions.TwoMinuteAndThirty,
+        TimeOptions.ThreeMinute,
+        TimeOptions.ThreeMinuteAndThirty,
+        TimeOptions.FourMinute,
+        TimeOptions.FourMinuteAndThirty,
+        TimeOptions.FiveMinute,
+    ];
     constructor(public gameConfiguration: GameConfigurationService, public router: Router, private activatedRoute: ActivatedRoute) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
     }
@@ -30,8 +54,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.router.navigate([`/multijoueur/salleAttente/${this.gameMode}`]);
     }
     secondToMinute(time: number): string {
-        const minute = Math.floor(time / 60);
-        const second = time - minute * 60;
+        const minute = Math.floor(time / TimeOptions.OneMinute);
+        const second = time - minute * TimeOptions.OneMinute;
 
         if (second === 0) {
             return minute.toString() + ':00 minutes';
