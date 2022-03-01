@@ -1,10 +1,19 @@
 <div class="rack-info">
     <div id="player-letters">
-        <div *ngFor="let letter of rack" class="rack-Letter">
-            <div class="letter-value" [style.font-size]="letterSize + 'px'">{{ letter.value.toUpperCase() }}</div>
+        <div
+            *ngFor="let letter of rack; index as i"
+            [className]="this.lettersToExchange.includes(i) ? 'rack-Letter-selected' : 'rack-Letter'"
+            (contextmenu)="onRightClick($event, i)"
+        >
+            <div class="letter-value" [style.font-size]="letterSize + 'px'">
+                {{ letter.value.toUpperCase() }}
+            </div>
             <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
         </div>
     </div>
     <button mat-raised-button disabled>valider le mot</button>
     <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
+    <button id="échanger" mat-raised-button [disabled]="!this.gameClient.playerOneTurn || this.lettersToExchange.length === 0" (click)="exchange()">
+        échanger
+    </button>
 </div>

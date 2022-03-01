@@ -13,6 +13,7 @@ import { Letter } from '@common/letter';
 export class PlayerRackComponent {
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
+    lettersToExchange: number[] = [];
     constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService, private tmpService: GridService) {}
     get letterSize(): number {
         return this.tmpService.letterSize;
@@ -26,5 +27,30 @@ export class PlayerRackComponent {
 
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
+    }
+
+    onRightClick(event: MouseEvent, letter: number) {
+        event.preventDefault();
+        if (!this.lettersToExchange.includes(letter)) {
+            this.lettersToExchange.push(letter);
+        } else {
+            const index = this.lettersToExchange.indexOf(letter, 0);
+            if (index > -1) {
+                this.lettersToExchange.splice(index, 1);
+            }
+        }
+    }
+
+    exchange() {
+        let letters = '';
+        for (const i of this.lettersToExchange) {
+            for (const letter of this.rack) {
+                if (i === this.rack.indexOf(letter)) {
+                    letters += letter.value;
+                }
+            }
+        }
+        this.lettersToExchange = [];
+        this.chatBoxHandler.submitMessage('!échanger ' + letters);
     }
 }
