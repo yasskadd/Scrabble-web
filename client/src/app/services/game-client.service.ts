@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpHandlerService } from '@app/services/http-handler.service';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
@@ -23,11 +22,7 @@ export class GameClientService {
     isGameFinish: boolean;
     winningMessage: string;
 
-    constructor(
-        private gridService: GridService,
-        private clientSocketService: ClientSocketService,
-        private readonly httpHandler: HttpHandlerService,
-    ) {
+    constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
@@ -50,7 +45,6 @@ export class GameClientService {
             if (this.winningMessage === '') {
                 this.findWinnerByScore();
                 this.isGameFinish = true;
-                this.httpHandler.addNewHighScore({ player: this.playerOne.name, type: 'Classique', score: this.playerOne.score });
             }
         });
 

@@ -10,18 +10,14 @@
             <table>
                 <thead class="tableContainer">
                     <tr>
-                        <th>position</th>
-                        <th>Nom Utilisateur</th>
-                        <th>score</th>
-                        <th>Mode</th>
+                        <th>Scores</th>
+                        <th>Joueurs</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let highScore of highScoreClassic">
-                        <td>{{ highScore.position }}</td>
-                        <td>{{ highScore.username }}</td>
                         <td>{{ highScore.score }}</td>
-                        <td>{{ highScore.type }}</td>
+                        <td>{{ highScore.username }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -32,18 +28,14 @@
             <table>
                 <thead class="tableContainer">
                     <tr>
-                        <th>position</th>
-                        <th>Nom Utilisateur</th>
-                        <th>score</th>
-                        <th>Mode</th>
+                        <th>Scores</th>
+                        <th>Joueurs</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let highScore of highScoreLOG29990">
-                        <td>{{ highScore.position }}</td>
-                        <td>{{ highScore.username }}</td>
                         <td>{{ highScore.score }}</td>
-                        <td>{{ highScore.type }}</td>
+                        <td>{{ highScore.username }}</td>
                     </tr>
                 </tbody>
             </table>

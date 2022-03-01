@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-type ScoreInfo = { player: string; type: string; score: number };
+// type ScoreInfo = { username: string; type: string; score: number };
 
 @Injectable({
     providedIn: 'root',
@@ -19,15 +19,13 @@ export class HttpHandlerService {
         return score.json();
     }
 
-    async addNewHighScore(scoreInfo: ScoreInfo) {
-        console.log(scoreInfo);
-        console.log(JSON.stringify(scoreInfo));
-        await fetch(`${this.baseUrl}/highScore/classique`, {
-            method: 'POST',
-            body: JSON.stringify(scoreInfo),
-            headers: {
-                'content-type': 'application/json',
-            },
-        });
-    }
+    // async addNewHighScore(scoreInfo: ScoreInfo) {
+    //     await fetch(`${this.baseUrl}/highScore/classique`, {
+    //         method: 'POST',
+    //         body: JSON.stringify(scoreInfo),
+    //         headers: {
+    //             'content-type': 'application/json',
+    //         },
+    //     });
+    // }
 }
