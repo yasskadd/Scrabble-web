@@ -44,25 +44,19 @@ export class Gameboard {
     }
 
     getLetterTile(position: Coordinate): LetterTile {
-        this.checkIfWithinBounds(position);
+        if (position.x > ROW_NUMBERS || position.x < 1 || position.y > ROW_NUMBERS || position.y < 1) return {} as LetterTile;
         return this.gameboardTiles.filter((gameboardTile) => {
             return gameboardTile.coordinate === position;
         })[0];
     }
 
     placeLetter(position: Coordinate, letter: string) {
-        this.checkIfWithinBounds(position);
         this.getLetterTile(position).setLetter(letter);
         this.getLetterTile(position).isOccupied = true;
     }
 
     removeLetter(position: Coordinate) {
-        this.checkIfWithinBounds(position);
         this.getLetterTile(position).setLetter('');
         this.getLetterTile(position).isOccupied = false;
-    }
-
-    checkIfWithinBounds(position: Coordinate): boolean {
-        return position.x > ROW_NUMBERS || position.x < 1 || position.y > ROW_NUMBERS || position.y < 1;
     }
 }
