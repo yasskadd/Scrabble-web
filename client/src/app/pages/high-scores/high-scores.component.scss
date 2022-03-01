@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+}
+
+.wrapper {
+    text-align: center;
+}
+
+table {
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+th {
+    padding: 10px;
+    text-align: center;
+}
+
+.highScoreTableClassic {
+    background-color: rgba(55, 179, 107, 0.233);
+    margin-bottom: 40px;
+}
+
+.highScoreTableLOG2990 {
+    background-color: rgba(202, 19, 19, 0.233);
+    margin-bottom: 10px;
+}
+
+.containerTitle {
+    text-align: center;
+    font-size: 40px;
+    padding: 20px 0px;
+}
+
+mat-icon {
+    font-size: 40px;
+    padding-left: 20px;
+}

@@ -24,6 +24,7 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
+import { HighScoresComponent } from './pages/high-scores/high-scores.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -44,6 +45,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         InformationPanelComponent,
         PlayerRackComponent,
         AbandonGameDialogBoxComponent,
+        HighScoresComponent,
     ],
     imports: [
         AppMaterialModule,
