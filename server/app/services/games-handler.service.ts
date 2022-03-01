@@ -78,13 +78,12 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const lettersToExchange = letters.length;
         const player = this.players.get(socket.id) as RealPlayer;
-        const playerRack = player.rack;
+        const oldPlayerRack = player.rack;
         const game = player.game;
         player.exchangeLetter(letters);
-        const newRack = player.rack;
 
-        if (newRack.length === 0) return;
-        if (JSON.stringify(playerRack) === JSON.stringify(player.rack)) {
+        if (player.rack.length === 0) return;
+        if (JSON.stringify(oldPlayerRack) === JSON.stringify(player.rack)) {
             socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne posséder pas toutes les lettres a échanger');
         } else {
             socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
