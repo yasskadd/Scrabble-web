@@ -20,6 +20,7 @@ interface GameHolder {
     players: Player[];
     roomId: string;
     isGameFinish: boolean;
+    timer: number;
 }
 
 const ROOM = '0';
@@ -215,12 +216,14 @@ describe('GamesHandler Service', () => {
         const SECOND_PLAYER = 'GILGAMESH';
         const PLAYER_ONE = new Player(FIRST_PLAYER);
         const PLAYER_TWO = new Player(SECOND_PLAYER);
+        const TIMER = 60;
 
         const params = {
             game: {} as Game,
             players: [PLAYER_ONE, PLAYER_TWO],
             roomId: ROOM,
             isGameFinish: false,
+            timer: TIMER,
         };
         // eslint-disable-next-line dot-notation
         const game = gamesHandler['createNewGame'](params);
