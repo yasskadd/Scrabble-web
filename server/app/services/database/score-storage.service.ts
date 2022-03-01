@@ -19,7 +19,7 @@ export class ScoreStorageService {
         if (scorePlace === ScoreStorageService.lastElement) return;
         const currentElement = currentTopScores.at(scorePlace - 1);
         if (currentElement !== undefined) {
-            if (currentElement.score === scoreInfo.score && this.isNameAlreadyThere(scoreInfo.username, currentElement.username)) {
+            if (currentElement.score === scoreInfo.score && !this.isNameAlreadyThere(scoreInfo.username, currentElement.username)) {
                 this.database.replaceDocument(
                     { position: scorePlace },
                     {
@@ -87,8 +87,8 @@ export class ScoreStorageService {
     }
     private isNameAlreadyThere(newPlayer: string, currentPlayer: string): boolean {
         const playerName = currentPlayer.split(' - ');
-        console.log(playerName);
-        if (playerName.indexOf(newPlayer) === undefined) return false;
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+        if (playerName.indexOf(newPlayer) === -1) return false;
         return true;
     }
 }
