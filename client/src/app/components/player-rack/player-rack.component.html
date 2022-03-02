@@ -1,10 +1,14 @@
-<div class="rack-info">
+<div #info class="rack-info">
     <div id="player-letters">
         <div *ngFor="let letter of rack" class="rack-Letter">
-            <div class="letter-value" [style.font-size]="letterSize + 'px'">{{ letter.value.toUpperCase() }}</div>
-            <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
+            <div [style.background]="letter.value === buttonPressed ? 'green' : '#ffffff00'">
+                <div class="letter-value" [style.font-size]="letterSize + 'px'">{{ letter.value.toUpperCase() }}</div>
+                <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
+            </div>
         </div>
     </div>
     <button mat-raised-button disabled>valider le mot</button>
+    <p>Appuyez sur une touche du clavier pour la détecter</p>
+    <p *ngIf="buttonPressed !== ''">touche : {{ buttonPressed }}</p>
     <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
 </div>
