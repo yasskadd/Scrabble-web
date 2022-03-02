@@ -72,8 +72,4 @@ export class PlayerRackComponent {
     cancel() {
         this.lettersToExchange = [];
     }
-
-    test(num: number) {
-        this.clicked.push(num);
-    }
 }
