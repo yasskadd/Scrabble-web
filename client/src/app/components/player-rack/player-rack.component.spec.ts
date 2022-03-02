@@ -1,8 +1,10 @@
+import { Renderer2 } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
+import { Letter } from '@common/letter';
 import { PlayerRackComponent } from './player-rack.component';
 
 const LETTER_SIZE = 5;
@@ -16,7 +18,10 @@ describe('PlayerRackComponent', () => {
 
     beforeEach(async () => {
         chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage']);
-        gameClientServiceSpy = jasmine.createSpyObj('GameClientService', ['updateGameboard'], { playerOneTurn: true, playerOne: { rack: [] } });
+        gameClientServiceSpy = jasmine.createSpyObj('GameClientService', ['updateGameboard'], {
+            playerOneTurn: true,
+            playerOne: { rack: [{ value: 'a' } as Letter] },
+        });
         gridServiceServiceSpy = jasmine.createSpyObj('GridService', [], { letterSize: LETTER_SIZE });
         await TestBed.configureTestingModule({
             declarations: [PlayerRackComponent],
@@ -24,6 +29,7 @@ describe('PlayerRackComponent', () => {
                 { provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy },
                 { provide: GameClientService, useValue: gameClientServiceSpy },
                 { provide: GridService, useValue: gridServiceServiceSpy },
+                { provide: Renderer2 },
             ],
         }).compileComponents();
     });
@@ -51,10 +57,44 @@ describe('PlayerRackComponent', () => {
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
     }));
+
+    it('should call exchange when the button to exchange is pressed and it is your turn to play', fakeAsync(() => {
+        const spy = spyOn(component, 'exchange');
+        component.lettersToExchange = [0];
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#exchange');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('exchange should call submitMessage of chatBoxHandler', fakeAsync(() => {
+        component.exchange();
+        expect(chatBoxHandlerSpy.submitMessage).toHaveBeenCalled();
+    }));
+
     it("letterSize should return a letter's size", () => {
         expect(component.letterSize).toEqual(LETTER_SIZE);
     });
     it("pointsSize should return a letter's size", () => {
         expect(component.pointsSize).toEqual(LETTER_SIZE * constants.LETTER_WEIGHT_RATIO);
+    });
+
+    it('should call cancel when the button to cancel selection is pressed', fakeAsync(() => {
+        const spy = spyOn(component, 'cancel');
+        component.lettersToExchange = [0];
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#cancel');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('cancel should return set lettersToExchange to an empty array', () => {
+        component.lettersToExchange = [0];
+        component.cancel();
+        expect(component.lettersToExchange.length).toEqual(0);
     });
 });
