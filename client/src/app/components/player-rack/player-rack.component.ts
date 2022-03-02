@@ -15,7 +15,10 @@ export class PlayerRackComponent {
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
     buttonPressed = '';
+    lastKeyPressed = 0;
     lettersToExchange: number[] = [];
+    lettersToManipulate: number[] = [];
+    temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
@@ -28,17 +31,14 @@ export class PlayerRackComponent {
         });
     }
 
-    @HostListener('keydown', ['$event'])
+    @HostListener('document: keydown', ['$event']) // should focus on player rack. ex: letters still show if player is typing in chatbox
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-        alert('here');
         console.log('hellooooooo');
+        this.selectManipulation(event);
+        // this.repositionRack();
     }
 
-    // @HostListener('click') doSomething() {
-    //     this.info.nativeElement.focus();
-    //     console.log('hello');
-    // } // multiplayerCreatePage test has problem when this is uncommented - check nativeElement
     get letterSize(): number {
         return this.tmpService.letterSize;
     }
@@ -53,26 +53,47 @@ export class PlayerRackComponent {
         this.chatBoxHandler.submitMessage('!passer');
     }
 
-    // maybe not necessary
-    containsSelected() {
-        let value = false;
-        this.gameClient.playerOne.rack.forEach((letter) => {
-            if (letter.value === this.buttonPressed) {
-                value = true;
+    selectManipulation(event: KeyboardEvent) {
+        let index = -1;
+        for (const [i, letter] of this.rack.entries()) {
+            if (letter.value === event.key.toLowerCase()) {
+                index = i;
             }
-        });
-        return value;
+            this.repositionRack();
+            if (!this.lettersToManipulate.includes(index) && index !== -1) {
+                this.lettersToManipulate.push(index);
+                this.lastKeyPressed = index;
+            }
+            // else {
+            //     this.lettersToManipulate = [];
+            // }
+            // return; // modify function to select the duplicate letters starting from left side
+        }
+        console.log(index);
     }
 
-    /* repositionRack(direction, selected){
-        if (ArrowLeft && selected index == gameClient.playerOne.rack[0])
-        if (ArrowRight && selected index == gameClient.playerOne.rack[6])
+    repositionRack() {
+        // if (this.buttonPressed === "ArrowLeft" && selected index == this.gameClient.playerOne.rack[0])
+        // if (this.buttonPressed === "ArrowRight"  && selected index == this.gameClient.playerOne.rack[6]);
 
-        else 
-        case directionLeft: swap selected index with gameClient.playerOne.rack[i - 1]
+        if (this.buttonPressed === 'ArrowLeft') {
+            this.temp = this.gameClient.playerOne.rack[this.lastKeyPressed - 1];
+            this.gameClient.playerOne.rack[this.lastKeyPressed - 1] = this.gameClient.playerOne.rack[this.lastKeyPressed];
+            this.gameClient.playerOne.rack[this.lastKeyPressed] = this.temp;
+        }
 
-        case directionRight:  swap selected index with gameClient.playerOne.rack[i + 1]
-    }*/
+        if (this.buttonPressed === 'ArrowRight') {
+            this.temp = this.gameClient.playerOne.rack[this.lastKeyPressed + 1];
+            this.gameClient.playerOne.rack[this.lastKeyPressed + 1] = this.gameClient.playerOne.rack[this.lastKeyPressed];
+            this.gameClient.playerOne.rack[this.lastKeyPressed] = this.temp;
+        }
+
+        // if (this.buttonPressed === 'ArrowRight') {
+        //     this.lettersToManipulate.push(this.lastKeyPressed + 1);
+        //     this.lettersToManipulate.splice(this.lastKeyPressed, 1);
+        // }
+    }
+
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
         const notFound = -1;
@@ -82,6 +103,19 @@ export class PlayerRackComponent {
             const index = this.lettersToExchange.indexOf(letter);
             if (index > notFound) {
                 this.lettersToExchange.splice(index, 1);
+            }
+        }
+    }
+
+    onLeftClick(event: MouseEvent, letter: number) {
+        event.preventDefault();
+        const notFound = -1;
+        if (!this.lettersToManipulate.includes(letter)) {
+            this.lettersToManipulate.push(letter);
+        } else {
+            const index = this.lettersToManipulate.indexOf(letter);
+            if (index > notFound) {
+                this.lettersToManipulate.splice(index, 1);
             }
         }
     }

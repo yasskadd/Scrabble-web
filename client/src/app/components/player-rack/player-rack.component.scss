@@ -32,6 +32,15 @@
     height: 40px;
 }
 
+.rack-letter-manipulate-selected {
+    border-collapse: collapse;
+    background-color: #76ca92;
+    border: 2px solid black;
+    border-right: 0px;
+    width: 40px;
+    height: 40px;
+}
+
 .rack-letter:last-child {
     border: 2px solid black;
 }
