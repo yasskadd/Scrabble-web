@@ -13,7 +13,12 @@
     </div>
     <button mat-raised-button disabled>valider le mot</button>
     <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
-    <button id="exchange" mat-raised-button [disabled]="!this.gameClient.playerOneTurn || this.lettersToExchange.length === 0" (click)="exchange()">
+    <button
+        id="exchange"
+        mat-raised-button
+        [disabled]="!this.gameClient.playerOneTurn || this.lettersToExchange.length === 0 || this.gameClient.letterReserveLength < 7"
+        (click)="exchange()"
+    >
         échanger
     </button>
     <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>

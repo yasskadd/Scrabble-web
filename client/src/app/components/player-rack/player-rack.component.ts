@@ -41,11 +41,12 @@ export class PlayerRackComponent {
 
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
+        const notFound = -1;
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
-            const index = this.lettersToExchange.indexOf(letter, 0);
-            if (index > -1) {
+            const index = this.lettersToExchange.indexOf(letter);
+            if (index > notFound) {
                 this.lettersToExchange.splice(index, 1);
             }
         }

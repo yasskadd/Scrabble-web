@@ -58,6 +58,27 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
+    it('OnRightClick should select a letter and insert it into the lettersToExchange on right click', fakeAsync(() => {
+        const indexLetter = 0;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
+        expect(component.lettersToExchange.length).toEqual(1);
+        expect(lettersDiv[indexLetter].className).toEqual('rack-Letter-selected');
+    }));
+
+    it('OnRightClick should deselect a letter already selected on right click ', fakeAsync(() => {
+        const indexLetter = 0;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
+        expect(component.lettersToExchange.length).toEqual(0);
+        expect(lettersDiv[indexLetter].className).toEqual('rack-Letter');
+    }));
+
     it('should call exchange when the button to exchange is pressed and it is your turn to play', fakeAsync(() => {
         const spy = spyOn(component, 'exchange');
         component.lettersToExchange = [0];
@@ -69,10 +90,17 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('exchange should call submitMessage of chatBoxHandler', fakeAsync(() => {
+    it('exchange should call submitMessage of chatBoxHandler with the letters to exchange as argument', () => {
+        component.lettersToExchange = [0];
         component.exchange();
-        expect(chatBoxHandlerSpy.submitMessage).toHaveBeenCalled();
-    }));
+        expect(chatBoxHandlerSpy.submitMessage).toHaveBeenCalledWith('!échanger a');
+    });
+
+    it('exchange should call cancel', () => {
+        const spy = spyOn(component, 'cancel');
+        component.cancel();
+        expect(spy).toHaveBeenCalled();
+    });
 
     it("letterSize should return a letter's size", () => {
         expect(component.letterSize).toEqual(LETTER_SIZE);
