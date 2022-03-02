@@ -1,4 +1,4 @@
-import { Component, Renderer2 } from '@angular/core';
+import { Component, ElementRef, HostListener } from '@angular/core';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
@@ -14,15 +14,19 @@ export class PlayerRackComponent {
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
     lettersToExchange: number[] = [];
+    clicked: number[] = [];
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,
         private tmpService: GridService,
-        private renderer: Renderer2,
-    ) {
-        this.renderer.listen('window', 'click', () => {
+        private eRef: ElementRef,
+    ) {}
+
+    @HostListener('document:click', ['$event'])
+    clickOutside(event: { target: unknown; preventDefault: () => void }) {
+        if (!this.eRef.nativeElement.contains(event.target)) {
             this.lettersToExchange = [];
-        });
+        }
     }
 
     get letterSize(): number {
