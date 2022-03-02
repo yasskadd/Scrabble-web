@@ -23,7 +23,19 @@
     width: 40px;
     height: 40px;
 }
+.rack-Letter-selected {
+    border-collapse: collapse;
+    background-color: #7949d1;
+    border: 2px solid black;
+    border-right: 0px;
+    width: 40px;
+    height: 40px;
+}
+
 .rack-Letter:last-child {
+    border: 2px solid black;
+}
+.rack-Letter-selected:last-child {
     border: 2px solid black;
 }
 .letter-value {

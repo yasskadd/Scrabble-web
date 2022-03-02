@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
@@ -13,7 +13,18 @@ import { Letter } from '@common/letter';
 export class PlayerRackComponent {
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
-    constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService, private tmpService: GridService) {}
+    lettersToExchange: number[] = [];
+    constructor(
+        private chatBoxHandler: ChatboxHandlerService,
+        public gameClient: GameClientService,
+        private tmpService: GridService,
+        private renderer: Renderer2,
+    ) {
+        this.renderer.listen('window', 'click', () => {
+            this.lettersToExchange = [];
+        });
+    }
+
     get letterSize(): number {
         return this.tmpService.letterSize;
     }
@@ -26,5 +37,35 @@ export class PlayerRackComponent {
 
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
+    }
+
+    onRightClick(event: MouseEvent, letter: number) {
+        event.preventDefault();
+        const notFound = -1;
+        if (!this.lettersToExchange.includes(letter)) {
+            this.lettersToExchange.push(letter);
+        } else {
+            const index = this.lettersToExchange.indexOf(letter);
+            if (index > notFound) {
+                this.lettersToExchange.splice(index, 1);
+            }
+        }
+    }
+
+    exchange() {
+        let letters = '';
+        for (const i of this.lettersToExchange) {
+            for (const letter of this.rack) {
+                if (i === this.rack.indexOf(letter)) {
+                    letters += letter.value;
+                }
+            }
+        }
+        this.cancel();
+        this.chatBoxHandler.submitMessage('!échanger ' + letters);
+    }
+
+    cancel() {
+        this.lettersToExchange = [];
     }
 }
