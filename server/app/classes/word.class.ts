@@ -9,8 +9,8 @@ export class Word {
     isValid: boolean;
     isHorizontal: boolean | undefined;
     points: number;
-    stringFormat: string; // used for dictionary validation
-    newLetterCoords: Coordinate[] = []; //
+    stringFormat: string;
+    newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
     allWords: Word[] = [];
 
@@ -27,6 +27,7 @@ export class Word {
         this.buildWord(firstCoord, commandInfo.letters, gameboard);
     }
 
+    // CONSTRUCTOR FUNCTIONS -------------------------------------------------------------------------------------------------
     private setIsHorizontal(firstCoord: Coordinate, gameboard: Gameboard) {
         if (
             gameboard.getLetterTile({ x: firstCoord.x, y: firstCoord.y-- }).isOccupied ||
@@ -42,45 +43,43 @@ export class Word {
     }
 
     private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {
-        if (!this.isHorizontal) {
-            if (this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 }) && gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied) {
-                while (this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 }) && gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied)
-                    coord.y--;
-                return coord;
-            }
-        } else {
-            if (this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y }) && gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied) {
-                while (this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y }) && gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied)
-                    coord.x--;
-                return coord;
-            }
-        }
-        return coord;
+        const backwardPosition = this.isHorizontal ? { x: coord.x - 1, y: coord.y } : { x: coord.x, y: coord.y - 1 };
+        if (this.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied) {
+            while (this.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied)
+                if (this.isHorizontal) coord.x--;
+                else coord.y--;
+            return coord;
+        } else return coord;
     }
 
     private buildWord(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
         const position = firstCoord;
-        let commandLettersCopy = { ...commandLetters };
 
-        while ((commandLettersCopy.length || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
+        if (commandLetters === ['']) commandLetters.shift();
+
+        while ((commandLetters.length || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
             if (!gameboard.getLetterTile(position).isOccupied) {
-                this.stringFormat += commandLettersCopy[0];
-                gameboard.placeLetter(position, commandLettersCopy[0]);
-                commandLettersCopy.shift();
+                this.stringFormat += commandLetters[0];
+                gameboard.placeLetter(position, commandLetters[0]);
+                commandLetters.shift();
                 this.wordCoords.push(position);
                 this.newLetterCoords.push(position);
             } else {
                 this.wordCoords.push(position);
                 this.stringFormat += gameboard.getLetterTile(position).getLetter();
             }
+            if (this.isHorizontal) position.x++;
+            else position.y++;
         }
-        if (commandLettersCopy.length !== 0) this.isValid == false;
+        if (commandLetters.length !== 0) this.isValid = false;
+        if (this.wordCoords.length < 2) this.isValid = false;
     }
 
     isWithinBoardLimits(coord: Coordinate): boolean {
         return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
     }
 
+    // FIND ADJACENT WORDS ---------------------------------------------------------------------------------------------------
     public findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
         const allWords: Word[] = [];
         allWords.push(word);
@@ -89,7 +88,7 @@ export class Word {
                 {
                     firstCoordinate: coord,
                     isHorizontal: !word.isHorizontal,
-                    letters: [gameboard.getLetterTile(coord).getLetter()],
+                    letters: [''],
                 },
                 gameboard,
             );

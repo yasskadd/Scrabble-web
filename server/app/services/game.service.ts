@@ -5,7 +5,6 @@ import { CommandInfo } from '@app/command-info';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
 import { Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;
@@ -48,24 +47,18 @@ export class Game {
     play(playerName: string, commandInfo: CommandInfo): [boolean, Gameboard] | string {
         let gameboard: [boolean, Gameboard] = [false, this.gameboard];
         const numberOfLetterPlaced = commandInfo.letters.length;
+
+        const player = this.player1.name === playerName ? this.player1 : this.player2;
+
         if (this.turn.validating(playerName)) {
-            const player = this.getPlayer(playerName) as Player;
-            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
-            const letterCoords = validationInfo[0];
-            const isValid = validationInfo[1];
-            if (isValid !== null) {
+            const errorType = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
+            if (errorType !== undefined) {
                 this.turn.resetSkipCounter();
                 this.turn.end();
-                return isValid as string;
+                return errorType as string; // TODO: as String necessary?
             }
-            gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], player, this.gameboard);
-
             if (gameboard[0] === true) {
-                if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
-                    player.rack = this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, player.rack);
-                } else if (!this.letterReserve.isEmpty()) {
-                    player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
-                }
+                this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
             }
 
             if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
@@ -74,63 +67,27 @@ export class Game {
                 this.turn.resetSkipCounter();
                 this.turn.end();
             }
-
-            return gameboard;
+            return gameboard as [boolean, Gameboard];
         }
-        // else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-        //     const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, this.player2);
-        //     const letterCoords = validationInfo[0];
-        //     const isValid = validationInfo[1];
-        //     if (isValid !== null) {
-        //         this.turn.resetSkipCounter();
-        //         this.turn.end();
-        //         return isValid as string;
-        //     }
-        //     gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], this.player2, this.gameboard);
-
-        //     if (gameboard[0] === true) {
-        //         if (this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
-        //             this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, this.player1.rack);
-        //         } else {
-        //             this.letterReserve.generateLetters(numberOfLetterPlaced, this.player1.rack);
-        //         }
-        //     }
-
-        //     if (this.player2.rackIsEmpty() && this.letterReserve.isEmpty()) {
-        //         this.end();
-        //     } else {
-        //         this.turn.resetSkipCounter();
-        //         this.turn.end();
-        //     }
-        //     return gameboard as [boolean, Gameboard];
-        // }
-
         return gameboard;
     }
 
     exchange(letters: string[], playerName: string): Letter[] {
-        if (this.turn.validating(playerName)) {
-            const player = this.getPlayer(playerName) as Player;
-            player.rack = this.letterReserve.exchangeLetter(letters, player.rack);
+        if (this.turn.validating(playerName) && this.player1.name === playerName) {
+            this.player1.rack = this.letterReserve.exchangeLetter(letters, this.player1.rack);
             this.turn.resetSkipCounter();
             this.turn.end();
-            return player.rack;
+            return this.player1.rack;
+        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
+            this.player2.rack = this.letterReserve.exchangeLetter(letters, this.player2.rack);
+            this.turn.resetSkipCounter();
+            this.turn.end();
+            return this.player2.rack;
         }
-        // else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-        //     this.player2.rack = this.letterReserve.exchangeLetter(letters, this.player2.rack);
-        //     this.turn.resetSkipCounter();
-        //     this.turn.end();
-        //     return this.player2.rack;
-        // }
         return [];
     }
 
     abandon(): void {
         this.end();
-    }
-
-    getPlayer(playerName: string): Player {
-        if (this.player1.name === playerName) return this.player1;
-        else return this.player2;
     }
 }

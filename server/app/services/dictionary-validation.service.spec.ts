@@ -4,23 +4,18 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-restricted-imports */
+import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
-import { ScoreService } from './score.service';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
 
 describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
-    let boxMultiplierService: BoxMultiplierService;
-    let scoreService: ScoreService;
-
     let gameboard: Gameboard;
 
     let validWord1: Word;
@@ -30,21 +25,24 @@ describe('Dictionary Validation Service', () => {
 
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();
-        const letterA = { points: 5 } as Letter;
-        validWord1 = new Word(true, [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterA)]);
-        validWord1.stringFormat = 'bonjour';
-        validWord2 = new Word(true, [new LetterTile(2, 2, letterA), new LetterTile(2, 3, letterA)]);
-        validWord2.stringFormat = 'chevalier';
-        invalidWord1 = {} as Word;
-        invalidWord1.stringFormat = 'dijasdijasd';
-        invalidWord2 = {} as Word;
-        invalidWord2.stringFormat = 'hhhhh';
+        gameboard = new Gameboard();
+
+        validWord1 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 1 }, letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'] }, gameboard);
+        validWord2 = new Word(
+            { isHorizontal: true, firstCoordinate: { x: 1, y: 3 }, letters: ['c', 'h', 'e', 'v', 'a', 'l', 'i', 'e', 'r'] },
+            gameboard,
+        );
+
+        invalidWord1 = new Word(
+            { isHorizontal: true, firstCoordinate: { x: 1, y: 5 }, letters: ['d', 'i', 'j', 'a', 's', 'd', 'i', 'j', 'a', 's', 'd'] },
+            gameboard,
+        );
+        invalidWord2 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 7 }, letters: ['h', 'h', 'h', 'h', 'h'] }, gameboard);
     });
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {
         expect(dictionaryValidationService.dictionary).to.not.be.null;
-        const jsonWordsLength: number = jsonDictionary.words.length;
-        expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonWordsLength);
+        expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonDictionary.words.length);
     });
 
     it('checkWordInDictionary() should set word isValid attribute to true if they exist', () => {
@@ -99,20 +97,20 @@ describe('Dictionary Validation Service', () => {
     });
 
     it('should call calculatePoints() when validateWord is called for each word in the list if there is no invalid words', () => {
-        const spyCalculate1 = Sinon.spy(scoreService, 'calculateWordPoints');
+        const spyCalculate1 = Sinon.spy(Word.prototype, 'calculateWordPoints');
         dictionaryValidationService.validateWord(validWord1, gameboard);
         expect(spyCalculate1.calledOnce).to.be.true;
     });
 
     it('should not call calculatePoints() when validateWord() is called if there is at least one invalid word', () => {
-        const spyCalculate1 = Sinon.spy(scoreService, 'calculateWordPoints');
+        const spyCalculate1 = Sinon.spy(Word.prototype, 'calculateWordPoints');
         dictionaryValidationService.validateWord(invalidWord2, gameboard);
         expect(spyCalculate1.called).to.be.false;
     });
 
     it('should return correct points number when validateWord() is called and wordList is valid', () => {
-        const stubCalculate1 = Sinon.stub(scoreService, 'calculateWordPoints');
-        const stubCalculate2 = Sinon.stub(scoreService, 'calculateWordPoints');
+        const stubCalculate1 = Sinon.stub(Word.prototype, 'calculateWordPoints');
+        const stubCalculate2 = Sinon.stub(Word.prototype, 'calculateWordPoints');
         stubCalculate1.returns(10);
         stubCalculate2.returns(20);
         expect(dictionaryValidationService.validateWord(validWord1, gameboard)).to.equal(10);

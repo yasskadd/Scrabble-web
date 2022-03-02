@@ -35,9 +35,14 @@ export class CommandHandlerService {
 
     private sendCommandPlacer(command: string[]) {
         const coordsAndDirection = this.getCoordsAndDirection(command);
+
+        let boolDirection: boolean | undefined;
+        if (coordsAndDirection[1] === 'h') boolDirection = true;
+        if (coordsAndDirection[1] === 'v') boolDirection = false;
+
         const commandInformation = {
             firstCoordinate: coordsAndDirection[0],
-            direction: coordsAndDirection[1],
+            direction: boolDirection,
             lettersPlaced: this.getLetters(command, 2),
         };
         this.clientSocket.send(SocketEvents.Play, commandInformation);
