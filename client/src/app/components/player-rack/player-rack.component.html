@@ -2,7 +2,7 @@
     <div id="player-letters">
         <div
             *ngFor="let letter of rack; index as i"
-            [className]="this.lettersToExchange.includes(i) ? 'rack-Letter-selected' : 'rack-Letter'"
+            [className]="this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter'"
             (contextmenu)="onRightClick($event, i)"
         >
             <div [style.background]="letter.value === buttonPressed ? 'green' : '#red'"></div>

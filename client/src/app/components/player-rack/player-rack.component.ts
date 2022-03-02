@@ -1,4 +1,4 @@
-import { Component, HostListener, Renderer2 } from '@angular/core';
+import { Component, ElementRef, HostListener, Renderer2, ViewChild } from '@angular/core';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
@@ -11,19 +11,12 @@ import { Letter } from '@common/letter';
     styleUrls: ['./player-rack.component.scss'],
 })
 export class PlayerRackComponent {
-    // @ViewChild('info') private info!: ElementRef<HTMLCanvasElement>;
-
+    @ViewChild('info', { static: false }) info: ElementRef;
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
     buttonPressed = '';
-    // constructor(
-    //     // private readonly gridService: GridService,
-    //     private chatBoxHandler: ChatboxHandlerService,
-    //     public gameClient: GameClientService,
-    //     private tmpService: GridService,
-    // ) {}
-
     lettersToExchange: number[] = [];
+
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,
@@ -38,8 +31,14 @@ export class PlayerRackComponent {
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
+        alert('here');
+        console.log('hellooooooo');
     }
 
+    // @HostListener('click') doSomething() {
+    //     this.info.nativeElement.focus();
+    //     console.log('hello');
+    // } // multiplayerCreatePage test has problem when this is uncommented - check nativeElement
     get letterSize(): number {
         return this.tmpService.letterSize;
     }

@@ -65,7 +65,7 @@ describe('PlayerRackComponent', () => {
         fixture.detectChanges();
         const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
         expect(component.lettersToExchange.length).toEqual(1);
-        expect(lettersDiv[indexLetter].className).toEqual('rack-Letter-selected');
+        expect(lettersDiv[indexLetter].className).toEqual('rack-letter-exchange-selected');
     }));
 
     it('OnRightClick should deselect a letter already selected on right click ', fakeAsync(() => {
@@ -76,7 +76,7 @@ describe('PlayerRackComponent', () => {
         fixture.detectChanges();
         const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
         expect(component.lettersToExchange.length).toEqual(0);
-        expect(lettersDiv[indexLetter].className).toEqual('rack-Letter');
+        expect(lettersDiv[indexLetter].className).toEqual('rack-letter');
     }));
 
     it('should call exchange when the button to exchange is pressed and it is your turn to play', fakeAsync(() => {
