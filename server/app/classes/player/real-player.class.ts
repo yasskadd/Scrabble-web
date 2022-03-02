@@ -1,7 +1,11 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/command-info';
 import { Game } from '@app/services/game.service';
+import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { Player } from './player.class';
+
+type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
 
 export class RealPlayer extends Player {
     game: Game;
@@ -25,7 +29,8 @@ export class RealPlayer extends Player {
         if (this.game === undefined) return;
         this.game.skip(this.name);
     }
-    getInformation() {
+    getInformation(): void | PlayerInformation {
+        if (this.game === undefined) return;
         return {
             name: this.name,
             score: this.score,
