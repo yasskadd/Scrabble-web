@@ -1,4 +1,3 @@
-import { Renderer2 } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
@@ -29,7 +28,6 @@ describe('PlayerRackComponent', () => {
                 { provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy },
                 { provide: GameClientService, useValue: gameClientServiceSpy },
                 { provide: GridService, useValue: gridServiceServiceSpy },
-                { provide: Renderer2 },
             ],
         }).compileComponents();
     });
