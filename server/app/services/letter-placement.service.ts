@@ -50,7 +50,7 @@ export class LetterPlacementService {
         return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15; // TODO: do I need to check if coord is occupied?
     }
 
-    // TODO : problem when you create an adjacent word : first command letter is on board and will be repeated ... removed letter then place it?
+    // TODO: problem when you create an adjacent word : first command letter is on board and will be repeated ... removed letter then place it?
 
     private createTempRack(player: Player): Letter[] {
         const tempPlayerRack: Letter[] = [];

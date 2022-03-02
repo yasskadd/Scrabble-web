@@ -67,7 +67,7 @@ export class Game {
                 this.turn.resetSkipCounter();
                 this.turn.end();
             }
-            return gameboard as [boolean, Gameboard];
+            return gameboard as [boolean, Gameboard]; // TODO: as necessary?
         }
         return gameboard;
     }
