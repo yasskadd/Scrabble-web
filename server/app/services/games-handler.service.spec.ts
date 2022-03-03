@@ -28,7 +28,7 @@ interface GameHolder {
 const ROOM = '0';
 describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
-    let scoreStorage: ScoreStorageService;
+    let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
     let clientSocket: Socket;
@@ -41,7 +41,11 @@ describe('GamesHandler Service', () => {
         socketManagerStub = sinon.createStubInstance(SocketManager);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         socketManagerStub.emitRoom.callsFake(() => {});
-        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager, scoreStorage);
+
+        scoreStorageStub = sinon.createStubInstance(ScoreStorageService);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        scoreStorageStub.addTopScores.callsFake(async (): Promise<void> => {});
+        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager, scoreStorageStub as unknown as ScoreStorageService);
 
         httpServer = createServer();
         sio = new ioServer(httpServer);
@@ -139,7 +143,57 @@ describe('GamesHandler Service', () => {
         expect(game.skip.called).to.equal(true);
         done();
     });
+    it('sendHighScore() should call scoreStorage.addTopScore', () => {
+        const player = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
 
+        // eslint-disable-next-line dot-notation
+        gamesHandler['sendHighScore'](serverSocket.id);
+        expect(scoreStorageStub.addTopScores.called).to.equal(true);
+    });
+
+    it('userConnected() should call sendHighScore and endGame when the two player are still in the game', () => {
+        const endGameStub = sinon.stub(gamesHandler, 'endGame' as never);
+        const sendHighScoreStub = sinon.stub(gamesHandler, 'sendHighScore' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        const player1 = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        const player2 = { name: 'Bob', room: ROOM, score: 70 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[0], player1);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[1], player2);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['userConnected'](socketId);
+        expect(endGameStub.called).to.equal(true);
+        expect(sendHighScoreStub.called).to.equal(true);
+    });
+
+    it('userConnected() should call sendHighScore and endGame when the first player is still in the game', () => {
+        const endGameStub = sinon.stub(gamesHandler, 'endGame' as never);
+        const sendHighScoreStub = sinon.stub(gamesHandler, 'sendHighScore' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        const player1 = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[0], player1);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['userConnected'](socketId);
+        expect(endGameStub.called).to.equal(true);
+        expect(sendHighScoreStub.called).to.equal(true);
+    });
+
+    it('userConnected() should call sendHighScore and endGame when the second player is still in the game', () => {
+        const endGameStub = sinon.stub(gamesHandler, 'endGame' as never);
+        const sendHighScoreStub = sinon.stub(gamesHandler, 'sendHighScore' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        const player2 = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[1], player2);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['userConnected'](socketId);
+        expect(endGameStub.called).to.equal(true);
+        expect(sendHighScoreStub.called).to.equal(true);
+    });
     it('sendTimer() should call emitRoom() with the correct parameters', () => {
         // eslint-disable-next-line dot-notation
         gamesHandler['sendTimer'](ROOM, 0);
@@ -646,41 +700,41 @@ describe('GamesHandler Service', () => {
         });
     });
 
-    // context('endGame() Tests', () => {
-    //     it('endGame() should emit a event to the client when the game is not already finished and we need to post endGame information', (done) => {
-    //         const player = { name: 'Marc', room: ROOM } as unknown as Player;
-    //         const gameHolderTest = sinon.createStubInstance(Game);
-    //         gameHolderTest.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
-    //         gameHolderTest.turn = { activePlayer: '' } as Turn;
-    //         gameHolderTest.skip.returns(true);
-    //         const gameHolder = { gameHolderTest, players: [player], roomId: ROOM, isGameFinish: false };
-    //         // eslint-disable-next-line dot-notation
-    //         gamesHandler['players'].set(serverSocket.id, player);
-    //         // eslint-disable-next-line dot-notation
-    //         gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
-    //         // eslint-disable-next-line dot-notation
-    //         gamesHandler['endGame'](serverSocket);
+    context('endGame() Tests', () => {
+        it('endGame() should emit a event to the client when the game is not already finished and we need to post endGame information', (done) => {
+            const player = { name: 'Marc', room: ROOM } as unknown as Player;
+            const gameHolderTest = sinon.createStubInstance(Game);
+            gameHolderTest.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+            gameHolderTest.turn = { activePlayer: '' } as Turn;
+            gameHolderTest.skip.returns(true);
+            const gameHolder = { gameHolderTest, players: [player], roomId: ROOM, isGameFinish: false };
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, player);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['endGame'](serverSocket.id);
 
-    //         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd));
-    //         done();
-    //     });
+            expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd));
+            done();
+        });
 
-    //     it('endGame() should emit a event to the client when the game is already finished and we need to post endGame information', (done) => {
-    //         const player = { name: 'Marc', room: ROOM } as unknown as Player;
-    //         const gameHolderTest = sinon.createStubInstance(Game);
-    //         gameHolderTest.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
-    //         gameHolderTest.turn = { activePlayer: '' } as Turn;
-    //         gameHolderTest.skip.returns(true);
-    //         const gameHolder = { gameHolderTest, players: [player], roomId: ROOM, isGameFinish: true };
-    //         // eslint-disable-next-line dot-notation
-    //         gamesHandler['players'].set(serverSocket.id, player);
-    //         // eslint-disable-next-line dot-notation
-    //         gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
-    //         // eslint-disable-next-line dot-notation
-    //         gamesHandler['endGame'](serverSocket);
+        it('endGame() should emit a event to the client when the game is already finished and we need to post endGame information', (done) => {
+            const player = { name: 'Marc', room: ROOM } as unknown as Player;
+            const gameHolderTest = sinon.createStubInstance(Game);
+            gameHolderTest.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+            gameHolderTest.turn = { activePlayer: '' } as Turn;
+            gameHolderTest.skip.returns(true);
+            const gameHolder = { gameHolderTest, players: [player], roomId: ROOM, isGameFinish: true };
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, player);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['endGame'](serverSocket.id);
 
-    //         expect(socketManagerStub.emitRoom.notCalled).to.be.equal(true);
-    //         done();
-    //     });
-    // });
+            expect(socketManagerStub.emitRoom.notCalled).to.be.equal(true);
+            done();
+        });
+    });
 });
