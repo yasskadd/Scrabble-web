@@ -48,7 +48,7 @@ export class DatabaseService {
         await this.collection.deleteMany({});
     }
 
-    private async connect() {
+    async connect() {
         if (this.isConnected) return;
         try {
             this.mongoClient = new MongoClient(DatabaseService.dbUrl);

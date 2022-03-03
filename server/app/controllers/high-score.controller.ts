@@ -20,15 +20,6 @@ export class HighScoreController {
             res.json(highScore);
         });
 
-        // this.router.post('/classique', async (req: Request, res: Response) => {
-        //     // Send the request to the service and send the response
-        //     if (!Object.keys(req.body).length) {
-        //         res.status(BAD_REQUEST).send();
-        //         return;
-        //     }
-        //     const newScore = req.body;
-        //     await this.scoreStorage.addTopScores(newScore);
-        // });
         this.router.get('/log2990', async (req: Request, res: Response) => {
             // Send the request to the service and send the response
             const highScore = await this.scoreStorage.getLOG2990TopScores();

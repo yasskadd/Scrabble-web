@@ -12,13 +12,12 @@ export class HighScoresComponent implements OnInit {
     highScoreLOG29990: HighScores[];
     constructor(private readonly httpHandler: HttpHandlerService) {}
 
-    async ngOnInit() {
-        await this.httpHandler.getClassicHighScore().then((result) => {
-            this.highScoreClassic = result;
-        });
+    ngOnInit(): void {
+        this.getHighScores();
+    }
 
-        await this.httpHandler.getLOG2990cHighScore().then((result) => {
-            this.highScoreLOG29990 = result;
-        });
+    getHighScores() {
+        this.httpHandler.getClassicHighScore().subscribe((highScore) => (this.highScoreClassic = highScore));
+        this.httpHandler.getLOG2990HighScore().subscribe((highScore) => (this.highScoreLOG29990 = highScore));
     }
 }
