@@ -79,7 +79,7 @@ describe('scoreStorage Service', () => {
     it("addTopScores() should replace a top score with the score info if it's legible ", async () => {
         const POSITION = 3;
         const scoreInfo = {
-            player: 'Arararagi',
+            username: 'Arararagi',
             type: 'Classique',
             score: 50,
         };
@@ -96,7 +96,7 @@ describe('scoreStorage Service', () => {
     it("addTopScores() shouldn't replace a top score with the score info if it's illegible ", async () => {
         const POSITION = 6;
         const scoreInfo = {
-            player: 'HelloWorld',
+            username: 'HelloWorld',
             type: 'LOG2990',
             score: 300,
         };
