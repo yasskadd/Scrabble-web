@@ -15,6 +15,13 @@ export class BeginnerBot extends Player {
         this.isPlayerOne = isPlayerOne;
     }
 
+    choosePlayMove(commandInfoMap: Map<CommandInfo, number>) {
+        const randomNumber = this.getRandomNumber(MAX_NUMBER);
+        if (this.inRange(randomNumber, 1, 1)) this.skipTurn();
+        else if (this.inRange(randomNumber, 2, 2)) this.exchangeLetter();
+        else this.placeLetter(commandInfoMap);
+    }
+
     /* Take a random number of letters to exchange (between 1 and length of rack)
         and take random indexes from the player rack in order to exchange them, if there is not enough letter
         in the reserve, skipTurn() */
