@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Coordinate } from '@common/coordinate';
@@ -23,10 +26,11 @@ describe.only('Word solver service', () => {
     });
 
     it.only('test', () => {
-        const rack: string[] = ['t', 'e', 'l', 'l', 'c', 'a', 'i', 'o'];
+        const rack: string[] = ['t', 'a'];
+        gameboard.placeLetter(new LetterTile(7, 8, { value: 't' } as Letter));
         gameboard.placeLetter(new LetterTile(8, 8, { value: 'e' } as Letter));
-        gameboard.placeLetter(new LetterTile(5, 5, { value: 'a' } as Letter));
         wordSolverService.findAllOptions(rack);
+        wordSolverService.commandInfoScore(wordSolverService['commandInfoList']);
     });
 
     context('Coordinate manipulation tests', () => {

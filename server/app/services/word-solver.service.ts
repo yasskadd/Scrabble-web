@@ -1,9 +1,13 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree, LetterTreeNode } from '@app/classes/trie/letter-tree.class';
+import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@common/coordinate';
 import { LetterTile } from '@common/letter-tile.class';
-import { Service } from 'typedi';
+import Container, { Service } from 'typedi';
+import { GameboardCoordinateValidationService } from './coordinate-validation.service';
+import { DictionaryValidationService } from './dictionary-validation.service';
+import { WordFinderService } from './word-finder.service';
 
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const ROW_NUMBERS = 15;
@@ -33,8 +37,28 @@ export class WordSolverService {
                 } else this.findLeftPart('', this.trie.root, anchor, rack, this.getLimitNumber(leftToAnchor, anchors));
             }
         }
-        console.log(this.commandInfoList.length);
         return this.commandInfoList;
+    }
+
+    commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
+        const coordinateValidation: GameboardCoordinateValidationService = Container.get(GameboardCoordinateValidationService);
+        const wordFinder: WordFinderService = Container.get(WordFinderService);
+        const dictionaryService: DictionaryValidationService = Container.get(DictionaryValidationService);
+        const commandInfoMap: Map<CommandInfo, number> = new Map();
+        commandInfoList.forEach((commandInfo) => {
+            const placedLetters: LetterTile[] = coordinateValidation.validateGameboardCoordinate(commandInfo, this.gameboard);
+            placedLetters.forEach((tile) => {
+                this.gameboard.placeLetter(tile);
+            });
+            const newWordsArray: Word[] = wordFinder.findNewWords(this.gameboard, placedLetters);
+            console.log(newWordsArray);
+            const placementScore: number = dictionaryService.validateWords(newWordsArray);
+            commandInfoMap.set(commandInfo, placementScore);
+            placedLetters.forEach((tile) => {
+                this.gameboard.removeLetter(tile);
+            });
+        });
+        return commandInfoMap;
     }
 
     private createCommandInfo(word: string, lastPosition: Coordinate) {

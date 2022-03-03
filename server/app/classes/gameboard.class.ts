@@ -63,8 +63,4 @@ export class Gameboard {
         }
         return anchors;
     }
-
-    copyGameboard(): LetterTile[] {
-        return [...this.gameboardCoords];
-    }
 }
