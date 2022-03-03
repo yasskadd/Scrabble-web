@@ -28,6 +28,19 @@ export class GridService {
         this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
+    // drawLetterPlaced(letter: Letter, coords: Coordinate) {}
+    getPosition(coords: Coordinate): Coordinate {
+        return { x: Math.floor(coords.x / GridService.squareWidth), y: Math.floor(coords.y / GridService.squareWidth) };
+    }
+    drawArrow(coords: Coordinate, isHorizontal: boolean) {
+        const arrow = isHorizontal ? '⇨' : '⇩';
+        this.gridContext.fillStyle = 'green';
+        this.gridContext.font = GridService.squareHeight + 'px system-ui';
+        this.gridContext.textAlign = 'left';
+        this.gridContext.textBaseline = 'top';
+        this.gridContext.fillText(arrow, GridService.squareWidth * coords.x, GridService.squareHeight * coords.y, GridService.squareWidth);
+    }
+
     drawGrid(gameboard: LetterTile[]) {
         this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
         this.drawRowNumbers();
@@ -37,7 +50,8 @@ export class GridService {
         this.drawMiddleTile();
         gameboard.forEach((letterTile) => {
             if (letterTile.isOccupied) {
-                this.drawBasicTile({ x: letterTile.x, y: letterTile.y });
+                this.gridContext.fillStyle = '#52B7BE';
+                this.fillTile({ x: letterTile.x, y: letterTile.y });
                 this.drawLetter({ x: letterTile.x, y: letterTile.y }, letterTile.letter.value.toUpperCase());
                 this.drawLetterPoints({ x: letterTile.x, y: letterTile.y }, String(letterTile.letter.points));
             }

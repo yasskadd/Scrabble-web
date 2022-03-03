@@ -21,7 +21,6 @@ export class PlayAreaComponent implements AfterViewInit {
 
     mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
-    private canvasSize = { x: constants.GRID_CANVAS_WIDTH, y: constants.GRID_CANVAS_HEIGHT };
 
     constructor(private readonly gridService: GridService) {}
 
@@ -32,20 +31,21 @@ export class PlayAreaComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        // this.gridCanvas.nativeElement.focus();
     }
 
     get width(): number {
-        return this.canvasSize.x;
+        return constants.GRID_CANVAS_WIDTH;
     }
 
     get height(): number {
-        return this.canvasSize.y;
+        return constants.GRID_CANVAS_HEIGHT;
     }
 
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            const position = this.gridService.getPosition(this.mousePosition);
+            this.gridService.drawArrow(position, true);
         }
     }
 }
