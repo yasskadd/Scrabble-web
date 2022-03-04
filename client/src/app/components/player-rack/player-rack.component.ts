@@ -49,10 +49,14 @@ export class PlayerRackComponent {
 
     // @HostListener('scroll')
     // onScroll(event: Event) {
-    //     // alert('scrolling!');
-    //     console.log(this.getYPosition(event));
+    //     console.log('scrolling!');
+    //     // console.log(this.getYPosition(event));
     // }
 
+    // @HostListener('window:scroll', ['$event']) onScrollEvent() {
+    //     // console.log($event['Window']);
+    //     // console.log('scrolling');
+    // }
     // ngOnInit() {
     //     this.parentSubject.subscribe((event) => {
     //         let index = -1;
@@ -80,9 +84,9 @@ export class PlayerRackComponent {
         this.chatBoxHandler.submitMessage('!passer');
     }
 
-    // getYPosition(e: Event): number {
-    //     return (e.target as Element).scrollTop;
-    // }
+    getYPosition(e: Event): number {
+        return (e.target as Element).scrollTop;
+    }
 
     selectManipulation(event: KeyboardEvent) {
         this.duplicates = [];
@@ -132,41 +136,6 @@ export class PlayerRackComponent {
         }
     }
 
-    moveLeft() {
-        if (this.currentSelection === 0) {
-            this.temp = this.gameClient.playerOne.rack[0];
-            for (let i = 1; i < this.gameClient.playerOne.rack.length; i++) {
-                this.gameClient.playerOne.rack[i - 1] = this.gameClient.playerOne.rack[i];
-            }
-            this.gameClient.playerOne.rack[6] = this.temp;
-            this.currentSelection = 6;
-        } else {
-            this.temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
-            this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
-            this.gameClient.playerOne.rack[this.currentSelection] = this.temp;
-
-            this.currentSelection -= 1;
-        }
-        this.lettersToManipulate.push(this.currentSelection);
-    }
-
-    moveRight() {
-        if (this.currentSelection === 6) {
-            this.temp = this.gameClient.playerOne.rack[6];
-            for (let i = this.gameClient.playerOne.rack.length - 1; i > 0; i--) {
-                this.gameClient.playerOne.rack[i] = this.gameClient.playerOne.rack[i - 1];
-            }
-            this.gameClient.playerOne.rack[0] = this.temp;
-            this.currentSelection = 0;
-        } else {
-            this.temp = this.gameClient.playerOne.rack[this.currentSelection + 1];
-            this.gameClient.playerOne.rack[this.currentSelection + 1] = this.gameClient.playerOne.rack[this.currentSelection];
-            this.gameClient.playerOne.rack[this.currentSelection] = this.temp;
-            this.currentSelection += 1;
-        }
-        this.lettersToManipulate.push(this.currentSelection);
-    }
-
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
         this.lettersToManipulate = [];
@@ -204,5 +173,40 @@ export class PlayerRackComponent {
 
     cancel() {
         this.lettersToExchange = [];
+    }
+
+    moveLeft() {
+        if (this.currentSelection === 0) {
+            this.temp = this.gameClient.playerOne.rack[0];
+            for (let i = 1; i < this.gameClient.playerOne.rack.length; i++) {
+                this.gameClient.playerOne.rack[i - 1] = this.gameClient.playerOne.rack[i];
+            }
+            this.gameClient.playerOne.rack[6] = this.temp;
+            this.currentSelection = 6;
+        } else {
+            this.temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
+            this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
+            this.gameClient.playerOne.rack[this.currentSelection] = this.temp;
+
+            this.currentSelection -= 1;
+        }
+        this.lettersToManipulate.push(this.currentSelection);
+    }
+
+    moveRight() {
+        if (this.currentSelection === 6) {
+            this.temp = this.gameClient.playerOne.rack[6];
+            for (let i = this.gameClient.playerOne.rack.length - 1; i > 0; i--) {
+                this.gameClient.playerOne.rack[i] = this.gameClient.playerOne.rack[i - 1];
+            }
+            this.gameClient.playerOne.rack[0] = this.temp;
+            this.currentSelection = 0;
+        } else {
+            this.temp = this.gameClient.playerOne.rack[this.currentSelection + 1];
+            this.gameClient.playerOne.rack[this.currentSelection + 1] = this.gameClient.playerOne.rack[this.currentSelection];
+            this.gameClient.playerOne.rack[this.currentSelection] = this.temp;
+            this.currentSelection += 1;
+        }
+        this.lettersToManipulate.push(this.currentSelection);
     }
 }
