@@ -12,7 +12,6 @@ enum ErrorType {
     lettersNotInRack = 'Letters not in rack',
     invalidFirstWordPlacement = 'One coordinate in the first word needs to pass by the middle coordinate',
     invalidWordBuild = 'At least one letter in word does not fit on rack or word only contains 1 letter',
-    wordsNotInDictionary = 'At Least one newly formed words does not exist in dictionary',
     noErrors = 'All verifications have passed. Letters have been placed on board',
 }
 
@@ -25,25 +24,21 @@ const MIDDLE_Y = 8;
 export class LetterPlacementService {
     constructor(private dictionaryService: DictionaryValidationService) {}
 
-    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): ErrorType | undefined {
-        if (!this.validateCommandCoordinate(commandInfo.firstCoordinate)) return ErrorType.commandCoordinateOutOfBounds;
-        if (!this.areLettersInRack(commandInfo.letters, player)) return ErrorType.lettersNotInRack;
+    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType] {
+        if (!this.validateCommandCoordinate(commandInfo.firstCoordinate)) return [{} as Word, ErrorType.commandCoordinateOutOfBounds];
+        if (!this.areLettersInRack(commandInfo.letters, player)) return [{} as Word, ErrorType.lettersNotInRack];
 
         const commandWord = new Word(commandInfo, gameboard);
         if (!commandWord.isValid) {
             commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
-            return ErrorType.invalidWordBuild;
+            return [{} as Word, ErrorType.invalidWordBuild];
         }
-        if (!this.verifyFirstTurn(commandWord.wordCoords, gameboard)) return ErrorType.invalidFirstWordPlacement;
-        const wordScore = this.dictionaryService.validateWord(commandWord, gameboard);
-        if (wordScore === 0) {
+        if (!this.verifyFirstTurn(commandWord.wordCoords, gameboard)) {
             commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
-            return ErrorType.wordsNotInDictionary;
+            return [{} as Word, ErrorType.invalidFirstWordPlacement];
         }
-        player.score += wordScore;
-        if (commandWord.newLetterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
-        this.updatePlayerRack(commandInfo.letters, player);
-        return;
+
+        return [commandWord, ErrorType.noErrors];
     }
 
     private validateCommandCoordinate(commandCoord: Coordinate): boolean {
@@ -91,6 +86,26 @@ export class LetterPlacementService {
             if (!coordList.some((element) => element.x === MIDDLE_X && element.y === MIDDLE_Y)) return false;
         }
         return true;
+    }
+
+    public placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): [boolean, Gameboard] {
+        const wordScore = this.dictionaryService.validateWord(commandWord, gameboard);
+        if (wordScore === 0) {
+            commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
+            return [false, gameboard];
+        }
+        commandWord.newLetterCoords.forEach((coord) => {
+            gameboard.placeLetter(coord, commandInfo.letters[0]);
+            commandInfo.letters.shift();
+        });
+        this.updatePlayerScore(wordScore, commandWord, player);
+        this.updatePlayerRack(commandInfo.letters, player);
+        return [true, gameboard];
+    }
+
+    private updatePlayerScore(wordScore: number, commandWord: Word, player: Player) {
+        player.score += wordScore;
+        if (commandWord.newLetterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
     }
 
     private updatePlayerRack(letters: string[], player: Player): void {

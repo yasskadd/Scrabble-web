@@ -54,14 +54,14 @@ export class Word {
 
     private buildWord(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
         const position = firstCoord;
+        let commandLettersCopy = { ...commandLetters };
 
-        if (commandLetters === ['']) commandLetters.shift();
+        if (commandLettersCopy === ['']) commandLettersCopy.shift();
 
-        while ((commandLetters.length || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
+        while ((commandLettersCopy.length || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
             if (!gameboard.getLetterTile(position).isOccupied) {
-                this.stringFormat += commandLetters[0];
-                gameboard.placeLetter(position, commandLetters[0]);
-                commandLetters.shift();
+                this.stringFormat += commandLettersCopy[0];
+                commandLettersCopy.shift();
                 this.wordCoords.push(position);
                 this.newLetterCoords.push(position);
             } else {
@@ -71,7 +71,7 @@ export class Word {
             if (this.isHorizontal) position.x++;
             else position.y++;
         }
-        if (commandLetters.length !== 0) this.isValid = false;
+        if (commandLettersCopy.length !== 0) this.isValid = false;
         if (this.wordCoords.length < 2) this.isValid = false;
     }
 

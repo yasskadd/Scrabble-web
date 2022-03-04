@@ -44,19 +44,21 @@ export class Game {
         return true;
     }
 
-    play(playerName: string, commandInfo: CommandInfo): [boolean, Gameboard] | string {
+    play(player: Player, commandInfo: CommandInfo): [boolean, Gameboard] | string {
         let gameboard: [boolean, Gameboard] = [false, this.gameboard];
         const numberOfLetterPlaced = commandInfo.letters.length;
-
-        const player = this.player1.name === playerName ? this.player1 : this.player2;
-
-        if (this.turn.validating(playerName)) {
-            const errorType = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
-            if (errorType !== undefined) {
+        if (this.turn.validating(player.name)) {
+            const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
+            const newWord = validationInfo[0];
+            const errorType = validationInfo[1] as string;
+            console.log(validationInfo[1]);
+            if (errorType !== 'noErrors') {
                 this.turn.resetSkipCounter();
                 this.turn.end();
-                return errorType as string; // TODO: as String necessary?
+                return errorType as string;
             }
+            gameboard = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
+
             if (gameboard[0] === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
             }
@@ -67,8 +69,9 @@ export class Game {
                 this.turn.resetSkipCounter();
                 this.turn.end();
             }
-            return gameboard as [boolean, Gameboard]; // TODO: as necessary?
+            return gameboard;
         }
+
         return gameboard;
     }
 
