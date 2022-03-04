@@ -1,37 +1,37 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
+import * as Sinon from 'sinon';
 import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordSolverService } from './word-solver.service';
 
-describe.only('Word solver service', () => {
+describe('Word solver service', () => {
     let wordSolverService: WordSolverService;
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
-    let boxMultiplierService: BoxMultiplierService;
+    let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
 
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();
         dictionaryValidationService.createTrieDictionary();
-        boxMultiplierService = new BoxMultiplierService();
+        boxMultiplierService = Sinon.createStubInstance(BoxMultiplierService);
         gameboard = new Gameboard(boxMultiplierService);
         wordSolverService = new WordSolverService(dictionaryValidationService.trie, gameboard);
     });
 
-    it.only('test', () => {
-        const rack: string[] = ['t', 'a'];
-        gameboard.placeLetter(new LetterTile(7, 8, { value: 't' } as Letter));
-        gameboard.placeLetter(new LetterTile(8, 8, { value: 'e' } as Letter));
-        wordSolverService.findAllOptions(rack);
-        wordSolverService.commandInfoScore(wordSolverService['commandInfoList']);
-    });
+    // it('test', () => {
+    //     const rack: string[] = ['t', 'a'];
+    //     gameboard.placeLetter(new LetterTile(7, 8, { value: 't' } as Letter));
+    //     gameboard.placeLetter(new LetterTile(8, 8, { value: 'e' } as Letter));
+    //     wordSolverService.findAllOptions(rack);
+    //     wordSolverService.commandInfoScore(wordSolverService['commandInfoList']);
+    // });
 
     context('Coordinate manipulation tests', () => {
         let upLeftCoordinate: Coordinate;
