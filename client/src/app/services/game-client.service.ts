@@ -40,19 +40,14 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
-            this.letterReserveLength = this.getAllLetterReserve(letterReserveUpdated);
+            this.getAllLetterReserve(letterReserveUpdated);
         });
         this.clientSocketService.on(SocketEvents.GameEnd, () => {
-            if (this.winningMessage === '') {
-                this.findWinnerByScore();
-                this.isGameFinish = true;
-            }
+            this.gameEndEvent();
         });
 
         this.clientSocketService.on(SocketEvents.OpponentGameLeave, () => {
-            this.playerOneTurn = false;
-            this.isGameFinish = true;
-            this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
+            this.opponentLeaveGameEvent();
         });
         this.clientSocketService.on(SocketEvents.ViewUpdate, (info: PlayInfo) => {
             this.playerOneTurn = info.activePlayer === this.playerOne.name;
@@ -60,21 +55,14 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
-            this.gameboard = gameInfo.gameboard;
-            this.playerOne = this.playerOne.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
-            this.secondPlayer = this.secondPlayer.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
-            this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
-            this.updateGameboard();
+            this.skipEvent(gameInfo);
         });
 
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
             this.timer = newTimer;
         });
     }
-    updateNewGameboard(newGameboard: LetterTile[]) {
-        this.gameboard = newGameboard;
-        this.updateGameboard();
-    }
+
     updateGameboard() {
         this.gridService.drawGrid(this.gameboard);
     }
@@ -98,6 +86,31 @@ export class GameClientService {
         this.isGameFinish = false;
         this.winningMessage = '';
     }
+    private updateNewGameboard(newGameboard: LetterTile[]) {
+        this.gameboard = newGameboard;
+        this.updateGameboard();
+    }
+
+    private gameEndEvent() {
+        if (this.winningMessage === '') {
+            this.findWinnerByScore();
+            this.isGameFinish = true;
+        }
+    }
+
+    private opponentLeaveGameEvent() {
+        this.playerOneTurn = false;
+        this.isGameFinish = true;
+        this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
+    }
+
+    private skipEvent(gameInfo: GameInfo) {
+        this.gameboard = gameInfo.gameboard;
+        this.playerOne = this.playerOne.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
+        this.secondPlayer = this.secondPlayer.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
+        this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
+        this.updateGameboard();
+    }
 
     private findWinnerByScore(): void {
         if (this.playerOne.score === this.secondPlayer.score) {
@@ -108,13 +121,13 @@ export class GameClientService {
             this.winningMessage = "L'adversaire a gagné la partie";
         }
     }
-    private getAllLetterReserve(lettersReserveUpdated: Letter[]): number {
+    private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {
         let letterString = '';
         lettersReserveUpdated.forEach((letter) => {
             for (let i = 1; i <= letter.quantity; i++) {
                 letterString = letterString + letter.value;
             }
         });
-        return letterString.length;
+        this.letterReserveLength = letterString.length;
     }
 }
