@@ -1,5 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player.class';
+import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
@@ -10,8 +10,6 @@ import { Inject } from 'typedi';
 const MAX_QUANTITY = 7;
 
 export class Game {
-    player1: Player;
-    player2: Player;
     gameboard: Gameboard;
 
     constructor(
@@ -21,16 +19,14 @@ export class Game {
         public letterReserve: LetterReserveService,
         @Inject() private letterPlacement: LetterPlacementService,
     ) {
-        this.player1 = player1;
-        this.player2 = player2;
-        this.start();
+        this.start(player1, player2);
         this.gameboard = new Gameboard();
     }
 
-    start(): void {
-        this.letterReserve.generateLetters(MAX_QUANTITY, this.player1.rack);
-        this.letterReserve.generateLetters(MAX_QUANTITY, this.player2.rack);
-        this.turn.determinePlayer(this.player1, this.player2);
+    start(player1: Player, player2: Player): void {
+        this.letterReserve.generateLetters(MAX_QUANTITY, player1.rack);
+        this.letterReserve.generateLetters(MAX_QUANTITY, player2.rack);
+        this.turn.determinePlayer(player1, player2);
         this.turn.start();
     }
 
@@ -75,17 +71,12 @@ export class Game {
         return gameboard;
     }
 
-    exchange(letters: string[], playerName: string): Letter[] {
-        if (this.turn.validating(playerName) && this.player1.name === playerName) {
-            this.player1.rack = this.letterReserve.exchangeLetter(letters, this.player1.rack);
+    exchange(letters: string[], player: Player): Letter[] {
+        if (this.turn.validating(player.name)) {
+            player.rack = this.letterReserve.exchangeLetter(letters, player.rack);
             this.turn.resetSkipCounter();
             this.turn.end();
-            return this.player1.rack;
-        } else if (this.turn.validating(playerName) && this.player2.name === playerName) {
-            this.player2.rack = this.letterReserve.exchangeLetter(letters, this.player2.rack);
-            this.turn.resetSkipCounter();
-            this.turn.end();
-            return this.player2.rack;
+            return player.rack;
         }
         return [];
     }

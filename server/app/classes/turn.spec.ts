@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { expect } from 'chai';
 import { SinonFakeTimers, spy, useFakeTimers } from 'sinon';
-import { Player } from './player.class';
+import { Player } from './player/player.class';
 import { Turn } from './turn';
 
 const SECOND = 1000;

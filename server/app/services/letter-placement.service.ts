@@ -1,5 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player.class';
+import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@common/command-info';
 import { Coordinate } from '@common/coordinate';
