@@ -125,4 +125,26 @@ describe('PlayerRackComponent', () => {
         component.cancel();
         expect(component.lettersToExchange.length).toEqual(0);
     });
+
+    it('exchange should call moveLeft', () => {
+        const spy = spyOn(component, 'moveLeft');
+        component.buttonPressed = 'ArrowLeft';
+        component.repositionRack();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('exchange should call moveRight', () => {
+        const spy = spyOn(component, 'moveRight');
+        component.buttonPressed = 'ArrowRight';
+        component.repositionRack();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    // it('exchange should move letter to the beginning of the rack', () => {
+    //     const manipulate = [];
+    //     component.buttonPressed = 'ArrowRight';
+    //     component.currentSelection = 6;
+    //     component.moveRight();
+    //     expect(manipulate).toEqual([0]);
+    // });
 });
