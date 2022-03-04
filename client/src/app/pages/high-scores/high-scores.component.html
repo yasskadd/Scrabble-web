@@ -1,0 +1,42 @@
+<mat-card class="container">
+    <button class="returnButton" mat-icon-button routerLink="/home"><mat-icon>keyboard_return</mat-icon></button>
+
+    <mat-card-title class="containerTitle">Meilleurs Scores</mat-card-title>
+    <div class="wrapper">
+        <mat-card-title>Partie Classique</mat-card-title>
+        <mat-card class="highScoreTableClassic">
+            <table>
+                <thead class="tableContainer">
+                    <tr>
+                        <th>Scores</th>
+                        <th>Joueurs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let highScore of highScoreClassic">
+                        <td>{{ highScore.score }}</td>
+                        <td>{{ highScore.username }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-card>
+
+        <mat-card-title>Partie LOG2990</mat-card-title>
+        <mat-card class="highScoreTableLOG2990">
+            <table>
+                <thead class="tableContainer">
+                    <tr>
+                        <th>Scores</th>
+                        <th>Joueurs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let highScore of highScoreLOG29990">
+                        <td>{{ highScore.score }}</td>
+                        <td>{{ highScore.username }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-card>
+    </div>
+</mat-card>
