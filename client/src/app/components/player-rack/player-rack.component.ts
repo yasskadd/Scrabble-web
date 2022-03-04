@@ -11,13 +11,19 @@ import { Letter } from '@common/letter';
     styleUrls: ['./player-rack.component.scss'],
 })
 export class PlayerRackComponent {
+    // @Input()
+    // parentSubject: Subject<KeyboardEvent>;
+
     @ViewChild('info', { static: false }) info: ElementRef;
+
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
     buttonPressed = '';
-    lastKeyPressed = 0;
+    toManipulate = 0;
     lettersToExchange: number[] = [];
     lettersToManipulate: number[] = [];
+    arrow: boolean = false;
+
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
     constructor(
@@ -35,9 +41,22 @@ export class PlayerRackComponent {
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
         console.log('hellooooooo');
+        this.lettersToManipulate = [];
         this.selectManipulation(event);
-        // this.repositionRack();
     }
+
+    // ngOnInit() {
+    //     this.parentSubject.subscribe((event) => {
+    //         let index = -1;
+    //         for (const [i, letter] of this.rack.entries()) {
+    //             if (letter.value === event.key.toLowerCase()) index = i;
+    //             if (!this.lettersToExchange.includes(index) && index !== -1) {
+    //                 this.lettersToExchange.push(index);
+    //                 break;
+    //             }
+    //         }
+    //     });
+    // }
 
     get letterSize(): number {
         return this.tmpService.letterSize;
@@ -54,44 +73,85 @@ export class PlayerRackComponent {
     }
 
     selectManipulation(event: KeyboardEvent) {
-        let index = -1;
+        // const index = -1;
+        const idx = [];
+        this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
+
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === event.key.toLowerCase()) {
-                index = i;
+                // index = i;
+                idx.push(i);
             }
-            this.repositionRack();
-            if (!this.lettersToManipulate.includes(index) && index !== -1) {
-                this.lettersToManipulate.push(index);
-                this.lastKeyPressed = index;
-            }
-            // else {
-            //     this.lettersToManipulate = [];
-            // }
-            // return; // modify function to select the duplicate letters starting from left side
         }
-        console.log(index);
+
+        // rack with duplicate letters
+        if (idx.length > 1) {
+            for (const idc of idx) {
+                if (idc === this.toManipulate) {
+                    if (idx.indexOf(idc) === idx.length - 1) {
+                        this.toManipulate = 0; // go back to beginning
+                    } else {
+                        this.toManipulate = idc + 1; // go to the next right
+                    }
+                }
+            }
+        } else if (this.arrow) {
+            this.repositionRack();
+        } else {
+            this.toManipulate = idx[0];
+        }
+
+        this.lettersToManipulate.push(this.toManipulate);
     }
 
     repositionRack() {
-        // if (this.buttonPressed === "ArrowLeft" && selected index == this.gameClient.playerOne.rack[0])
-        // if (this.buttonPressed === "ArrowRight"  && selected index == this.gameClient.playerOne.rack[6]);
+        //
+        // if (this.toManipulate === this.gameClient.playerOne.rack[6]);
 
         if (this.buttonPressed === 'ArrowLeft') {
-            this.temp = this.gameClient.playerOne.rack[this.lastKeyPressed - 1];
-            this.gameClient.playerOne.rack[this.lastKeyPressed - 1] = this.gameClient.playerOne.rack[this.lastKeyPressed];
-            this.gameClient.playerOne.rack[this.lastKeyPressed] = this.temp;
+            this.moveLeft();
         }
 
         if (this.buttonPressed === 'ArrowRight') {
-            this.temp = this.gameClient.playerOne.rack[this.lastKeyPressed + 1];
-            this.gameClient.playerOne.rack[this.lastKeyPressed + 1] = this.gameClient.playerOne.rack[this.lastKeyPressed];
-            this.gameClient.playerOne.rack[this.lastKeyPressed] = this.temp;
+            this.moveRight();
         }
+    }
 
-        // if (this.buttonPressed === 'ArrowRight') {
-        //     this.lettersToManipulate.push(this.lastKeyPressed + 1);
-        //     this.lettersToManipulate.splice(this.lastKeyPressed, 1);
-        // }
+    moveLeft() {
+        if (this.toManipulate === 0) {
+            this.temp = this.gameClient.playerOne.rack[0];
+            for (let i = 1; i < this.gameClient.playerOne.rack.length; i++) {
+                this.gameClient.playerOne.rack[i - 1] = this.gameClient.playerOne.rack[i];
+            }
+            this.gameClient.playerOne.rack[6] = this.temp;
+            this.toManipulate = 6;
+        } else {
+            this.temp = this.gameClient.playerOne.rack[this.toManipulate - 1];
+            this.gameClient.playerOne.rack[this.toManipulate - 1] = this.gameClient.playerOne.rack[this.toManipulate];
+            this.gameClient.playerOne.rack[this.toManipulate] = this.temp;
+
+            this.toManipulate -= 1;
+        }
+        this.lettersToManipulate.push(this.toManipulate);
+        console.log('moving left!');
+    }
+
+    moveRight() {
+        if (this.toManipulate === 6) {
+            this.temp = this.gameClient.playerOne.rack[6];
+            for (let i = 0; i < this.gameClient.playerOne.rack.length - 1; i++) {
+                this.gameClient.playerOne.rack[i + 1] = this.gameClient.playerOne.rack[i];
+            }
+            this.gameClient.playerOne.rack[0] = this.temp;
+            this.toManipulate = 0;
+        } else {
+            this.temp = this.gameClient.playerOne.rack[this.toManipulate + 1];
+            this.gameClient.playerOne.rack[this.toManipulate + 1] = this.gameClient.playerOne.rack[this.toManipulate];
+            this.gameClient.playerOne.rack[this.toManipulate] = this.temp;
+            this.toManipulate += 1;
+        }
+        this.lettersToManipulate.push(this.toManipulate);
+        console.log('moving right!');
     }
 
     onRightClick(event: MouseEvent, letter: number) {
@@ -109,15 +169,11 @@ export class PlayerRackComponent {
 
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        const notFound = -1;
-        if (!this.lettersToManipulate.includes(letter)) {
-            this.lettersToManipulate.push(letter);
-        } else {
-            const index = this.lettersToManipulate.indexOf(letter);
-            if (index > notFound) {
-                this.lettersToManipulate.splice(index, 1);
-            }
-        }
+        this.lettersToManipulate = [];
+        this.lettersToExchange = [];
+        this.toManipulate = letter;
+        console.log(letter);
+        this.lettersToManipulate.push(letter);
     }
 
     exchange() {

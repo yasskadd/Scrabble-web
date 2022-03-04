@@ -7,6 +7,7 @@
             (click)="onLeftClick($event, i)"
             (contextmenu)="onRightClick($event, i)"
         >
+            <!-- [className]="this.toManipulate === i ? 'rack-manipulate-selected' : 'rack-letter'"  -->
             <div [style.background]="letter.value === buttonPressed ? 'green' : '#red'"></div>
             <div class="letter-value" [style.font-size]="letterSize + 'px'">
                 {{ letter.value.toUpperCase() }}
