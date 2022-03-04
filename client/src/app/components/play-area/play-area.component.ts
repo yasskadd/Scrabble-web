@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Vec2 } from '@app/classes/vec2';
 import * as constants from '@app/constants';
+import { Vec2 } from '@app/interfaces/vec2';
 import { GridService } from '@app/services/grid.service';
 
 export enum MouseButton {

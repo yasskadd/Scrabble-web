@@ -23,7 +23,6 @@ const enum TimeOptions {
 export class MultiplayerCreatePageComponent implements OnInit {
     playerName: string;
     timer: number = TimeOptions.OneMinute;
-    navigator: Navigator;
     gameMode: string;
     timerList = [
         TimeOptions.ThirtySecond,
