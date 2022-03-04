@@ -11,7 +11,7 @@ import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordSolverService } from './word-solver.service';
 
-describe('Word solver service', () => {
+describe.only('Word solver service', () => {
     let wordSolverService: WordSolverService;
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
@@ -25,13 +25,12 @@ describe('Word solver service', () => {
         wordSolverService = new WordSolverService(dictionaryValidationService.trie, gameboard);
     });
 
-    // it('test', () => {
-    //     const rack: string[] = ['t', 'a'];
-    //     gameboard.placeLetter(new LetterTile(7, 8, { value: 't' } as Letter));
-    //     gameboard.placeLetter(new LetterTile(8, 8, { value: 'e' } as Letter));
-    //     wordSolverService.findAllOptions(rack);
-    //     wordSolverService.commandInfoScore(wordSolverService['commandInfoList']);
-    // });
+    it.only('test', () => {
+        const rack: string[] = ['*'];
+        gameboard.placeLetter(new LetterTile(8, 8, { value: 'l' } as Letter));
+        wordSolverService.findAllOptions(rack);
+        wordSolverService.commandInfoScore(wordSolverService['commandInfoList']);
+    });
 
     context('Coordinate manipulation tests', () => {
         let upLeftCoordinate: Coordinate;

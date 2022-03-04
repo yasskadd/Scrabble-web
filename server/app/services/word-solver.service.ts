@@ -51,7 +51,6 @@ export class WordSolverService {
                 this.gameboard.placeLetter(tile);
             });
             const newWordsArray: Word[] = wordFinder.findNewWords(this.gameboard, placedLetters);
-            console.log(newWordsArray);
             const placementScore: number = dictionaryService.validateWords(newWordsArray);
             commandInfoMap.set(commandInfo, placementScore);
             placedLetters.forEach((tile) => {
@@ -89,10 +88,12 @@ export class WordSolverService {
         this.extendRight(partialWord, currentNode, rack, anchor, false);
         if (limit > 0) {
             for (const nextLetter of currentNode.children.keys()) {
-                if (rack.includes(nextLetter)) {
-                    rack.splice(rack.indexOf(nextLetter), 1);
+                const isBlankLetter: boolean = rack.includes('*') ? true : false;
+                if (rack.includes(nextLetter) || isBlankLetter) {
+                    const letterToRemove = isBlankLetter ? '*' : nextLetter;
+                    rack.splice(rack.indexOf(letterToRemove), 1);
                     this.findLeftPart(partialWord + nextLetter, currentNode.children.get(nextLetter) as LetterTreeNode, anchor, rack, limit - 1);
-                    rack.push(nextLetter);
+                    rack.push(letterToRemove);
                 }
             }
         }
@@ -104,11 +105,14 @@ export class WordSolverService {
         if (nextPosition === null) return; // means that position is out of bounds
         if (!this.gameboard.getCoord(nextPosition).isOccupied) {
             for (const nextLetter of currentNode.children.keys()) {
-                if (rack.includes(nextLetter) && this.crossCheckResults.get(this.gameboard.getCoord(nextPosition))?.includes(nextLetter)) {
-                    rack.splice(rack.indexOf(nextLetter), 1); // remove to letter from the rack to avoid reusing it
+                const isBlankLetter: boolean = rack.includes('*') ? true : false;
+                const crossCheckVerif = this.crossCheckResults.get(this.gameboard.getCoord(nextPosition))?.includes(nextLetter);
+                if ((rack.includes(nextLetter) && crossCheckVerif) || isBlankLetter) {
+                    const letterToRemove = isBlankLetter ? '*' : nextLetter;
+                    rack.splice(rack.indexOf(letterToRemove), 1); // remove to letter from the rack to avoid reusing it
                     const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
                     this.extendRight(partialWord + nextLetter, currentNode.children.get(nextLetter) as LetterTreeNode, rack, nextPos, true);
-                    rack.push(nextLetter);
+                    rack.push(letterToRemove);
                 }
             }
         } else {
