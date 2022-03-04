@@ -40,10 +40,15 @@ export class PlayerRackComponent {
     @HostListener('document: keydown', ['$event']) // should focus on player rack. ex: letters still show if player is typing in chatbox
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-        console.log('hellooooooo');
         this.lettersToManipulate = [];
         this.selectManipulation(event);
     }
+
+    // @HostListener('scroll')
+    // onScroll(event: Event) {
+    //     // alert('scrolling!');
+    //     console.log(this.getYPosition(event));
+    // }
 
     // ngOnInit() {
     //     this.parentSubject.subscribe((event) => {
@@ -70,6 +75,10 @@ export class PlayerRackComponent {
 
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
+    }
+
+    getYPosition(e: Event): number {
+        return (e.target as Element).scrollTop;
     }
 
     selectManipulation(event: KeyboardEvent) {
@@ -105,9 +114,6 @@ export class PlayerRackComponent {
     }
 
     repositionRack() {
-        //
-        // if (this.toManipulate === this.gameClient.playerOne.rack[6]);
-
         if (this.buttonPressed === 'ArrowLeft') {
             this.moveLeft();
         }
@@ -133,7 +139,6 @@ export class PlayerRackComponent {
             this.toManipulate -= 1;
         }
         this.lettersToManipulate.push(this.toManipulate);
-        console.log('moving left!');
     }
 
     moveRight() {
@@ -151,11 +156,11 @@ export class PlayerRackComponent {
             this.toManipulate += 1;
         }
         this.lettersToManipulate.push(this.toManipulate);
-        console.log('moving right!');
     }
 
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
+        this.lettersToManipulate = [];
         const notFound = -1;
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
@@ -172,7 +177,6 @@ export class PlayerRackComponent {
         this.lettersToManipulate = [];
         this.lettersToExchange = [];
         this.toManipulate = letter;
-        console.log(letter);
         this.lettersToManipulate.push(letter);
     }
 
