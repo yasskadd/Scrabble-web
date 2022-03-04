@@ -6,8 +6,8 @@
             [className]="this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'"
             (click)="onLeftClick($event, i)"
             (contextmenu)="onRightClick($event, i)"
+            (scroll)="onScroll($event)"
         >
-            <!-- [className]="this.toManipulate === i ? 'rack-manipulate-selected' : 'rack-letter'"  -->
             <div [style.background]="letter.value === buttonPressed ? 'green' : '#red'"></div>
             <div class="letter-value" [style.font-size]="letterSize + 'px'">
                 {{ letter.value.toUpperCase() }}
