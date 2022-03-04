@@ -17,7 +17,7 @@ export class ScoreStorageService {
         const currentTopScores = await this.database.fetchDocuments({ type: scoreInfo.type });
         const scorePlace = this.getTopScoresPosition(currentTopScores, scoreInfo.score);
         if (scorePlace === ScoreStorageService.lastElement) return;
-        const currentElement = currentTopScores.at(scorePlace - 1);
+        const currentElement = currentTopScores[scorePlace - 1];
         if (currentElement !== undefined) {
             if (currentElement.score === scoreInfo.score && !this.isNameAlreadyThere(scoreInfo.username, currentElement.username)) {
                 this.database.replaceDocument(

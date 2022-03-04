@@ -41,9 +41,7 @@ export class Server {
 
         try {
             await this.databaseService.connect();
-            console.log('Database connection successful !');
         } catch {
-            console.error('Database connection failed !');
             process.exit(1);
         }
     }
