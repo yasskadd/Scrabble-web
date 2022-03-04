@@ -1,6 +1,6 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { CommandInfo } from '@app/command-info';
 import { Game } from '@app/services/game.service';
+import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { Player } from './player.class';
@@ -36,7 +36,7 @@ export class RealPlayer extends Player {
             score: this.score,
             rack: this.rack,
             room: this.room,
-            gameboard: this.game.gameboard.gameboardCoords,
+            gameboard: this.game.gameboard.gameboardTiles,
         };
     }
 }

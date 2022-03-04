@@ -2,7 +2,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@common/command-info';
 import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io';
@@ -109,7 +109,7 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const firstCoordinateColumns = commandInfo.firstCoordinate.x;
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
-        const letterPlaced = commandInfo.lettersPlaced.join('');
+        const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as RealPlayer;
         const play = player.placeLetter(commandInfo) as [boolean, Gameboard] | string;
 
@@ -131,7 +131,7 @@ export class GamesHandler {
                     .emit(
                         SocketEvents.GameMessage,
                         `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${
-                            commandInfo.direction
+                            commandInfo.isHorizontal
                         } ${letterPlaced}`,
                     );
             }
