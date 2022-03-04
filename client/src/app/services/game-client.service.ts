@@ -6,8 +6,10 @@ import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
+type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
 type Player = { name: string; score: number; rack: Letter[]; room: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+
 @Injectable({
     providedIn: 'root',
 })
@@ -29,13 +31,12 @@ export class GameClientService {
         this.configureBaseSocketFeatures();
     }
     configureBaseSocketFeatures() {
-        this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: Player) => {
+        this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: PlayerInformation) => {
             this.playerOne = player;
-            this.updateGameboard();
+            this.updateNewGameboard(player.gameboard);
         });
-        this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
+        this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: PlayerInformation) => {
             this.secondPlayer = player;
-            this.updateGameboard();
         });
 
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {

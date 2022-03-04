@@ -1,3 +1,4 @@
+import { Game } from '@app/services/game.service';
 import { Letter } from '@common/letter';
 
 export class Player {
@@ -5,6 +6,8 @@ export class Player {
     score: number = 0;
     name: string;
     room: string;
+    game: Game;
+    isPlayerOne: boolean;
 
     constructor(name: string) {
         this.name = name;
