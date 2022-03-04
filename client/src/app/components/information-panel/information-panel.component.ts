@@ -12,7 +12,7 @@ import { GridService } from '@app/services/grid.service';
 })
 export class InformationPanelComponent {
     value: number;
-    private readonly dialogWidth: string = '25%';
+    private readonly dialogWidth: string = '40%';
 
     constructor(public gridService: GridService, public gameClientService: GameClientService, public dialog: MatDialog, public router: Router) {}
 
@@ -28,10 +28,25 @@ export class InformationPanelComponent {
     abandonGame(): void {
         this.dialog.open(AbandonGameDialogBoxComponent, {
             width: this.dialogWidth,
+            backdropClass: 'abandonDialogComponent',
+            panelClass: 'abandonDialogComponent',
+            disableClose: true,
         });
     }
     leaveGame(): void {
         this.router.navigate(['/home']);
         this.gameClientService.quitGame();
+    }
+
+    timerToMinute(time: number): number {
+        const second = 60;
+        return Math.floor(time / second);
+    }
+
+    timerToSecond(timer: number): number {
+        const minute = 60;
+        const second = 60;
+        const hour = minute * second;
+        return timer - Math.floor(timer / hour) * hour - Math.floor((timer - Math.floor(timer / hour) * hour) / second) * minute;
     }
 }
