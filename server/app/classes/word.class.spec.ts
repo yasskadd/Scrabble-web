@@ -40,16 +40,16 @@ describe('Word', () => {
         expect(word.stringFormat).to.eql('abc');
     });
 
-    it('buildFirstWord should build string abc if only a,b are the placedLetters', () => {
+    it('buildWord should build string abc if only a,b are the placedLetters', () => {
         gameboard.placeLetter(new LetterTile(1, 1, letterA));
         gameboard.placeLetter(new LetterTile(2, 1, letterB));
         gameboard.placeLetter(new LetterTile(3, 1, letterC));
         const placedLetters: LetterTile[] = [new LetterTile(2, 1, letterB), new LetterTile(3, 1, letterC)];
-        word = Word['buildFirstWord'](placedLetters, gameboard);
+        word = Word['buildWord'](placedLetters, gameboard);
         expect(word.stringFormat).to.eql('abc');
     });
 
-    it('buildFirstWord should build string aabbcc if there is already occupied squares between placedLetters', () => {
+    it('buildWord should build string aabbcc if there is already occupied squares between placedLetters', () => {
         gameboard.placeLetter(new LetterTile(2, 1, letterA));
         gameboard.placeLetter(new LetterTile(3, 1, letterA));
         gameboard.placeLetter(new LetterTile(4, 1, letterB));
@@ -57,12 +57,12 @@ describe('Word', () => {
         gameboard.placeLetter(new LetterTile(6, 1, letterC));
         gameboard.placeLetter(new LetterTile(7, 1, letterC));
         const placedLetters: LetterTile[] = [new LetterTile(2, 1, letterA), new LetterTile(4, 1, letterB), new LetterTile(6, 1, letterC)];
-        word = Word['buildFirstWord'](placedLetters, gameboard);
+        word = Word['buildWord'](placedLetters, gameboard);
         expect(word.stringFormat).to.eql('aabbcc');
         expect(word.isHorizontal).to.be.true;
     });
 
-    it('buildFirstWord should build string if there is already occupied squares between placedLetters', () => {
+    it('buildWord should build string if there is already occupied squares between placedLetters', () => {
         gameboard.placeLetter(new LetterTile(1, 1, letterA));
         gameboard.placeLetter(new LetterTile(1, 2, letterA));
         gameboard.placeLetter(new LetterTile(1, 3, letterB));
@@ -70,13 +70,13 @@ describe('Word', () => {
         gameboard.placeLetter(new LetterTile(1, 5, letterC));
         gameboard.placeLetter(new LetterTile(1, 6, letterC));
         const placedLetters: LetterTile[] = [new LetterTile(1, 5, letterA), new LetterTile(1, 3, letterB), new LetterTile(1, 1, letterC)];
-        word = Word['buildFirstWord'](placedLetters, gameboard);
+        word = Word['buildWord'](placedLetters, gameboard);
         expect(word.stringFormat).to.eql('aabbcc');
         expect(word.isHorizontal).to.be.false;
     });
 
-    it('buildFirstWord should return empty word if coordList is empty', () => {
-        word = Word['buildFirstWord']([], gameboard);
+    it('buildWord should return empty word if coordList is empty', () => {
+        word = Word['buildWord']([], gameboard);
         expect(word).to.eql({} as Word);
     });
 
@@ -208,34 +208,34 @@ describe('Word', () => {
         expect(word.calculateWordPoints(word, gameboard)).to.equal(expectedScore);
     });
 
-    it('findNewWords should return a single word if there is one placedLetter and letters are horizontal', () => {
+    it('findAdjacentWords should return a single word if there is one placedLetter and letters are horizontal', () => {
         const placedLetter: LetterTile[] = [new LetterTile(1, 1, letterA)];
         gameboard.placeLetter({ x: 1, y: 1 }, letterA.value);
         gameboard.placeLetter({ x: 2, y: 1 }, letterB.value);
         gameboard.placeLetter({ x: 3, y: 1 }, letterC.value);
-        const words: Word[] = Word['findNewWords'](gameboard, placedLetter);
+        const words: Word[] = Word['findAdjacentWords'](gameboard, placedLetter);
         expect(words).to.have.lengthOf(1);
         expect(words[0].stringFormat).to.eql('abc');
         expect(words[0].isHorizontal).to.be.true;
     });
 
-    it('findNewWords should return a single word if there is one placedLetter and letters are vertical', () => {
+    it('findAdjacentWords should return a single word if there is one placedLetter and letters are vertical', () => {
         const placedLetter: LetterTile[] = [new LetterTile(1, 1, letterA)];
-        gameboard.placeLetter(new LetterTile(1, 1, letterA));
-        gameboard.placeLetter(new LetterTile(1, 2, letterB));
-        gameboard.placeLetter(new LetterTile(1, 3, letterC));
-        const words: Word[] = Word['findNewWords'](gameboard, placedLetter);
+        gameboard.placeLetter({ x: 1, y: 1 }, letterA.value);
+        gameboard.placeLetter({ x: 1, y: 2 }, letterB.value);
+        gameboard.placeLetter({ x: 1, y: 3 }, letterC.value);
+        const words: Word[] = Word['findAdjacentWords'](gameboard, placedLetter);
         expect(words).to.have.lengthOf(1);
         expect(words[0].stringFormat).to.eql('abc');
         expect(words[0].isHorizontal).to.be.false;
     });
 
-    it('findNewWords should return an array of 2 words if there is one placedLetter related to 2 words', () => {
+    it('findAdjacentWords should return an array of 2 words if there is one placedLetter related to 2 words', () => {
         const placedLetter: LetterTile[] = [new LetterTile(1, 1, letterA)];
-        gameboard.placeLetter(new LetterTile(1, 1, letterA));
-        gameboard.placeLetter(new LetterTile(1, 2, letterA));
-        gameboard.placeLetter(new LetterTile(2, 1, letterB));
-        const words: Word[] = Word['findNewWords'](gameboard, placedLetter);
+        gameboard.placeLetter({ x: 1, y: 1 }, letterA.value);
+        gameboard.placeLetter({ x: 1, y: 2 }, letterA.value);
+        gameboard.placeLetter({ x: 2, y: 1 }, letterB.value);
+        const words: Word[] = Word['findAdjacentWords'](gameboard, placedLetter);
         expect(words).to.have.lengthOf(2);
         const stringList: string[] = words.map((word) => {
             return word.stringFormat;
@@ -243,26 +243,26 @@ describe('Word', () => {
         expect(stringList).to.include.members(['aa', 'ab']);
     });
 
-    it('findNewWords() should return an array of 2 words if there is 2 horizontal placed Letters related to 2 words', () => {
+    it('findAdjacentWords() should return an array of 2 words if there is 2 horizontal placed Letters related to 2 words', () => {
         const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(2, 1, letterB)];
         gameboard.placeLetter(placedLetters[0]);
         gameboard.placeLetter(placedLetters[1]);
         gameboard.placeLetter(new LetterTile(1, 2, { value: 'c' } as Letter));
         gameboard.placeLetter(new LetterTile(2, 2, { value: 'b' } as Letter));
-        const words: Word[] = Word['findNewWords'](gameboard, placedLetters);
+        const words: Word[] = Word['findAdjacentWords'](gameboard, placedLetters);
         const stringList: string[] = words.map((word) => {
             return word.stringFormat;
         });
         expect(stringList).to.include.members(['ab', 'ac', 'bb']);
     });
 
-    it('findNewWords() should return an array of 2 words if there is 2 vertical placed Letters related to 2 words', () => {
+    it('findAdjacentWords() should return an array of 2 words if there is 2 vertical placed Letters related to 2 words', () => {
         const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB)];
         gameboard.placeLetter(placedLetters[0]);
         gameboard.placeLetter(placedLetters[1]);
         gameboard.placeLetter(new LetterTile(2, 1, letterA));
         gameboard.placeLetter(new LetterTile(2, 2, letterA));
-        const words: Word[] = Word['findNewWords'](gameboard, placedLetters);
+        const words: Word[] = Word['findAdjacentWords'](gameboard, placedLetters);
         const stringList: string[] = words.map((word) => {
             return word.stringFormat;
         });
@@ -273,7 +273,7 @@ describe('Word', () => {
         const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB)];
         gameboard.placeLetter(placedLetters[0]);
         gameboard.placeLetter(placedLetters[1]);
-        const words: Word[] = Word['findNewWords'](gameboard, placedLetters);
+        const words: Word[] = Word['findAdjacentWords'](gameboard, placedLetters);
         const stringList: string[] = words.map((word) => {
             return word.stringFormat;
         });
@@ -285,7 +285,7 @@ describe('Word', () => {
         const placedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(2, 1, letterB)];
         gameboard.placeLetter(placedLetters[0]);
         gameboard.placeLetter(placedLetters[1]);
-        const words: Word[] = Word['findNewWords'](gameboard, placedLetters);
+        const words: Word[] = Word['findAdjacentWords'](gameboard, placedLetters);
         const stringList: string[] = words.map((word) => {
             return word.stringFormat;
         });
@@ -293,7 +293,7 @@ describe('Word', () => {
         expect(stringList).to.eql(['ab']);
     });
 
-    it('findNewWords() should return empty array if coordList is empty', () => {
-        expect(Word.findNewWords(gameboard, [])).to.eql([]);
+    it('findAdjacentWords() should return empty array if coordList is empty', () => {
+        expect(Word.findAdjacentWords(gameboard, [])).to.eql([]);
     });
 });

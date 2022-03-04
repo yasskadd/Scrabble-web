@@ -23,7 +23,7 @@ export class DictionaryValidationService {
     validateWord(word: Word, gameboard: Gameboard): number {
         const foundWords = word.findAdjacentWords(word, gameboard); // TODO: take out repitition of word
         this.checkWordInDictionary(foundWords);
-        return this.calculateTurnPoints(word, foundWords, gameboard);
+        return this.calculateTurnPoints(foundWords, gameboard);
     }
 
     createTrieDictionary() {
@@ -36,7 +36,7 @@ export class DictionaryValidationService {
         });
     }
 
-    private calculateTurnPoints(word: Word, foundWords: Word[], gameboard: Gameboard): number {
+    private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): number {
         let totalPointsForTurn = 0;
         if (this.isolateInvalidWords(foundWords).length !== 0) totalPointsForTurn = 0;
         else

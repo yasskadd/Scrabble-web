@@ -1,7 +1,7 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@common/command-info';
 import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { Server, Socket } from 'socket.io';
@@ -115,6 +115,7 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const firstCoordinateColumns = commandInfo.firstCoordinate.x;
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
+        console.log(commandInfo);
         const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as Player;
         const room = player.room;

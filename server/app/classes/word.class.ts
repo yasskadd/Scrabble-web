@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@common/command-info';
 import { Coordinate } from '@common/coordinate';
 import { Gameboard } from './gameboard.class';
 
@@ -12,7 +12,7 @@ export class Word {
     stringFormat: string;
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
-    allWords: Word[] = [];
+    allWords: Word[] = []; // TODO: not necessary?
 
     constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
         this.isValid = true;

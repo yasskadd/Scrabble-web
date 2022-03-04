@@ -1,7 +1,7 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@common/command-info';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { Service } from 'typedi';

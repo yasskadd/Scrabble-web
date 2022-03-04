@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { CommandInfo } from '@common/command-info';
 import { Coordinate } from '@common/coordinate';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
@@ -40,10 +41,10 @@ export class CommandHandlerService {
         if (coordsAndDirection[1] === 'h') boolDirection = true;
         if (coordsAndDirection[1] === 'v') boolDirection = false;
 
-        const commandInformation = {
-            firstCoordinate: coordsAndDirection[0],
-            direction: boolDirection,
-            lettersPlaced: this.getLetters(command, 2),
+        const commandInformation: CommandInfo = {
+            firstCoordinate: coordsAndDirection[0] as Coordinate,
+            isHorizontal: boolDirection,
+            letters: this.getLetters(command, 2),
         };
         this.clientSocket.send(SocketEvents.Play, commandInformation);
     }

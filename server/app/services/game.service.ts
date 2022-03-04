@@ -1,9 +1,9 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/command-info';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
+import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
 import { Inject } from 'typedi';
 
