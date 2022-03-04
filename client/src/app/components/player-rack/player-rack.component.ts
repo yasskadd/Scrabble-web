@@ -139,8 +139,8 @@ export class PlayerRackComponent {
     moveRight() {
         if (this.toManipulate === 6) {
             this.temp = this.gameClient.playerOne.rack[6];
-            for (let i = 0; i < this.gameClient.playerOne.rack.length - 1; i++) {
-                this.gameClient.playerOne.rack[i + 1] = this.gameClient.playerOne.rack[i];
+            for (let i = this.gameClient.playerOne.rack.length - 1; i > 0; i--) {
+                this.gameClient.playerOne.rack[i] = this.gameClient.playerOne.rack[i - 1];
             }
             this.gameClient.playerOne.rack[0] = this.temp;
             this.toManipulate = 0;
