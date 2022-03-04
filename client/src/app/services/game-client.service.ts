@@ -30,18 +30,20 @@ export class GameClientService {
         this.isGameFinish = false;
         this.configureBaseSocketFeatures();
     }
+
     configureBaseSocketFeatures() {
         this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: PlayerInformation) => {
-            this.playerOne = player;
-            this.updateNewGameboard(player.gameboard);
+            this.updatePlayerInformationEvent(player);
         });
+
         this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: PlayerInformation) => {
-            this.secondPlayer = player;
+            this.updateOpponentInformation(player);
         });
 
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
             this.getAllLetterReserve(letterReserveUpdated);
         });
+
         this.clientSocketService.on(SocketEvents.GameEnd, () => {
             this.gameEndEvent();
         });
@@ -49,9 +51,9 @@ export class GameClientService {
         this.clientSocketService.on(SocketEvents.OpponentGameLeave, () => {
             this.opponentLeaveGameEvent();
         });
+
         this.clientSocketService.on(SocketEvents.ViewUpdate, (info: PlayInfo) => {
-            this.playerOneTurn = info.activePlayer === this.playerOne.name;
-            this.updateNewGameboard(info.gameboard);
+            this.viewUpdateEvent(info);
         });
 
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
@@ -59,7 +61,7 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
-            this.timer = newTimer;
+            this.timerClientUpdateEvent(newTimer);
         });
     }
 
@@ -86,6 +88,25 @@ export class GameClientService {
         this.isGameFinish = false;
         this.winningMessage = '';
     }
+
+    private updateOpponentInformation(player: PlayerInformation) {
+        this.secondPlayer = player;
+    }
+
+    private timerClientUpdateEvent(newTimer: number) {
+        this.timer = newTimer;
+    }
+
+    private viewUpdateEvent(info: PlayInfo) {
+        this.playerOneTurn = info.activePlayer === this.playerOne.name;
+        this.updateNewGameboard(info.gameboard);
+    }
+
+    private updatePlayerInformationEvent(player: PlayerInformation) {
+        this.playerOne = player;
+        this.updateNewGameboard(player.gameboard);
+    }
+
     private updateNewGameboard(newGameboard: LetterTile[]) {
         this.gameboard = newGameboard;
         this.updateGameboard();
