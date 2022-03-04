@@ -7,7 +7,7 @@ import { Letter } from '@common/letter';
 import { Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
-enum ErrorType {
+export enum ErrorType {
     commandCoordinateOutOfBounds = 'First Coordinate is an invalid placement',
     lettersNotInRack = 'Letters not in rack',
     invalidFirstWordPlacement = 'One coordinate in the first word needs to pass by the middle coordinate',

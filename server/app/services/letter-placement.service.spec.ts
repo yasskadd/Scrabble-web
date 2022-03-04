@@ -3,16 +3,13 @@
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
-import { BoxMultiplierService } from './box-multiplier.service';
-import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
-import { WordFinderService } from './word-finder.service';
 
 describe('Letter Placement Service', () => {
     let player: Player;
@@ -22,10 +19,7 @@ describe('Letter Placement Service', () => {
     let letterC: Letter;
     let gameboard: Gameboard;
     let placementService: LetterPlacementService;
-    let validateCoordService: Sinon.SinonStubbedInstance<GameboardCoordinateValidationService>;
-    let wordFinderService: Sinon.SinonStubbedInstance<WordFinderService>;
     let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService>;
-    let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
 
     beforeEach(() => {
         letterA = { value: 'a', points: 1 } as Letter;
@@ -34,30 +28,14 @@ describe('Letter Placement Service', () => {
 
         player = { rack: [letterA, letterB], score: 0, name: 'test', room: 'testRoom' } as Player;
         commandInfo = {
-            firstCoordinate: { x: 1, y: 1 } as LetterTile,
-            direction: 'h',
-            lettersPlaced: ['a', 'l', 'l'],
+            firstCoordinate: { x: 1, y: 1 },
+            isHorizontal: true,
+            letters: ['a', 'l', 'l'],
         } as CommandInfo;
 
-        wordFinderService = Sinon.createStubInstance(WordFinderService);
-        validateCoordService = Sinon.createStubInstance(GameboardCoordinateValidationService);
-        boxMultiplierService = Sinon.createStubInstance(BoxMultiplierService);
+        gameboard = new Gameboard();
         dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService);
-        gameboard = new Gameboard(boxMultiplierService);
-        placementService = new LetterPlacementService(
-            validateCoordService as unknown as GameboardCoordinateValidationService,
-            wordFinderService as unknown as WordFinderService,
-            dictionaryValidation as unknown as DictionaryValidationService,
-        );
-    });
-
-    afterEach(() => {
-        validateCoordService.validateGameboardCoordinate.restore();
-    });
-
-    it('getLettersCoord() should call validateGameboardCoordinate()', () => {
-        placementService['getLettersCoord'](commandInfo, gameboard);
-        expect(validateCoordService.validateGameboardCoordinate.calledOnce).to.equal(true);
+        placementService = new LetterPlacementService(dictionaryValidation as unknown as DictionaryValidationService);
     });
 
     it('getLettersCoord() should return correct game Coordinates', () => {
@@ -183,7 +161,7 @@ describe('Letter Placement Service', () => {
 
         it('should return true if there is placed letters on the gameboard', () => {
             const letterCoords: LetterTile[] = [new LetterTile(8, 8, letterA), new LetterTile(8, 9, letterB)];
-            gameboard.placeLetter(new LetterTile(1, 1, {} as Letter));
+            gameboard.placeLetters(new LetterTile(1, 1, {} as Letter));
             expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(true);
         });
     });
@@ -240,7 +218,7 @@ describe('Letter Placement Service', () => {
         });
     });
 
-    context('placeLetter tests', () => {
+    context('placeLetters tests', () => {
         let letterCoords: LetterTile[];
         const bonusPoint = 50;
         const points = 10;
@@ -257,30 +235,30 @@ describe('Letter Placement Service', () => {
         });
 
         it('should call validateWords() once', () => {
-            placementService.placeLetter(letterCoords, player, gameboard);
+            placementService.placeLetters(letterCoords, player, gameboard);
             expect(dictionaryValidation.validateWords.calledOnce).to.equal(true);
         });
 
         it('should return false and the gameboard if validateWords returns 0', () => {
             dictionaryValidation.validateWords.returns(0);
-            expect(placementService.placeLetter(letterCoords, player, gameboard)).to.eql([false, gameboard]);
+            expect(placementService.placeLetters(letterCoords, player, gameboard)).to.eql([false, gameboard]);
         });
 
         it('should change player score if validateWords() dont return 0', () => {
             letterCoords = [new LetterTile(1, 1, letterA)];
             dictionaryValidation.validateWords.returns(points);
-            placementService.placeLetter(letterCoords, player, gameboard);
+            placementService.placeLetters(letterCoords, player, gameboard);
             expect(player.score).to.equal(points);
         });
 
         it('should return true and gameboard if validateWords() dont return 0', () => {
             dictionaryValidation.validateWords.returns(points);
-            expect(placementService.placeLetter(letterCoords, player, gameboard)).to.eql([true, gameboard]);
+            expect(placementService.placeLetters(letterCoords, player, gameboard)).to.eql([true, gameboard]);
         });
 
         it('should give a bonus of 50 points', () => {
             dictionaryValidation.validateWords.returns(points);
-            placementService.placeLetter(letterCoords, player, gameboard);
+            placementService.placeLetters(letterCoords, player, gameboard);
             expect(player.score).to.equal(points + bonusPoint);
         });
     });
