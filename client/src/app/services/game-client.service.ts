@@ -36,8 +36,8 @@ export class GameClientService {
             this.updatePlayerInformationEvent(player);
         });
 
-        this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: PlayerInformation) => {
-            this.updateOpponentInformation(player);
+        this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
+            this.updateOpponentInformationEvent(player);
         });
 
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
@@ -89,7 +89,7 @@ export class GameClientService {
         this.winningMessage = '';
     }
 
-    private updateOpponentInformation(player: PlayerInformation) {
+    private updateOpponentInformationEvent(player: Player) {
         this.secondPlayer = player;
     }
 

@@ -11,6 +11,7 @@ import { GridService } from './grid.service';
 type Player = { name: string; score: number; rack: Letter[]; room: string };
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,
@@ -35,7 +36,6 @@ const PLAYER_TWO: Player = {
     ],
     room: '3',
 };
-
 const PLAYER_INFO: PlayInfo = {
     gameboard: [
         {
@@ -51,7 +51,6 @@ const PLAYER_INFO: PlayInfo = {
     ],
     activePlayer: 'Paul',
 };
-
 const GAME_INFO: GameInfo = {
     gameboard: [
         {
@@ -81,7 +80,6 @@ const GAME_INFO: GameInfo = {
     ],
     activePlayer: 'Maurice',
 };
-
 const TIME = 12;
 
 export class SocketClientServiceMock extends ClientSocketService {
@@ -110,20 +108,32 @@ describe('GameClientService', () => {
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
+
     it('should update the player information', () => {
-        socketEmulator.peerSideEmit('UpdateMyPlayerInformation', PLAYER_ONE);
+        socketEmulator.peerSideEmit(SocketEvents.UpdatePlayerInformation, PLAYER_ONE);
         expect(service.playerOne).toEqual(PLAYER_ONE);
     });
+
+    it('should call updateOpponentInformationEvent', () => {
+        const spy = spyOn(service, 'updateOpponentInformationEvent' as never);
+        service.playerOne = PLAYER_ONE;
+        socketEmulator.peerSideEmit(SocketEvents.UpdateOpponentInformation, PLAYER_TWO);
+        expect(spy).toHaveBeenCalled();
+    });
+
     it('should update the opponent information', () => {
         service.playerOne = PLAYER_ONE;
-        socketEmulator.peerSideEmit('UpdateOpponentInformation', PLAYER_TWO);
+        // eslint-disable-next-line dot-notation
+        service['updateOpponentInformationEvent'](PLAYER_TWO);
         expect(service.secondPlayer).toEqual(PLAYER_TWO);
     });
+
     it('the playerOneTurn should be false when ViewUpdate is called and it is not their turn to play', () => {
         service.playerOne = PLAYER_ONE;
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
         expect(service.playerOneTurn).not.toBeTruthy();
     });
+
     it('playerOneTurn should be true when ViewUpdate is called and it is their turn to play', () => {
         service.playerOne = PLAYER_TWO;
         socketEmulator.peerSideEmit(SocketEvents.ViewUpdate, PLAYER_INFO);
@@ -175,6 +185,7 @@ describe('GameClientService', () => {
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).toBeTruthy();
     });
+
     it('should update the playOneTurn to false if it is not your turn to play', () => {
         service.playerOne = PLAYER_TWO;
         service.secondPlayer = PLAYER_ONE;
@@ -184,6 +195,7 @@ describe('GameClientService', () => {
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).not.toBeTruthy();
     });
+
     it('should update the letter reserve length if SocketEvents.letterReserveUpdated event is called from the server', () => {
         socketEmulator.peerSideEmit('letterReserveUpdated', LETTER_RESERVE);
         expect(service.letterReserveLength).toEqual(LETTER_RESERVE_LENGTH);
@@ -197,9 +209,11 @@ describe('GameClientService', () => {
     it('should  not update the time when the SocketEvents.TimerClientUpdate event is not called from the server', () => {
         expect(service.timer).not.toEqual(TIME);
     });
+
     it('should  not update the letter reserve if SocketEvents.letterReserveUpdated  is not called from the server', () => {
         expect(service.letterReserveLength).not.toEqual(LETTER_RESERVE_LENGTH);
     });
+
     it('should set the value of isGameFinish to true when the opponent left the game ', () => {
         service.isGameFinish = false;
         socketEmulator.peerSideEmit('OpponentLeftTheGame');
@@ -207,11 +221,28 @@ describe('GameClientService', () => {
         expect(service.isGameFinish).toBeTruthy();
     });
 
-    it('should call findWinnerByScore when the endGame event is emit and the game is not finish already', () => {
+    it('gameEnd event should call gameEndEvent()', () => {
+        const spy = spyOn(service, 'gameEndEvent' as never);
+        socketEmulator.peerSideEmit(SocketEvents.GameEnd);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('endGameEvent should call findWinnerByScore when the game is not finish already', () => {
         const spy = spyOn(service, 'findWinnerByScore' as never);
         service.isGameFinish = false;
-        socketEmulator.peerSideEmit('endGame');
+        // eslint-disable-next-line dot-notation
+        service['gameEndEvent']();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('endGameEvent should not call findWinnerByScore when the game is finish already', () => {
+        const spy = spyOn(service, 'findWinnerByScore' as never);
+        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
+        service.winningMessage = messageWinner;
+        service.isGameFinish = true;
+        // eslint-disable-next-line dot-notation
+        service['gameEndEvent']();
+        expect(spy).not.toHaveBeenCalled();
     });
 
     it('should emit abandonGame to the server if the player Abandon the game', () => {
@@ -227,14 +258,7 @@ describe('GameClientService', () => {
         service.quitGame();
         expect(spy).toHaveBeenCalledOnceWith('quitGame');
     });
-    it('should not call findWinnerByScore if the game is already finish', () => {
-        const spy = spyOn(service, 'findWinnerByScore' as never);
-        const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
-        service.winningMessage = messageWinner;
-        service.isGameFinish = true;
-        socketEmulator.peerSideEmit(SocketEvents.GameEnd);
-        expect(spy).not.toHaveBeenCalled();
-    });
+
     it('should emit a message that say that the two player have the same score', () => {
         service.playerOne = PLAYER_ONE;
         service.secondPlayer = PLAYER_TWO;
@@ -264,6 +288,7 @@ describe('GameClientService', () => {
         service['getAllLetterReserve'](LETTER_RESERVE);
         expect(service.letterReserveLength).toEqual(LETTER_RESERVE_LENGTH);
     });
+
     it('should emit a message that say that the second player won the game because he has a higher score than the first one', () => {
         service.playerOne = PLAYER_ONE;
         service.secondPlayer = PLAYER_TWO;

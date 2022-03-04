@@ -10,7 +10,7 @@ import { DialogBoxComponent } from '@app/components/dialog-box/dialog-box.compon
 export class MainPageComponent {
     readonly title: string = "Bienvenue au jeu Scrabble de l'équipe 107";
     private readonly dialogWidth: string = '25%';
-    constructor(public dialog: MatDialog) {}
+    constructor(private dialog: MatDialog) {}
 
     openDialog(gameModeValue: string): void {
         this.dialog.open(DialogBoxComponent, {
