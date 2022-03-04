@@ -14,7 +14,6 @@ type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: stri
     providedIn: 'root',
 })
 export class GameClientService {
-    static timerInterval: number;
     timer: number;
     gameboard: LetterTile[];
     playerOne: Player;
