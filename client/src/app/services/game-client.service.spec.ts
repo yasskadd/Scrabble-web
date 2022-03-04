@@ -131,13 +131,35 @@ describe('GameClientService', () => {
     });
 
     it('updateNewGameboard should call updateGameboard', () => {
-        service.gameboard = PLAYER_INFO.gameboard;
-        const spy = spyOn(service, 'updateNewGameboard');
-        service.updateNewGameboard(GAME_INFO.gameboard);
+        const spy = spyOn(service, 'updateGameboard' as never);
+        // eslint-disable-next-line dot-notation
+        service['updateNewGameboard'](GAME_INFO.gameboard);
         expect(spy).toHaveBeenCalled();
     });
 
-    it('updateGamboard should call drawGridArray', () => {
+    it('opponentLeaveGameEvent should set the winning message and the isGameFinish attribute', () => {
+        const winningMessageTest = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
+        // eslint-disable-next-line dot-notation
+        service['opponentLeaveGameEvent']();
+        expect(service.winningMessage).toEqual(winningMessageTest);
+        expect(service.isGameFinish).toBeTruthy();
+        expect(service.playerOneTurn).toBeFalsy();
+    });
+
+    it('skipEvent should call updateGameboard', () => {
+        const spy = spyOn(service, 'updateGameboard' as never);
+        service.playerOne = GAME_INFO.players[0];
+        service.secondPlayer = GAME_INFO.players[1];
+        // eslint-disable-next-line dot-notation
+        service['skipEvent'](GAME_INFO);
+        expect(service.gameboard).toEqual(GAME_INFO.gameboard);
+        expect(service.playerOne).toEqual(GAME_INFO.players[0]);
+        expect(service.secondPlayer).toEqual(GAME_INFO.players[1]);
+        expect(service.playerOneTurn).toBeFalsy();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('updateGameboard should call drawGridArray', () => {
         service.gameboard = PLAYER_INFO.gameboard;
         const spy = spyOn(service, 'updateGameboard');
         service.updateGameboard();
@@ -239,7 +261,8 @@ describe('GameClientService', () => {
 
     it(' getAllLetterReserve should return the length of the reserve', () => {
         // eslint-disable-next-line dot-notation
-        expect(service['getAllLetterReserve'](LETTER_RESERVE)).toEqual(LETTER_RESERVE_LENGTH);
+        service['getAllLetterReserve'](LETTER_RESERVE);
+        expect(service.letterReserveLength).toEqual(LETTER_RESERVE_LENGTH);
     });
     it('should emit a message that say that the second player won the game because he has a higher score than the first one', () => {
         service.playerOne = PLAYER_ONE;
