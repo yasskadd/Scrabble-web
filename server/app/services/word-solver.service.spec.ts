@@ -25,9 +25,10 @@ describe.only('Word solver service', () => {
         wordSolverService = new WordSolverService(dictionaryValidationService.trie, gameboard);
     });
 
-    it.only('test', () => {
+    it('test', () => {
         const rack: string[] = ['*'];
-        gameboard.placeLetter(new LetterTile(8, 8, { value: 'l' } as Letter));
+        gameboard.placeLetter(new LetterTile(7, 8, { value: 'j' } as Letter));
+        gameboard.placeLetter(new LetterTile(8, 8, { value: 'e' } as Letter));
         wordSolverService.findAllOptions(rack);
         wordSolverService.commandInfoScore(wordSolverService['commandInfoList']);
     });
