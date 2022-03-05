@@ -1,6 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { HighScores } from '@app/classes/high-score-parameters';
+import { HighScores } from '@app/interfaces/high-score-parameters';
 import { HttpHandlerService } from './http-handler.service';
 
 // type ScoreInfo = { username: string; type: string; score: number };

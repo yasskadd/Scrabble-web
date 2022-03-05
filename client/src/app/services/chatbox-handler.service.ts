@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ChatboxMessage } from '@app/classes/chatbox-message';
+import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';

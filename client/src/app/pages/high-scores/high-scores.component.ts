@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HighScores } from '@app/classes/high-score-parameters';
+import { HighScores } from '@app/interfaces/high-score-parameters';
 import { HttpHandlerService } from '@app/services/http-handler.service';
 
 @Component({

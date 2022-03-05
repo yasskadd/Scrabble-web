@@ -54,9 +54,11 @@ export class CommandHandlerService {
     private isDigit(information: string) {
         return information >= '0' && information <= '9';
     }
+
     private getCommandType(stringArr: string[]) {
         return stringArr[0];
     }
+
     private getCoordsAndDirection(stringArr: string[]) {
         const placementArray = stringArr[1].split('');
         const coordinateRatio = 9;
