@@ -1,18 +1,22 @@
-import { Component, ElementRef, HostListener, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { Letter } from '@common/letter';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-player-rack',
     templateUrl: './player-rack.component.html',
     styleUrls: ['./player-rack.component.scss'],
 })
-export class PlayerRackComponent {
+export class PlayerRackComponent implements OnInit {
+    @Input()
+    keyboardParentSubject: Subject<KeyboardEvent>;
+
     // @Input()
-    // parentSubject: Subject<KeyboardEvent>;
+    // scrollParentSubject: Subject<Scroll>;
 
     @ViewChild('info', { static: false }) info: ElementRef;
 
@@ -29,23 +33,22 @@ export class PlayerRackComponent {
 
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
-    constructor(
-        private chatBoxHandler: ChatboxHandlerService,
-        public gameClient: GameClientService,
-        private tmpService: GridService,
-        private renderer: Renderer2,
-    ) {
-        this.renderer.listen('window', 'click', () => {
-            this.lettersToExchange = [];
+    constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService, private tmpService: GridService) {}
+
+    ngOnInit() {
+        this.keyboardParentSubject.subscribe((event) => {
+            this.buttonPressed = event.key;
+            this.lettersToManipulate = [];
+            this.selectManipulation(event);
         });
     }
 
-    @HostListener('document: keydown', ['$event']) // should focus on player rack. ex: letters still show if player is typing in chatbox
-    buttonDetect(event: KeyboardEvent) {
-        this.buttonPressed = event.key;
-        this.lettersToManipulate = [];
-        this.selectManipulation(event);
-    }
+    // @HostListener('document: keydown', ['$event']) // should focus on player rack. ex: letters still show if player is typing in chatbox
+    // buttonDetect(event: KeyboardEvent) {
+    //     this.buttonPressed = event.key;
+    //     this.lettersToManipulate = [];
+    //     this.selectManipulation(event);
+    // }
 
     // @HostListener('scroll')
     // onScroll(event: Event) {
@@ -56,18 +59,6 @@ export class PlayerRackComponent {
     // @HostListener('window:scroll', ['$event']) onScrollEvent() {
     //     // console.log($event['Window']);
     //     // console.log('scrolling');
-    // }
-    // ngOnInit() {
-    //     this.parentSubject.subscribe((event) => {
-    //         let index = -1;
-    //         for (const [i, letter] of this.rack.entries()) {
-    //             if (letter.value === event.key.toLowerCase()) index = i;
-    //             if (!this.lettersToExchange.includes(index) && index !== -1) {
-    //                 this.lettersToExchange.push(index);
-    //                 break;
-    //             }
-    //         }
-    //     });
     // }
 
     get letterSize(): number {
@@ -156,6 +147,11 @@ export class PlayerRackComponent {
         this.lettersToExchange = [];
         this.currentSelection = letter;
         this.lettersToManipulate.push(letter);
+    }
+
+    onScroll(event: Event) {
+        event.preventDefault();
+        console.log('Scrolling!!!!!');
     }
 
     exchange() {
