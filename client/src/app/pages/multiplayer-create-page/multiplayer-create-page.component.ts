@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
@@ -22,7 +23,7 @@ const enum TimeOptions {
 })
 export class MultiplayerCreatePageComponent implements OnInit {
     playerName: string;
-    timer: number = TimeOptions.OneMinute;
+    form: FormGroup;
     navigator: Navigator;
     gameMode: string;
     timerList = [
@@ -37,15 +38,29 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FourMinuteAndThirty,
         TimeOptions.FiveMinute,
     ];
-    constructor(public gameConfiguration: GameConfigurationService, public router: Router, private activatedRoute: ActivatedRoute) {
+    constructor(
+        public gameConfiguration: GameConfigurationService,
+        public router: Router,
+        private activatedRoute: ActivatedRoute,
+        private fb: FormBuilder,
+    ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
     }
 
     ngOnInit(): void {
         this.gameConfiguration.resetRoomInformation();
+        const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
+        this.form = this.fb.group({
+            timer: [defaultTimer, Validators.required],
+        });
     }
     createGame() {
-        this.gameConfiguration.gameInitialization({ username: this.playerName, timer: this.timer, dictionary: 'francais', mode: this.gameMode });
+        this.gameConfiguration.gameInitialization({
+            username: this.playerName,
+            timer: this.form.get('timer')?.value,
+            dictionary: 'francais',
+            mode: this.gameMode,
+        });
         this.resetInput();
         this.navigatePage();
     }
