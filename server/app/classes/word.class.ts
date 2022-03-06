@@ -12,7 +12,6 @@ export class Word {
     stringFormat: string;
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
-    allWords: Word[] = []; // TODO: not necessary?
 
     constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
         this.isValid = true;
@@ -54,10 +53,11 @@ export class Word {
 
     private buildWord(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
         const position = firstCoord;
-        let commandLettersCopy = { ...commandLetters };
-
+        let commandLettersCopy = commandLetters.slice();
         if (commandLettersCopy === ['']) commandLettersCopy.shift();
 
+        console.log(commandLettersCopy.length);
+        console.log(gameboard.getLetterTile(position).isOccupied);
         while ((commandLettersCopy.length || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
             if (!gameboard.getLetterTile(position).isOccupied) {
                 this.stringFormat += commandLettersCopy[0];
@@ -80,7 +80,7 @@ export class Word {
     }
 
     // FIND ADJACENT WORDS ---------------------------------------------------------------------------------------------------
-    public findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
+    static findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
         const allWords: Word[] = [];
         allWords.push(word);
         word.newLetterCoords.forEach((coord: Coordinate) => {
@@ -98,32 +98,33 @@ export class Word {
     }
 
     // CALCULATE POINTS ----------------------------------------------------------------------------------------------------
-    calculateWordPoints(word: Word, gameboard: Gameboard): number {
-        this.addLetterPoints(word, gameboard);
-        this.addWordMultiplierPoints(word, gameboard);
-        return word.points;
+    static calculateWordPoints(word: Word, gameboard: Gameboard): number {
+        let points: number = 0;
+        this.addLetterPoints(word, points, gameboard);
+        this.addWordMultiplierPoints(word, points, gameboard);
+        return points;
     }
 
-    private addLetterPoints(word: Word, gameboard: Gameboard) {
+    static addLetterPoints(word: Word, points: number, gameboard: Gameboard) {
         word.wordCoords.forEach((coord: Coordinate) => {
             if (
                 gameboard.getLetterTile(coord).multiplier.type === 'LETTRE' &&
                 gameboard.getLetterTile(coord).multiplier.number > 1 &&
                 word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
             )
-                word.points += gameboard.getLetterTile(coord).points * gameboard.getLetterTile(coord).multiplier.number;
-            else word.points += gameboard.getLetterTile(coord).points;
+                points += gameboard.getLetterTile(coord).points * gameboard.getLetterTile(coord).multiplier.number;
+            else points += gameboard.getLetterTile(coord).points;
         });
     }
 
-    private addWordMultiplierPoints(word: Word, gameboard: Gameboard) {
+    static addWordMultiplierPoints(word: Word, points: number, gameboard: Gameboard) {
         word.wordCoords.forEach((coord: Coordinate) => {
             if (
                 gameboard.getLetterTile(coord).multiplier.type === 'MOT' &&
                 gameboard.getLetterTile(coord).multiplier.number > 1 &&
                 word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
             )
-                word.points *= gameboard.getLetterTile(coord).multiplier.number;
+                points *= gameboard.getLetterTile(coord).multiplier.number;
         });
     }
 }

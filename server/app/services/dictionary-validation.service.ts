@@ -21,7 +21,7 @@ export class DictionaryValidationService {
     }
 
     validateWord(word: Word, gameboard: Gameboard): number {
-        const foundWords = word.findAdjacentWords(word, gameboard); // TODO: take out repitition of word
+        const foundWords = Word.findAdjacentWords(word, gameboard); // TODO: take out repitition of word
         this.checkWordInDictionary(foundWords);
         return this.calculateTurnPoints(foundWords, gameboard);
     }
@@ -41,7 +41,7 @@ export class DictionaryValidationService {
         if (this.isolateInvalidWords(foundWords).length !== 0) totalPointsForTurn = 0;
         else
             foundWords.forEach((enteredWord: Word) => {
-                totalPointsForTurn += enteredWord.calculateWordPoints(enteredWord, gameboard);
+                totalPointsForTurn += Word.calculateWordPoints(enteredWord, gameboard);
             });
 
         return totalPointsForTurn;

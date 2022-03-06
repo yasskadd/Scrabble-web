@@ -29,14 +29,12 @@ export class LetterPlacementService {
         if (!this.areLettersInRack(commandInfo.letters, player)) return [{} as Word, ErrorType.lettersNotInRack];
 
         const commandWord = new Word(commandInfo, gameboard);
-        if (!commandWord.isValid) {
-            commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
-            return [{} as Word, ErrorType.invalidWordBuild];
-        }
-        if (!this.verifyFirstTurn(commandWord.wordCoords, gameboard)) {
-            commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
-            return [{} as Word, ErrorType.invalidFirstWordPlacement];
-        }
+        console.log(commandWord.isHorizontal);
+        console.log(commandWord.newLetterCoords);
+        console.log(commandWord.stringFormat);
+        console.log(commandWord.wordCoords);
+        if (!commandWord.isValid) return [{} as Word, ErrorType.invalidWordBuild];
+        if (!this.verifyFirstTurn(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
 
         return [commandWord, ErrorType.noErrors];
     }
@@ -74,7 +72,7 @@ export class LetterPlacementService {
         });
 
         const lettersPresentInRack = letters.filter((letter) => letter !== undefined) as string[];
-        return lettersPresentInRack.length !== commandLetters.length;
+        return lettersPresentInRack.length === commandLetters.length;
     }
 
     private verifyFirstTurn(lettersCoords: Coordinate[], gameboard: Gameboard): boolean {
