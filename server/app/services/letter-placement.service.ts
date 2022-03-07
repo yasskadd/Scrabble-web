@@ -35,7 +35,7 @@ export class LetterPlacementService {
     }
 
     private validateCommandCoordinate(commandCoord: Coordinate): boolean {
-        return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15; // TODO: do I need to check if coord is occupied?
+        return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15;
     }
 
     private createTempRack(player: Player): Letter[] {
@@ -90,6 +90,7 @@ export class LetterPlacementService {
             return [false, gameboard];
         }
         this.updatePlayerScore(wordScore, commandWord, player);
+        // TODO: ARRRGH, player rack isn<t updated
         this.updatePlayerRack(commandInfo.letters, player);
         return [true, gameboard];
     }
@@ -99,13 +100,15 @@ export class LetterPlacementService {
         if (commandWord.newLetterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
     }
 
+    //TODO : letters aren'T properly removed for some reason
     private updatePlayerRack(letters: string[], player: Player): void {
+        const INDEX_NOT_FOUND = -1;
         letters.forEach((letter) => {
-            const itemInRack = player.rack.filter((item) => item.value === letter)[0];
-            if (player.rack.includes(itemInRack)) {
-                const index = player.rack.indexOf(itemInRack);
-                player.rack.splice(index, 1);
-            }
+            const itemInRack = player.rack.filter((item: Letter) => item.value == letter)[0];
+            console.log(itemInRack);
+            const index = player.rack.indexOf(itemInRack);
+            console.log(index);
+            if (index > INDEX_NOT_FOUND) player.rack.splice(index, 1);
         });
     }
 }
