@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@app/classes/letter-tile.class';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 

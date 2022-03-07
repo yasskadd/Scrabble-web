@@ -5,7 +5,7 @@ import { Multiplier } from './multiplier';
 export class LetterTile {
     coordinate: Coordinate;
     isOccupied: boolean;
-    private letter: string;
+    private _letter: string;
     points: number;
     multiplier: Multiplier;
 
@@ -13,23 +13,25 @@ export class LetterTile {
         this.coordinate = { ...position };
         this.isOccupied = false;
         this.multiplier = { type: '', number: 1 };
-        this.setLetter('');
+        this.letter = '';
     }
 
-    public getLetter() {
-        return this.letter;
+    get letter(): string {
+        console.log('Hellowlrd');
+        return this._letter;
     }
 
-    public setLetter(letter: string) {
-        this.letter = letter.toLowerCase();
+    set letter(newLetter: string) {
+        this._letter = newLetter;
         this.setPoints();
     }
 
     private setPoints() {
-        if (this.letter === '') this.points = 0;
-        else {
+        if (this._letter === '') {
+            this.points = 0;
+        } else {
             const letterType = letterTypes.LETTERS.filter((letter) => {
-                return letter.value === this.letter;
+                return letter.value === this._letter;
             })[0];
             this.points = letterType.points;
         }

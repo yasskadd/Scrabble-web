@@ -6,7 +6,7 @@ import { Word } from '@app/classes/word.class';
 import * as fs from 'fs';
 import { Service } from 'typedi';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
+const jsonDictionary = JSON.parse(fs.readFileSync('@app/../assets/dictionary.json', 'utf8'));
 
 @Service()
 export class DictionaryValidationService {

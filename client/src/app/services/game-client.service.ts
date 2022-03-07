@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 
-type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
+type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
+type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
 type Player = { name: string; score: number; rack: Letter[]; room: string };
-type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +16,7 @@ type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: stri
 export class GameClientService {
     static timerInterval: number;
     timer: number;
-    gameboard: LetterTile[];
+    gameboard: LetterTileInterface[];
     playerOne: Player;
     secondPlayer: Player;
     playerOneTurn: boolean;
@@ -29,6 +29,7 @@ export class GameClientService {
         this.playerOneTurn = false;
         this.isGameFinish = false;
         this.configureBaseSocketFeatures();
+        this.gameboard = [];
     }
     configureBaseSocketFeatures() {
         this.clientSocketService.on(SocketEvents.UpdatePlayerInformation, (player: PlayerInformation) => {
@@ -71,8 +72,10 @@ export class GameClientService {
             this.timer = newTimer;
         });
     }
-    updateNewGameboard(newGameboard: LetterTile[]) {
+    updateNewGameboard(newGameboard: LetterTileInterface[]) {
         this.gameboard = newGameboard;
+        console.log(this.gameboard);
+
         this.updateGameboard();
     }
     updateGameboard() {

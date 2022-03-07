@@ -1,4 +1,6 @@
-export const LETTERS = [
+import { Letter } from './letter';
+
+export const LETTERS: Letter[] = [
     {
         value: 'a',
         quantity: 9,

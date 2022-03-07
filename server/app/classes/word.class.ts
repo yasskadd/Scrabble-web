@@ -20,7 +20,7 @@ export class Word {
         }
 
         const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
-        this.buildWord(firstCoord, commandInfo.letters, gameboard);
+        this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
     }
 
     // CONSTRUCTOR FUNCTIONS -------------------------------------------------------------------------------------------------
@@ -48,8 +48,8 @@ export class Word {
         } else return coord;
     }
 
-    // TODO: check how many times buildWord() is called. Something is sus.
-    private buildWord(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
+    // TODO: check how many times setWordAttributes() is called. Something is sus.
+    private setWordAttributes(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
         let position = { ...firstCoord };
         let commandLettersCopy = commandLetters.slice();
         if (commandLettersCopy[0] === '') commandLettersCopy.shift();
@@ -62,7 +62,7 @@ export class Word {
                 this.newLetterCoords.push({ ...position });
             } else {
                 this.wordCoords.push({ ...position });
-                this.stringFormat += gameboard.getLetterTile({ ...position }).getLetter();
+                this.stringFormat += gameboard.getLetterTile({ ...position }).letter;
             }
             if (this.isHorizontal) position.x++;
             else position.y++;

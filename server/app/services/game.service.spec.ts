@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { LetterTile } from '@app/classes/letter-tile.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';

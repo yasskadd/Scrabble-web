@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
+const jsonDictionary = JSON.parse(fs.readFileSync('@app/../assets/dictionary.json', 'utf8'));
 
 describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;

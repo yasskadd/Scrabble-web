@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 
 @Injectable({
     providedIn: 'root',
@@ -28,18 +28,27 @@ export class GridService {
         this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
-    drawGrid(gameboard: LetterTile[]) {
+    drawGrid(gameboard: LetterTileInterface[]) {
         this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
         this.drawRowNumbers();
         this.drawColumnLetters();
         this.drawBasicTiles();
         this.drawMultipliers();
         this.drawMiddleTile();
-        gameboard.forEach((letterTile) => {
-            if (letterTile.isOccupied) {
-                this.drawBasicTile({ x: letterTile.coordinate.x, y: letterTile.coordinate.y });
-                this.drawLetter({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, letterTile.getLetter().toUpperCase());
-                this.drawLetterPoints({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, String(letterTile.points));
+        gameboard.forEach((letterTileInterface: LetterTileInterface) => {
+            if (letterTileInterface.isOccupied) {
+                if (letterTileInterface._letter === undefined) {
+                    debugger;
+                }
+                this.drawBasicTile({ x: letterTileInterface.coordinate.x, y: letterTileInterface.coordinate.y });
+                this.drawLetter(
+                    { x: letterTileInterface.coordinate.x, y: letterTileInterface.coordinate.y },
+                    letterTileInterface._letter.toUpperCase(),
+                );
+                this.drawLetterPoints(
+                    { x: letterTileInterface.coordinate.x, y: letterTileInterface.coordinate.y },
+                    String(letterTileInterface.points),
+                );
             }
         });
     }

@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterTile } from '@app/classes/letter-tile.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@common/command-info';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
@@ -233,15 +233,7 @@ describe('Letter Placement Service', () => {
         const bonusPoint = 50;
         const points = 10;
         beforeEach(() => {
-            letterCoords = [
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-            ];
+            commandInfo = {};
         });
 
         it('should call validateWords() once', () => {
