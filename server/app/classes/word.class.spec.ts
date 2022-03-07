@@ -296,4 +296,129 @@ describe('Word', () => {
     it('findAdjacentWords() should return empty array if coordList is empty', () => {
         expect(Word.findAdjacentWords(gameboard, [])).to.eql([]);
     });
+
+    // context('validateCoordinate() should return empty list if string goes out of bound', () => {
+    //     let firstCoord: LetterTile;
+    //     let word: string[];
+    //     beforeEach(() => {
+    //         firstCoord = new LetterTile(14, 14, {} as Letter);
+    //         word = ['a', 'a', 'a', 'a'];
+    //     });
+    //     it('horizontal', () => {
+    //         const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'h', lettersPlaced: word };
+    //         expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql([]);
+    //     });
+
+    //     it('vertical', () => {
+    //         const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'v', lettersPlaced: word };
+    //         expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql([]);
+    //     });
+    // });
+
+    // context('validateCoordinate() should return empty list if string goes out of bound and there is already placed Letters', () => {
+    //     let word: string[];
+    //     beforeEach(() => {
+    //         gameboard.placeLetter(new LetterTile(14, 11, {} as Letter));
+    //         gameboard.placeLetter(new LetterTile(15, 1, {} as Letter));
+    //         gameboard.placeLetter(new LetterTile(1, 14, {} as Letter));
+    //         gameboard.placeLetter(new LetterTile(1, 15, {} as Letter));
+    //         word = ['a', 'a', 'a', 'a'];
+    //     });
+    //     it('horizontal', () => {
+    //         const coord = new LetterTile(13, 1, {} as Letter);
+    //         const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'h', lettersPlaced: word };
+    //         expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql([]);
+    //     });
+    //     it('vertical', () => {
+    //         const coord = new LetterTile(1, 13, {} as Letter);
+    //         const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'v', lettersPlaced: word };
+    //         expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql([]);
+    //     });
+    // });
+
+    // context('validateCoordinate() should return placedLetters array if placement is valid and there is no letters on the gameboard', () => {
+    //     let word: string[];
+    //     let coord: LetterTile;
+    //     beforeEach(() => {
+    //         word = ['a', 'a', 'a', 'a'];
+    //         coord = new LetterTile(1, 1, letterA);
+    //     });
+    //     it('horizontal', () => {
+    //         const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'h', lettersPlaced: word };
+    //         const expectedCoordList = [
+    //             new LetterTile(1, 1, letterA),
+    //             new LetterTile(2, 1, letterA),
+    //             new LetterTile(3, 1, letterA),
+    //             new LetterTile(4, 1, letterA),
+    //         ];
+    //         expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql(expectedCoordList);
+    //     });
+
+    //     it('vertical', () => {
+    //         const commandInfo: CommandInfo = { firstCoordinate: coord, direction: 'v', lettersPlaced: word };
+    //         const expectedCoordList = [
+    //             new LetterTile(1, 1, letterA),
+    //             new LetterTile(1, 2, letterA),
+    //             new LetterTile(1, 3, letterA),
+    //             new LetterTile(1, 4, letterA),
+    //         ];
+    //         expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql(expectedCoordList);
+    //     });
+    // });
+
+    // it('should return correct placedLetters array if placement is valid horizontally and there is already letters on the gameboard', () => {
+    //     const firstCoord = new LetterTile(5, 6, {} as Letter);
+    //     gameboard.placeLetter(new LetterTile(6, 6, {} as Letter));
+    //     gameboard.placeLetter(new LetterTile(7, 6, {} as Letter));
+    //     gameboard.placeLetter(new LetterTile(8, 6, {} as Letter));
+    //     const word: string[] = ['a', 'a', 'b'];
+    //     const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'h', lettersPlaced: word };
+    //     const expectedCoordList = [new LetterTile(5, 6, letterA), new LetterTile(9, 6, letterA), new LetterTile(10, 6, letterB)];
+    //     expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql(expectedCoordList);
+    // });
+
+    // it('should return correct placedLetters array if placement is valid vertically and there is already letters on the gameboard', () => {
+    //     const firstCoord = new LetterTile(5, 6, {} as Letter);
+    //     gameboard.placeLetter(new LetterTile(5, 7, {} as Letter));
+    //     gameboard.placeLetter(new LetterTile(5, 8, {} as Letter));
+    //     gameboard.placeLetter(new LetterTile(5, 9, {} as Letter));
+    //     const word: string[] = ['a', 'a', 'b'];
+    //     const commandInfo: CommandInfo = { firstCoordinate: firstCoord, direction: 'v', lettersPlaced: word };
+    //     const expectedCoordList = [new LetterTile(5, 6, letterA), new LetterTile(5, 10, letterA), new LetterTile(5, 11, letterB)];
+    //     expect(gameboard.validateGameboardCoordinate(commandInfo)).to.eql(expectedCoordList);
+    // });
+
+    // context('isThereAdjacentLetters() tests', () => {
+    //     let testCoordinate: LetterTile;
+    //     let upLeftCoord: LetterTile;
+    //     let downRightCoord: LetterTile;
+    //     beforeEach(() => {
+    //         testCoordinate = new LetterTile(8, 8, letterA);
+    //         upLeftCoord = new LetterTile(1, 1, letterA);
+    //         downRightCoord = new LetterTile(15, 15, letterA);
+    //     });
+
+    //     it('should return false if there is no adjacent letters', () => {
+    //         expect(gameboard['isThereAdjacentLetters'](testCoordinate)).to.equal(false);
+    //     });
+
+    //     it('should return true if upward tile is occupied', () => {
+    //         gameboard.placeLetter(new LetterTile(8, 7, letterA));
+    //         expect(gameboard['isThereAdjacentLetters'](testCoordinate)).to.equal(true);
+    //     });
+
+    //     it('should return true if downward tile is occupied', () => {
+    //         gameboard.placeLetter(new LetterTile(8, 9, letterA));
+    //         expect(gameboard['isThereAdjacentLetters'](testCoordinate)).to.equal(true);
+    //     });
+
+    //     it('should return true if right tile is occupied', () => {
+    //         gameboard.placeLetter(new LetterTile(9, 8, letterA));
+    //         expect(gameboard['isThereAdjacentLetters'](testCoordinate)).to.equal(true);
+    //     });
+
+    //     it('should return true if left tile is occupied', () => {
+    //         gameboard.placeLetter(new LetterTile(7, 8, letterA));
+    //         expect(gameboard['isThereAdjacentLetters'](testCoordinate)).to.equal(true);
+    //     });
 });

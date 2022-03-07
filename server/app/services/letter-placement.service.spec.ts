@@ -62,6 +62,21 @@ describe('Letter Placement Service', () => {
         expect(copyRack).to.deep.equal(player.rack);
     });
 
+    // context('First Coordinate verification', () => {
+    //     it('should return false if the first coord is occupied on the gameboard', () => {
+    //         gameboard.placeLetter({ x: 2, y: 2 }, '');
+    //         expect(gameboard['isFirstCoordValid'](new LetterTile(2, 2, {} as Letter))).to.equal(false);
+    //     });
+
+    //     it('should return false if the firstCoord is out of bounds on the gameboard', () => {
+    //         expect(gameboard['isFirstCoordValid'](new LetterTile(16, 0, {} as Letter))).to.equal(false);
+    //     });
+
+    //     it('should return true if firstCoord is not occupied on the gameboard', () => {
+    //         expect(gameboard['isFirstCoordValid'](new LetterTile(4, 4, {} as Letter))).to.equal(true);
+    //     });
+    // });
+
     context('associateLettersWithRack tests', () => {
         it('return a list of letters', () => {
             const letters: LetterTile[] = [new LetterTile(1, 1, letterA)];

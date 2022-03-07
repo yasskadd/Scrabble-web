@@ -81,7 +81,7 @@ export class LetterPlacementService {
 
     public placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): [boolean, Gameboard] {
         commandWord.newLetterCoords.forEach((coord) => {
-            gameboard.placeLetter(coord, commandInfo.letters[0]);
+            gameboard.placeLetter(coord, commandInfo.letters[0]); // TODO: letters don<t place on board
             commandInfo.letters.shift();
         });
         const wordScore = this.dictionaryService.validateWord(commandWord, gameboard);
@@ -105,9 +105,7 @@ export class LetterPlacementService {
         const INDEX_NOT_FOUND = -1;
         letters.forEach((letter) => {
             const itemInRack = player.rack.filter((item: Letter) => item.value == letter)[0];
-            console.log(itemInRack);
             const index = player.rack.indexOf(itemInRack);
-            console.log(index);
             if (index > INDEX_NOT_FOUND) player.rack.splice(index, 1);
         });
     }
