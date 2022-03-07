@@ -164,7 +164,7 @@ export class GameSessions {
             id: roomID,
             users: [parameters.username],
             socketID: [socketId],
-            isAvailable: true,
+            isAvailable: parameters.isMultiplayer ? true : false,
             dictionary: parameters.dictionary,
             timer: parameters.timer,
             mode: parameters.mode,
