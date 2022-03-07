@@ -84,15 +84,12 @@ export class PlayerRackComponent implements OnInit {
         this.chatBoxHandler.submitMessage('!passer');
     }
 
-    getYPosition(e: Event): number {
-        return (e.target as Element).scrollTop;
-    }
-
     selectManipulation(event: KeyboardEvent) {
         this.duplicates = [];
         this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
 
         if (this.arrow) {
+            this.previousSelection = -1;
             this.repositionRack();
             return;
         }
@@ -104,6 +101,7 @@ export class PlayerRackComponent implements OnInit {
         }
 
         if (this.duplicates.length === 1) {
+            this.previousSelection = -1;
             this.currentSelection = this.duplicates[0];
         }
 
@@ -113,11 +111,12 @@ export class PlayerRackComponent implements OnInit {
                 this.previousSelection = this.currentSelection;
                 this.previousPressed = event.key.toLowerCase();
             } else {
-                if (this.previousSelection === this.duplicates.length - 1) {
+                if (this.previousSelection === this.duplicates[this.duplicates.length - 1]) {
                     this.currentSelection = this.duplicates[0];
                     this.previousSelection = this.currentSelection; // back to beginning
                 } else {
-                    this.currentSelection = this.duplicates[this.duplicates.indexOf(this.currentSelection) + 1]; // go to the next right
+                    this.currentSelection = this.duplicates[this.duplicates.indexOf(this.currentSelection) + 1];
+                    this.previousSelection = this.currentSelection;
                 }
             }
         }

@@ -4,7 +4,6 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
-import { Letter } from '@common/letter';
 import { of, Subject } from 'rxjs';
 import { PlayerRackComponent } from './player-rack.component';
 
@@ -22,7 +21,51 @@ describe('PlayerRackComponent', () => {
         chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage']);
         gameClientServiceSpy = jasmine.createSpyObj('GameClientService', ['updateGameboard'], {
             playerOneTurn: true,
-            playerOne: { rack: [{ value: 'a' } as Letter] },
+            playerOne: {
+                rack: [
+                    {
+                        value: 'a',
+                        quantity: 2,
+                        points: 1,
+                        isBlankLetter: false,
+                    },
+
+                    {
+                        value: 'd',
+                        quantity: 2,
+                        points: 1,
+                        isBlankLetter: false,
+                    },
+
+                    {
+                        value: 'a',
+                        quantity: 2,
+                        points: 1,
+                        isBlankLetter: false,
+                    },
+
+                    {
+                        value: 'm',
+                        quantity: 2,
+                        points: 1,
+                        isBlankLetter: false,
+                    },
+
+                    {
+                        value: 's',
+                        quantity: 2,
+                        points: 1,
+                        isBlankLetter: false,
+                    },
+
+                    {
+                        value: 'o',
+                        quantity: 2,
+                        points: 1,
+                        isBlankLetter: false,
+                    },
+                ],
+            },
         });
         gridServiceServiceSpy = jasmine.createSpyObj('GridService', [], { letterSize: LETTER_SIZE });
         await TestBed.configureTestingModule({
@@ -85,6 +128,14 @@ describe('PlayerRackComponent', () => {
         expect(component.lettersToExchange.length).toEqual(0);
     });
 
+    // it('clicking outside the rack should call cancel', () => {
+    //     const spy = spyOn(component, 'cancel');
+    //     window.dispatchEvent(new MouseEvent('click'));
+
+    //     fixture.detectChanges();
+    //     expect(spy).toHaveBeenCalled();
+    // });
+
     it('onRightClick should select a letter and insert it into the lettersToExchange on right click', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');
@@ -93,6 +144,15 @@ describe('PlayerRackComponent', () => {
         const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
         expect(component.lettersToExchange.length).toEqual(1);
         expect(lettersDiv[indexLetter].className).toEqual('rack-letter'); //
+    });
+
+    it('onLeftClick should call cancel', () => {
+        const indexLetter = 0;
+        const mockClick = new MouseEvent('click');
+        const spy = spyOn(component, 'cancel');
+        component.onLeftClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('onRightClick should deselect a letter already selected on right click ', () => {
@@ -167,11 +227,81 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    // it('exchange should move letter to the beginning of the rack', () => {
-    //     const manipulate = [];
-    //     component.buttonPressed = 'ArrowRight';
-    //     component.currentSelection = 6;
-    //     component.moveRight();
-    //     expect(manipulate).toEqual([0]);
+    it('selectManipulation should call repositionRack if the key pressed is a left arrow', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockKey = new KeyboardEvent('keydown');
+        component.buttonPressed = 'ArrowLeft';
+        component.selectManipulation(mockKey);
+        expect(component.arrow).toBeTruthy();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('selectManipulation should call repositionRack if the key pressed is a right arrow', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockKey = new KeyboardEvent('keydown');
+        component.buttonPressed = 'ArrowRight';
+        component.selectManipulation(mockKey);
+        expect(component.arrow).toBeTruthy();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('selectManipulation should not call repositionRack if the key pressed is not a left right arrow', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockKey = new KeyboardEvent('keydown');
+        component.buttonPressed = 'Backspace';
+        component.selectManipulation(mockKey);
+        expect(component.arrow).toBeFalsy();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('selectManipulation should not be an arrow when letter is typed', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockKey = new KeyboardEvent('keydown');
+        component.buttonPressed = 'a';
+        component.selectManipulation(mockKey);
+        expect(component.arrow).toBeFalsy();
+        expect(component.previousSelection).toEqual(-1);
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    // it('selectManipulation should have a duplicates of length 2', () => {
+    //     const expected = [3];
+    //     component.previousSelection = -1;
+    //     const mockKey = new KeyboardEvent('keydown');
+    //     component.buttonPressed = 'm';
+    //     component.selectManipulation(mockKey);
+    //     expect(component.duplicates).toEqual(expected);
+    //     expect(component.duplicates.length).toEqual(1);
     // });
+
+    it('moveRight should move letter to the beginning of the rack when the letter selected is at the end', () => {
+        component.buttonPressed = 'ArrowRight';
+        component.currentSelection = 6;
+        component.moveRight();
+        expect(component.currentSelection).toEqual(0);
+    });
+
+    it('moveRight should move letter one index to the right', () => {
+        const expected = 3;
+        component.buttonPressed = 'ArrowRight';
+        component.currentSelection = 2;
+        component.moveRight();
+        expect(component.currentSelection).toEqual(expected);
+    });
+
+    it('moveLeft should move letter to the end of the rack when the letter selected is at the beginning', () => {
+        const expected = 6;
+        component.buttonPressed = 'ArrowLeft';
+        component.currentSelection = 0;
+        component.moveLeft();
+        expect(component.currentSelection).toEqual(expected);
+    });
+
+    it('moveLeft should move letter one index to the left', () => {
+        const expected = 4;
+        component.buttonPressed = 'ArrowLeft';
+        component.currentSelection = 5;
+        component.moveLeft();
+        expect(component.currentSelection).toEqual(expected);
+    });
 });
