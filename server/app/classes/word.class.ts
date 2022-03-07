@@ -3,19 +3,18 @@ import { CommandInfo } from '@common/command-info';
 import { Coordinate } from '@common/coordinate';
 import { Gameboard } from './gameboard.class';
 
-const INDEX_NOT_FOUND = -1;
-
 export class Word {
     isValid: boolean;
     isHorizontal: boolean | undefined;
     stringFormat: string = '';
+    points: number;
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
 
     constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
         this.isValid = true;
         this.isHorizontal = commandInfo.isHorizontal;
-
+        this.points = 0;
         if (commandInfo.isHorizontal === undefined && commandInfo.letters.length === 1) {
             this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
         }
@@ -95,33 +94,32 @@ export class Word {
     }
 
     // CALCULATE POINTS ----------------------------------------------------------------------------------------------------
-    static calculateWordPoints(word: Word, gameboard: Gameboard): number {
-        let points: number = 0;
-        this.addLetterPoints(word, points, gameboard);
-        this.addWordMultiplierPoints(word, points, gameboard);
-        return points;
+    public calculateWordPoints(gameboard: Gameboard): number {
+        this.addLetterPoints(gameboard);
+        this.addWordMultiplierPoints(gameboard);
+        return this.points;
     }
 
-    static addLetterPoints(word: Word, points: number, gameboard: Gameboard) {
-        word.wordCoords.forEach((coord: Coordinate) => {
+    private addLetterPoints(gameboard: Gameboard) {
+        this.wordCoords.forEach((coord: Coordinate) => {
             if (
                 gameboard.getLetterTile(coord).multiplier.type === 'LETTRE' &&
                 gameboard.getLetterTile(coord).multiplier.number > 1 &&
-                word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
+                this.newLetterCoords.filter((newLetterCoord) => coord.x === newLetterCoord.x && coord.y === newLetterCoord.y).length === 1
             )
-                points += gameboard.getLetterTile(coord).points * gameboard.getLetterTile(coord).multiplier.number;
-            else points += gameboard.getLetterTile(coord).points;
+                this.points += gameboard.getLetterTile(coord).points * gameboard.getLetterTile(coord).multiplier.number;
+            else this.points += gameboard.getLetterTile(coord).points;
         });
     }
 
-    static addWordMultiplierPoints(word: Word, points: number, gameboard: Gameboard) {
-        word.wordCoords.forEach((coord: Coordinate) => {
+    private addWordMultiplierPoints(gameboard: Gameboard) {
+        this.wordCoords.forEach((coord: Coordinate) => {
             if (
                 gameboard.getLetterTile(coord).multiplier.type === 'MOT' &&
                 gameboard.getLetterTile(coord).multiplier.number > 1 &&
-                word.newLetterCoords.indexOf(coord) > INDEX_NOT_FOUND
+                this.newLetterCoords.filter((newLetterCoord) => coord.x === newLetterCoord.x && coord.y === newLetterCoord.y).length === 1
             )
-                points *= gameboard.getLetterTile(coord).multiplier.number;
+                this.points *= gameboard.getLetterTile(coord).multiplier.number;
         });
     }
 }

@@ -86,7 +86,7 @@ export class LetterPlacementService {
         });
         const wordScore = this.dictionaryService.validateWord(commandWord, gameboard);
         if (wordScore === 0) {
-            commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
+            commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord)); // TODO : wait 3 seconds
             return [false, gameboard];
         }
         this.updatePlayerScore(wordScore, commandWord, player);

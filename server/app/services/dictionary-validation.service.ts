@@ -37,13 +37,13 @@ export class DictionaryValidationService {
     }
 
     private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): number {
-        let totalPointsForTurn = 0;
-        if (foundWords.filter((word) => word.isValid === false).length !== 0) totalPointsForTurn = 0;
-        else
-            foundWords.forEach((enteredWord: Word) => {
-                totalPointsForTurn += Word.calculateWordPoints(enteredWord, gameboard);
+        if (foundWords.filter((word) => word.isValid === false).length !== 0) return 0;
+        else {
+            let pointsForTurn: number = 0;
+            foundWords.forEach((foundWord: Word) => {
+                pointsForTurn += foundWord.calculateWordPoints(gameboard);
             });
-
-        return totalPointsForTurn;
+            return pointsForTurn;
+        }
     }
 }
