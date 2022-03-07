@@ -11,8 +11,7 @@ export enum ErrorType {
     commandCoordinateOutOfBounds = 'First Coordinate is an invalid placement',
     lettersNotInRack = 'Letters not in rack',
     invalidFirstWordPlacement = 'One coordinate in the first word needs to pass by the middle coordinate',
-    invalidWordBuild = 'At least one letter in word does not fit on rack or word only contains 1 letter',
-    noErrors = 'All verifications have passed. Letters have been placed on board',
+    invalidWordBuild = 'At least one letter in word does not fit on board or word only contains 1 letter',
 }
 
 const SEVEN_LETTERS = 7;
@@ -24,26 +23,20 @@ const MIDDLE_Y = 8;
 export class LetterPlacementService {
     constructor(private dictionaryService: DictionaryValidationService) {}
 
-    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType] {
+    globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {
         if (!this.validateCommandCoordinate(commandInfo.firstCoordinate)) return [{} as Word, ErrorType.commandCoordinateOutOfBounds];
         if (!this.areLettersInRack(commandInfo.letters, player)) return [{} as Word, ErrorType.lettersNotInRack];
 
         const commandWord = new Word(commandInfo, gameboard);
-        console.log(commandWord.isHorizontal);
-        console.log(commandWord.newLetterCoords);
-        console.log(commandWord.stringFormat);
-        console.log(commandWord.wordCoords);
         if (!commandWord.isValid) return [{} as Word, ErrorType.invalidWordBuild];
         if (!this.verifyFirstTurn(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
 
-        return [commandWord, ErrorType.noErrors];
+        return [commandWord, null];
     }
 
     private validateCommandCoordinate(commandCoord: Coordinate): boolean {
         return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15; // TODO: do I need to check if coord is occupied?
     }
-
-    // TODO: problem when you create an adjacent word : first command letter is on board and will be repeated ... removed letter then place it?
 
     private createTempRack(player: Player): Letter[] {
         const tempPlayerRack: Letter[] = [];
@@ -87,15 +80,15 @@ export class LetterPlacementService {
     }
 
     public placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): [boolean, Gameboard] {
+        commandWord.newLetterCoords.forEach((coord) => {
+            gameboard.placeLetter(coord, commandInfo.letters[0]);
+            commandInfo.letters.shift();
+        });
         const wordScore = this.dictionaryService.validateWord(commandWord, gameboard);
         if (wordScore === 0) {
             commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord));
             return [false, gameboard];
         }
-        commandWord.newLetterCoords.forEach((coord) => {
-            gameboard.placeLetter(coord, commandInfo.letters[0]);
-            commandInfo.letters.shift();
-        });
         this.updatePlayerScore(wordScore, commandWord, player);
         this.updatePlayerRack(commandInfo.letters, player);
         return [true, gameboard];

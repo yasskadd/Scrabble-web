@@ -47,8 +47,7 @@ export class Game {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
             const newWord = validationInfo[0];
             const errorType = validationInfo[1] as string;
-            console.log(validationInfo[1]);
-            if (errorType !== 'noErrors') {
+            if (errorType !== null) {
                 this.turn.resetSkipCounter();
                 this.turn.end();
                 return errorType as string;

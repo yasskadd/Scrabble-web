@@ -618,7 +618,7 @@ describe('GamesHandler Service', () => {
     it('playGame() should return an impossible command error if boolean is true', (done) => {
         serverSocket.join(ROOM);
         const RETURNED_BOOLEAN = false;
-        const EXPECTED_MESSAGE = 'Les lettres que vous essayer de mettre ne forme pas des mots valides';
+        const EXPECTED_MESSAGE = 'Les lettres que vous essayez de mettre ne forment pas de mots valides';
         sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
         const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;

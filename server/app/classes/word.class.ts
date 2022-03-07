@@ -8,14 +8,12 @@ const INDEX_NOT_FOUND = -1;
 export class Word {
     isValid: boolean;
     isHorizontal: boolean | undefined;
-    points: number;
-    stringFormat: string;
+    stringFormat: string = '';
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
 
     constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
         this.isValid = true;
-        this.points = 0;
         this.isHorizontal = commandInfo.isHorizontal;
 
         if (commandInfo.isHorizontal === undefined && commandInfo.letters.length === 1) {
@@ -51,22 +49,21 @@ export class Word {
         } else return coord;
     }
 
+    // TODO: check how many times buildWord() is called. Something is sus.
     private buildWord(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
-        const position = firstCoord;
+        let position = { ...firstCoord };
         let commandLettersCopy = commandLetters.slice();
-        if (commandLettersCopy === ['']) commandLettersCopy.shift();
+        if (commandLettersCopy[0] === '') commandLettersCopy.shift();
 
-        console.log(commandLettersCopy.length);
-        console.log(gameboard.getLetterTile(position).isOccupied);
-        while ((commandLettersCopy.length || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
+        while ((commandLettersCopy.length > 0 || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
             if (!gameboard.getLetterTile(position).isOccupied) {
                 this.stringFormat += commandLettersCopy[0];
                 commandLettersCopy.shift();
-                this.wordCoords.push(position);
-                this.newLetterCoords.push(position);
+                this.wordCoords.push({ ...position });
+                this.newLetterCoords.push({ ...position });
             } else {
-                this.wordCoords.push(position);
-                this.stringFormat += gameboard.getLetterTile(position).getLetter();
+                this.wordCoords.push({ ...position });
+                this.stringFormat += gameboard.getLetterTile({ ...position }).getLetter();
             }
             if (this.isHorizontal) position.x++;
             else position.y++;
@@ -84,16 +81,16 @@ export class Word {
         const allWords: Word[] = [];
         allWords.push(word);
         word.newLetterCoords.forEach((coord: Coordinate) => {
-            const newWord = new Word(
-                {
-                    firstCoordinate: coord,
-                    isHorizontal: !word.isHorizontal,
-                    letters: [''],
-                },
-                gameboard,
-            );
+            const fakeCommandInfo: CommandInfo = {
+                firstCoordinate: { ...coord },
+                isHorizontal: !word.isHorizontal,
+                letters: [''],
+            };
+            const newWord = new Word(fakeCommandInfo, gameboard);
             if (newWord.wordCoords.length !== 1) allWords.push(newWord);
         });
+        allWords.forEach((word) => {});
+        allWords.forEach((word) => {});
         return allWords;
     }
 

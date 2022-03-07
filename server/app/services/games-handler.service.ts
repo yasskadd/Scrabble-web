@@ -124,7 +124,7 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, player.room, player.game);
 
             if (!play[0]) {
-                socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
+                socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayez de mettre ne forment pas de mots valides');
             } else {
                 socket.broadcast
                     .to(player.room)

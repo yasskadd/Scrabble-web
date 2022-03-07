@@ -32,22 +32,18 @@ export class DictionaryValidationService {
 
     private checkWordInDictionary(wordList: Word[]): void {
         wordList.forEach((word) => {
-            !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
+            if (!this.dictionary.has(word.stringFormat)) word.isValid = false;
         });
     }
 
     private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): number {
         let totalPointsForTurn = 0;
-        if (this.isolateInvalidWords(foundWords).length !== 0) totalPointsForTurn = 0;
+        if (foundWords.filter((word) => word.isValid === false).length !== 0) totalPointsForTurn = 0;
         else
             foundWords.forEach((enteredWord: Word) => {
                 totalPointsForTurn += Word.calculateWordPoints(enteredWord, gameboard);
             });
 
         return totalPointsForTurn;
-    }
-
-    private isolateInvalidWords(foundWords: Word[]) {
-        return foundWords.filter((word) => word.isValid === false);
     }
 }
