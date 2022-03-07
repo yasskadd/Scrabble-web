@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
+import { HighScoresComponent } from '@app/pages/high-scores/high-scores.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from '@app/pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from '@app/pages/multiplayer-join-page/multiplayer-join-page.component';
@@ -13,6 +14,7 @@ const routes: Routes = [
     { path: 'multijoueur/rejoindre/:id', component: MultiplayerJoinPageComponent },
     { path: 'multijoueur/creer/:id', component: MultiplayerCreatePageComponent },
     { path: 'multijoueur/salleAttente/:id', component: WaitingOpponentPageComponent },
+    { path: 'highScore', component: HighScoresComponent },
     { path: '**', redirectTo: '/home' },
 ];
 

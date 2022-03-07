@@ -1,13 +1,15 @@
-import { Renderer2 } from '@angular/core';
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { Letter } from '@common/letter';
+import { of, Subject } from 'rxjs';
 import { PlayerRackComponent } from './player-rack.component';
 
 const LETTER_SIZE = 5;
+class MockElementRef extends ElementRef {}
 
 describe('PlayerRackComponent', () => {
     let component: PlayerRackComponent;
@@ -29,14 +31,17 @@ describe('PlayerRackComponent', () => {
                 { provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy },
                 { provide: GameClientService, useValue: gameClientServiceSpy },
                 { provide: GridService, useValue: gridServiceServiceSpy },
-                { provide: Renderer2 },
+                { provide: ElementRef, useClass: MockElementRef },
             ],
         }).compileComponents();
     });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(PlayerRackComponent);
+
         component = fixture.componentInstance;
+        const typeEvent = new KeyboardEvent('keydown');
+        component.keyboardParentSubject = of(typeEvent) as Subject<KeyboardEvent>;
         fixture.detectChanges();
     });
 
@@ -58,17 +63,39 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('OnRightClick should select a letter and insert it into the lettersToExchange on right click', fakeAsync(() => {
+    it('clicking outside the rack should call clickOutside', () => {
+        const indexLetter = 0;
+        const spy = spyOn(component, 'clickOutside');
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        window.dispatchEvent(new MouseEvent('click'));
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('clicking outside the rack should deselect all selected letters', () => {
+        component.lettersToExchange = [0];
+        const indexLetter = 0;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        window.dispatchEvent(new MouseEvent('click'));
+        fixture.detectChanges();
+        expect(component.lettersToExchange.length).toEqual(0);
+    });
+
+    it('onRightClick should select a letter and insert it into the lettersToExchange on right click', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');
         component.onRightClick(mockClick, indexLetter);
         fixture.detectChanges();
         const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
         expect(component.lettersToExchange.length).toEqual(1);
-        expect(lettersDiv[indexLetter].className).toEqual('rack-letter-exchange-selected');
-    }));
+        expect(lettersDiv[indexLetter].className).toEqual('rack-letter'); //
+    });
 
-    it('OnRightClick should deselect a letter already selected on right click ', fakeAsync(() => {
+    it('onRightClick should deselect a letter already selected on right click ', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');
         component.onRightClick(mockClick, indexLetter);
@@ -77,7 +104,7 @@ describe('PlayerRackComponent', () => {
         const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
         expect(component.lettersToExchange.length).toEqual(0);
         expect(lettersDiv[indexLetter].className).toEqual('rack-letter');
-    }));
+    });
 
     it('should call exchange when the button to exchange is pressed and it is your turn to play', fakeAsync(() => {
         const spy = spyOn(component, 'exchange');
@@ -126,14 +153,14 @@ describe('PlayerRackComponent', () => {
         expect(component.lettersToExchange.length).toEqual(0);
     });
 
-    it('exchange should call moveLeft', () => {
+    it('repositionRack should call moveLeft', () => {
         const spy = spyOn(component, 'moveLeft');
         component.buttonPressed = 'ArrowLeft';
         component.repositionRack();
         expect(spy).toHaveBeenCalled();
     });
 
-    it('exchange should call moveRight', () => {
+    it('repositionRack should call moveRight', () => {
         const spy = spyOn(component, 'moveRight');
         component.buttonPressed = 'ArrowRight';
         component.repositionRack();

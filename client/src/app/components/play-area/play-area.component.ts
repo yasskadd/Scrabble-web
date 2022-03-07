@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Vec2 } from '@app/classes/vec2';
 import * as constants from '@app/constants';
+import { Vec2 } from '@app/interfaces/vec2';
 import { GridService } from '@app/services/grid.service';
 import { Subject } from 'rxjs';
 
@@ -21,6 +21,7 @@ export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
 
     keyboardParentSubject: Subject<KeyboardEvent> = new Subject();
+    clickParentSubject: Subject<MouseEvent> = new Subject();
     mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
     private canvasSize = { x: constants.GRID_CANVAS_WIDTH, y: constants.GRID_CANVAS_HEIGHT };
@@ -32,9 +33,14 @@ export class PlayAreaComponent implements AfterViewInit {
         this.buttonPressed = event.key;
         this.keyboardParentSubject.next(event);
     }
+
+    // @HostListener('document:click', ['$event'])
+    // clickOutside(event: MouseEvent) {
+    //     this.clickParentSubject.next(event.target);
+    // }
+
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        // this.gridCanvas.nativeElement.focus();
     }
 
     get width(): number {

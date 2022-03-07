@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChatboxMessage } from '@app/classes/chatbox-message';
+import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { ChatboxComponent } from './chatbox.component';
 

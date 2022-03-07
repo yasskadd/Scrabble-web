@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -58,6 +59,7 @@ describe('WaitingOpponentPageComponent', () => {
                 MatIconModule,
                 MatCardModule,
                 MatSnackBarModule,
+                MatProgressBarModule,
                 RouterTestingModule.withRoutes([
                     { path: MULTIPLAYER_CREATE_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_JOIN_ROOM_ROUTE, component: StubComponent },

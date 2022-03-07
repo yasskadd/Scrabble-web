@@ -43,7 +43,8 @@ describe('MainPageComponent', () => {
 
     it('openDialog() should open the dialog', () => {
         const stubParameter = '';
-        const dialogSpy = spyOn(component.dialog, 'open');
+        // eslint-disable-next-line dot-notation
+        const dialogSpy = spyOn(component['dialog'], 'open');
         component.openDialog(stubParameter);
         expect(dialogSpy).toHaveBeenCalled();
     });

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
@@ -15,6 +15,9 @@ export class PlayerRackComponent implements OnInit {
     @Input()
     keyboardParentSubject: Subject<KeyboardEvent>;
 
+    @Input()
+    clickParentSubject: Subject<EventTarget>;
+
     // @Input()
     // scrollParentSubject: Subject<Scroll>;
 
@@ -30,25 +33,31 @@ export class PlayerRackComponent implements OnInit {
     lettersToManipulate: number[] = [];
     duplicates: number[] = [];
     arrow: boolean = false;
+    clicked: number[] = [];
 
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
-    constructor(private chatBoxHandler: ChatboxHandlerService, public gameClient: GameClientService, private tmpService: GridService) {}
+    constructor(
+        private chatBoxHandler: ChatboxHandlerService,
+        public gameClient: GameClientService,
+        private tmpService: GridService,
+        private eRef: ElementRef,
+    ) {}
+
+    @HostListener('window: click', ['$event'])
+    clickOutside(event: { target: unknown; preventDefault: () => void }) {
+        if (!this.eRef.nativeElement.contains(event.target)) {
+            this.cancel();
+        }
+    }
 
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            this.lettersToManipulate = [];
+            this.cancel();
             this.selectManipulation(event);
         });
     }
-
-    // @HostListener('document: keydown', ['$event']) // should focus on player rack. ex: letters still show if player is typing in chatbox
-    // buttonDetect(event: KeyboardEvent) {
-    //     this.buttonPressed = event.key;
-    //     this.lettersToManipulate = [];
-    //     this.selectManipulation(event);
-    // }
 
     // @HostListener('scroll')
     // onScroll(event: Event) {
@@ -105,13 +114,11 @@ export class PlayerRackComponent implements OnInit {
                 this.previousPressed = event.key.toLowerCase();
             } else {
                 if (this.previousSelection === this.duplicates.length - 1) {
-                    this.currentSelection = this.duplicates[0]; // this condition not fully functional yet
-                    this.previousSelection = this.currentSelection;
-                    console.log('back to beginning');
+                    this.currentSelection = this.duplicates[0];
+                    this.previousSelection = this.currentSelection; // back to beginning
                 } else {
                     this.currentSelection = this.duplicates[this.duplicates.indexOf(this.currentSelection) + 1]; // go to the next right
                 }
-                console.log('here');
             }
         }
         this.lettersToManipulate.push(this.currentSelection);
@@ -143,15 +150,9 @@ export class PlayerRackComponent implements OnInit {
 
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        this.lettersToManipulate = [];
-        this.lettersToExchange = [];
+        this.cancel();
         this.currentSelection = letter;
         this.lettersToManipulate.push(letter);
-    }
-
-    onScroll(event: Event) {
-        event.preventDefault();
-        console.log('Scrolling!!!!!');
     }
 
     exchange() {
@@ -169,6 +170,7 @@ export class PlayerRackComponent implements OnInit {
 
     cancel() {
         this.lettersToExchange = [];
+        this.lettersToManipulate = [];
     }
 
     moveLeft() {
