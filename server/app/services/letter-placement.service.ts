@@ -24,7 +24,7 @@ export class LetterPlacementService {
     constructor(private dictionaryService: DictionaryValidationService) {}
 
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {
-        if (!this.validateCommandCoordinate(commandInfo.firstCoordinate)) return [{} as Word, ErrorType.commandCoordinateOutOfBounds];
+        if (!this.validateCommandCoordinate(commandInfo.firstCoordinate, gameboard)) return [{} as Word, ErrorType.commandCoordinateOutOfBounds];
         if (!this.areLettersInRack(commandInfo.letters, player)) return [{} as Word, ErrorType.lettersNotInRack];
 
         const commandWord = new Word(commandInfo, gameboard);
@@ -34,8 +34,10 @@ export class LetterPlacementService {
         return [commandWord, null];
     }
 
-    private validateCommandCoordinate(commandCoord: Coordinate): boolean {
-        return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15;
+    private validateCommandCoordinate(commandCoord: Coordinate, gameboard: Gameboard): boolean {
+        if (!gameboard.getLetterTile(commandCoord).isOccupied)
+            return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15;
+        else return false;
     }
 
     private createTempRack(player: Player): Letter[] {

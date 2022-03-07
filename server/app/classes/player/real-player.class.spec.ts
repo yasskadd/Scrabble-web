@@ -1,6 +1,6 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { CommandInfo } from '@app/command-info';
 import { Game } from '@app/services/game.service';
+import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
@@ -72,7 +72,7 @@ describe('Player', () => {
             score: player.score,
             rack: player.rack,
             room: player.room,
-            gameboard: player.game.gameboard.gameboardCoords,
+            gameboard: player.game.gameboard.gameboardTiles,
         };
         const result = player.getInformation();
         expect(result).to.be.deep.equal(info);
