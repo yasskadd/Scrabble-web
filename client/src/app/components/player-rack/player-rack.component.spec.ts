@@ -81,7 +81,6 @@ describe('PlayerRackComponent', () => {
 
     beforeEach(() => {
         fixture = TestBed.createComponent(PlayerRackComponent);
-
         component = fixture.componentInstance;
         const typeEvent = new KeyboardEvent('keydown');
         component.keyboardParentSubject = of(typeEvent) as Subject<KeyboardEvent>;
@@ -118,6 +117,10 @@ describe('PlayerRackComponent', () => {
     });
 
     it('clicking outside the rack should deselect all selected letters', () => {
+        const spy = spyOn(component, 'cancel');
+        spyOn(fixture.debugElement.nativeElement, 'contains').and.callFake(() => {
+            return false;
+        });
         component.lettersToExchange = [0];
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');
@@ -126,6 +129,7 @@ describe('PlayerRackComponent', () => {
         window.dispatchEvent(new MouseEvent('click'));
         fixture.detectChanges();
         expect(component.lettersToExchange.length).toEqual(0);
+        expect(spy).toHaveBeenCalled();
     });
 
     // it('clicking outside the rack should call cancel', () => {
@@ -185,7 +189,7 @@ describe('PlayerRackComponent', () => {
 
     it('exchange should call cancel', () => {
         const spy = spyOn(component, 'cancel');
-        component.cancel();
+        component.exchange();
         expect(spy).toHaveBeenCalled();
     });
 
