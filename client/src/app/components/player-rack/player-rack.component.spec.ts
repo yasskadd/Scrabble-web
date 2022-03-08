@@ -251,8 +251,8 @@ describe('PlayerRackComponent', () => {
 
     it('selectManipulation should not call repositionRack if the key pressed is not a left right arrow', () => {
         const spy = spyOn(component, 'repositionRack');
-        const mockKey = new KeyboardEvent('keydown');
-        component.buttonPressed = 'Backspace';
+        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonPressed = 'a';
         component.selectManipulation(mockKey);
         expect(component.arrow).toBeFalsy();
         expect(spy).not.toHaveBeenCalled();
