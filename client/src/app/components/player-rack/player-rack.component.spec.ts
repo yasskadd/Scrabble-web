@@ -259,13 +259,28 @@ describe('PlayerRackComponent', () => {
     });
 
     it('selectManipulation should not have previous selection if the key pressed references one letter', () => {
-        const spy = spyOn(component, 'repositionRack');
         const mockKey = new KeyboardEvent('keydown', { key: 'o' });
         component.buttonPressed = 'o';
         component.selectManipulation(mockKey);
-        expect(component.arrow).toBeFalsy();
         expect(component.previousSelection).toEqual(-1);
-        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('selectManipulation should manipulate second iteration of a letter when the key has been pressed twice', () => {
+        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonPressed = 'a';
+        component.selectManipulation(mockKey);
+        component.selectManipulation(mockKey);
+        expect(component.previousSelection).not.toEqual(-1);
+    });
+
+    // eslint-disable-next-line max-len
+    it('selectManipulation should manipulate the first iteration of a letter when the key has been pressed when the current letter to manipulate is the last letter instance of the iteration', () => {
+        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonPressed = 'a';
+        component.selectManipulation(mockKey);
+        component.selectManipulation(mockKey);
+        component.selectManipulation(mockKey);
+        expect(component.previousSelection).not.toEqual(-1);
     });
 
     // it('selectManipulation should have a duplicates of length 2', () => {
