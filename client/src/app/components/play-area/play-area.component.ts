@@ -34,11 +34,6 @@ export class PlayAreaComponent implements AfterViewInit {
         this.keyboardParentSubject.next(event);
     }
 
-    // @HostListener('document:click', ['$event'])
-    // clickOutside(event: MouseEvent) {
-    //     this.clickParentSubject.next(event.target);
-    // }
-
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
     }

@@ -132,14 +132,6 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    // it('clicking outside the rack should call cancel', () => {
-    //     const spy = spyOn(component, 'cancel');
-    //     window.dispatchEvent(new MouseEvent('click'));
-
-    //     fixture.detectChanges();
-    //     expect(spy).toHaveBeenCalled();
-    // });
-
     it('onRightClick should select a letter and insert it into the lettersToExchange on right click', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');
@@ -259,39 +251,39 @@ describe('PlayerRackComponent', () => {
     });
 
     it('selectManipulation should not have previous selection if the key pressed references one letter', () => {
+        const invalidIndex = -1;
         const mockKey = new KeyboardEvent('keydown', { key: 'o' });
         component.buttonPressed = 'o';
         component.selectManipulation(mockKey);
-        expect(component.previousSelection).toEqual(-1);
+        expect(component.previousSelection).toEqual(invalidIndex);
     });
 
     it('selectManipulation should manipulate second iteration of a letter when the key has been pressed twice', () => {
+        const invalidIndex = -1;
         const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
         component.selectManipulation(mockKey);
         component.selectManipulation(mockKey);
-        expect(component.previousSelection).not.toEqual(-1);
+        expect(component.previousSelection).not.toEqual(invalidIndex);
     });
 
-    // eslint-disable-next-line max-len
-    it('selectManipulation should manipulate the first iteration of a letter when the key has been pressed when the current letter to manipulate is the last letter instance of the iteration', () => {
+    it('selectManipulation should manipulate the leftmost iteration the last one pressed was at the rightmost position in the rack', () => {
+        const invalidIndex = -1;
         const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
         component.selectManipulation(mockKey);
         component.selectManipulation(mockKey);
         component.selectManipulation(mockKey);
-        expect(component.previousSelection).not.toEqual(-1);
+        expect(component.duplicates.length).toEqual(2);
+        expect(component.previousSelection).not.toEqual(invalidIndex);
     });
 
-    // it('selectManipulation should have a duplicates of length 2', () => {
-    //     const expected = [3];
-    //     component.previousSelection = -1;
-    //     const mockKey = new KeyboardEvent('keydown');
-    //     component.buttonPressed = 'm';
-    //     component.selectManipulation(mockKey);
-    //     expect(component.duplicates).toEqual(expected);
-    //     expect(component.duplicates.length).toEqual(1);
-    // });
+    it('selectManipulation should have a duplicates array of length 2', () => {
+        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
+        component.buttonPressed = 'a';
+        component.selectManipulation(mockKey);
+        expect(component.duplicates.length).toEqual(2);
+    });
 
     it('moveRight should move letter to the beginning of the rack when the letter selected is at the end', () => {
         component.buttonPressed = 'ArrowRight';
