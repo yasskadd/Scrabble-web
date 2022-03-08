@@ -103,9 +103,7 @@ export class PlayerRackComponent implements OnInit {
         if (this.duplicates.length === 1) {
             this.previousSelection = -1;
             this.currentSelection = this.duplicates[0];
-        }
-
-        if (this.duplicates.length > 1) {
+        } else if (this.duplicates.length > 1) {
             if (this.previousSelection === -1) {
                 this.currentSelection = this.duplicates[0];
                 this.previousSelection = this.currentSelection;

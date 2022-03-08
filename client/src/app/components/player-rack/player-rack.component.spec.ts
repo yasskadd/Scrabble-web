@@ -249,7 +249,7 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('selectManipulation should not call repositionRack if the key pressed is not a left right arrow', () => {
+    it('selectManipulation should not call repositionRack if the key pressed is not a left or right arrow', () => {
         const spy = spyOn(component, 'repositionRack');
         const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
@@ -258,10 +258,10 @@ describe('PlayerRackComponent', () => {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it('selectManipulation should not be an arrow when letter is typed', () => {
+    it('selectManipulation should not have previous selection if the key pressed references one letter', () => {
         const spy = spyOn(component, 'repositionRack');
-        const mockKey = new KeyboardEvent('keydown');
-        component.buttonPressed = 'a';
+        const mockKey = new KeyboardEvent('keydown', { key: 'o' });
+        component.buttonPressed = 'o';
         component.selectManipulation(mockKey);
         expect(component.arrow).toBeFalsy();
         expect(component.previousSelection).toEqual(-1);
