@@ -106,11 +106,15 @@ export class GameConfigurationService {
     }
 
     gameInitialization(parameters: GameParameters) {
+        this.roomInformation.statusGame = SEARCHING_OPPONENT;
+        if (parameters.opponent !== undefined) {
+            this.roomInformation.playerName[1] = parameters.opponent;
+            this.roomInformation.statusGame = FOUND_OPPONENT_MESSAGE;
+        }
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
         this.roomInformation.playerName[0] = parameters.username;
         this.roomInformation.isCreator = true;
-        this.roomInformation.statusGame = SEARCHING_OPPONENT;
     }
 
     joinGame(roomId: string, username: string) {
