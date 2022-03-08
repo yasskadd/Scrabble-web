@@ -99,13 +99,29 @@ describe('GameConfigurationService', () => {
     });
 
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
-        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique' };
+        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique', isMultiplayer: true };
         const testStatusGame = "En Attente d'un Adversaire ...";
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.gameInitialization(testGameConfiguration);
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.CreateGame, testGameConfiguration);
         expect(service.roomInformation.playerName[0]).toEqual(testGameConfiguration.username);
+        expect(service.roomInformation.isCreator).toBeTruthy();
+        expect(service.roomInformation.statusGame).toEqual(testStatusGame);
+    });
+
+    it('gameInitialization() should  should set opponent game when the player wants to start a solo game', () => {
+        const testGameConfiguration = {
+            username: 'Pauline',
+            opponent: 'Bob',
+            dictionary: 'francais',
+            timer: 1,
+            mode: 'classique',
+            isMultiplayer: true,
+        };
+        const testStatusGame = 'Adversaire Trouvé';
+        service.gameInitialization(testGameConfiguration);
+        expect(service.roomInformation.playerName[1]).toEqual(testGameConfiguration.opponent);
         expect(service.roomInformation.isCreator).toBeTruthy();
         expect(service.roomInformation.statusGame).toEqual(testStatusGame);
     });

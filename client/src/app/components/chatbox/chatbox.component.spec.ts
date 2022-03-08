@@ -1,4 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { ChatboxComponent } from './chatbox.component';
@@ -13,7 +18,7 @@ describe('ChatboxComponent', () => {
     beforeEach(async () => {
         chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage', 'resetMessage'], { messages: [TEST_MESSAGE] });
         await TestBed.configureTestingModule({
-            imports: [],
+            imports: [MatCardModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, BrowserAnimationsModule],
             declarations: [ChatboxComponent],
             providers: [{ provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy }],
         }).compileComponents();

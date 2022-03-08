@@ -60,6 +60,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
             timer: this.form.get('timer')?.value,
             dictionary: 'francais',
             mode: this.gameMode,
+            isMultiplayer: true,
         });
         this.resetInput();
         this.navigatePage();
