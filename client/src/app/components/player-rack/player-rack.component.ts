@@ -18,21 +18,18 @@ export class PlayerRackComponent implements OnInit {
     @Input()
     clickParentSubject: Subject<EventTarget>;
 
-    // @Input()
-    // scrollParentSubject: Subject<Scroll>;
-
     @ViewChild('info', { static: false }) info: ElementRef;
 
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
     buttonPressed = '';
-    previousPressed = '';
     currentSelection = 0;
-    previousSelection = -1;
+    previousSelection = constants.INVALID_INDEX;
     lettersToExchange: number[] = [];
     lettersToManipulate: number[] = [];
     duplicates: number[] = [];
     arrow: boolean = false;
+    absentFromRack: boolean = true;
     clicked: number[] = [];
 
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
@@ -59,17 +56,6 @@ export class PlayerRackComponent implements OnInit {
         });
     }
 
-    // @HostListener('scroll')
-    // onScroll(event: Event) {
-    //     console.log('scrolling!');
-    //     // console.log(this.getYPosition(event));
-    // }
-
-    // @HostListener('window:scroll', ['$event']) onScrollEvent() {
-    //     // console.log($event['Window']);
-    //     // console.log('scrolling');
-    // }
-
     get letterSize(): number {
         return this.tmpService.letterSize;
     }
@@ -89,7 +75,7 @@ export class PlayerRackComponent implements OnInit {
         this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
 
         if (this.arrow) {
-            this.previousSelection = -1;
+            this.previousSelection = constants.INVALID_INDEX;
             this.repositionRack();
             return;
         }
@@ -97,26 +83,29 @@ export class PlayerRackComponent implements OnInit {
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === event.key.toLowerCase()) {
                 this.duplicates.push(i);
+                this.absentFromRack = false;
             }
         }
 
         if (this.duplicates.length === 1) {
-            this.previousSelection = -1;
+            this.previousSelection = constants.INVALID_INDEX;
             this.currentSelection = this.duplicates[0];
         } else if (this.duplicates.length > 1) {
-            if (this.previousSelection === -1) {
+            if (this.previousSelection === constants.INVALID_INDEX) {
                 this.currentSelection = this.duplicates[0];
                 this.previousSelection = this.currentSelection;
-                this.previousPressed = event.key.toLowerCase();
             } else {
                 if (this.previousSelection === this.duplicates[this.duplicates.length - 1]) {
                     this.currentSelection = this.duplicates[0];
-                    this.previousSelection = this.currentSelection; // back to beginning
+                    this.previousSelection = this.currentSelection;
                 } else {
                     this.currentSelection = this.duplicates[this.duplicates.indexOf(this.currentSelection) + 1];
                     this.previousSelection = this.currentSelection;
                 }
             }
+        } else {
+            this.cancel();
+            return;
         }
         this.lettersToManipulate.push(this.currentSelection);
     }
@@ -134,7 +123,7 @@ export class PlayerRackComponent implements OnInit {
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
         this.lettersToManipulate = [];
-        const notFound = -1;
+        const notFound = constants.INVALID_INDEX;
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
@@ -171,13 +160,14 @@ export class PlayerRackComponent implements OnInit {
     }
 
     moveLeft() {
+        const rackIndices = 6;
         if (this.currentSelection === 0) {
             this.temp = this.gameClient.playerOne.rack[0];
             for (let i = 1; i < this.gameClient.playerOne.rack.length; i++) {
                 this.gameClient.playerOne.rack[i - 1] = this.gameClient.playerOne.rack[i];
             }
-            this.gameClient.playerOne.rack[6] = this.temp;
-            this.currentSelection = 6;
+            this.gameClient.playerOne.rack[rackIndices] = this.temp;
+            this.currentSelection = rackIndices;
         } else {
             this.temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
             this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
@@ -189,8 +179,9 @@ export class PlayerRackComponent implements OnInit {
     }
 
     moveRight() {
-        if (this.currentSelection === 6) {
-            this.temp = this.gameClient.playerOne.rack[6];
+        const rackIndices = 6;
+        if (this.currentSelection === rackIndices) {
+            this.temp = this.gameClient.playerOne.rack[rackIndices];
             for (let i = this.gameClient.playerOne.rack.length - 1; i > 0; i--) {
                 this.gameClient.playerOne.rack[i] = this.gameClient.playerOne.rack[i - 1];
             }

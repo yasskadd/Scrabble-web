@@ -139,7 +139,7 @@ describe('PlayerRackComponent', () => {
         fixture.detectChanges();
         const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
         expect(component.lettersToExchange.length).toEqual(1);
-        expect(lettersDiv[indexLetter].className).toEqual('rack-letter'); //
+        expect(lettersDiv[indexLetter].className).toEqual('rack-letter-exchange-selected');
     });
 
     it('onLeftClick should call cancel', () => {
