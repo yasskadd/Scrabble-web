@@ -18,7 +18,6 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     @HostListener('click')
     clickInside() {
         this.chatbox.nativeElement.focus();
-        console.log('CHATBOX');
     }
 
     ngAfterViewInit() {
