@@ -2,17 +2,17 @@ import { Injectable } from '@angular/core';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
+import { Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
-import { GridService } from './grid.service';
 
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type Player = { name: string; score: number; rack: Letter[]; room: string };
+type Player = { name: string; score: number; rack: Letter[] };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+
 @Injectable({
     providedIn: 'root',
 })
 export class GameClientService {
-    static timerInterval: number;
     timer: number;
     gameboard: LetterTile[];
     playerOne: Player;
@@ -21,11 +21,13 @@ export class GameClientService {
     letterReserveLength: number;
     isGameFinish: boolean;
     winningMessage: string;
+    gameboardUpdated: Subject<boolean>;
 
-    constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
+    constructor(private clientSocketService: ClientSocketService) {
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
+        this.gameboardUpdated = new Subject();
         this.configureBaseSocketFeatures();
     }
     configureBaseSocketFeatures() {
@@ -35,7 +37,6 @@ export class GameClientService {
         });
         this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
             this.secondPlayer = player;
-            this.updateGameboard();
         });
 
         this.clientSocketService.on(SocketEvents.LetterReserveUpdated, (letterReserveUpdated: Letter[]) => {
@@ -75,7 +76,7 @@ export class GameClientService {
         this.updateGameboard();
     }
     updateGameboard() {
-        this.gridService.drawGrid(this.gameboard);
+        this.gameboardUpdated.next(true);
     }
 
     abandonGame() {
@@ -90,8 +91,8 @@ export class GameClientService {
     resetGameInformation() {
         this.timer = 0;
         this.gameboard = [];
-        this.playerOne = { name: '', score: 0, rack: [], room: '' };
-        this.secondPlayer = { name: '', score: 0, rack: [], room: '' };
+        this.playerOne = { name: '', score: 0, rack: [] };
+        this.secondPlayer = { name: '', score: 0, rack: [] };
         this.playerOneTurn = false;
         this.letterReserveLength = 0;
         this.isGameFinish = false;
