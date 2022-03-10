@@ -53,6 +53,7 @@ export class LetterPlacementService {
     }
 
     undoPlacement() {
+        if (this.placedLetters.length === 0) return;
         this.resetGameBoardView();
         this.gameClientService.playerOne.rack.push(this.placedLetters.pop() as Letter);
         this.updateLettersView();
@@ -70,7 +71,7 @@ export class LetterPlacementService {
     placeLetterStartPosition(coordinate: Coordinate) {
         const position = this.gridService.getPosition(coordinate);
         if (!this.gameClientService.playerOneTurn || coordinate.x === 0 || coordinate.y === 0) return;
-        if (this.startTile === position) {
+        if (this.startTile.x === position.x && this.startTile.y === position.y) {
             this.isHorizontal = !this.isHorizontal;
             this.gridService.drawArrow(position, this.isHorizontal);
             return;

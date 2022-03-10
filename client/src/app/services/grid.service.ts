@@ -41,9 +41,15 @@ export class GridService {
         const arrow = isHorizontal ? '⇨' : '⇩';
         this.gridContext.fillStyle = 'green';
         this.gridContext.font = GridService.squareHeight + 'px system-ui';
-        this.gridContext.textAlign = 'left';
+        this.gridContext.textAlign = 'center';
         this.gridContext.textBaseline = 'top';
-        this.gridContext.fillText(arrow, GridService.squareWidth * coords.x, GridService.squareHeight * coords.y, GridService.squareWidth);
+        this.gridContext.fillStyle = 'black';
+        this.gridContext.fillText(
+            arrow,
+            GridService.squareWidth * coords.x + GridService.halfSquareWidth,
+            GridService.squareHeight * coords.y,
+            GridService.squareWidth,
+        );
     }
 
     drawUnfinalizedLetter(coordinate: Coordinate, letter: Letter) {
