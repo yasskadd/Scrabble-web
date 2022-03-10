@@ -3,6 +3,8 @@
     flex-direction: column;
     width: 50%;
     margin: auto;
+    top: 20%;
+    background-color: ghostwhite;
 }
 
 .containerButton {
@@ -32,6 +34,8 @@
 
 .list-container {
     background-color: rgba(204, 203, 203, 0.233);
+    width: 60%;
+    margin: 2% auto;
 }
 
 .list {
@@ -47,12 +51,18 @@
 
 table {
     justify-content: space-evenly;
+    margin: 0 auto;
 }
 
 th {
-    padding: 10px;
+    padding: 0px 20px 20px 20px;
+}
+
+td {
+    padding: 2% 0;
 }
 
 .joinGameButton {
     margin: 0px 0px 0px 10px;
+    background-color: greenyellow;
 }
