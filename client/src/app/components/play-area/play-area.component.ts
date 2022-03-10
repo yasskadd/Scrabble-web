@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import * as constants from '@app/constants';
-import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 
 export enum MouseButton {
@@ -23,15 +22,16 @@ export class PlayAreaComponent implements AfterViewInit {
     mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
 
-    constructor(private readonly gridService: GridService, private letterPlacementService: LetterPlacementService) {}
+    constructor(private letterService: LetterPlacementService) {}
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
+        this.letterService.handlePlacement(this.buttonPressed);
     }
 
     ngAfterViewInit(): void {
-        this.letterPlacementService.setCanvas(this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
+        this.letterService.setCanvas(this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
     }
 
     get width(): number {
@@ -45,8 +45,7 @@ export class PlayAreaComponent implements AfterViewInit {
     mouseHitDetect(event: MouseEvent) {
         if (event.button === MouseButton.Left) {
             this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            const position = this.gridService.getPosition(this.mousePosition);
-            this.gridService.drawArrow(position, true);
+            this.letterService.placeLetterStartPosition(this.mousePosition);
         }
     }
 }

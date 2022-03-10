@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
+import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 
 @Injectable({
@@ -28,10 +29,12 @@ export class GridService {
         this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
-    // drawLetterPlaced(letter: Letter, coords: Coordinate) {}
+    // added Functions :
+
     getPosition(coords: Coordinate): Coordinate {
         return { x: Math.floor(coords.x / GridService.squareWidth), y: Math.floor(coords.y / GridService.squareWidth) };
     }
+
     drawArrow(coords: Coordinate, isHorizontal: boolean) {
         const arrow = isHorizontal ? '⇨' : '⇩';
         this.gridContext.fillStyle = 'green';
@@ -40,6 +43,15 @@ export class GridService {
         this.gridContext.textBaseline = 'top';
         this.gridContext.fillText(arrow, GridService.squareWidth * coords.x, GridService.squareHeight * coords.y, GridService.squareWidth);
     }
+
+    drawUnfinalisedLetter(coordinate: Coordinate, letter: Letter) {
+        this.gridContext.fillStyle = '#52B7BE';
+        this.fillTile({ x: coordinate.x, y: coordinate.y });
+        this.drawLetter({ x: coordinate.x, y: coordinate.y }, letter.value.toUpperCase());
+        this.drawLetterPoints({ x: coordinate.x, y: coordinate.y }, String(letter.points));
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------------------------------
 
     drawGrid(gameboard: LetterTile[]) {
         this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
