@@ -95,7 +95,7 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, '' as ErrorType]);
             const play = game.play(player1, commandInfo);
-            expect(play).to.equal('Invalid');
+            expect(play).to.equal('');
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
@@ -104,7 +104,7 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, '' as ErrorType]);
             const play = game.play(player2, commandInfo);
-            expect(play).to.equal('Invalid');
+            expect(play).to.equal('');
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
