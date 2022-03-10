@@ -34,29 +34,35 @@ export class LetterPlacementService {
 
     placeLetter(letter: Letter) {
         if (!(this.gameClientService.playerOneTurn || this.isPlacingActive)) return;
-        const letterPosition = this.calculateNextCoordinate();
-        this.gridService.drawUnfinalisedLetter(this.calculateNextCoordinate(), letter);
-        const arrowPosition = letterPosition;
-        if (this.isHorizontal) arrowPosition.x++;
-        else arrowPosition.y++;
-        this.gridService.drawArrow(arrowPosition, this.isHorizontal);
         this.placedLetters.push(letter);
+        this.updateLettersView();
     }
 
-    calculateNextCoordinate() {
-        const position = { ...this.startTile };
-        if (this.isHorizontal) {
-            position.x += this.placedLetters.length;
-            return position;
-        }
-        position.y += this.placedLetters.length;
-        return position;
+    updateLettersView() {
+        this.placedLetters.forEach((letter, index) => {
+            this.gridService.drawUnfinalizedLetter(this.calculateNextCoordinate(index), letter);
+        });
+        const arrowPosition = this.calculateNextCoordinate(this.placedLetters.length);
+        this.gridService.drawArrow(arrowPosition, this.isHorizontal);
+    }
+
+    calculateNextCoordinate(positionFromStart: number): Coordinate {
+        return this.isHorizontal
+            ? { ...this.startTile, x: this.startTile.x + positionFromStart }
+            : { ...this.startTile, y: this.startTile.y + positionFromStart };
+    }
+
+    undoPlacement() {
+        this.resetGameBoardView();
+        this.gameClientService.playerOne.rack.push(this.placedLetters.pop() as Letter);
+        this.updateLettersView();
     }
 
     resetGameBoardView() {
         this.gridService.drawGrid(this.gameClientService.gameboard);
     }
 
+    // Might not be the best place to put it
     setCanvas(canvas: CanvasRenderingContext2D) {
         this.gridService.gridContext = canvas;
     }
@@ -64,6 +70,11 @@ export class LetterPlacementService {
     placeLetterStartPosition(coordinate: Coordinate) {
         const position = this.gridService.getPosition(coordinate);
         if (!this.gameClientService.playerOneTurn || coordinate.x === 0 || coordinate.y === 0) return;
+        if (this.startTile === position) {
+            this.isHorizontal = !this.isHorizontal;
+            this.gridService.drawArrow(position, this.isHorizontal);
+            return;
+        }
         this.startTile = position;
         this.gridService.drawArrow(position, true);
         this.isPlacingActive = true;

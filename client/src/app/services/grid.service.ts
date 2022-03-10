@@ -36,6 +36,8 @@ export class GridService {
     }
 
     drawArrow(coords: Coordinate, isHorizontal: boolean) {
+        this.gridContext.fillStyle = '#60E961';
+        this.fillTile(coords);
         const arrow = isHorizontal ? '⇨' : '⇩';
         this.gridContext.fillStyle = 'green';
         this.gridContext.font = GridService.squareHeight + 'px system-ui';
@@ -44,11 +46,12 @@ export class GridService {
         this.gridContext.fillText(arrow, GridService.squareWidth * coords.x, GridService.squareHeight * coords.y, GridService.squareWidth);
     }
 
-    drawUnfinalisedLetter(coordinate: Coordinate, letter: Letter) {
-        this.gridContext.fillStyle = '#52B7BE';
-        this.fillTile({ x: coordinate.x, y: coordinate.y });
-        this.drawLetter({ x: coordinate.x, y: coordinate.y }, letter.value.toUpperCase());
-        this.drawLetterPoints({ x: coordinate.x, y: coordinate.y }, String(letter.points));
+    drawUnfinalizedLetter(coordinate: Coordinate, letter: Letter) {
+        this.gridContext.fillStyle = '#60E961';
+        this.fillTile(coordinate);
+        this.gridContext.fillStyle = 'black';
+        this.drawLetter(coordinate, letter.value.toUpperCase());
+        this.drawLetterPoints(coordinate, String(letter.points));
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------------------

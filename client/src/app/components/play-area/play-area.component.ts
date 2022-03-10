@@ -27,7 +27,8 @@ export class PlayAreaComponent implements AfterViewInit {
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-        this.letterService.handlePlacement(this.buttonPressed);
+        if (this.buttonPressed === 'Backspace') this.letterService.undoPlacement();
+        else this.letterService.handlePlacement(this.buttonPressed);
     }
 
     ngAfterViewInit(): void {
