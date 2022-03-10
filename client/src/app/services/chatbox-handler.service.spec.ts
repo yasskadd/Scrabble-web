@@ -358,6 +358,74 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(message1);
     });
 
+    it('configureClueCommand should push  3 message with the possible word placements given by the command Indice if 3 option are push', () => {
+        const CHAR_ASCII = 96;
+        const wordPlacements = [
+            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: 'aed' },
+            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: 'bille' },
+            { firstCoordinate: { x: 8, y: 8 }, direction: false, lettersPlaced: 'cadeau' },
+        ];
+        const message1 = {
+            type: 'system-message',
+            data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
+                wordPlacements[0].direction
+            } ${wordPlacements[0].lettersPlaced}`,
+        };
+        const message2 = {
+            type: 'system-message',
+            data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
+                wordPlacements[1].direction
+            } ${wordPlacements[1].lettersPlaced}`,
+        };
+        const message3 = {
+            type: 'system-message',
+            data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[2].firstCoordinate.y)}${wordPlacements[2].firstCoordinate.x}${
+                wordPlacements[2].direction
+            } ${wordPlacements[2].lettersPlaced}`,
+        };
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['configureClueCommand'](wordPlacements as never);
+        expect(service.messages.pop()).toEqual(message3);
+        expect(service.messages.pop()).toEqual(message2);
+        expect(service.messages.pop()).toEqual(message1);
+    });
+
+    it('configureClueCommand should push 2 message with the possible word placements given by the command Indice if 2 option are push', () => {
+        const CHAR_ASCII = 96;
+        const wordPlacements = [
+            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: 'aed' },
+            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: 'bille' },
+        ];
+        const message1 = {
+            type: 'system-message',
+            data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
+                wordPlacements[0].direction
+            } ${wordPlacements[0].lettersPlaced}`,
+        };
+        const message2 = {
+            type: 'system-message',
+            data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
+                wordPlacements[1].direction
+            } ${wordPlacements[1].lettersPlaced}`,
+        };
+        const message3 = { type: 'system-message', data: 'Aucune autre possibilité possible' };
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['configureClueCommand'](wordPlacements as never);
+        expect(service.messages.pop()).toEqual(message3);
+        expect(service.messages.pop()).toEqual(message2);
+        expect(service.messages.pop()).toEqual(message1);
+    });
+
+    it('configureClueCommand should explain to the player that no word placement are possible with the letters on his rack', () => {
+        const message1 = { type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" };
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['configureClueCommand']([] as never);
+        expect(service.messages.pop()).toEqual(message1);
+    });
+
     it('should emit 3 messages to show in the chatBox when the game is finish', () => {
         const message1 = { type: 'system-message', data: 'Fin de la partie : lettres restantes' };
         const message2 = { type: 'system-message', data: `${gameClientServiceSpy.playerOne.name} : crp` };
@@ -392,6 +460,12 @@ describe('ChatboxHandlerService', () => {
     it('should called the endGame Message method if the server emit the Event', () => {
         const spy = spyOn(service, 'endGameMessage' as never);
         socketEmulator.peerSideEmit('endGame');
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should called the configureClueCommand method if the server emit the Event', () => {
+        const spy = spyOn(service, 'configureClueCommand' as never);
+        socketEmulator.peerSideEmit(SocketEvents.ClueCommand);
         expect(spy).toHaveBeenCalled();
     });
 
