@@ -17,7 +17,6 @@ export class LetterTile {
     }
 
     get letter(): string {
-        console.log('Hellowlrd');
         return this._letter;
     }
 

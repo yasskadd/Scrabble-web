@@ -1,6 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { LetterTile } from '@app/classes/letter-tile.class';
+import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { Gameboard } from './gameboard.class';
@@ -41,17 +41,17 @@ describe('gameboard', () => {
         const gameboardTestCoord = gameboard.gameboardTiles[0];
         gameboard.placeLetter({ x: 1, y: 1 }, 'a');
 
-        expect(gameboardTestCoord.getLetter()).to.eql('a');
+        expect(gameboardTestCoord.letter).to.eql('a');
         expect(gameboardTestCoord.points).to.eql(1);
         expect(gameboardTestCoord.isOccupied).to.equal(true);
     });
 
     it('should set isOccupied attribute to false if removeLetter is called', () => {
-        gameboard.gameboardTiles[0].setLetter('f');
+        gameboard.gameboardTiles[0].letter = 'f';
         gameboard.removeLetter({ x: 1, y: 1 });
 
         expect(gameboard.gameboardTiles[0].isOccupied).to.equal(false);
-        expect(gameboard.gameboardTiles[0].getLetter()).to.eql('');
+        expect(gameboard.gameboardTiles[0].letter).to.eql('');
     });
 
     it('should not change isOccupied attribute if removeLetter is called on a coord that is not occupied', () => {
@@ -61,8 +61,8 @@ describe('gameboard', () => {
 
     it('should return correct LetterTile when getLetterTile is called', () => {
         gameboard.placeLetter({ x: 2, y: 2 }, 'c');
-        expect(gameboard.getLetterTile({ x: 2, y: 2 }).getLetter()).to.eql('c');
-        expect(gameboard.getLetterTile({ x: 2, y: 2 }).coordinate).to.equal({ x: 2, y: 2 });
+        expect(gameboard.getLetterTile({ x: 2, y: 2 }).letter).to.eql('c');
+        expect(gameboard.getLetterTile({ x: 2, y: 2 }).coordinate).to.eql({ x: 2, y: 2 });
     });
 
     it('should return false when if coordinates are less than 1', () => {

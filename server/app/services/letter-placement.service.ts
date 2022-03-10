@@ -30,6 +30,7 @@ export class LetterPlacementService {
         const commandWord = new Word(commandInfo, gameboard);
         if (!commandWord.isValid) return [{} as Word, ErrorType.invalidWordBuild];
         if (!this.verifyFirstTurn(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
+        // TODO: in gameservice check that word is next to other word
 
         return [commandWord, null];
     }
@@ -83,12 +84,9 @@ export class LetterPlacementService {
 
     public placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): [boolean, Gameboard] {
         for (const coord of commandWord.newLetterCoords) {
-            gameboard.placeLetter(coord, commandInfo.letters[0]); // TODO: letters don<t place on board
-            console.log(gameboard.getLetterTile(coord).letter);
+            gameboard.placeLetter(coord, commandInfo.letters[0]);
             commandInfo.letters.shift();
         }
-        // commandWord.newLetterCoords.forEach((coord) => {
-        // });
 
         const wordScore = this.dictionaryService.validateWord(commandWord, gameboard);
         if (wordScore === 0) {
@@ -106,8 +104,9 @@ export class LetterPlacementService {
         if (commandWord.newLetterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
     }
 
-    //TODO : letters aren'T properly removed for some reason
+    //TODO : letters aren't properly removed for some reason
     private updatePlayerRack(letters: string[], player: Player): void {
+        console.log(letters);
         const INDEX_NOT_FOUND = -1;
         letters.forEach((letter) => {
             const itemInRack = player.rack.filter((item: Letter) => item.value == letter)[0];

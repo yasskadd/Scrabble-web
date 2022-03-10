@@ -74,8 +74,6 @@ export class GameClientService {
     }
     updateNewGameboard(newGameboard: LetterTileInterface[]) {
         this.gameboard = newGameboard;
-        console.log(this.gameboard);
-
         this.updateGameboard();
     }
     updateGameboard() {

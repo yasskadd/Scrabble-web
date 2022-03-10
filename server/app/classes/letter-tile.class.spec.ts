@@ -1,8 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { LetterTile } from '@app/classes/letter-tile.class';
+import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
-import * as sinon from 'sinon';
 
 describe('LetterTile', () => {
     let letterTile: LetterTile;
@@ -16,32 +15,26 @@ describe('LetterTile', () => {
         expect(letterTile.multiplier.number).to.equal(1);
         expect(letterTile.multiplier.type).to.equal('');
         expect(letterTile.isOccupied).to.equal(false);
-        expect(letterTile.getLetter()).to.eql('');
+        expect(letterTile.letter).to.eql('');
     });
 
     it('setLetter() should correctly set letter string', () => {
-        letterTile.setLetter('a');
-        expect(letterTile.getLetter()).to.eql('a');
-    });
-
-    it('setLetter() should call setPoints()', () => {
-        const setPointsSpy = sinon.spy(letterTile.setLetter, 'setPoints' as never);
-        letterTile.setLetter('a');
-        expect(setPointsSpy.called).to.have.true;
+        letterTile.letter = 'a';
+        expect(letterTile.letter).to.eql('a');
     });
 
     it('setPoints() should correctly set points if letter is an empty string', () => {
-        letterTile.setLetter('');
+        letterTile.letter = '';
         expect(letterTile.points).to.eql(0);
     });
 
     it('setPoints() should correctly set points if letter is given', () => {
-        letterTile.setLetter('a');
+        letterTile.letter = 'a';
         expect(letterTile.points).to.eql(1);
     });
 
     it('setPoints() should correctly set points if letter is given', () => {
-        letterTile.setLetter('z');
+        letterTile.letter = 'z';
         expect(letterTile.points).to.eql(10);
     });
 });

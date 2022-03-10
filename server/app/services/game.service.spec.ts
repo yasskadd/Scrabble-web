@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { LetterTile } from '@app/classes/letter-tile.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
+import { Word } from '@app/classes/word.class';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
@@ -84,16 +84,16 @@ describe('Game tests', () => {
             letterA = { value: 'a', quantity: 8, points: 1 };
             posX = 8;
             posY = 8;
-            commandInfo = commandInfo = {
-                firstCoordinate: new LetterTile(posX, posY, letterA),
-                direction: 'h',
-                lettersPlaced: [letterA.value, letterA.value],
+            commandInfo = {
+                firstCoordinate: { x: posX, y: posY },
+                isHorizontal: true,
+                letters: [letterA.value, letterA.value],
             };
         });
 
         it('play() should return invalid message if the command is invalid and end turn of player1 on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'Invalid']);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, '' as ErrorType]);
             const play = game.play(player1, commandInfo);
             expect(play).to.equal('Invalid');
             expect(turn.resetSkipCounter.called).to.be.true;
@@ -102,7 +102,7 @@ describe('Game tests', () => {
 
         it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'Invalid']);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, '' as ErrorType]);
             const play = game.play(player2, commandInfo);
             expect(play).to.equal('Invalid');
             expect(turn.resetSkipCounter.called).to.be.true;
@@ -112,7 +112,7 @@ describe('Game tests', () => {
         it('play() should return the gameboard if the command is valid of player1 on play', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'noErrors' as ErrorType]);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns([false, game.gameboard]);
             const play = game.play(player1, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
@@ -121,7 +121,7 @@ describe('Game tests', () => {
         it('play() should return the gameboard if the command is valid of player2 on play', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'noErrors' as ErrorType]);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns([false, game.gameboard]);
             const play = game.play(player2, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
@@ -136,7 +136,7 @@ describe('Game tests', () => {
 
         it('play() should call generateLetter of letterReserveService if placeLetters of letterPlacementService return true', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'noErrors' as ErrorType]);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns([true, game.gameboard]);
             game.play(player1, commandInfo);
             expect(letterReserveService.generateLetters.called).to.be.true;
@@ -145,7 +145,7 @@ describe('Game tests', () => {
         it('play() should call end if the rack of the player1 and the letter reserve is empty on play', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'noErrors' as ErrorType]);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns([true, game.gameboard]);
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
@@ -156,7 +156,7 @@ describe('Game tests', () => {
         it('play() should call end if the rack of the player2 and the letter reserve is empty on play', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'noErrors' as ErrorType]);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns([true, game.gameboard]);
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
@@ -166,7 +166,7 @@ describe('Game tests', () => {
 
         it('play() should call resetSkipCounter and end of turn if the rack of the player1 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'noErrors' as ErrorType]);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns([true, game.gameboard]);
             letterReserveService.isEmpty.returns(false);
             game.play(player1, commandInfo);
@@ -176,7 +176,7 @@ describe('Game tests', () => {
 
         it('play() should call resetSkipCounter and end of turn if the rack of the player2 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([[], 'noErrors' as ErrorType]);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns([true, game.gameboard]);
             player2.rack = [];
             game.play(player2, commandInfo);

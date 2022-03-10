@@ -1,9 +1,9 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterTile } from '@app/classes/letter-tile.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@common/command-info';
+import { LetterTile } from '@common/letter-tile.class';
 import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';

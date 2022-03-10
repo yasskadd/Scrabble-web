@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import { LetterTile } from '@app/classes/letter-tile.class';
 import * as multipliers from '@common/board-multiplier-coords';
 import { Coordinate } from '@common/coordinate';
+import { LetterTile } from '@common/letter-tile.class';
 
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;

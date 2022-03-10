@@ -15,11 +15,13 @@ export class Word {
         this.isValid = true;
         this.isHorizontal = commandInfo.isHorizontal;
         this.points = 0;
+
         if (commandInfo.isHorizontal === undefined && commandInfo.letters.length === 1) {
             this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
         }
 
         const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
+
         this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
     }
 
@@ -35,38 +37,58 @@ export class Word {
             gameboard.getLetterTile({ x: firstCoord.x++, y: firstCoord.y }).isOccupied
         )
             this.isHorizontal = true;
-        else this.isValid = false;
     }
 
     private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {
         const backwardPosition = this.isHorizontal ? { x: coord.x - 1, y: coord.y } : { x: coord.x, y: coord.y - 1 };
+
         if (this.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied) {
             while (this.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied)
-                if (this.isHorizontal) coord.x--;
-                else coord.y--;
-            return coord;
+                this.decrementBackwardPosition(backwardPosition);
+            this.incrementPosition(backwardPosition);
+            return backwardPosition;
         } else return coord;
     }
 
-    // TODO: check how many times setWordAttributes() is called. Something is sus.
+    decrementBackwardPosition(backwardPosition: Coordinate) {
+        if (this.isHorizontal) backwardPosition.x--;
+        else backwardPosition.y--;
+    }
+
     private setWordAttributes(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
-        let position = { ...firstCoord };
-        let commandLettersCopy = commandLetters.slice();
+        let position: Coordinate = { ...firstCoord };
+        let commandLettersCopy: string[] = commandLetters.slice();
+
         if (commandLettersCopy[0] === '') commandLettersCopy.shift();
 
         while ((commandLettersCopy.length > 0 || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
-            if (!gameboard.getLetterTile(position).isOccupied) {
-                this.stringFormat += commandLettersCopy[0];
-                commandLettersCopy.shift();
-                this.wordCoords.push({ ...position });
-                this.newLetterCoords.push({ ...position });
-            } else {
-                this.wordCoords.push({ ...position });
-                this.stringFormat += gameboard.getLetterTile({ ...position }).letter;
-            }
-            if (this.isHorizontal) position.x++;
-            else position.y++;
+            if (!gameboard.getLetterTile(position).isOccupied) this.addNewLetter(position, commandLettersCopy);
+            else this.addGameboardLetter(position, gameboard);
+
+            this.incrementPosition(position);
         }
+
+        this.checkValidity(commandLettersCopy);
+    }
+
+    addNewLetter(position: Coordinate, commandLettersCopy: string[]) {
+        this.stringFormat += commandLettersCopy[0];
+        commandLettersCopy.shift();
+        this.wordCoords.push({ ...position });
+        this.newLetterCoords.push({ ...position });
+    }
+
+    addGameboardLetter(position: Coordinate, gameboard: Gameboard) {
+        this.wordCoords.push({ ...position });
+        this.stringFormat += gameboard.getLetterTile({ ...position }).letter;
+    }
+
+    incrementPosition(position: Coordinate) {
+        if (this.isHorizontal) position.x++;
+        else position.y++;
+    }
+
+    checkValidity(commandLettersCopy: string[]) {
         if (commandLettersCopy.length !== 0) this.isValid = false;
         if (this.wordCoords.length < 2) this.isValid = false;
     }
@@ -75,25 +97,21 @@ export class Word {
         return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
     }
 
-    // FIND ADJACENT WORDS ---------------------------------------------------------------------------------------------------
     static findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
         const allWords: Word[] = [];
         allWords.push(word);
         word.newLetterCoords.forEach((coord: Coordinate) => {
             const fakeCommandInfo: CommandInfo = {
-                firstCoordinate: { ...coord },
+                firstCoordinate: coord,
                 isHorizontal: !word.isHorizontal,
                 letters: [''],
             };
             const newWord = new Word(fakeCommandInfo, gameboard);
             if (newWord.wordCoords.length !== 1) allWords.push(newWord);
         });
-        allWords.forEach((word) => {});
-        allWords.forEach((word) => {});
         return allWords;
     }
 
-    // CALCULATE POINTS ----------------------------------------------------------------------------------------------------
     public calculateWordPoints(gameboard: Gameboard): number {
         this.addLetterPoints(gameboard);
         this.addWordMultiplierPoints(gameboard);
