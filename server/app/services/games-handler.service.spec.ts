@@ -3,6 +3,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
+import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-handler.service';
 import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
@@ -29,6 +30,7 @@ interface GameHolder {
 const ROOM = '0';
 describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
+    let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
     let clientSocket: Socket;
@@ -41,7 +43,11 @@ describe('GamesHandler Service', () => {
         socketManagerStub = sinon.createStubInstance(SocketManager);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         socketManagerStub.emitRoom.callsFake(() => {});
-        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager);
+
+        scoreStorageStub = sinon.createStubInstance(ScoreStorageService);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        scoreStorageStub.addTopScores.callsFake(async (): Promise<void> => {});
+        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager, scoreStorageStub as unknown as ScoreStorageService);
 
         httpServer = createServer();
         sio = new ioServer(httpServer);
@@ -133,7 +139,57 @@ describe('GamesHandler Service', () => {
         expect(player.skipTurn.called).to.equal(true);
         done();
     });
+    it('sendHighScore() should call scoreStorage.addTopScore', () => {
+        const player = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
 
+        // eslint-disable-next-line dot-notation
+        gamesHandler['sendHighScore'](serverSocket.id);
+        expect(scoreStorageStub.addTopScores.called).to.equal(true);
+    });
+
+    it('userConnected() should call sendHighScore and endGame when the two player are still in the game', () => {
+        const endGameStub = sinon.stub(gamesHandler, 'endGame' as never);
+        const sendHighScoreStub = sinon.stub(gamesHandler, 'sendHighScore' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        const player1 = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        const player2 = { name: 'Bob', room: ROOM, score: 70 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[0], player1);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[1], player2);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['userConnected'](socketId);
+        expect(endGameStub.called).to.equal(true);
+        expect(sendHighScoreStub.called).to.equal(true);
+    });
+
+    it('userConnected() should call sendHighScore and endGame when the first player is still in the game', () => {
+        const endGameStub = sinon.stub(gamesHandler, 'endGame' as never);
+        const sendHighScoreStub = sinon.stub(gamesHandler, 'sendHighScore' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        const player1 = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[0], player1);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['userConnected'](socketId);
+        expect(endGameStub.called).to.equal(true);
+        expect(sendHighScoreStub.called).to.equal(true);
+    });
+
+    it('userConnected() should call sendHighScore and endGame when the second player is still in the game', () => {
+        const endGameStub = sinon.stub(gamesHandler, 'endGame' as never);
+        const sendHighScoreStub = sinon.stub(gamesHandler, 'sendHighScore' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        const player2 = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(socketId[1], player2);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['userConnected'](socketId);
+        expect(endGameStub.called).to.equal(true);
+        expect(sendHighScoreStub.called).to.equal(true);
+    });
     it('sendTimer() should call emitRoom() with the correct parameters', () => {
         // eslint-disable-next-line dot-notation
         gamesHandler['sendTimer'](ROOM, 0);
@@ -715,7 +771,7 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
             // eslint-disable-next-line dot-notation
-            gamesHandler['endGame'](serverSocket);
+            gamesHandler['endGame'](serverSocket.id);
 
             expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd));
             done();
@@ -733,7 +789,7 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
             // eslint-disable-next-line dot-notation
-            gamesHandler['endGame'](serverSocket);
+            gamesHandler['endGame'](serverSocket.id);
 
             expect(socketManagerStub.emitRoom.notCalled).to.be.equal(true);
             done();

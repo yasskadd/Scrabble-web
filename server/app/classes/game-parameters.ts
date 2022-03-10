@@ -3,4 +3,5 @@ export interface GameParameters {
     dictionary: string;
     timer: number;
     mode: string;
+    isMultiplayer: boolean;
 }

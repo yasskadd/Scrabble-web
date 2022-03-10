@@ -1,14 +1,19 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { ReplaySubject } from 'rxjs';
 import { MultiplayerJoinPageComponent } from './multiplayer-join-page.component';
+
 @Component({
     template: '',
 })
@@ -41,6 +46,11 @@ describe('MultiplayerJoinPageComponent', () => {
         );
         await TestBed.configureTestingModule({
             imports: [
+                MatInputModule,
+                ReactiveFormsModule,
+                MatFormFieldModule,
+                BrowserModule,
+                MatIconModule,
                 BrowserAnimationsModule,
                 MatCardModule,
                 FormsModule,

@@ -21,7 +21,7 @@
                     <tr *ngFor="let gameRoom of availableRooms">
                         <td>{{ gameRoom.users }}</td>
                         <td>{{ gameRoom.dictionary }}</td>
-                        <td>{{ gameRoom.timer }}</td>
+                        <td>{{ gameRoom.timer }} s</td>
                         <td>{{ gameRoom.mode }}</td>
                         <button class="joinGameButton" (click)="joinRoom(gameRoom.id)" mat-raised-button [disabled]="!playerName">Rejoindre</button>
                     </tr>

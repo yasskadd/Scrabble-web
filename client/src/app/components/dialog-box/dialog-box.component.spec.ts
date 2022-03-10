@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DialogBoxComponent } from './dialog-box.component';
@@ -20,6 +20,11 @@ describe('DialogBoxComponent', () => {
     let fixture: ComponentFixture<DialogBoxComponent>;
     let location: Location;
 
+    const dialogMock = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        close: () => {},
+    };
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [
@@ -32,7 +37,10 @@ describe('DialogBoxComponent', () => {
                 ]),
             ],
             declarations: [DialogBoxComponent],
-            providers: [{ provide: MAT_DIALOG_DATA, useValue: DATA_GAME_MODE }],
+            providers: [
+                { provide: MAT_DIALOG_DATA, useValue: DATA_GAME_MODE },
+                { provide: MatDialogRef, useValue: dialogMock },
+            ],
         }).compileComponents();
     });
 
@@ -67,5 +75,12 @@ describe('DialogBoxComponent', () => {
 
     it('Game mode should be in the passed data', () => {
         expect(component.gameMode).toEqual(DATA_GAME_MODE);
+    });
+
+    it('dialog should be closed after onYesClick()', () => {
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(component['dialogRef'], 'close').and.callThrough();
+        component.closeDialog();
+        expect(spy).toHaveBeenCalled();
     });
 });

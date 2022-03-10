@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ChatboxMessage } from '@app/classes/chatbox-message';
+import { ChatboxMessage } from '@app/interfaces/chatbox-message';
+import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
@@ -7,18 +8,23 @@ import { CommandHandlerService } from './command-handler.service';
 import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
+const CHAR_ASCII = 96;
 const VALID_COMMAND_REGEX_STRING =
     // eslint-disable-next-line max-len
-    '^!r(é|e)serve$|^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
+    '^!r(é|e)serve$|^!indice$|^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
 const VALID_COMMAND_REGEX = new RegExp(VALID_COMMAND_REGEX_STRING);
 const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
-
+interface CommandInfo {
+    firstCoordinate: Coordinate;
+    direction: boolean;
+    lettersPlaced: string;
+}
 @Injectable({
     providedIn: 'root',
 })
 export class ChatboxHandlerService {
-    private static readonly syntaxRegexString = '^!r(é|e)serve|^!aide|^!placer|^!(é|e)changer|^!passer';
+    private static readonly syntaxRegexString = '^!r(é|e)serve|^!aide|^!placer|^!(é|e)changer|^!passer|^!indice';
     messages: ChatboxMessage[];
     private readonly validSyntaxRegex = RegExp(ChatboxHandlerService.syntaxRegexString);
 
@@ -62,12 +68,15 @@ export class ChatboxHandlerService {
         this.clientSocket.on(SocketEvents.GameMessage, (broadcastMessage: string) => {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
+
         this.clientSocket.on(SocketEvents.ImpossibleCommandError, (error: string) => {
             this.addMessage(this.configureImpossibleCommandError(error));
         });
+
         this.clientSocket.on(SocketEvents.UserDisconnect, () => {
             this.addDisconnect();
         });
+
         this.clientSocket.on(SocketEvents.GameEnd, () => {
             this.endGameMessage();
         });
@@ -75,6 +84,29 @@ export class ChatboxHandlerService {
         this.clientSocket.on(SocketEvents.AllReserveLetters, (letterReserveUpdated: Letter[]) => {
             this.configureReserveLetterCommand(letterReserveUpdated);
         });
+
+        this.clientSocket.on(SocketEvents.ClueCommand, (clueCommand: CommandInfo[]) => {
+            this.configureClueCommand(clueCommand);
+        });
+    }
+
+    private configureClueCommand(clueCommand: CommandInfo[]) {
+        if (clueCommand.length !== 0) {
+            clueCommand.forEach((clue) => {
+                this.messages.push({
+                    type: 'system-message',
+                    data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${clue.direction} ${
+                        clue.lettersPlaced
+                    }`,
+                });
+            });
+
+            if (clueCommand.length < 3) {
+                this.messages.push({ type: 'system-message', data: 'Aucune autre possibilité possible' });
+            }
+        } else {
+            this.messages.push({ type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" });
+        }
     }
 
     private sendMessage(message: string): void {
