@@ -134,7 +134,10 @@ export class GameConfigurationService {
         this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
-    beginScrabbleGame() {
+    beginScrabbleGame(opponent?: string) {
+        if (opponent !== undefined) {
+            this.roomInformation.playerName[1] = opponent;
+        }
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
 
