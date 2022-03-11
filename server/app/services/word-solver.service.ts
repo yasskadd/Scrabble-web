@@ -12,7 +12,7 @@ import { WordFinderService } from './word-finder.service';
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
-
+// TODO: NEED 100% COVERAGE
 @Service()
 export class WordSolverService {
     private crossCheckResults: Map<Coordinate, string[]> = new Map();
@@ -33,13 +33,16 @@ export class WordSolverService {
                 if (this.gameboard.getCoord(leftToAnchor).isOccupied) {
                     const partialWord = this.buildPartialWord(leftToAnchor);
                     const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
-                    if (partialWordNode !== null) this.extendRight(partialWord, partialWordNode, rack, anchor, false);
+                    if (partialWordNode !== null) {
+                        console.log('ENTERED');
+                        this.extendRight(partialWord, partialWordNode, rack, anchor, false);
+                    }
                 } else this.findLeftPart('', this.trie.root, anchor, rack, this.getLimitNumber(leftToAnchor, anchors));
             }
         }
         return this.commandInfoList;
     }
-
+    // Letter
     commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
         const coordinateValidation: GameboardCoordinateValidationService = Container.get(GameboardCoordinateValidationService);
         const wordFinder: WordFinderService = Container.get(WordFinderService);
@@ -59,7 +62,7 @@ export class WordSolverService {
         });
         return commandInfoMap;
     }
-
+    // Tested
     private createCommandInfo(word: string, lastPosition: Coordinate) {
         console.log(`${this.index++} Word found : ${word}`);
         let wordIndex = word.length - 1;

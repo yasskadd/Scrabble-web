@@ -28,6 +28,10 @@ describe.only('Word solver service', () => {
 
     it('test', () => {
         const rack: string[] = ['*'];
+        gameboard.placeLetter(new LetterTile(1, 12, { value: 'z' } as Letter));
+        gameboard.placeLetter(new LetterTile(2, 1, { value: 'x' } as Letter));
+        gameboard.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
+        gameboard.placeLetter(new LetterTile(7, 10, { value: 'a' } as Letter));
         gameboard.placeLetter(new LetterTile(7, 8, { value: 'j' } as Letter));
         gameboard.placeLetter(new LetterTile(8, 8, { value: 'e' } as Letter));
         wordSolverService.findAllOptions(rack);
@@ -254,4 +258,17 @@ describe.only('Word solver service', () => {
         wordSolverService['createCommandInfo']('test', { x: 4, y: 1 } as Coordinate);
         expect(wordSolverService['commandInfoList'][0]).to.eql(expectedCommandInfo);
     });
+
+    // context('findOptions() tests', () => {
+    //     let anchors: Coordinate[];
+    //     let rack: string[];
+    //     beforeEach(() => {
+    //         rack = ['s'];
+    //         anchors = [{ x: 1, y: 1 } as Coordinate, { x: 5, y: 5 } as Coordinate];
+    //         gameboard.placeLetter(new LetterTile(5, 5, { value: 'e' } as Letter));
+    //         gameboard.placeLetter(new LetterTile(4, 5, { value: 'l' } as Letter));
+    //     });
+
+    //     it('should create correct commandInfos');
+    // });
 });
