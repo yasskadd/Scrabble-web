@@ -6,6 +6,7 @@
             [className]="this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'"
             (click)="onLeftClick($event, i)"
             (contextmenu)="onRightClick($event, i)"
+            (scroll)="onScroll($event)"
         >
             <div [style.background]="letter.value === buttonPressed ? 'green' : '#red'"></div>
             <div class="letter-value" [style.font-size]="letterSize + 'px'">
@@ -15,8 +16,6 @@
         </div>
     </div>
     <button mat-raised-button disabled>valider le mot</button>
-    <p>Appuyez sur une touche du clavier pour la détecter</p>
-    <p *ngIf="buttonPressed !== ''">touche : {{ buttonPressed }}</p>
     <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
     <button
         id="exchange"
