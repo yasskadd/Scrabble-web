@@ -177,23 +177,24 @@ describe.only('Word solver service', () => {
         });
     });
 
-    // context('extendRight() Tests', () => {
-    //     let firstNode: LetterTreeNode;
-    //     let rack: string[];
-    //     beforeEach(() => {
-    //         firstNode = dictionaryValidationService.trie.root;
-    //         rack = ['l', 'l', 'e', 'a', 'p', 'i', 'o'];
-    //     });
+    context.only('verifyConditions() tests', () => {
+        it('should return true if the coordinate is out of bounds horizontally', () => {
+            const outOfBoundsCoord: Coordinate = { x: 17, y: 1 } as Coordinate;
+            expect(wordSolverService['verifyConditions'](outOfBoundsCoord)).to.equal(true);
+        });
 
-    //     it('should call itself', () => {
-    //         const spyExtend = Sinon.spy(wordSolverService, 'extendRight' as never)
-    //         const mock = Sinon.mock(wordSolverService);
-    //         mock.
-    //         expect(spyExtend.)
-    //     });
+        it('should return true if the coordinate is out of bounds horizontally', () => {
+            const outOfBoundsCoord: Coordinate = { x: 1, y: 17 } as Coordinate;
+            expect(wordSolverService['verifyConditions'](outOfBoundsCoord)).to.equal(true);
+        });
 
-    //     it('should call findLeftPart()', () => {
+        it('should return false if coordinate is placed on the gameboard', () => {
+            gameboard.placeLetter(new LetterTile(1, 1, {} as Letter));
+            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 } as Coordinate)).to.equal(false);
+        });
 
-    //     })
-    // });
+        it('should return true if coordinate is not placed on the gameboard', () => {
+            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 } as Coordinate)).to.equal(true);
+        });
+    });
 });
