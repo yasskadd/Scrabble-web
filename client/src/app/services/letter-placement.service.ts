@@ -52,7 +52,7 @@ export class LetterPlacementService {
             else placementPosition.y++;
         });
         placementPosition = this.computeNextCoordinate(placementPosition);
-        if (placementPosition.x > constants.TOTAL_TILES_IN_ROW || placementPosition.y > constants.TOTAL_TILES_IN_COLUMN) {
+        if (this.isOutOfBound(placementPosition)) {
             this.hasPlacingEnded = true;
             return;
         }
@@ -88,7 +88,7 @@ export class LetterPlacementService {
         const position = this.gridService.getPosition(coordinate);
         if (
             !this.gameClientService.playerOneTurn ||
-            this.isOutOfBound(coordinate) ||
+            this.isOutOfBound(position) ||
             this.gameClientService.gameboard[this.getArrayIndex(position)].isOccupied
             // || this.placedLetters.length !== 0
         )
@@ -105,18 +105,20 @@ export class LetterPlacementService {
 
     // TODO: refactor if positionFromStart isn't useful
     private computeNextCoordinate(startingPoint: Coordinate, positionFromStart: number = 0): Coordinate {
-        const resultPosition = this.isHorizontal
+        const computedPosition = this.isHorizontal
             ? { ...startingPoint, x: startingPoint.x + positionFromStart }
             : { ...startingPoint, y: startingPoint.y + positionFromStart };
-        while (this.gameClientService.gameboard[this.getArrayIndex(resultPosition)].isOccupied) {
-            if (this.isHorizontal) resultPosition.x++;
-            else resultPosition.y++;
+        while (!this.isOutOfBound(computedPosition) && this.gameClientService.gameboard[this.getArrayIndex(computedPosition)].isOccupied) {
+            if (this.isHorizontal) computedPosition.x++;
+            else computedPosition.y++;
         }
-        return resultPosition;
+        return computedPosition;
     }
 
     private isOutOfBound(coordinate: Coordinate): boolean {
-        return coordinate.x === 0 || coordinate.y === 0;
+        return (
+            coordinate.x === 0 || coordinate.y === 0 || coordinate.x > constants.TOTAL_TILES_IN_ROW || coordinate.y > constants.TOTAL_TILES_IN_COLUMN
+        );
     }
 
     private getArrayIndex(coordinate: Coordinate): number {
