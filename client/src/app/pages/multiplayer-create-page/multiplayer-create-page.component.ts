@@ -27,6 +27,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     navigator: Navigator;
     gameMode: string;
     difficultyList = ['Débutant'];
+    botNameList = ['robert', 'jean', 'albert'];
     timerList = [
         TimeOptions.ThirtySecond,
         TimeOptions.OneMinute,
@@ -62,8 +63,13 @@ export class MultiplayerCreatePageComponent implements OnInit {
             timer: this.form.get('timer')?.value,
             dictionary: 'francais',
             mode: this.gameMode,
-            isMultiplayer: true,
+            isMultiplayer: this.isSoloMode() ? false : true,
         });
+        if (this.isSoloMode()) {
+            setTimeout(() => {
+                this.gameConfiguration.beginScrabbleGame(this.createBotName());
+            }, 0);
+        }
         this.resetInput();
         this.navigatePage();
     }
@@ -88,5 +94,11 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
     private resetInput() {
         this.playerName = '';
+    }
+
+    private createBotName(): string {
+        const indexName: number = this.botNameList.indexOf(this.playerName.toLowerCase());
+        if (indexName !== -1) this.botNameList.splice(indexName, 1);
+        return this.botNameList[Math.floor(Math.random() * this.botNameList.length)];
     }
 }
