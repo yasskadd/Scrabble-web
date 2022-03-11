@@ -51,7 +51,6 @@ describe('Word', () => {
         ];
         word = new Word(false, coordList);
         expect(word.stringFormat).to.eql('abcd');
-        expect(word.isFirstWord).to.be.false;
     });
 
     it('should correctly calculate points if there is no multiplier', () => {

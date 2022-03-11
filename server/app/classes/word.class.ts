@@ -4,16 +4,16 @@ import { LetterTile } from '@common/classes/letter-tile.class';
 export class Word {
     isHorizontal: boolean;
     isValid: boolean;
-    points: number = 0;
-    isFirstWord: boolean = false;
+    points: number;
     coords: LetterTile[];
-    stringFormat: string = '';
+    stringFormat: string;
 
     constructor(isHorizontal: boolean, coordList: LetterTile[]) {
         this.isHorizontal = isHorizontal;
         this.isValid = false;
-        this.coords = coordList;
         this.points = 0;
+        this.coords = coordList;
+        this.stringFormat = '';
         coordList.forEach((coord: LetterTile) => {
             this.stringFormat += coord.letter.value?.toLowerCase();
         });

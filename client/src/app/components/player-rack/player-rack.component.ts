@@ -14,7 +14,6 @@ export class PlayerRackComponent {
     width = constants.RACK_WIDTH;
     height = constants.RACK_HEIGHT;
     lettersToExchange: number[] = [];
-    clicked: number[] = [];
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,

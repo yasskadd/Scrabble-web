@@ -8,9 +8,10 @@ const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
 
 export class Gameboard {
-    gameboardCoords: LetterTile[] = new Array();
+    gameboardCoords: LetterTile[];
 
     constructor(@Inject() private boxMultiplierService: BoxMultiplierService) {
+        this.gameboardCoords = new Array();
         this.createLetterTiles();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }
