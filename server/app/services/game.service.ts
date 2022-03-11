@@ -1,12 +1,12 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@app/interfaces/command-info';
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
+import { LetterTile } from '@common/services/letter-tile.class';
 import { Container, Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;

@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { Letter } from '@common/letter';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Letter } from '@common/interfaces/letter';
 import { Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { ClientSocketService } from './client-socket.service';

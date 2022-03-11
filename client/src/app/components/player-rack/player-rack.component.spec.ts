@@ -4,7 +4,7 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { PlayerRackComponent } from './player-rack.component';
 
 const LETTER_SIZE = 5;

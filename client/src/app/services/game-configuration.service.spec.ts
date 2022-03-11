@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';

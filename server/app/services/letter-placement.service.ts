@@ -1,10 +1,10 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@app/command-info';
-import { Coordinate } from '@common/coordinate';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { CommandInfo } from '@app/interfaces/command-info';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
+import { LetterTile } from '@common/services/letter-tile.class';
 import { Service } from 'typedi';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';

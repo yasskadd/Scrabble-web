@@ -1,5 +1,5 @@
 import { Game } from '@app/services/game.service';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 
 export class Player {
     rack: Letter[] = [];

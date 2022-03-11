@@ -6,8 +6,8 @@
 /* eslint-disable no-restricted-imports */
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
+import { LetterTile } from '@common/services/letter-tile.class';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';

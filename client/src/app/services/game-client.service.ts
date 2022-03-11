@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Letter } from '@common/interfaces/letter';
+import { LetterTile } from '@common/services/letter-tile.class';
 import { ClientSocketService } from './client-socket.service';
 import { GridService } from './grid.service';
 

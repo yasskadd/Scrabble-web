@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
+import { LetterTile } from '@common/services/letter-tile.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';

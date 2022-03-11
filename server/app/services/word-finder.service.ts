@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
+import { LetterTile } from '@common/services/letter-tile.class';
 import { Service } from 'typedi';
 
 const ROW_NUMBER = 15;

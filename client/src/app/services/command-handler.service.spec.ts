@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { CommandHandlerService } from './command-handler.service';
 describe('CommandHandlerService', () => {
     let service: CommandHandlerService;

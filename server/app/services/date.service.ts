@@ -1,4 +1,4 @@
-import { Message } from '@app/message';
+import { Message } from '@app/interfaces/message';
 import { Service } from 'typedi';
 
 @Service()

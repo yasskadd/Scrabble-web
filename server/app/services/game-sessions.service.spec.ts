@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
-import { GameParameters } from '@app/classes/game-parameters';
-import { GameRoom } from '@app/classes/game-room';
+import { GameParameters } from '@app/interfaces/game-parameters';
+import { GameRoom } from '@app/interfaces/game-room';
 import { GameSessions } from '@app/services/game-sessions.service';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { assert, expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';

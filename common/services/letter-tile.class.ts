@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Letter } from '@common/letter';
-import { Coordinate } from './coordinate';
+import { Coordinate } from '../interfaces/coordinate';
+import { Letter } from '../interfaces/letter';
 
 export class LetterTile implements Coordinate {
     x: number;

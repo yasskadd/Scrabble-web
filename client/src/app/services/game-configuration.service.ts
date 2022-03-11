@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoomClient } from '@app/interfaces/game-room-client';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 

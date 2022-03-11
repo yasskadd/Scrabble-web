@@ -1,6 +1,6 @@
-import { GameParameters } from '@app/classes/game-parameters';
-import { GameRoom } from '@app/classes/game-room';
-import { SocketEvents } from '@common/socket-events';
+import { GameParameters } from '@app/interfaces/game-parameters';
+import { GameRoom } from '@app/interfaces/game-room';
+import { SocketEvents } from '@common/constants/socket-events';
 import { Server, Socket } from 'socket.io';
 // import { Socket } from 'socket.io';
 import { Service } from 'typedi';
