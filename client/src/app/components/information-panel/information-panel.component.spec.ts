@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSliderModule } from '@angular/material/slider';
+import { MatSliderChange, MatSliderModule } from '@angular/material/slider';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -209,27 +209,12 @@ describe('InformationPanelComponent', () => {
         expect(message).not.toBeTruthy();
     });
 
-    // it('should call updateFontSize() when the mat-slider is pressed', fakeAsync(() => {
-    //     // const button = fixture.debugElement.nativeElement.querySelector('#updateFontSlider');
-    //     // button.dispatchEvent(new MatSliderChange());
-    //     // tick();
-    //     const slider = fixture.debugElement.query(By.directive(MatSliderChange));
-
-    //     const spy = spyOn(component, 'updateFontSize');
-
-    //     slider.triggerEventHandler('input', null); // triggerEventHandler
-
-    //     fixture.detectChanges();
-    //     expect(spy).toHaveBeenCalled();
-    //     // expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
-    // }));
-    it('should call updateFontSize() when the mat-slider is pressed', fakeAsync(() => {
-        const button = fixture.debugElement.nativeElement.querySelector('#updateFontSlider');
-        button.click();
-        tick();
+    it('should call updateGameboard() when the mat-slider is triggered', () => {
+        const mockSlider = new MatSliderChange();
+        component.updateFontSize(mockSlider);
         fixture.detectChanges();
         expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
-    }));
+    });
 
     it('timerToMinute() should return number of minute in the timer', () => {
         const twoMinute = 120;
