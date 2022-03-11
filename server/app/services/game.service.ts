@@ -49,7 +49,6 @@ export class Game {
             const errorType = validationInfo[1] as string;
             if (errorType !== null) {
                 this.turn.resetSkipCounter();
-                this.turn.end();
                 return errorType as string;
             }
             gameboard = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);

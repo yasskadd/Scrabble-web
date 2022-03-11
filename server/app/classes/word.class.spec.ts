@@ -195,13 +195,8 @@ describe('Word', () => {
             word = new Word(commandInfo, gameboard);
             placeLettersWordTest(commandInfo, word, gameboard);
 
-            const newWord = new Word({ firstCoordinate: { x: 3, y: 2 }, isHorizontal: true, letters: ['b'] }, gameboard);
-
             const words: Word[] = Word.findAdjacentWords(word, gameboard);
-            const stringList: string[] = words.map((word) => {
-                console.log(word);
-                return word.stringFormat;
-            });
+            const stringList: string[] = words.map((word) => word.stringFormat);
 
             expect(words).to.have.lengthOf(2);
             expect(stringList).to.include.members(['abc', 'bb']);

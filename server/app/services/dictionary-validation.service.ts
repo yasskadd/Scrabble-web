@@ -37,7 +37,7 @@ export class DictionaryValidationService {
     }
 
     private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): number {
-        if (this.isolateInvalidWords(foundWords)) return 0;
+        if (this.isolateInvalidWords(foundWords)[0]) return 0;
         else {
             let pointsForTurn: number = 0;
             foundWords.forEach((foundWord: Word) => {

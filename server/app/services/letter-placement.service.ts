@@ -9,9 +9,9 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 
 export enum ErrorType {
     commandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
-    lettersNotInRack = 'Letters not in rack',
-    invalidFirstWordPlacement = 'One coordinate in the first word needs to pass by the middle coordinate',
-    invalidWordBuild = 'At least one letter in word does not fit on board or word only contains 1 letter',
+    lettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
+    invalidFirstWordPlacement = 'Le mot doit etre attaché à un autre mot (ou passer par la case du milieu)',
+    invalidWordBuild = 'Le mot est invalide',
 }
 
 const SEVEN_LETTERS = 7;
@@ -30,7 +30,6 @@ export class LetterPlacementService {
         const commandWord = new Word(commandInfo, gameboard);
         if (!commandWord.isValid) return [{} as Word, ErrorType.invalidWordBuild];
         if (!this.verifyFirstTurn(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
-        // TODO: in gameservice check that word is next to other word
 
         return [commandWord, null];
     }
@@ -67,6 +66,8 @@ export class LetterPlacementService {
             }
         });
 
+        letters.forEach((letter) => console.log(letter));
+
         const lettersPresentInRack = letters.filter((letter) => letter !== undefined) as string[];
         return lettersPresentInRack.length === commandLetters.length;
     }
@@ -78,23 +79,48 @@ export class LetterPlacementService {
                 coordList.push({ x: coord.x, y: coord.y } as Coordinate);
             });
             if (!coordList.some((element) => element.x === MIDDLE_X && element.y === MIDDLE_Y)) return false;
+            return true;
+        } else {
+            return this.checkIfWordIsNextToOther(lettersCoords, gameboard);
         }
-        return true;
+    }
+
+    private checkIfWordIsNextToOther(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
+        let up, down, left, right: Coordinate;
+        let lettersWithAdjacency: number = 0;
+
+        letterCoords.forEach((coord) => {
+            up = { x: coord.x, y: coord.y-- };
+            down = { x: coord.x, y: coord.y++ };
+            left = { x: coord.x--, y: coord.y };
+            right = { x: coord.x++, y: coord.y };
+            if (
+                gameboard.getLetterTile(up).isOccupied ||
+                gameboard.getLetterTile(down).isOccupied ||
+                gameboard.getLetterTile(left).isOccupied ||
+                gameboard.getLetterTile(right).isOccupied
+            )
+                lettersWithAdjacency++;
+        });
+
+        if (lettersWithAdjacency++ === 0) return false;
+        else return true;
     }
 
     public placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): [boolean, Gameboard] {
-        for (const coord of commandWord.newLetterCoords) {
-            gameboard.placeLetter(coord, commandInfo.letters[0]);
-            commandInfo.letters.shift();
-        }
+        const commandLettersCopy = commandInfo.letters.slice();
+        commandWord.newLetterCoords.forEach((coord) => {
+            gameboard.placeLetter(coord, commandLettersCopy[0]);
+            commandLettersCopy.shift();
+        });
 
         const wordScore = this.dictionaryService.validateWord(commandWord, gameboard);
+
         if (wordScore === 0) {
             commandWord.newLetterCoords.forEach((coord) => gameboard.removeLetter(coord)); // TODO : wait 3 seconds
             return [false, gameboard];
         }
         this.updatePlayerScore(wordScore, commandWord, player);
-        // TODO: ARRRGH, player rack isn<t updated
         this.updatePlayerRack(commandInfo.letters, player);
         return [true, gameboard];
     }
@@ -104,15 +130,11 @@ export class LetterPlacementService {
         if (commandWord.newLetterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
     }
 
-    //TODO : letters aren't properly removed for some reason
     private updatePlayerRack(letters: string[], player: Player): void {
-        console.log(letters);
         const INDEX_NOT_FOUND = -1;
         letters.forEach((letter) => {
             const itemInRack = player.rack.filter((item: Letter) => item.value == letter)[0];
-            console.log(itemInRack);
             const index = player.rack.indexOf(itemInRack);
-            console.log(index);
             if (index > INDEX_NOT_FOUND) player.rack.splice(index, 1);
         });
     }
