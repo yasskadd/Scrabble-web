@@ -89,8 +89,8 @@ export class LetterPlacementService {
         if (
             !this.gameClientService.playerOneTurn ||
             this.isOutOfBound(position) ||
-            this.gameClientService.gameboard[this.getArrayIndex(position)].isOccupied
-            // || this.placedLetters.length !== 0
+            this.gameClientService.gameboard[this.getArrayIndex(position)].isOccupied ||
+            this.placedLetters.length !== 0
         )
             return;
         if (this.startTile.x === position.x && this.startTile.y === position.y) {
@@ -98,8 +98,9 @@ export class LetterPlacementService {
             this.gridService.drawArrow(position, this.isHorizontal);
             return;
         }
+        this.resetGameBoardView();
         this.startTile = position;
-        this.gridService.drawArrow(position, true);
+        this.gridService.drawArrow(position, this.isHorizontal);
         this.isPlacingActive = true;
     }
 
