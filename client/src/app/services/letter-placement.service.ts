@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as constants from '@app/constants';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { GameClientService } from './game-client.service';
@@ -70,7 +71,12 @@ export class LetterPlacementService {
 
     placeLetterStartPosition(coordinate: Coordinate) {
         const position = this.gridService.getPosition(coordinate);
-        if (!this.gameClientService.playerOneTurn || coordinate.x === 0 || coordinate.y === 0) return;
+        if (
+            !this.gameClientService.playerOneTurn ||
+            this.isOutOfBound(coordinate) ||
+            this.gameClientService.gameboard[this.getArrayIndex(position)].isOccupied
+        )
+            return;
         if (this.startTile.x === position.x && this.startTile.y === position.y) {
             this.isHorizontal = !this.isHorizontal;
             this.gridService.drawArrow(position, this.isHorizontal);
@@ -79,5 +85,13 @@ export class LetterPlacementService {
         this.startTile = position;
         this.gridService.drawArrow(position, true);
         this.isPlacingActive = true;
+    }
+    private isOutOfBound(coordinate: Coordinate): boolean {
+        return coordinate.x === 0 || coordinate.y === 0;
+    }
+    private getArrayIndex(coordinate: Coordinate): number {
+        const TILES_IN_ROW = constants.TOTAL_COLUMNS - 1;
+        const DISPLACEMENT = 1;
+        return coordinate.x - DISPLACEMENT + (coordinate.y - DISPLACEMENT) * TILES_IN_ROW;
     }
 }
