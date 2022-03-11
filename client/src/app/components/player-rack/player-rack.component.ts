@@ -18,6 +18,9 @@ export class PlayerRackComponent implements OnInit {
     @Input()
     clickParentSubject: Subject<EventTarget>;
 
+    // @Input()
+    // scrollParentSubject: Subject<EventTarget>;
+
     @ViewChild('info', { static: false }) info: ElementRef;
 
     width = constants.RACK_WIDTH;
@@ -25,6 +28,7 @@ export class PlayerRackComponent implements OnInit {
     buttonPressed = '';
     currentSelection = 0;
     previousSelection = constants.INVALID_INDEX;
+    previousScrollPosition = 0;
     lettersToExchange: number[] = [];
     lettersToManipulate: number[] = [];
     duplicates: number[] = [];
@@ -49,17 +53,27 @@ export class PlayerRackComponent implements OnInit {
     }
 
     // @HostListener('scroll', ['$event'])
-    onScroll(event: Event) {
-        // alert('scrolling!');
-        // console.log(this.getYPosition(event));
-        console.log('scrolling!');
-        console.log(event.composed);
-        // console.log(this.getYPosition(event));
-    }
+    // onScroll(event: Event) {
+    //     // alert('scrolling!');
+    //     // console.log(this.getYPosition(event));
+    //     console.log('scrolling!');
+    //     console.log(event.composed);
+    //     // console.log(this.getYPosition(event));
+    // }
 
-    // @HostListener('body:scroll', ['$event']) onScrollEvent() {
+    // @HostListener('window:scroll', ['$event'])
+    // onScrollEvent(event: Event) {
     //     // console.log($event['Window']);
     //     console.log('scrolling');
+    //     console.log(window.scrollY);
+    //     if (window.scrollY > this.previousScrollPosition) {
+    //         this.moveRight();
+    //         this.previousScrollPosition = window.scrollY;
+    //         return;
+    //     }
+    //     this.moveLeft();
+    //     this.previousScrollPosition = window.scrollY;
+    //     return;
     // }
 
     ngOnInit() {
@@ -89,7 +103,6 @@ export class PlayerRackComponent implements OnInit {
         this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
 
         if (this.arrow) {
-            this.previousSelection = constants.INVALID_INDEX;
             this.repositionRack();
             return;
         }
@@ -105,18 +118,8 @@ export class PlayerRackComponent implements OnInit {
             this.previousSelection = constants.INVALID_INDEX;
             this.currentSelection = this.duplicates[0];
         } else if (this.duplicates.length > 1) {
-            if (this.previousSelection === constants.INVALID_INDEX) {
-                this.currentSelection = this.duplicates[0];
-                this.previousSelection = this.currentSelection;
-            } else {
-                if (this.previousSelection === this.duplicates[this.duplicates.length - 1]) {
-                    this.currentSelection = this.duplicates[0];
-                    this.previousSelection = this.currentSelection;
-                } else {
-                    this.currentSelection = this.duplicates[this.duplicates.indexOf(this.currentSelection) + 1];
-                    this.previousSelection = this.currentSelection;
-                }
-            }
+            this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
+            this.previousSelection = this.currentSelection;
         } else {
             this.cancel();
             return;
@@ -125,6 +128,7 @@ export class PlayerRackComponent implements OnInit {
     }
 
     repositionRack() {
+        this.previousSelection = constants.INVALID_INDEX;
         if (this.buttonPressed === 'ArrowLeft') {
             this.moveLeft();
         }
