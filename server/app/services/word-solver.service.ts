@@ -22,6 +22,7 @@ export class WordSolverService {
     constructor(private trie: LetterTree, private gameboard: Gameboard) {}
 
     findAllOptions(rack: string[]): CommandInfo[] {
+        console.log('FINDALLOPTIONS CALLED');
         this.commandInfoList.length = 0;
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
