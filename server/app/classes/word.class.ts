@@ -71,7 +71,7 @@ export class Word {
     }
 
     private addNewLetter(position: Coordinate, commandLettersCopy: string[]) {
-        this.stringFormat += commandLettersCopy[0];
+        this.stringFormat += commandLettersCopy[0].toLowerCase();
         commandLettersCopy.shift();
         this.wordCoords.push({ ...position });
         this.newLetterCoords.push({ ...position });

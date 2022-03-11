@@ -66,8 +66,6 @@ export class LetterPlacementService {
             }
         });
 
-        letters.forEach((letter) => console.log(letter));
-
         const lettersPresentInRack = letters.filter((letter) => letter !== undefined) as string[];
         return lettersPresentInRack.length === commandLetters.length;
     }
@@ -133,6 +131,7 @@ export class LetterPlacementService {
     private updatePlayerRack(letters: string[], player: Player): void {
         const INDEX_NOT_FOUND = -1;
         letters.forEach((letter) => {
+            if (letter === letter.toUpperCase()) letter = '*';
             const itemInRack = player.rack.filter((item: Letter) => item.value == letter)[0];
             const index = player.rack.indexOf(itemInRack);
             if (index > INDEX_NOT_FOUND) player.rack.splice(index, 1);
