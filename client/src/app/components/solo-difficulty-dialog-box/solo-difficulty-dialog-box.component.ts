@@ -15,7 +15,7 @@ export class SoloDifficultyDialogBoxComponent {
     }
 
     easySoloMode() {
-        this.gameConfiguration.beginScrabbleGame();
+        this.gameConfiguration.beginScrabbleGame('Vincent');
         this.router.navigate(['/game']);
     }
 }
