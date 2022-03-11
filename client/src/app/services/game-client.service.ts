@@ -106,7 +106,7 @@ export class GameClientService {
         this.updateNewGameboard(player.gameboard);
     }
 
-    private updateNewGameboard(newGameboard: LetterTile[]) {
+    private updateNewGameboard(newGameboard: LetterTileInterface[]) {
         this.gameboard = newGameboard;
         this.updateGameboard();
     }

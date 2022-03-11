@@ -52,12 +52,20 @@ describe('Dictionary Validation Service', () => {
         expect(invalidWord1.isValid && invalidWord2.isValid).to.be.false;
     });
 
-    it('isolateInvalidWords() should return false if words are not in dictionary', () => {
+    it('isolateInvalidWords() should return true if words are not in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
         // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
         // eslint-disable-next-line dot-notation
-        expect(dictionaryValidationService['isolateInvalidWords'](wordList)).to.be.true;
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.be.true;
+    });
+
+    it('isolateInvalidWords() should return array of length 2 if 2 words are not in dictionary', () => {
+        const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
+        // eslint-disable-next-line dot-notation
+        dictionaryValidationService['checkWordInDictionary'](wordList);
+        // eslint-disable-next-line dot-notation
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(2);
     });
 
     it('isolateInvalidWords should return false if words are in dictionary', () => {
@@ -65,20 +73,34 @@ describe('Dictionary Validation Service', () => {
         // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
         // eslint-disable-next-line dot-notation
-        expect(dictionaryValidationService['isolateInvalidWords'](wordList)).to.be.false;
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.be.false;
     });
 
-    it('should call isolateInvalidWords and checkWordInDictionary when validateWord is called', () => {
-        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
-        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
+    it('isolateInvalidWords should return array of 0 if words are in dictionary', () => {
+        const wordList: Word[] = [validWord1, validWord2];
+        // eslint-disable-next-line dot-notation
+        dictionaryValidationService['checkWordInDictionary'](wordList);
+        // eslint-disable-next-line dot-notation
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(0);
+    });
+
+    it('should call calculateTurnPoints() and checkWordInDictionary() when validateWord() is called', () => {
+        const spycalculateTurnPoints = Sinon.spy(dictionaryValidationService, 'calculateTurnPoints' as keyof DictionaryValidationService);
+        const spyCcheckWordInDictionary = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
         dictionaryValidationService.validateWord(validWord1, gameboard);
-        expect(spyIsolate.calledOnce && spyCheckWord.calledOnce).to.be.true;
+        expect(spycalculateTurnPoints.called && spyCcheckWordInDictionary.called).to.be.true;
     });
 
-    it('should call calculatePoints() when validateWord is called for each word in the list if there is no invalid words', () => {
+    it('should call isolateInvalidWords() when calculateTurnPoints() is called', () => {
+        const spyisolateInvalidWords = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
+        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
+        expect(spyisolateInvalidWords.called).to.be.true;
+    });
+
+    it('should call calculateWordPoints() when calculateTurnPoints() is called for each word in the list if there is no invalid words', () => {
         const spyCalculate1 = Sinon.spy(validWord1, 'calculateWordPoints');
-        dictionaryValidationService.validateWord(validWord1, gameboard);
-        expect(spyCalculate1.calledOnce).to.be.true;
+        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
+        expect(spyCalculate1.called).to.be.true;
     });
 
     it('should not call calculatePoints() when validateWord() is called if there is at least one invalid word', () => {
@@ -86,19 +108,6 @@ describe('Dictionary Validation Service', () => {
         dictionaryValidationService.validateWord(invalidWord2, gameboard);
         expect(spyCalculate1.called).to.be.false;
     });
-
-    //TODO
-    // it('should return correct points number when validateWord() is called and wordList is valid', () => {
-    //     const stubCalculate1 = Sinon.stub(validWord1, 'calculateWordPoints');
-    //     stubCalculate1.returns(10);
-    //     expect(dictionaryValidationService.validateWord(validWord1, gameboard)).to.equal(10);
-    // });
-
-    // it('should return correct points number when validateWord() is called and wordList is valid', () => {
-    //     const stubCalculate2 = Sinon.stub(validWord2, 'calculateWordPoints');
-    //     stubCalculate2.returns(20);
-    //     expect(dictionaryValidationService.validateWord(validWord2, gameboard)).to.equal(20);
-    // });
 
     it('should return 0 points when validateWord() is called and wordList is invalid', () => {
         expect(dictionaryValidationService.validateWord(invalidWord1, gameboard)).to.equal(0);

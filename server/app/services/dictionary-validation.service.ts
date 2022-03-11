@@ -21,7 +21,7 @@ export class DictionaryValidationService {
     }
 
     validateWord(word: Word, gameboard: Gameboard): number {
-        const foundWords = Word.findAdjacentWords(word, gameboard); // TODO: take out repitition of word
+        const foundWords = Word.findAdjacentWords(word, gameboard);
         this.checkWordInDictionary(foundWords);
         return this.calculateTurnPoints(foundWords, gameboard);
     }
@@ -47,7 +47,7 @@ export class DictionaryValidationService {
         }
     }
 
-    private isolateInvalidWords(foundWords: Word[]): boolean {
-        return foundWords.filter((word) => word.isValid === false).length !== 0;
+    private isolateInvalidWords(foundWords: Word[]): [boolean, Word[]] {
+        return [foundWords.filter((word) => word.isValid === false).length !== 0, foundWords.filter((word) => word.isValid === false)];
     }
 }

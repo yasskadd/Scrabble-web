@@ -110,6 +110,7 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const firstCoordinateColumns = commandInfo.firstCoordinate.x;
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
+        console.log(commandInfo);
         const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as RealPlayer;
         const play = player.placeLetter(commandInfo) as [boolean, Gameboard] | string;

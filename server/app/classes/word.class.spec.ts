@@ -11,12 +11,6 @@ describe('Word', () => {
     });
 
     describe('Constructor tests', () => {
-        // TODO ??
-        // it('setAttributes should return empty word if coordList is empty', () => {
-        //     word = new Word({} as CommandInfo, gameboard);
-        //     expect(word).to.eql({} as Word);
-        // });
-
         describe('setAttributes should build word with string abc if all placedLetters form abc and word is horizontal', () => {
             beforeEach(async () => {
                 word = new Word(
@@ -173,6 +167,7 @@ describe('Word', () => {
     // TODO
     context('isHorizontal is not specified', () => {});
 
+    // TODO : write more tests for find adjacent words ....
     describe('Find adjacent words', () => {
         it('findAdjacentWords() should return a single word if there are no words adjacent to itself', () => {
             word = new Word(
@@ -183,7 +178,7 @@ describe('Word', () => {
                 },
                 gameboard,
             );
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             const words: Word[] = Word.findAdjacentWords(word, gameboard);
 
             expect(words).to.have.lengthOf(1);
@@ -200,7 +195,7 @@ describe('Word', () => {
                 },
                 gameboard,
             );
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
 
             const words: Word[] = Word.findAdjacentWords(word, gameboard);
             const stringList: string[] = words.map((word) => {
@@ -223,7 +218,7 @@ describe('Word', () => {
                 },
                 gameboard,
             );
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
 
             const words: Word[] = Word.findAdjacentWords(word, gameboard);
             const stringList: string[] = words.map((word) => {
@@ -234,6 +229,7 @@ describe('Word', () => {
             expect(stringList).to.include.members(['abc', 'abc', 'ca']);
         });
 
+        // TODO
         // it('findAdjacentWords() should return empty array if coordList is empty', () => {
         //     expect(Word.findAdjacentWords({} as Word, gameboard)).to.eql([]);
         // });
@@ -242,61 +238,61 @@ describe('Word', () => {
     context('Calculate points', () => {
         it('should correctly calculate points if there is no multiplier', () => {
             word = new Word({ isHorizontal: true, firstCoordinate: { x: 9, y: 8 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(2);
         });
 
         it('should correctly calculate points if word is Horizontal and on letterMultiplier by 2', () => {
             word = new Word({ isHorizontal: true, firstCoordinate: { x: 4, y: 1 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(3);
         });
 
         it('should correctly calculate points if word is vertical and on letterMultiplier by 2', () => {
             word = new Word({ isHorizontal: false, firstCoordinate: { x: 4, y: 1 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(3);
         });
 
         it('should correctly calculate points if word is Horizontal and on letterMultiplier by 3', () => {
             word = new Word({ isHorizontal: true, firstCoordinate: { x: 6, y: 2 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(4);
         });
 
         it('should correctly calculate points if word is vertical and on letterMultiplier by 3', () => {
             word = new Word({ isHorizontal: false, firstCoordinate: { x: 6, y: 1 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(4);
         });
 
         it('should correctly calculate points if word is Horizontal and on wordMultiplier by 2', () => {
             word = new Word({ isHorizontal: true, firstCoordinate: { x: 8, y: 8 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(4);
         });
 
         it('should correctly calculate points if word is vertical and on wordMultiplier by 2', () => {
             word = new Word({ isHorizontal: false, firstCoordinate: { x: 8, y: 8 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(4);
         });
 
         it('should correctly calculate points if word is Horizontal and on wordMultiplier by 3', () => {
             word = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 8 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(6);
         });
 
         it('should correctly calculate points if word is vertical and on wordMultiplier by 3', () => {
             word = new Word({ isHorizontal: false, firstCoordinate: { x: 1, y: 8 }, letters: ['a', 'a'] }, gameboard);
-            placeLetters(word, gameboard);
+            placeLettersWordTest(word, gameboard);
             expect(word.calculateWordPoints(gameboard)).to.equal(6);
         });
     });
 });
 
-function placeLetters(word: Word, gameboard: Gameboard) {
+function placeLettersWordTest(word: Word, gameboard: Gameboard) {
     let stringArray = word.stringFormat.split('');
     word.newLetterCoords.forEach((coord) => {
         gameboard.placeLetter(coord, stringArray[0]);

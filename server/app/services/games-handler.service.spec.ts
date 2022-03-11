@@ -190,6 +190,7 @@ describe('GamesHandler Service', () => {
         expect(endGameStub.called).to.equal(true);
         expect(sendHighScoreStub.called).to.equal(true);
     });
+
     it('sendTimer() should call emitRoom() with the correct parameters', () => {
         // eslint-disable-next-line dot-notation
         gamesHandler['sendTimer'](ROOM, 0);
@@ -248,6 +249,7 @@ describe('GamesHandler Service', () => {
 
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.Skip, game));
     });
+
     it('changeTurn() should emit that the game ended when the active player is undefined', () => {
         const game = {
             gameboard: { gameboardCoords: [] },
@@ -292,12 +294,14 @@ describe('GamesHandler Service', () => {
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave));
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd));
     });
+
     it("abandonGame() shouldn't do anything if the player isn't in the map ()", () => {
         // eslint-disable-next-line dot-notation
         gamesHandler['abandonGame'](serverSocket);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd)).to.not.be.equal(true);
     });
+
     context('Two Clientsocket tests', () => {
         let secondSocket: Socket;
         let playerOne: sinon.SinonStubbedInstance<RealPlayer>;

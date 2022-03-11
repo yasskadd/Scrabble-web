@@ -50,7 +50,7 @@ export class Word {
         } else return coord;
     }
 
-    decrementBackwardPosition(backwardPosition: Coordinate) {
+    private decrementBackwardPosition(backwardPosition: Coordinate) {
         if (this.isHorizontal) backwardPosition.x--;
         else backwardPosition.y--;
     }
@@ -71,29 +71,29 @@ export class Word {
         this.checkValidity(commandLettersCopy);
     }
 
-    addNewLetter(position: Coordinate, commandLettersCopy: string[]) {
+    private addNewLetter(position: Coordinate, commandLettersCopy: string[]) {
         this.stringFormat += commandLettersCopy[0];
         commandLettersCopy.shift();
         this.wordCoords.push({ ...position });
         this.newLetterCoords.push({ ...position });
     }
 
-    addGameboardLetter(position: Coordinate, gameboard: Gameboard) {
+    private addGameboardLetter(position: Coordinate, gameboard: Gameboard) {
         this.wordCoords.push({ ...position });
         this.stringFormat += gameboard.getLetterTile({ ...position }).letter;
     }
 
-    incrementPosition(position: Coordinate) {
+    private incrementPosition(position: Coordinate) {
         if (this.isHorizontal) position.x++;
         else position.y++;
     }
 
-    checkValidity(commandLettersCopy: string[]) {
+    private checkValidity(commandLettersCopy: string[]) {
         if (commandLettersCopy.length !== 0) this.isValid = false;
         if (this.wordCoords.length < 2) this.isValid = false;
     }
 
-    isWithinBoardLimits(coord: Coordinate): boolean {
+    private isWithinBoardLimits(coord: Coordinate): boolean {
         return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
     }
 
