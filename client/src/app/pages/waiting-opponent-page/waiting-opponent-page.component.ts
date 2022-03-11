@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SoloDifficultyDialogBoxComponent } from '@app/components/solo-difficulty-dialog-box/solo-difficulty-dialog-box.component';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
 @Component({
@@ -10,11 +12,14 @@ import { GameConfigurationService } from '@app/services/game-configuration.servi
 })
 export class WaitingOpponentPageComponent implements OnInit {
     gameMode: string;
+    private readonly dialogWidth: string = '40%';
+    private readonly dialogHeight: string = '30%';
     constructor(
         public gameConfiguration: GameConfigurationService,
         public router: Router,
         public snackBar: MatSnackBar,
         private activatedRoute: ActivatedRoute,
+        public dialog: MatDialog,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
     }
@@ -39,7 +44,15 @@ export class WaitingOpponentPageComponent implements OnInit {
         });
     }
 
-    /// soloMode() {} Implementation for sprint 2
+    soloMode() {
+        this.gameConfiguration.setGameUnavailable();
+        this.dialog.open(SoloDifficultyDialogBoxComponent, {
+            width: this.dialogWidth,
+            height: this.dialogHeight,
+            panelClass: 'soloDifficulty',
+            disableClose: true,
+        });
+    }
 
     rejectOpponent() {
         this.gameConfiguration.rejectOpponent();

@@ -28,7 +28,6 @@ export class InformationPanelComponent {
     abandonGame(): void {
         this.dialog.open(AbandonGameDialogBoxComponent, {
             width: this.dialogWidth,
-            backdropClass: 'abandonDialogComponent',
             panelClass: 'abandonDialogComponent',
             disableClose: true,
         });
