@@ -110,13 +110,6 @@ describe('InformationPanelComponent', () => {
         expect(testedValue).toEqual(expectedValue);
     });
 
-    it('should call the method gameClientService.updateGameboard if updateFontSize is called', () => {
-        // const newSize = 28;
-        // const spy = spyOn(component, 'updateFontSize');
-        // // expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
-        // expect(spy).toHaveBeenCalled();
-    });
-
     it('should have a div with the timer when it is your turn to play', () => {
         gameClientSpy.playerOneTurn = true;
         fixture.detectChanges();
