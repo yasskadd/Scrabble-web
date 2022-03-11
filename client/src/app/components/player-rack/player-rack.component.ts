@@ -3,6 +3,7 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { Letter } from '@common/letter';
 
 @Component({
@@ -16,9 +17,11 @@ export class PlayerRackComponent {
     lettersToExchange: number[] = [];
     clicked: number[] = [];
     constructor(
+        // I think there's too many services in this component (╯‵□′)╯︵┻━┻
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,
-        private tmpService: GridService,
+        public letterPlacementService: LetterPlacementService,
+        private gridService: GridService,
         private eRef: ElementRef,
     ) {}
 
@@ -30,10 +33,10 @@ export class PlayerRackComponent {
     }
 
     get letterSize(): number {
-        return this.tmpService.letterSize;
+        return this.gridService.letterSize;
     }
     get pointsSize(): number {
-        return this.tmpService.letterSize * constants.LETTER_WEIGHT_RATIO;
+        return this.gridService.letterSize * constants.LETTER_WEIGHT_RATIO;
     }
     get rack(): Letter[] {
         return this.gameClient.playerOne.rack;
@@ -55,6 +58,16 @@ export class PlayerRackComponent {
             }
         }
     }
+
+    // Added function -------------------------------------
+    // TODO : TEST
+    playPlacedLetters() {
+        this.letterPlacementService.submitPlacement();
+    }
+    get noPlacedLetters(): boolean {
+        return this.letterPlacementService.noLettersPlaced();
+    }
+    // -----------------------------------------------------
 
     exchange() {
         let letters = '';

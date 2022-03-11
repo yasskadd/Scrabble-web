@@ -34,7 +34,7 @@ export class LetterPlacementService {
     }
 
     submitPlacement() {
-        if (this.placedLetters.length === 0) return;
+        if (this.noLettersPlaced()) return;
         const ASCII_ALPHABET_START = 96;
         const direction = this.isHorizontal ? 'h' : 'v';
         const verticalPlacement = String.fromCharCode(this.startTile.y + ASCII_ALPHABET_START);
@@ -43,7 +43,7 @@ export class LetterPlacementService {
     }
 
     undoPlacement() {
-        if (this.placedLetters.length === 0) return;
+        if (this.noLettersPlaced()) return;
         this.resetGameBoardView();
         this.gameClientService.playerOne.rack.push(this.placedLetters.pop() as Letter);
         this.hasPlacingEnded = false;
@@ -96,6 +96,10 @@ export class LetterPlacementService {
     // Might not be the best place to put it
     setCanvas(canvas: CanvasRenderingContext2D) {
         this.gridService.gridContext = canvas;
+    }
+
+    noLettersPlaced() {
+        return this.placedLetters.length === 0;
     }
 
     private updateLettersView() {
