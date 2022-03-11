@@ -36,6 +36,9 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.letterService.submitPlacement();
                 break;
             }
+            case 'Shift': {
+                break;
+            }
             case 'Escape': {
                 this.letterService.undoEverything();
                 break;

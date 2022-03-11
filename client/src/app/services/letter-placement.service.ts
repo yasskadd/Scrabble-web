@@ -6,6 +6,9 @@ import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 
+// might put it somewhere else later
+const INDEX_NOT_FOUND = -1;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -25,11 +28,11 @@ export class LetterPlacementService {
 
     handlePlacement(letterValue: string) {
         if (!this.isPlacingActive || this.hasPlacingEnded) return;
-        const INDEX_NOT_FOUND = -1;
-        // TODO : WHITE LETTERS IMPLEMENTATION
-        const indexOfLetter = this.gameClientService.playerOne.rack.findIndex((letter) => letter.value === letterValue);
+        const normalizedLetter = this.normalizeLetter(letterValue);
+        const indexOfLetter = this.findLetterFromRack(normalizedLetter);
         if (indexOfLetter === INDEX_NOT_FOUND) return;
         const placedLetter = this.gameClientService.playerOne.rack.splice(indexOfLetter, 1)[0];
+        if (placedLetter.value === '*') placedLetter.value = letterValue;
         this.placeLetter(placedLetter);
     }
 
@@ -45,13 +48,16 @@ export class LetterPlacementService {
     undoPlacement() {
         if (this.noLettersPlaced()) return;
         this.resetGameBoardView();
-        this.gameClientService.playerOne.rack.push(this.placedLetters.pop() as Letter);
+        const letter = this.placedLetters.pop() as Letter;
+        letter.value = this.treatLetter(letter.value);
+        this.gameClientService.playerOne.rack.push(letter);
         this.hasPlacingEnded = false;
         this.updateLettersView();
     }
 
     undoEverything() {
         this.placedLetters.forEach((letter) => {
+            letter.value = this.treatLetter(letter.value);
             this.gameClientService.playerOne.rack.push(letter);
         });
         this.resetView();
@@ -102,14 +108,25 @@ export class LetterPlacementService {
         return this.placedLetters.length === 0;
     }
 
+    private normalizeLetter(letterValue: string): string {
+        return letterValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '');
+    }
+    private treatLetter(letterValue: string): string {
+        if (letterValue === letterValue.toLowerCase()) return letterValue;
+        return '*';
+    }
+
+    private findLetterFromRack(letterValue: string) {
+        const letterTreated = this.treatLetter(letterValue);
+        return this.gameClientService.playerOne.rack.findIndex((letter) => letter.value === letterTreated);
+    }
+
     private updateLettersView() {
         let placementPosition = this.startTile;
         this.placedLetters.forEach((letter) => {
             placementPosition = this.computeNextCoordinate(placementPosition);
             this.gridService.drawUnfinalizedLetter(placementPosition, letter);
-            // TODO: refactor
-            if (this.isHorizontal) placementPosition.x++;
-            else placementPosition.y++;
+            this.incrementByOne(placementPosition);
         });
         placementPosition = this.computeNextCoordinate(placementPosition);
         if (this.isOutOfBound(placementPosition)) {
@@ -125,10 +142,14 @@ export class LetterPlacementService {
             ? { ...startingPoint, x: startingPoint.x + positionFromStart }
             : { ...startingPoint, y: startingPoint.y + positionFromStart };
         while (!this.isOutOfBound(computedPosition) && this.gameClientService.gameboard[this.getArrayIndex(computedPosition)].isOccupied) {
-            if (this.isHorizontal) computedPosition.x++;
-            else computedPosition.y++;
+            this.incrementByOne(computedPosition);
         }
         return computedPosition;
+    }
+
+    private incrementByOne(coordinate: Coordinate) {
+        if (this.isHorizontal) coordinate.x++;
+        else coordinate.y++;
     }
 
     private setPropreties() {
