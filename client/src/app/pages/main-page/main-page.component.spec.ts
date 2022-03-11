@@ -43,10 +43,19 @@ describe('MainPageComponent', () => {
 
     it('openDialog() should open the dialog', () => {
         const stubParameter = '';
-        const dialogSpy = spyOn(component.dialog, 'open');
+        // eslint-disable-next-line dot-notation
+        const dialogSpy = spyOn(component['dialog'], 'open');
         component.openDialog(stubParameter);
         expect(dialogSpy).toHaveBeenCalled();
     });
+
+    it('openHighScoreDialog() should open the dialog', () => {
+        // eslint-disable-next-line dot-notation
+        const dialogSpy = spyOn(component['highScore'], 'open');
+        component.openHighScoreDialog();
+        expect(dialogSpy).toHaveBeenCalled();
+    });
+
     it('The Classic button should pass the Classique game mode', () => {
         const CLASSIC_GAME_MODE = 'classique';
         const openDialogSpy = spyOn(component, 'openDialog');

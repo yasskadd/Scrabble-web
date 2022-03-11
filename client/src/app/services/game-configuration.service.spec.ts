@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { SocketEvents } from '@common/socket-events';
@@ -61,6 +62,24 @@ describe('GameConfigurationService', () => {
         service.beginScrabbleGame();
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.StartScrabbleGame, roomID);
     });
+
+    it("beginScrabbleGame() should assign the value of the opponent's name if called with", () => {
+        // eslint-disable-next-line dot-notation
+        const roomID = '1';
+        service.roomInformation.roomId = roomID;
+        service.beginScrabbleGame('Vincent');
+        expect(service.roomInformation.playerName[1]).toEqual('Vincent');
+    });
+
+    it("beginScrabbleGame() should  not assign the value of the opponent's name if not called with", () => {
+        // eslint-disable-next-line dot-notation
+        const roomID = '1';
+        service.roomInformation.roomId = roomID;
+        service.roomInformation.playerName[1] = '';
+        service.beginScrabbleGame();
+        expect(service.roomInformation.playerName[1]).toEqual('');
+    });
+
     it('joinPage() send a command to the server to tell that a player wants to join a multiplayer game', () => {
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
@@ -97,13 +116,29 @@ describe('GameConfigurationService', () => {
     });
 
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
-        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique' };
+        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique', isMultiplayer: true };
         const testStatusGame = "En Attente d'un Adversaire ...";
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.gameInitialization(testGameConfiguration);
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.CreateGame, testGameConfiguration);
         expect(service.roomInformation.playerName[0]).toEqual(testGameConfiguration.username);
+        expect(service.roomInformation.isCreator).toBeTruthy();
+        expect(service.roomInformation.statusGame).toEqual(testStatusGame);
+    });
+
+    it('gameInitialization() should  should set opponent game when the player wants to start a solo game', () => {
+        const testGameConfiguration = {
+            username: 'Pauline',
+            opponent: 'Bob',
+            dictionary: 'francais',
+            timer: 1,
+            mode: 'classique',
+            isMultiplayer: true,
+        };
+        const testStatusGame = 'Adversaire Trouvé';
+        service.gameInitialization(testGameConfiguration);
+        expect(service.roomInformation.playerName[1]).toEqual(testGameConfiguration.opponent);
         expect(service.roomInformation.isCreator).toBeTruthy();
         expect(service.roomInformation.statusGame).toEqual(testStatusGame);
     });
@@ -129,6 +164,7 @@ describe('GameConfigurationService', () => {
         service.exitWaitingRoom();
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.ExitWaitingRoom, { id: roomID, name: playerName });
     });
+
     it('removeRoom() should  send a command to the server to removeRoom from the the games when a player decide to return to the create page', () => {
         const roomID = '1';
         // eslint-disable-next-line dot-notation
@@ -197,23 +233,66 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.roomId).toEqual(roomId);
     });
 
+    it('setGameUnavailable should send a event to the server with the room Id to make the room Unavailable', () => {
+        const roomId = '1';
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        service.roomInformation.roomId = roomId;
+        service.setGameUnavailable();
+        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameUnavailable, roomId);
+    });
+
+    it('setGameAvailable should send a event to the server with the room Id to make the room Available', () => {
+        const roomId = '1';
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        service.roomInformation.roomId = roomId;
+        service.setGameAvailable();
+        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameAvailable, roomId);
+    });
+
     it('should handle foundOpponent event with the username of the opponent that wants to join his game', () => {
         const opponentName = 'Marcel';
-        const statusGame = 'Adversaire Trouvé';
+        const spyONFoundAnOpponentEvent = spyOn(service, 'foundAnOpponentEvent' as never);
         socketEmulator.peerSideEmit(SocketEvents.FoundAnOpponent, opponentName);
+        expect(spyONFoundAnOpponentEvent).toHaveBeenCalled();
+    });
+
+    it('foundOpponentEvent should set certain attribute', () => {
+        const opponentName = 'Marcel';
+        const statusGame = 'Adversaire Trouvé';
+        // eslint-disable-next-line dot-notation
+        service['foundAnOpponentEvent'](opponentName);
         expect(service.roomInformation.playerName[1]).toEqual(opponentName);
         expect(service.roomInformation.statusGame).toEqual(statusGame);
     });
 
     it('should handle gameAboutToStart event to inform the player of the room that the game is about to start ', () => {
-        const spyONResetIsGameStarted = spyOn(service, 'setIsGameStartedSubject');
+        const spyONGameAboutToStartEvent = spyOn(service, 'gameAboutToStartEvent' as never);
         socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart);
+        expect(spyONGameAboutToStartEvent).toHaveBeenCalled();
+    });
+
+    it('gameAboutToStartEvent should call setIsGameStartedSubject', () => {
+        const socketIDUserRoom = ['346574gdvb', 'dsfhg56ter'];
+        const spyONResetIsGameStarted = spyOn(service, 'setIsGameStartedSubject');
+        // eslint-disable-next-line dot-notation
+        service['gameAboutToStartEvent'](socketIDUserRoom);
         expect(spyONResetIsGameStarted).toHaveBeenCalled();
     });
+
     it('should handle rejectByOtherPlayer event with a reason why he was rejected from the other player ', () => {
         const playerRejectFromRoomError = "L'adversaire à rejeter votre demande";
-        const spyOnResetErrorSubject = spyOn(service, 'setErrorSubject');
+        const spyOnRejectByOtherPlayerEvent = spyOn(service, 'rejectByOtherPlayerEvent' as never);
         socketEmulator.peerSideEmit(SocketEvents.RejectByOtherPlayer, playerRejectFromRoomError);
+        expect(spyOnRejectByOtherPlayerEvent).toHaveBeenCalled();
+    });
+
+    it('rejectByOtherPlayerEvent should set certain attribute and call setErrorSubject', () => {
+        const playerRejectFromRoomError = "L'adversaire à rejeter votre demande";
+        const spyOnResetErrorSubject = spyOn(service, 'setErrorSubject');
+        // eslint-disable-next-line dot-notation
+        service['rejectByOtherPlayerEvent'](playerRejectFromRoomError);
         expect(spyOnResetErrorSubject).toHaveBeenCalled();
         expect(service.roomInformation.roomId).toEqual('');
         expect(service.roomInformation.statusGame).toEqual('');
@@ -221,21 +300,39 @@ describe('GameConfigurationService', () => {
 
     it('should handle joinValid event with the name of the other player in the game you want to join ', () => {
         const playerName = 'Marc';
+        const spyOnjoinValidGameEvent = spyOn(service, 'joinValidGameEvent' as never);
+        socketEmulator.peerSideEmit(SocketEvents.JoinValidGame, playerName);
+        expect(spyOnjoinValidGameEvent).toHaveBeenCalled();
+    });
+
+    it('joinValidGameEvent should set certain attribute and call setRoomJoinableSubject', () => {
+        const playerName = 'Marc';
         const statusGame = "En Attente de la confirmation de L'adversaire";
         const isCreator = false;
         const spyOnResetRoomJoinableSubject = spyOn(service, 'setRoomJoinableSubject');
-        socketEmulator.peerSideEmit(SocketEvents.JoinValidGame, playerName);
+        // eslint-disable-next-line dot-notation
+        service['joinValidGameEvent'](playerName);
         expect(spyOnResetRoomJoinableSubject).toHaveBeenCalled();
         expect(service.roomInformation.isCreator).toEqual(isCreator);
         expect(service.roomInformation.playerName[1]).toEqual(playerName);
         expect(service.roomInformation.statusGame).toEqual(statusGame);
     });
+
     it('should handle OpponentLeave event to remove the player name of the second player ', () => {
+        const playerNames = ['Marc', 'Maurice'];
+        const spyOnOpponentLeaveEvent = spyOn(service, 'opponentLeaveEvent' as never);
+        service.roomInformation.playerName = playerNames;
+        socketEmulator.peerSideEmit(SocketEvents.OpponentLeave);
+        expect(spyOnOpponentLeaveEvent).toHaveBeenCalled();
+    });
+
+    it('opponentLeaveEvent should set certain attribute', () => {
         const playerNames = ['Marc', 'Maurice'];
         const searchingOpponent = "En Attente d'un Adversaire ...";
         service.roomInformation.playerName = playerNames;
         expect(service.roomInformation.playerName.length).toEqual(2);
-        socketEmulator.peerSideEmit(SocketEvents.OpponentLeave);
+        // eslint-disable-next-line dot-notation
+        service['opponentLeaveEvent']();
         expect(service.roomInformation.playerName.length).toEqual(1);
         expect(service.roomInformation.statusGame).toEqual(searchingOpponent);
     });

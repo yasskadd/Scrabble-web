@@ -1,9 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { Vec2 } from '@app/classes/vec2';
+import * as constants from '@app/constants';
+import { Vec2 } from '@app/interfaces/vec2';
 import { GridService } from '@app/services/grid.service';
-
-export const DEFAULT_WIDTH = 610;
-export const DEFAULT_HEIGHT = 750;
+import { Subject } from 'rxjs';
 
 export enum MouseButton {
     Left = 0,
@@ -21,23 +20,22 @@ export enum MouseButton {
 export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
 
+    keyboardParentSubject: Subject<KeyboardEvent> = new Subject();
+    clickParentSubject: Subject<MouseEvent> = new Subject();
     mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
-    private canvasSize = { x: DEFAULT_WIDTH, y: DEFAULT_HEIGHT };
+    private canvasSize = { x: constants.GRID_CANVAS_WIDTH, y: constants.GRID_CANVAS_HEIGHT };
 
     constructor(private readonly gridService: GridService) {}
 
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
+        this.keyboardParentSubject.next(event);
     }
 
     ngAfterViewInit(): void {
         this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
-        // this.gridService.drawGrid();
-        // this.gridService.drawWord('Scrabble');
-
-        this.gridCanvas.nativeElement.focus();
     }
 
     get width(): number {

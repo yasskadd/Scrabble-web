@@ -15,6 +15,49 @@
     width: 320px;
     box-shadow: 1px 3px 2px -2px rgba(0, 0, 0, 0.2), 1px 2px 2px 1px rgba(0, 0, 0, 0.14), 1px 2px 4px 1px rgba(0, 0, 0, 0.12);
 }
+.rack-letter {
+    border-collapse: collapse;
+    background-color: #facc8b;
+    border: 2px solid black;
+    border-right: 0px;
+    width: 40px;
+    height: 40px;
+}
+.rack-letter-exchange-selected {
+    border-collapse: collapse;
+    background-color: #7949d1;
+    border: 2px solid black;
+    border-right: 0px;
+    width: 40px;
+    height: 40px;
+}
+
+.rack-letter-manipulate-selected {
+    border-collapse: collapse;
+    background-color: #76ca92;
+    border: 2px solid black;
+    border-right: 0px;
+    width: 40px;
+    height: 40px;
+}
+
+.rack-letter:last-child {
+    border: 2px solid black;
+}
+.rack-letter-exchange-selected:last-child {
+    border: 2px solid black;
+}
+.rack-letter-manipulate-selected:last-child {
+    border: 2px solid black;
+}
+.letter-value {
+    text-align: center;
+    vertical-align: middle;
+}
+.letter-points {
+    text-align: right;
+    vertical-align: bottom;
+}
 
 button {
     margin-left: 10px;

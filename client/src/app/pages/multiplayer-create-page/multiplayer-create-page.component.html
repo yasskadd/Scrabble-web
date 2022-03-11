@@ -7,12 +7,17 @@
             <input matInput type="text" [(ngModel)]="playerName" placeholder="Ex. Robert" />
         </mat-form-field>
 
-        <mat-card-title>Minuterie</mat-card-title>
-        <mat-form-field appearance="fill">
-            <mat-label>Temps</mat-label>
-            <mat-select disabled required> </mat-select>
-            <mat-option value="1" disabled>1 minute</mat-option>
-        </mat-form-field>
+        <form [formGroup]="form">
+            <mat-card-title>Minuterie</mat-card-title>
+            <mat-form-field appearance="fill">
+                <mat-label>Temps</mat-label>
+                <mat-select id="timer-select" formControlName="timer">
+                    <mat-option id="timer-options" *ngFor="let time of this.timerList" [value]="time">
+                        {{ this.secondToMinute(time) }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </form>
 
         <mat-card-title>Dictionnaire</mat-card-title>
         <mat-form-field appearance="fill">

@@ -5,6 +5,6 @@
 </mat-card>
 <mat-form-field appearance="outline" (keydown.enter)="submit()" class="user-input">
     <mat-label>Entrez une message</mat-label>
-    <input id="input" matInput type="text" [formControl]="input" placeholder="Ex. Salut!" #chatbox />
-    <mat-error *ngIf="input.invalid" class="error"> Vous dépassez <strong>512 caractères</strong> </mat-error>
+    <input id="input" matInput maxlength="512" type="text" [formControl]="input" placeholder="Ex. Salut!" #chatbox />
+    <mat-hint align="end">{{ input.value?.length || 0 }}/512</mat-hint>
 </mat-form-field>

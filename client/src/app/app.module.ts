@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -18,12 +19,14 @@ import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { AbandonGameDialogBoxComponent } from './components/abandon-game-dialog-box/abandon-game-dialog-box.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
+import { HighScoresComponent } from './components/high-scores/high-scores.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
+import { SoloDifficultyDialogBoxComponent } from './components/solo-difficulty-dialog-box/solo-difficulty-dialog-box.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -44,8 +47,11 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         InformationPanelComponent,
         PlayerRackComponent,
         AbandonGameDialogBoxComponent,
+        HighScoresComponent,
+        SoloDifficultyDialogBoxComponent,
     ],
     imports: [
+        CommonModule,
         AppMaterialModule,
         AppRoutingModule,
         MatSnackBarModule,
