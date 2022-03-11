@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
+import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 
@@ -15,7 +16,7 @@ export class LetterPlacementService {
     private isPlacingActive: boolean;
     private hasPlacingEnded: boolean;
 
-    constructor(private gridService: GridService, private gameClientService: GameClientService) {
+    constructor(private gridService: GridService, private gameClientService: GameClientService, private chatboxService: ChatboxHandlerService) {
         this.setPropreties();
         this.gameClientService.gameboardUpdated.subscribe(() => {
             this.resetView();
@@ -32,27 +33,13 @@ export class LetterPlacementService {
         this.placeLetter(placedLetter);
     }
 
-    placeLetter(letter: Letter) {
-        if (!(this.gameClientService.playerOneTurn || this.isPlacingActive)) return;
-        this.placedLetters.push(letter);
-        this.updateLettersView();
-    }
-
-    updateLettersView() {
-        let placementPosition = this.startTile;
-        this.placedLetters.forEach((letter) => {
-            placementPosition = this.computeNextCoordinate(placementPosition);
-            this.gridService.drawUnfinalizedLetter(placementPosition, letter);
-            // TODO: refactor
-            if (this.isHorizontal) placementPosition.x++;
-            else placementPosition.y++;
-        });
-        placementPosition = this.computeNextCoordinate(placementPosition);
-        if (this.isOutOfBound(placementPosition)) {
-            this.hasPlacingEnded = true;
-            return;
-        }
-        this.gridService.drawArrow(placementPosition, this.isHorizontal);
+    submitPlacement() {
+        if (this.placedLetters.length === 0) return;
+        const ASCII_ALPHABET_START = 96;
+        const direction = this.isHorizontal ? 'h' : 'v';
+        const verticalPlacement = String.fromCharCode(this.startTile.y + ASCII_ALPHABET_START);
+        const lettersToSubmit = this.placedLetters.map((letter) => letter.value).join('');
+        this.chatboxService.submitMessage(`!placer ${verticalPlacement}${this.startTile.x}${direction} ${lettersToSubmit}`);
     }
 
     undoPlacement() {
@@ -68,20 +55,6 @@ export class LetterPlacementService {
             this.gameClientService.playerOne.rack.push(letter);
         });
         this.resetView();
-    }
-
-    resetView() {
-        this.resetGameBoardView();
-        this.setPropreties();
-    }
-
-    resetGameBoardView() {
-        this.gridService.drawGrid(this.gameClientService.gameboard);
-    }
-
-    // Might not be the best place to put it
-    setCanvas(canvas: CanvasRenderingContext2D) {
-        this.gridService.gridContext = canvas;
     }
 
     placeLetterStartPosition(coordinate: Coordinate) {
@@ -103,6 +76,43 @@ export class LetterPlacementService {
         this.isHorizontal = true;
         this.gridService.drawArrow(position, this.isHorizontal);
         this.isPlacingActive = true;
+    }
+
+    placeLetter(letter: Letter) {
+        if (!(this.gameClientService.playerOneTurn || this.isPlacingActive)) return;
+        this.placedLetters.push(letter);
+        this.updateLettersView();
+    }
+
+    resetView() {
+        this.resetGameBoardView();
+        this.setPropreties();
+    }
+
+    resetGameBoardView() {
+        this.gridService.drawGrid(this.gameClientService.gameboard);
+    }
+
+    // Might not be the best place to put it
+    setCanvas(canvas: CanvasRenderingContext2D) {
+        this.gridService.gridContext = canvas;
+    }
+
+    private updateLettersView() {
+        let placementPosition = this.startTile;
+        this.placedLetters.forEach((letter) => {
+            placementPosition = this.computeNextCoordinate(placementPosition);
+            this.gridService.drawUnfinalizedLetter(placementPosition, letter);
+            // TODO: refactor
+            if (this.isHorizontal) placementPosition.x++;
+            else placementPosition.y++;
+        });
+        placementPosition = this.computeNextCoordinate(placementPosition);
+        if (this.isOutOfBound(placementPosition)) {
+            this.hasPlacingEnded = true;
+            return;
+        }
+        this.gridService.drawArrow(placementPosition, this.isHorizontal);
     }
 
     // TODO: refactor if positionFromStart isn't useful

@@ -33,7 +33,7 @@ export class PlayAreaComponent implements AfterViewInit {
                 break;
             }
             case 'Enter': {
-                // statements;
+                this.letterService.submitPlacement();
                 break;
             }
             case 'Escape': {
