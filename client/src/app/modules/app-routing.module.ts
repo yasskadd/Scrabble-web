@@ -11,6 +11,7 @@ const routes: Routes = [
     { path: '', redirectTo: '/home', pathMatch: 'full' },
     { path: 'home', component: MainPageComponent },
     { path: 'game', component: GamePageComponent },
+    { path: 'solo/:id', component: MultiplayerCreatePageComponent },
     { path: 'multijoueur/rejoindre/:id', component: MultiplayerJoinPageComponent },
     { path: 'multijoueur/creer/:id', component: MultiplayerCreatePageComponent },
     { path: 'multijoueur/salleAttente/:id', component: WaitingOpponentPageComponent },

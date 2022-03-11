@@ -26,6 +26,15 @@
             <mat-option value="francais" disabled>Francais</mat-option>
         </mat-form-field>
 
+        <form *ngIf="isSoloMode()">
+            <mat-card-title>Difficulté</mat-card-title>
+            <mat-form-field appearance="fill">
+                <mat-label>Difficulté</mat-label>
+                <mat-select disabled required> </mat-select>
+                <mat-option *ngFor="let difficulty of this.difficultyList" [value]="difficulty" disabled>Débutant</mat-option>
+            </mat-form-field>
+        </form>
+
         <div class="containerButton">
             <button class="returnButton" mat-icon-button routerLink="/home">
                 <mat-icon>navigate_before</mat-icon>
