@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
 
-describe.only('Word', () => {
+describe('Word', () => {
     let gameboard: Gameboard;
     let word: Word;
 
@@ -185,10 +185,8 @@ describe.only('Word', () => {
         });
 
         it('findAdjacentWords() should return an array of 2 words if there is one adjacent word', () => {
-            console.log('letter : ' + gameboard.getLetterTile({ x: 1, y: 2 }).letter);
             gameboard.placeLetter({ x: 1, y: 1 }, 'a');
             gameboard.placeLetter({ x: 2, y: 2 }, 'b');
-            console.log('letter : ' + gameboard.getLetterTile({ x: 1, y: 2 }).letter);
             commandInfo = {
                 firstCoordinate: { x: 1, y: 2 },
                 isHorizontal: false,
@@ -197,9 +195,7 @@ describe.only('Word', () => {
             word = new Word(commandInfo, gameboard);
             placeLettersWordTest(commandInfo, word, gameboard);
 
-            console.log('letter : ' + gameboard.getLetterTile({ x: 1, y: 2 }).letter);
             const newWord = new Word({ firstCoordinate: { x: 3, y: 2 }, isHorizontal: true, letters: ['b'] }, gameboard);
-            console.log(newWord);
 
             const words: Word[] = Word.findAdjacentWords(word, gameboard);
             const stringList: string[] = words.map((word) => {
