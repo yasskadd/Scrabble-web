@@ -29,6 +29,10 @@ export class CommandHandlerService {
                 this.clientSocket.send(SocketEvents.ReserveCommand);
                 break;
             }
+            case '!indice': {
+                this.clientSocket.send(SocketEvents.ClueCommand);
+                break;
+            }
             // No default
         }
     }
