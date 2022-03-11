@@ -58,7 +58,7 @@ describe('WaitingOpponentPageComponent', () => {
     beforeEach(async () => {
         gameConfigurationServiceSpy = jasmine.createSpyObj(
             'GameConfigurationService',
-            ['removeRoom', 'rejectOpponent', 'beginScrabbleGame', 'exitWaitingRoom'],
+            ['removeRoom', 'rejectOpponent', 'beginScrabbleGame', 'exitWaitingRoom', 'setGameUnavailable'],
             {
                 roomInformation: ROOM_INFORMATION,
                 errorReason: TEST_ERROR_REASON,
@@ -234,6 +234,17 @@ describe('WaitingOpponentPageComponent', () => {
         component.startGame();
         fixture.detectChanges();
         expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalled();
+    });
+
+    it('should open a dialog box if the soloMode method is called', () => {
+        const dialogSpy = spyOn(component.dialog, 'open');
+        component.soloMode();
+        expect(dialogSpy).toHaveBeenCalled();
+    });
+
+    it('should call gameConfiguration.setGameUnavailable if the soloMode method is called', () => {
+        component.soloMode();
+        expect(gameConfigurationServiceSpy.setGameUnavailable).toHaveBeenCalled();
     });
 
     it('should call joinGamePage when the isGameStarted value is true', () => {
