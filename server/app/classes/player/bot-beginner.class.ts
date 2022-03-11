@@ -17,7 +17,7 @@ export class BeginnerBot extends Player {
 
     choosePlayMove(commandInfoMap: Map<CommandInfo, number>) {
         const randomNumber = this.getRandomNumber(MAX_NUMBER);
-        if (this.inRange(randomNumber, 1, 1)) this.skipTurn();
+        if (this.inRange(randomNumber, 1, 1) || !commandInfoMap.size) this.skipTurn();
         else if (this.inRange(randomNumber, 2, 2)) this.exchangeLetter();
         else this.placeLetter(commandInfoMap);
     }
@@ -63,7 +63,7 @@ export class BeginnerBot extends Player {
             });
         }
         // chose a random commandInfo
-        const randomCommandInfo = commandInfoList[Math.random() * commandInfoList.length];
+        const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
         return this.game.play(this, randomCommandInfo);
     }
 
