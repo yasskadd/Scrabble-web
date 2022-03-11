@@ -13,19 +13,22 @@ export class LetterPlacementService {
     private placedLetters: Letter[];
     private isHorizontal: boolean;
     private isPlacingActive: boolean;
+    private hasPlacingEnded: boolean;
 
     constructor(private gridService: GridService, private gameClientService: GameClientService) {
         this.startTile = { x: 0, y: 0 };
         this.placedLetters = [];
         this.isHorizontal = true;
         this.isPlacingActive = false;
+        this.hasPlacingEnded = false;
 
         this.gameClientService.gameboardUpdated.subscribe(() => {
-            this.resetGameBoardView();
+            this.resetView();
         });
     }
 
     handlePlacement(letterValue: string) {
+        if (!this.isPlacingActive || this.hasPlacingEnded) return;
         const INDEX_NOT_FOUND = -1;
         const indexOfLetter = this.gameClientService.playerOne.rack.findIndex((letter) => letter.value === letterValue);
         if (indexOfLetter === INDEX_NOT_FOUND) return;
@@ -40,24 +43,36 @@ export class LetterPlacementService {
     }
 
     updateLettersView() {
-        this.placedLetters.forEach((letter, index) => {
-            this.gridService.drawUnfinalizedLetter(this.calculateNextCoordinate(index), letter);
+        let placementPosition = this.startTile;
+        this.placedLetters.forEach((letter) => {
+            placementPosition = this.computeNextCoordinate(placementPosition);
+            this.gridService.drawUnfinalizedLetter(placementPosition, letter);
+            // TODO: refactor
+            if (this.isHorizontal) placementPosition.x++;
+            else placementPosition.y++;
         });
-        const arrowPosition = this.calculateNextCoordinate(this.placedLetters.length);
-        this.gridService.drawArrow(arrowPosition, this.isHorizontal);
-    }
-
-    calculateNextCoordinate(positionFromStart: number): Coordinate {
-        return this.isHorizontal
-            ? { ...this.startTile, x: this.startTile.x + positionFromStart }
-            : { ...this.startTile, y: this.startTile.y + positionFromStart };
+        placementPosition = this.computeNextCoordinate(placementPosition);
+        if (placementPosition.x > constants.TOTAL_TILES_IN_ROW || placementPosition.y > constants.TOTAL_TILES_IN_COLUMN) {
+            this.hasPlacingEnded = true;
+            return;
+        }
+        this.gridService.drawArrow(placementPosition, this.isHorizontal);
     }
 
     undoPlacement() {
         if (this.placedLetters.length === 0) return;
         this.resetGameBoardView();
         this.gameClientService.playerOne.rack.push(this.placedLetters.pop() as Letter);
+        this.hasPlacingEnded = false;
         this.updateLettersView();
+    }
+
+    resetView() {
+        this.resetGameBoardView();
+        this.placedLetters = [];
+        this.isHorizontal = true;
+        this.isPlacingActive = false;
+        this.hasPlacingEnded = false;
     }
 
     resetGameBoardView() {
@@ -75,6 +90,7 @@ export class LetterPlacementService {
             !this.gameClientService.playerOneTurn ||
             this.isOutOfBound(coordinate) ||
             this.gameClientService.gameboard[this.getArrayIndex(position)].isOccupied
+            // || this.placedLetters.length !== 0
         )
             return;
         if (this.startTile.x === position.x && this.startTile.y === position.y) {
@@ -86,12 +102,25 @@ export class LetterPlacementService {
         this.gridService.drawArrow(position, true);
         this.isPlacingActive = true;
     }
+
+    // TODO: refactor if positionFromStart isn't useful
+    private computeNextCoordinate(startingPoint: Coordinate, positionFromStart: number = 0): Coordinate {
+        const resultPosition = this.isHorizontal
+            ? { ...startingPoint, x: startingPoint.x + positionFromStart }
+            : { ...startingPoint, y: startingPoint.y + positionFromStart };
+        while (this.gameClientService.gameboard[this.getArrayIndex(resultPosition)].isOccupied) {
+            if (this.isHorizontal) resultPosition.x++;
+            else resultPosition.y++;
+        }
+        return resultPosition;
+    }
+
     private isOutOfBound(coordinate: Coordinate): boolean {
         return coordinate.x === 0 || coordinate.y === 0;
     }
+
     private getArrayIndex(coordinate: Coordinate): number {
-        const TILES_IN_ROW = constants.TOTAL_COLUMNS - 1;
         const DISPLACEMENT = 1;
-        return coordinate.x - DISPLACEMENT + (coordinate.y - DISPLACEMENT) * TILES_IN_ROW;
+        return coordinate.x - DISPLACEMENT + (coordinate.y - DISPLACEMENT) * constants.TOTAL_TILES_IN_ROW;
     }
 }
