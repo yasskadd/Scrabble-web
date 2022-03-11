@@ -1,7 +1,13 @@
 <mat-card class="container">
     <mat-card-title>{{ this.gameConfiguration.roomInformation.statusGame }}</mat-card-title>
     <div id="soloModeButtonContainer">
-        <button *ngIf="this.gameConfiguration.roomInformation.isCreator" class="soloModeButton" mat-raised-button disabled>
+        <button
+            *ngIf="this.gameConfiguration.roomInformation.isCreator"
+            class="soloModeButton"
+            (click)="soloMode()"
+            mat-raised-button
+            [disabled]="this.gameConfiguration.roomInformation.playerName[1]"
+        >
             Rejoindre Partie Solo
         </button>
     </div>

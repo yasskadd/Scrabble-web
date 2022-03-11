@@ -49,6 +49,15 @@ export class GameSessions {
         this.socketManager.on(SocketEvents.RejectOpponent, (socket, roomId: string) => {
             this.rejectOpponent(socket, roomId);
         });
+
+        this.socketManager.io(SocketEvents.SetGameUnavailable, (sio, _, roomId: string) => {
+            this.setRoomUnavailable(sio, roomId);
+        });
+
+        this.socketManager.io(SocketEvents.SetGameAvailable, (sio, _, roomId: string) => {
+            this.setRoomAvailable(sio, roomId);
+        });
+
         this.socketManager.on(SocketEvents.JoinRoom, (socket, roomID: string) => {
             this.joinRoom(socket, roomID);
         });
@@ -63,6 +72,16 @@ export class GameSessions {
         this.socketManager.io(SocketEvents.Disconnect, (sio, socket) => {
             this.disconnect(sio, socket);
         });
+    }
+
+    private setRoomUnavailable(this: this, sio: Server, roomId: string) {
+        this.makeRoomUnavailable(roomId);
+        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
+    }
+
+    private setRoomAvailable(this: this, sio: Server, roomId: string) {
+        this.makeRoomAvailable(roomId);
+        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }
 
     private joinRoom(this: this, socket: Socket, roomID: string) {

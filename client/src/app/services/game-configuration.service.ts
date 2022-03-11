@@ -85,6 +85,14 @@ export class GameConfigurationService {
         this.errorReason = new ReplaySubject<string>(1);
     }
 
+    setGameUnavailable() {
+        this.clientSocket.send(SocketEvents.SetGameUnavailable, this.roomInformation.roomId);
+    }
+
+    setGameAvailable() {
+        this.clientSocket.send(SocketEvents.SetGameAvailable, this.roomInformation.roomId);
+    }
+
     removeRoom() {
         if (this.roomInformation.playerName[1]) {
             this.rejectOpponent();
@@ -126,7 +134,10 @@ export class GameConfigurationService {
         this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
-    beginScrabbleGame() {
+    beginScrabbleGame(opponent?: string) {
+        if (opponent !== undefined) {
+            this.roomInformation.playerName[1] = opponent;
+        }
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
 
