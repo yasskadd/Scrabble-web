@@ -327,9 +327,11 @@ describe('GamesHandler Service', () => {
             secondSocket = Client(`http://localhost:${port}`);
             secondSocket.on('connect', done);
         });
+
         afterEach(() => {
             secondSocket.close();
         });
+
         it('exchange() should emit the exchanged letters to the other player when an exchange occurs', (done) => {
             const LETTER = { value: 'LaStructureDuServeur' } as Letter;
             const player = sinon.createStubInstance(RealPlayer);
@@ -355,6 +357,7 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['exchange'](serverSocket, []);
         });
+
         it('updatePlayerInfo() should broadcast correct info to the first Player', (done) => {
             clientSocket.on(SocketEvents.UpdateOpponentInformation, (information) => {
                 expect(information).to.be.eql(playerOne.getInformation());
@@ -372,6 +375,7 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
         });
+
         it('updatePlayerInfo() should broadcast correct info to the second Player', (done) => {
             secondSocket.on(SocketEvents.UpdateOpponentInformation, (information) => {
                 expect(information).to.be.eql(playerTwo.getInformation());
@@ -389,6 +393,7 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
         });
+
         it("updatePlayerInfo() should broadcast correct info if it isn't the first player", (done) => {
             secondSocket.on(SocketEvents.UpdateOpponentInformation, (information) => {
                 expect(information).to.be.eql(playerOne.getInformation());
@@ -409,6 +414,7 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
         });
+
         it('updatePlayerInfo() should emit the letterReserve to the room', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['players'].set(serverSocket.id, playerOne);
@@ -417,6 +423,7 @@ describe('GamesHandler Service', () => {
             gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
             expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.LetterReserveUpdated, RESERVE));
         });
+
         it("updatePlayerInfo() shouldn't do anything if the players are undefined", () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['players'].set(serverSocket.id, playerOne);
@@ -491,13 +498,14 @@ describe('GamesHandler Service', () => {
             expect(socketManagerStub.emitRoom.called).to.be.equal(true);
             done();
         });
+
         it('playGame() should send to the other player the command inputed', (done) => {
             serverSocket.join(ROOM);
             const RETURNED_BOOLEAN = true;
             const EXPECTED_MESSAGE = '!placer `0v ';
             sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
-            const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[], direction: 'v' } as unknown as CommandInfo;
+            const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[], isHorizontal: false } as unknown as CommandInfo;
             const player = sinon.createStubInstance(RealPlayer);
             player.name = '';
             player.room = ROOM;
@@ -563,6 +571,7 @@ describe('GamesHandler Service', () => {
         // eslint-disable-next-line dot-notation
         gamesHandler['exchange'](serverSocket, []);
     });
+
     it('exchange() should call updatePlayerInfo()', () => {
         const LETTER = { value: '' } as Letter;
         const player = sinon.createStubInstance(RealPlayer);
@@ -582,6 +591,7 @@ describe('GamesHandler Service', () => {
         gamesHandler['exchange'](serverSocket, []);
         expect(updatePlayerInfoStub.called).to.be.equal(true);
     });
+
     it("exchange() shouldn't do anything if the socket doesn't exist call updatePlayerInfo()", () => {
         const LETTER = { value: '' } as Letter;
         const updatePlayerInfoStub = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
@@ -599,7 +609,7 @@ describe('GamesHandler Service', () => {
 
     it('playGame() should emit an impossible command', (done) => {
         const RETURNED_STRING = 'suffering';
-        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[] } as unknown as CommandInfo;
         const player = sinon.createStubInstance(RealPlayer);
         player.name = '';
         player.room = ROOM;
@@ -630,7 +640,7 @@ describe('GamesHandler Service', () => {
             activePlayer: '',
         };
 
-        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[] } as unknown as CommandInfo;
         const player = sinon.createStubInstance(RealPlayer);
         player.name = '';
         player.room = ROOM;
@@ -655,7 +665,7 @@ describe('GamesHandler Service', () => {
         const RETURNED_BOOLEAN = true;
         const updatePlayerInfo = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
-        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[] } as unknown as CommandInfo;
         const player = sinon.createStubInstance(RealPlayer);
         player.name = '';
         player.room = ROOM;
@@ -681,7 +691,7 @@ describe('GamesHandler Service', () => {
         const EXPECTED_MESSAGE = 'Les lettres que vous essayez de mettre ne forment pas de mots valides';
         sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
-        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[] } as unknown as CommandInfo;
         const player = sinon.createStubInstance(RealPlayer);
         player.name = '';
         player.room = ROOM;
@@ -707,7 +717,7 @@ describe('GamesHandler Service', () => {
     it("playGame() shouldn't do anything if the socket.id isn't in players", () => {
         const updatePlayerInfoSpy = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
-        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: [] as string[] } as unknown as CommandInfo;
+        const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[] } as unknown as CommandInfo;
         const gameStub = sinon.createStubInstance(Game);
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
@@ -719,6 +729,7 @@ describe('GamesHandler Service', () => {
         gamesHandler['playGame'](serverSocket, commandInfo);
         expect(updatePlayerInfoSpy.called).to.not.be.equal(true);
     });
+
     context('CreateGame() Tests', () => {
         it('CreateGame() should call setAndGetPlayer()', (done) => {
             const setAndGetPlayer = sinon.spy(gamesHandler, 'setAndGetPlayer' as never);

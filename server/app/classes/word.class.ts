@@ -25,7 +25,6 @@ export class Word {
         this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
     }
 
-    // CONSTRUCTOR FUNCTIONS -------------------------------------------------------------------------------------------------
     private setIsHorizontal(firstCoord: Coordinate, gameboard: Gameboard) {
         if (
             gameboard.getLetterTile({ x: firstCoord.x, y: firstCoord.y-- }).isOccupied ||

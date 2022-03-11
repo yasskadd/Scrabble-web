@@ -110,7 +110,6 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const firstCoordinateColumns = commandInfo.firstCoordinate.x;
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
-        console.log(commandInfo);
         const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as RealPlayer;
         const play = player.placeLetter(commandInfo) as [boolean, Gameboard] | string;
@@ -128,13 +127,12 @@ export class GamesHandler {
             if (!play[0]) {
                 socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayez de mettre ne forment pas de mots valides');
             } else {
+                const direction = commandInfo.isHorizontal ? 'h' : 'v';
                 socket.broadcast
                     .to(player.room)
                     .emit(
                         SocketEvents.GameMessage,
-                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${
-                            commandInfo.isHorizontal
-                        } ${letterPlaced}`,
+                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${direction} ${letterPlaced}`,
                     );
             }
         }

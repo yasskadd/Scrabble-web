@@ -75,9 +75,13 @@ describe('Letter Placement Service', () => {
     });
 
     context('areLettersInRack() tests', () => {
-        it('areLettersInRack() should return true if letter is in rack', () => {});
+        it('areLettersInRack() should return true if letter is in rack', () => {
+            /*TODO*/
+        });
 
-        it('areLettersInRack() should return false if letter is not in rack', () => {});
+        it('areLettersInRack() should return false if letter is not in rack', () => {
+            /*TODO*/
+        });
 
         it('return a list of 1 letter if only 1 letter is in command and it is present in rack', () => {
             expect(placementService['associateLettersWithRack']('a', player).length).to.eql(1);
@@ -189,45 +193,41 @@ describe('Letter Placement Service', () => {
     });
 
     context('globalCommandVerification() tests', () => {
-        let getLettersStub: Sinon.SinonStub<unknown[], unknown>;
-        let isPlacementStub: Sinon.SinonStub<unknown[], unknown>;
+        let validateCommandCoordinateStub: Sinon.SinonStub<unknown[], unknown>;
         let lettersInRackStub: Sinon.SinonStub<unknown[], unknown>;
         let invalidFirstPlacementStub: Sinon.SinonStub<unknown[], unknown>;
         let letterCoords: Coordinate[];
         beforeEach(() => {
-            getLettersStub = Sinon.stub(placementService, 'getLettersCoord' as never);
-            isPlacementStub = Sinon.stub(placementService, 'isPlacementValid' as never);
+            validateCommandCoordinateStub = Sinon.stub(placementService, 'validateCommandCoordinate' as never);
             lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as never);
             invalidFirstPlacementStub = Sinon.stub(placementService, 'verifyFirstTurn' as never);
             letterCoords = [
                 { x: 0, y: 0 },
                 { x: 0, y: 1 },
             ];
-            getLettersStub.returns(letterCoords);
         });
 
         afterEach(() => {
-            getLettersStub.restore();
-            isPlacementStub.restore();
+            validateCommandCoordinateStub.restore();
             lettersInRackStub.restore();
             invalidFirstPlacementStub.restore();
         });
 
         it('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
-            isPlacementStub.withArgs(commandInfo, gameboard).returns(false);
-            const expectedReturn = [letterCoords, 'Placement invalide'];
+            validateCommandCoordinateStub.withArgs(commandInfo, gameboard).returns(false);
+            const expectedReturn = [letterCoords, 'Placement invalide pour la premiere coordonnée'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
         it('should return array with letterCoords and lettersNotInRack string if areLettersInRack() returns false', () => {
-            isPlacementStub.returns(true);
+            validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(false);
             const expectedReturn = [letterCoords, 'Lettres absents du chevalet'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
         it('should return letterCoords and invalidFirstPlacement string if verifyFirstTurn() returns false', () => {
-            isPlacementStub.returns(true);
+            validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(true);
             invalidFirstPlacementStub.returns(false);
             const expectedReturn = [letterCoords, 'Placement du premier tour pas valide'];
@@ -235,7 +235,7 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return letterCoords and null if verification is valid', () => {
-            isPlacementStub.returns(true);
+            validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(true);
             invalidFirstPlacementStub.returns(true);
             const expectedReturn = [letterCoords, null];

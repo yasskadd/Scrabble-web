@@ -8,7 +8,7 @@ import { Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
 export enum ErrorType {
-    commandCoordinateOutOfBounds = 'First Coordinate is an invalid placement',
+    commandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
     lettersNotInRack = 'Letters not in rack',
     invalidFirstWordPlacement = 'One coordinate in the first word needs to pass by the middle coordinate',
     invalidWordBuild = 'At least one letter in word does not fit on board or word only contains 1 letter',

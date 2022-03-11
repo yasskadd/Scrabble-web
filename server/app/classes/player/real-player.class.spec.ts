@@ -6,7 +6,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { RealPlayer } from './real-player.class';
 
-describe('Player', () => {
+describe('RealPlayer', () => {
     let player: RealPlayer;
     beforeEach(() => {
         player = new RealPlayer('player');
