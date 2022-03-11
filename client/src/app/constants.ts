@@ -1,6 +1,8 @@
 export const TOTAL_COLUMNS = 16;
 export const TOTAL_ROWS = 16;
 
+export const INVALID_INDEX = -1;
+
 export const GRID_CANVAS_WIDTH = 600;
 export const GRID_CANVAS_HEIGHT = 600;
 export const RACK_WIDTH = 300;

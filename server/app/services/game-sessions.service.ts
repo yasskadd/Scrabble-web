@@ -19,11 +19,9 @@ type Parameters = { id: string; name: string };
 export class GameSessions {
     idCounter: number;
     private gameRooms: Map<string, GameRoom>;
-    private activeUsers: Map<string, string>;
 
     constructor(private socketManager: SocketManager) {
         this.gameRooms = new Map<string, GameRoom>();
-        this.activeUsers = new Map<string, string>();
         this.idCounter = 0;
     }
 
@@ -51,6 +49,15 @@ export class GameSessions {
         this.socketManager.on(SocketEvents.RejectOpponent, (socket, roomId: string) => {
             this.rejectOpponent(socket, roomId);
         });
+
+        this.socketManager.io(SocketEvents.SetGameUnavailable, (sio, _, roomId: string) => {
+            this.setRoomUnavailable(sio, roomId);
+        });
+
+        this.socketManager.io(SocketEvents.SetGameAvailable, (sio, _, roomId: string) => {
+            this.setRoomAvailable(sio, roomId);
+        });
+
         this.socketManager.on(SocketEvents.JoinRoom, (socket, roomID: string) => {
             this.joinRoom(socket, roomID);
         });
@@ -65,6 +72,16 @@ export class GameSessions {
         this.socketManager.io(SocketEvents.Disconnect, (sio, socket) => {
             this.disconnect(sio, socket);
         });
+    }
+
+    private setRoomUnavailable(this: this, sio: Server, roomId: string) {
+        this.makeRoomUnavailable(roomId);
+        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
+    }
+
+    private setRoomAvailable(this: this, sio: Server, roomId: string) {
+        this.makeRoomAvailable(roomId);
+        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }
 
     private joinRoom(this: this, socket: Socket, roomID: string) {
@@ -89,7 +106,6 @@ export class GameSessions {
                 if (roomId !== null) {
                     this.removeRoom(sio, roomId);
                 }
-                this.removeUserFromActiveUsers(socket.id);
             }
         }, SECOND);
     }
@@ -150,7 +166,7 @@ export class GameSessions {
     private getAvailableRooms(): GameRoom[] {
         const roomAvailableArray: GameRoom[] = [];
         this.gameRooms.forEach((gameRoom) => {
-            if (gameRoom.users.length === 1) roomAvailableArray.push(gameRoom);
+            if (gameRoom.isAvailable === true) roomAvailableArray.push(gameRoom);
         });
         return roomAvailableArray;
     }
@@ -167,12 +183,11 @@ export class GameSessions {
             id: roomID,
             users: [parameters.username],
             socketID: [socketId],
-            isAvailable: true,
+            isAvailable: parameters.isMultiplayer ? true : false,
             dictionary: parameters.dictionary,
             timer: parameters.timer,
             mode: parameters.mode,
         };
-        this.addUserToActiveUsers(parameters.username, socketId);
         this.gameRooms.set(roomID, newRoom);
         return roomID;
     }
@@ -212,7 +227,6 @@ export class GameSessions {
             room.users.push(user);
             room.socketID.push(socketID);
         }
-        this.addUserToActiveUsers(user, socketID);
         this.makeRoomUnavailable(roomID);
     }
 
@@ -224,22 +238,12 @@ export class GameSessions {
             const index1: number = room.socketID.indexOf(socketID);
             if (index > UNAVAILABLE_ELEMENT_INDEX) room.socketID.splice(index1, 1);
         }
-
-        this.removeUserFromActiveUsers(socketID);
         this.makeRoomAvailable(roomID);
     }
 
     private removeRoom(this: this, sio: Server, roomID: string) {
         this.gameRooms.delete(roomID);
         sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
-    }
-
-    private addUserToActiveUsers(username: string, socketID: string) {
-        this.activeUsers.set(socketID, username);
-    }
-
-    private removeUserFromActiveUsers(socketID: string) {
-        this.activeUsers.delete(socketID);
     }
 
     private getRoomId(socketID: string) {

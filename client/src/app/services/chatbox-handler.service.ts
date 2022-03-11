@@ -1,25 +1,30 @@
 import { Injectable } from '@angular/core';
-import { ChatboxMessage } from '@app/classes/chatbox-message';
+import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { SocketEvents } from '@common/socket-events';
 import { ClientSocketService } from './client-socket.service';
+import { CommandHandlerService } from './command-handler.service';
 import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
-// const VALID_SYNTAX_REGEX_STRING = '^!aide|^!placer|^!(é|e)changer|^!passer';
-// const VALID_SYNTAX_REGEX = new RegExp(VALID_SYNTAX_REGEX_STRING);
+const CHAR_ASCII = 96;
 const VALID_COMMAND_REGEX_STRING =
-    '^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
+    // eslint-disable-next-line max-len
+    '^!r(é|e)serve$|^!indice$|^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
 const VALID_COMMAND_REGEX = new RegExp(VALID_COMMAND_REGEX_STRING);
 const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
-
+interface CommandInfo {
+    firstCoordinate: Coordinate;
+    direction: boolean;
+    lettersPlaced: string;
+}
 @Injectable({
     providedIn: 'root',
 })
 export class ChatboxHandlerService {
-    private static readonly syntaxRegexString = '^!aide|^!placer|^!(é|e)changer|^!passer';
+    private static readonly syntaxRegexString = '^!r(é|e)serve|^!aide|^!placer|^!(é|e)changer|^!passer|^!indice';
     messages: ChatboxMessage[];
     private readonly validSyntaxRegex = RegExp(ChatboxHandlerService.syntaxRegexString);
 
@@ -27,6 +32,7 @@ export class ChatboxHandlerService {
         private clientSocket: ClientSocketService,
         private gameConfiguration: GameConfigurationService,
         private gameClient: GameClientService,
+        private commandHandler: CommandHandlerService,
     ) {
         this.messages = [];
         this.configureBaseSocketFeatures();
@@ -34,13 +40,13 @@ export class ChatboxHandlerService {
 
     submitMessage(userInput: string): void {
         if (userInput !== '') {
+            this.addMessage(this.configureUserMessage(userInput));
             if (this.isCommand(userInput)) {
                 if (this.validCommand(userInput)) {
                     const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                    this.sendCommand(commandValid);
+                    this.commandHandler.sendCommand(commandValid);
                 }
             } else {
-                this.addMessage(this.configureUserMessage(userInput));
                 this.sendMessage(userInput);
             }
         }
@@ -62,39 +68,49 @@ export class ChatboxHandlerService {
         this.clientSocket.on(SocketEvents.GameMessage, (broadcastMessage: string) => {
             this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
         });
+
         this.clientSocket.on(SocketEvents.ImpossibleCommandError, (error: string) => {
             this.addMessage(this.configureImpossibleCommandError(error));
         });
+
         this.clientSocket.on(SocketEvents.UserDisconnect, () => {
             this.addDisconnect();
         });
+
         this.clientSocket.on(SocketEvents.GameEnd, () => {
             this.endGameMessage();
         });
+
+        this.clientSocket.on(SocketEvents.AllReserveLetters, (letterReserveUpdated: Letter[]) => {
+            this.configureReserveLetterCommand(letterReserveUpdated);
+        });
+
+        this.clientSocket.on(SocketEvents.ClueCommand, (clueCommand: CommandInfo[]) => {
+            this.configureClueCommand(clueCommand);
+        });
+    }
+
+    private configureClueCommand(clueCommand: CommandInfo[]) {
+        if (clueCommand.length !== 0) {
+            clueCommand.forEach((clue) => {
+                this.messages.push({
+                    type: 'system-message',
+                    data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${clue.direction} ${
+                        clue.lettersPlaced
+                    }`,
+                });
+            });
+
+            if (clueCommand.length < 3) {
+                this.messages.push({ type: 'system-message', data: 'Aucune autre possibilité possible' });
+            }
+        } else {
+            this.messages.push({ type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" });
+        }
     }
 
     private sendMessage(message: string): void {
         this.clientSocket.send(SocketEvents.SendMessage, { roomId: this.gameConfiguration.roomInformation.roomId, message });
-    }
-
-    private sendCommand(command: string): void {
-        const splitCommand = this.splitCommand(command);
-        const commandType = this.getCommandType(splitCommand);
-        switch (commandType) {
-            case '!placer': {
-                this.sendCommandPlacer(splitCommand);
-                break;
-            }
-            case '!echanger': {
-                this.sendCommandEchanger(splitCommand);
-                break;
-            }
-            case '!passer': {
-                this.clientSocket.send(SocketEvents.Skip);
-                break;
-            }
-            // No default
-        }
     }
 
     private addMessage(message: ChatboxMessage): void {
@@ -110,10 +126,9 @@ export class ChatboxHandlerService {
     }
 
     private validCommand(userCommand: string): boolean {
-        if (this.gameClient.playerOneTurn) {
+        if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) {
             if (this.validSyntax(userCommand)) {
                 if (this.validCommandParameters(userCommand)) {
-                    this.addMessage(this.configureUserMessage(userCommand));
                     return true;
                 } else {
                     this.addMessage(this.configureInvalidError());
@@ -125,6 +140,12 @@ export class ChatboxHandlerService {
             this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
         }
         return false;
+    }
+
+    private isReserveCommand(userInput: string): boolean {
+        const validReserveCommand = '^!r(é|e)serve$';
+        const validReserveCommandRegex = new RegExp(validReserveCommand);
+        return validReserveCommandRegex.test(userInput);
     }
 
     private validSyntax(userInput: string): boolean {
@@ -147,53 +168,6 @@ export class ChatboxHandlerService {
         return { type: 'system-message', data: '[Erreur] La commande saisie est invalide' };
     }
 
-    private sendCommandPlacer(command: string[]) {
-        const coordsAndDirection = this.getCoordsAndDirection(command);
-        const commandInformation = {
-            firstCoordinate: coordsAndDirection[0],
-            direction: coordsAndDirection[1],
-            lettersPlaced: this.getLetters(command, 2),
-        };
-        this.clientSocket.send(SocketEvents.Play, commandInformation);
-    }
-
-    private sendCommandEchanger(command: string[]) {
-        this.clientSocket.send(SocketEvents.Exchange, this.getLetters(command, 1));
-    }
-
-    private splitCommand(command: string) {
-        return command.split(' ');
-    }
-
-    private isDigit(information: string) {
-        return information >= '0' && information <= '9';
-    }
-    private getCommandType(stringArr: string[]) {
-        return stringArr[0];
-    }
-    private getCoordsAndDirection(stringArr: string[]) {
-        const placementArray = stringArr[1].split('');
-        const coordinateRatio = 9;
-        if (this.isDigit(placementArray[2]) && placementArray[3] != null) {
-            const coordinateX = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, placementArray[3] as string];
-        } else if (this.isDigit(placementArray[2])) {
-            const coordinateX = +(placementArray[1] + placementArray[2]);
-            return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
-        } else if (placementArray[2] == null) {
-            const coordinateX = +placementArray[1];
-            return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
-        }
-        return [
-            { x: parseInt(placementArray[1], 10), y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate,
-            placementArray[2] as string,
-        ];
-    }
-
-    private getLetters(stringArr: string[], position: number) {
-        return stringArr[position].split('');
-    }
-
     private configureImpossibleCommandError(error: string): ChatboxMessage {
         return { type: 'system-message', data: `[Erreur] ${error}` };
     }
@@ -204,5 +178,11 @@ export class ChatboxHandlerService {
             letterString = letterString + letter.value;
         });
         return letterString;
+    }
+
+    private configureReserveLetterCommand(letterReserve: Letter[]): void {
+        letterReserve.forEach((letter) => {
+            this.messages.push({ type: 'system-message', data: `${letter.value}: ${letter.quantity}` });
+        });
     }
 }

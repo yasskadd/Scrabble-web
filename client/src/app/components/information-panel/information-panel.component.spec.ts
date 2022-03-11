@@ -1,7 +1,10 @@
 // eslint-disable-next-line max-classes-per-file
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSliderModule } from '@angular/material/slider';
+import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
@@ -42,10 +45,11 @@ export class StubComponent {}
 export class MatDialogMock {
     open() {
         return {
-            afterClosed: () => of({}),
+            afterClosed: () => of({ action: true }),
         };
     }
 }
+
 describe('InformationPanelComponent', () => {
     let router: Router;
     let component: InformationPanelComponent;
@@ -58,7 +62,12 @@ describe('InformationPanelComponent', () => {
             gameTimer: TIMER,
         });
         await TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes([{ path: MULTIPLAYER_HOME_PAGE, component: StubComponent }])],
+            imports: [
+                MatSliderModule,
+                FormsModule,
+                BrowserModule,
+                RouterTestingModule.withRoutes([{ path: MULTIPLAYER_HOME_PAGE, component: StubComponent }]),
+            ],
             declarations: [InformationPanelComponent],
             providers: [
                 { provide: GameClientService, useValue: gameClientSpy },
@@ -214,4 +223,23 @@ describe('InformationPanelComponent', () => {
     //     expect(spy).toHaveBeenCalled();
     //     // expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
     // }));
+    it('should call updateFontSize() when the mat-slider is pressed', fakeAsync(() => {
+        const button = fixture.debugElement.nativeElement.querySelector('#updateFontSlider');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
+    }));
+
+    it('timerToMinute() should return number of minute in the timer', () => {
+        const twoMinute = 120;
+        const expectedValue = 2;
+        expect(component.timerToMinute(twoMinute)).toEqual(expectedValue);
+    });
+
+    it('timerToSecond() should return number of second in the timer', () => {
+        const fiftyNineSecond = 179;
+        const expectedValue = 59;
+        expect(component.timerToSecond(fiftyNineSecond)).toEqual(expectedValue);
+    });
 });

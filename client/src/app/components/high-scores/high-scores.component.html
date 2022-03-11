@@ -1,0 +1,43 @@
+<div class="headerContent">
+    <button class="returnButton" mat-icon-button mat-button mat-dialog-close><mat-icon>keyboard_return</mat-icon></button>
+    <h1 class="containerTitle" mat-dialog-title>Meilleurs Scores</h1>
+</div>
+<div class="container" mat-dialog-content>
+    <div class="wrapper">
+        <mat-card-title>Partie Classique</mat-card-title>
+        <mat-card class="highScoreTableClassic">
+            <table>
+                <thead class="tableContainer">
+                    <tr>
+                        <th>Scores</th>
+                        <th>Joueurs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let highScore of highScoreClassic">
+                        <td>{{ highScore.score }}</td>
+                        <td>{{ highScore.username }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-card>
+
+        <mat-card-title>Partie LOG2990</mat-card-title>
+        <mat-card class="highScoreTableLOG2990">
+            <table>
+                <thead class="tableContainer">
+                    <tr>
+                        <th>Scores</th>
+                        <th>Joueurs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let highScore of highScoreLOG29990">
+                        <td>{{ highScore.score }}</td>
+                        <td>{{ highScore.username }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-card>
+    </div>
+</div>

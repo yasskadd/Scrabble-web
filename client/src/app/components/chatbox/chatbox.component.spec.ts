@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChatboxMessage } from '@app/classes/chatbox-message';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { ChatboxComponent } from './chatbox.component';
 
@@ -13,7 +18,7 @@ describe('ChatboxComponent', () => {
     beforeEach(async () => {
         chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage', 'resetMessage'], { messages: [TEST_MESSAGE] });
         await TestBed.configureTestingModule({
-            imports: [],
+            imports: [MatCardModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, BrowserAnimationsModule],
             declarations: [ChatboxComponent],
             providers: [{ provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy }],
         }).compileComponents();
@@ -49,17 +54,6 @@ describe('ChatboxComponent', () => {
         component.input.setValue(VALID_INPUT);
         component.submit();
         expect(chatBoxHandlerSpy.submitMessage).toHaveBeenCalledWith(VALID_INPUT);
-    });
-
-    it('submit() should not call chatboxHandler.submitMessage() and not reset the input if the input is the length of 512 caracters ', () => {
-        const INVALID_INPUT =
-            // Reason : Testing if the input is not valid with a lenght of 512 caracters
-            // eslint-disable-next-line max-len
-            'IfphBjnEs3QDqhdrFn9bvjf6iSZifC50P10BIfdTlZjRG0AhCmjOKRb7iyiinHXYP0MO8GHg3VFyIF9rk2fNNyQIGeYPW3wanAQg2GNywLGKJloeDcBIaqiTLSDXV5zUl8lvizB14h5autn2hfwl4w1Yhn0nMcPSsz43mypkDcrY8yi1ZX3xeAO0pNus4dge7lDAVT1YyC9FuprbY5dPfOhg9K4KqXRBpxfbZb1GRJXXX2JrXHiyefbucv7gg6oJaP30eZOMa1cijGTKMgs8PQhWGFdrwvnWuAFvHhWs8KbBio5GTYUK9WtIbs626N1UxwaS6McbpJfIttFtzzuJsEJwsHYfPPfdTxe4JzKRMwekjyUCzxXrxNJjzZQhfxhCkz8wgv2sjCtF5ieh6mcJvnbpDNost2vlIJLmto6j0VFp1PK8efrz0b9QABdlBlEm2UZUZmwRg2YKEWhZdSk4zx6SjOCiFjaeK1A1ZzoCkeDy9KnAeyqtwSWmRI2Mv5d4y';
-        component.input.setValue(INVALID_INPUT);
-        component.submit();
-        expect(chatBoxHandlerSpy.submitMessage).not.toHaveBeenCalled();
-        expect(component.input.value).not.toEqual('');
     });
 
     it("get messages() should return chatboxHandler's messages", () => {
@@ -123,18 +117,6 @@ describe('ChatboxComponent', () => {
 
         expect(spyOnScrollBottom).toHaveBeenCalled();
     });
-
-    it('a mat error should appear when writing more than 512 characters', () => {
-        const INVALID_INPUT =
-            // Reason : Testing if the input is not valid with a lenght of 512 caracters
-            // eslint-disable-next-line max-len
-            'IfphBjnEs3QDqhdrFn9bvjf6iSZifC50P10BIfdTlZjRG0AhCmjOKRb7iyiinHXYP0MO8GHg3VFyIF9rk2fNNyQIGeYPW3wanAQg2GNywLGKJloeDcBIaqiTLSDXV5zUl8lvizB14h5autn2hfwl4w1Yhn0nMcPSsz43mypkDcrY8yi1ZX3xeAO0pNus4dge7lDAVT1YyC9FuprbY5dPfOhg9K4KqXRBpxfbZb1GRJXXX2JrXHiyefbucv7gg6oJaP30eZOMa1cijGTKMgs8PQhWGFdrwvnWuAFvHhWs8KbBio5GTYUK9WtIbs626N1UxwaS6McbpJfIttFtzzuJsEJwsHYfPPfdTxe4JzKRMwekjyUCzxXrxNJjzZQhfxhCkz8wgv2sjCtF5ieh6mcJvnbpDNost2vlIJLmto6j0VFp1PK8efrz0b9QABdlBlEm2UZUZmwRg2YKEWhZdSk4zx6SjOCiFjaeK1A1ZzoCkeDy9KnAeyqtwSWmRI2Mv5d4y';
-        component.input.setValue(INVALID_INPUT);
-        fixture.detectChanges();
-        const matError = fixture.debugElement.nativeElement.querySelector('.error');
-        expect(matError !== null).toBeTruthy();
-    });
-
     it("a mat error shouldn't be here when input is valid (less than 512 characters)", () => {
         const VALID_INPUT = 'HELLO';
         component.input.setValue(VALID_INPUT);
