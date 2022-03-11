@@ -62,28 +62,23 @@ export class WordSolverService {
 
     private createCommandInfo(word: string, lastPosition: Coordinate) {
         console.log(`${this.index++} Word found : ${word}`);
-        let playPosition = lastPosition;
         let wordIndex = word.length - 1;
-        const coordList: Coordinate[] = [];
         let wordCopy = word.slice();
         const placedLetters: string[] = [];
         while (wordIndex >= 0) {
-            if (!this.gameboard.getCoord(playPosition).isOccupied) {
-                coordList.unshift(playPosition);
-                placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
-            }
+            if (!this.gameboard.getCoord(lastPosition).isOccupied) placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
             wordCopy = wordCopy.slice(0, -1);
             wordIndex--;
-            playPosition = this.decrementCoord(playPosition, this.isHorizontal) as Coordinate;
+            if (wordIndex >= 0) lastPosition = this.decrementCoord(lastPosition, this.isHorizontal) as Coordinate;
         }
         const commandInfo: CommandInfo = {
-            firstCoordinate: this.gameboard.getCoord(coordList[0]),
+            firstCoordinate: this.gameboard.getCoord(lastPosition),
             direction: this.isHorizontal ? 'h' : 'v',
             lettersPlaced: placedLetters,
         };
         this.commandInfoList.push(commandInfo);
     }
-
+    // Tested
     private findLeftPart(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, rack: string[], limit: number) {
         this.extendRight(partialWord, currentNode, rack, anchor, false);
         if (limit > 0) {
@@ -98,7 +93,7 @@ export class WordSolverService {
             }
         }
     }
-
+    // TESTED
     private extendRight(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
         if (currentNode.isWord && this.verifyConditions(nextPosition) && anchorFilled)
             this.createCommandInfo(partialWord, this.decrementCoord(nextPosition, this.isHorizontal) as Coordinate);

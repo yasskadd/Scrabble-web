@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
+import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@common/coordinate';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
@@ -177,7 +178,7 @@ describe.only('Word solver service', () => {
         });
     });
 
-    context.only('verifyConditions() tests', () => {
+    context('verifyConditions() tests', () => {
         it('should return true if the coordinate is out of bounds horizontally', () => {
             const outOfBoundsCoord: Coordinate = { x: 17, y: 1 } as Coordinate;
             expect(wordSolverService['verifyConditions'](outOfBoundsCoord)).to.equal(true);
@@ -196,5 +197,61 @@ describe.only('Word solver service', () => {
         it('should return true if coordinate is not placed on the gameboard', () => {
             expect(wordSolverService['verifyConditions']({ x: 1, y: 1 } as Coordinate)).to.equal(true);
         });
+    });
+
+    context('extendRight() tests', () => {
+        let rack: string[];
+        let spyCreateCommand: Sinon.SinonSpy<[rack: string[]]>;
+
+        beforeEach(() => {
+            rack = ['p', 'e', 'u', 'r'];
+            wordSolverService['isHorizontal'] = true;
+            wordSolverService['crossCheckResults'] = wordSolverService['crossCheck']();
+            spyCreateCommand = Sinon.spy(wordSolverService, 'createCommandInfo' as keyof WordSolverService);
+        });
+        it('createCommandInfo should be called if we could form a word with the rack letters', () => {
+            const nextPosition: Coordinate = { x: 2, y: 2 } as Coordinate;
+            wordSolverService['extendRight']('', wordSolverService['trie'].root, rack, nextPosition, false);
+            expect(spyCreateCommand.called).to.equal(true);
+        });
+
+        it('createCommandInfo should be called if we could form a word with rack and placed letters on the board', () => {
+            const nextPosition: Coordinate = { x: 2, y: 2 } as Coordinate;
+            gameboard.placeLetter(new LetterTile(3, 2, { value: 'a' } as Letter));
+            wordSolverService['extendRight']('', wordSolverService['trie'].root, rack, nextPosition, false);
+            expect(spyCreateCommand.called).to.equal(true);
+        });
+
+        it('createCommandInfo should be called if we could form a word with blank letter and letters on the board', () => {
+            rack = ['*'];
+            const nextPosition: Coordinate = { x: 2, y: 2 } as Coordinate;
+            gameboard.placeLetter(new LetterTile(2, 2, { value: 'l' } as Letter));
+            wordSolverService['extendRight']('', wordSolverService['trie'].root, rack, nextPosition, false);
+            expect(spyCreateCommand.called).to.equal(true);
+        });
+    });
+
+    context('findLeftPart() tests', () => {
+        it('should call findLeftPart() and extendRight() more than once if a word could be found', () => {
+            const rack = ['l', 'e', 's'];
+            const anchor: Coordinate = { x: 1, y: 1 } as Coordinate;
+            const limit = 100;
+            const spyLeftPart = Sinon.spy(wordSolverService, 'findLeftPart' as keyof WordSolverService);
+            const spyExtendRight = Sinon.spy(wordSolverService, 'extendRight' as keyof WordSolverService);
+            wordSolverService['findLeftPart']('', wordSolverService['trie'].root, anchor, rack, limit);
+            expect(spyLeftPart.callCount && spyExtendRight.callCount).to.be.greaterThan(1);
+        });
+    });
+
+    it('createCommandInfo() should create correct commandInfo if there is placed letters on the board', () => {
+        gameboard.placeLetter(new LetterTile(2, 1, { value: 'e' } as Letter));
+        wordSolverService['isHorizontal'] = true;
+        const expectedCommandInfo: CommandInfo = {
+            firstCoordinate: gameboard.getCoord({ x: 1, y: 1 } as Coordinate),
+            direction: 'h',
+            lettersPlaced: ['t', 's', 't'],
+        };
+        wordSolverService['createCommandInfo']('test', { x: 4, y: 1 } as Coordinate);
+        expect(wordSolverService['commandInfoList'][0]).to.eql(expectedCommandInfo);
     });
 });
