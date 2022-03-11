@@ -10,8 +10,9 @@ import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
 import { expect } from 'chai';
 import * as fs from 'fs';
-import * as Sinon from 'sinon';
+import Container from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
+import Sinon = require('sinon');
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
 
@@ -23,7 +24,7 @@ describe('Dictionary Validation Service', () => {
     let invalidWord2: Word;
 
     beforeEach(() => {
-        dictionaryValidationService = new DictionaryValidationService();
+        dictionaryValidationService = Container.get(DictionaryValidationService);
         const letterA = { points: 5 } as Letter;
         validWord1 = new Word(true, [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterA)]);
         validWord1.stringFormat = 'bonjour';

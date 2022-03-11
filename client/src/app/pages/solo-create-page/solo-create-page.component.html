@@ -1,0 +1,46 @@
+<mat-card class="container">
+    <mat-card-title>Paramètres</mat-card-title>
+    <div class="wrapper">
+        <mat-card-title>Nom</mat-card-title>
+        <mat-form-field appearance="fill">
+            <mat-label>Entrez votre Nom</mat-label>
+            <input matInput type="text" [(ngModel)]="playerName" placeholder="Ex. Robert" />
+        </mat-form-field>
+
+        <form [formGroup]="form">
+            <mat-card-title>Minuterie</mat-card-title>
+            <mat-form-field appearance="fill">
+                <mat-label>Temps</mat-label>
+                <mat-select id="timer-select" formControlName="timer">
+                    <mat-option id="timer-options" *ngFor="let time of this.timerList" [value]="time">
+                        {{ this.secondToMinute(time) }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </form>
+
+        <mat-card-title>Dictionnaire</mat-card-title>
+        <mat-form-field appearance="fill">
+            <mat-label>Dictionnaire</mat-label>
+            <mat-select disabled required> </mat-select>
+            <mat-option value="francais" disabled>Francais</mat-option>
+        </mat-form-field>
+
+        <mat-card-title>Difficulté</mat-card-title>
+        <mat-form-field appearance="fill">
+            <mat-label>Difficulté</mat-label>
+            <mat-select id="difficulty-select" formControlName="difficulty">
+                <mat-option id="difficulty-options" *ngFor="let difficulty of this.difficultyList" [value]="difficulty">
+                    {{ difficulty }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <div class="containerButton">
+            <button class="returnButton" mat-icon-button routerLink="/home">
+                <mat-icon>navigate_before</mat-icon>
+            </button>
+            <button class="startButton" mat-raised-button [disabled]="!playerName">Commencer</button>
+        </div>
+    </div>
+</mat-card>

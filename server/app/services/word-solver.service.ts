@@ -34,7 +34,6 @@ export class WordSolverService {
                     const partialWord = this.buildPartialWord(leftToAnchor);
                     const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
                     if (partialWordNode !== null) {
-                        console.log('ENTERED');
                         this.extendRight(partialWord, partialWordNode, rack, anchor, false);
                     }
                 } else this.findLeftPart('', this.trie.root, anchor, rack, this.getLimitNumber(leftToAnchor, anchors));
