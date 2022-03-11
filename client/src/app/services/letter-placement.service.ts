@@ -16,12 +16,7 @@ export class LetterPlacementService {
     private hasPlacingEnded: boolean;
 
     constructor(private gridService: GridService, private gameClientService: GameClientService) {
-        this.startTile = { x: 0, y: 0 };
-        this.placedLetters = [];
-        this.isHorizontal = true;
-        this.isPlacingActive = false;
-        this.hasPlacingEnded = false;
-
+        this.setPropreties();
         this.gameClientService.gameboardUpdated.subscribe(() => {
             this.resetView();
         });
@@ -30,6 +25,7 @@ export class LetterPlacementService {
     handlePlacement(letterValue: string) {
         if (!this.isPlacingActive || this.hasPlacingEnded) return;
         const INDEX_NOT_FOUND = -1;
+        // TODO : WHITE LETTERS IMPLEMENTATION
         const indexOfLetter = this.gameClientService.playerOne.rack.findIndex((letter) => letter.value === letterValue);
         if (indexOfLetter === INDEX_NOT_FOUND) return;
         const placedLetter = this.gameClientService.playerOne.rack.splice(indexOfLetter, 1)[0];
@@ -67,12 +63,16 @@ export class LetterPlacementService {
         this.updateLettersView();
     }
 
+    undoEverything() {
+        this.placedLetters.forEach((letter) => {
+            this.gameClientService.playerOne.rack.push(letter);
+        });
+        this.resetView();
+    }
+
     resetView() {
         this.resetGameBoardView();
-        this.placedLetters = [];
-        this.isHorizontal = true;
-        this.isPlacingActive = false;
-        this.hasPlacingEnded = false;
+        this.setPropreties();
     }
 
     resetGameBoardView() {
@@ -100,6 +100,7 @@ export class LetterPlacementService {
         }
         this.resetGameBoardView();
         this.startTile = position;
+        this.isHorizontal = true;
         this.gridService.drawArrow(position, this.isHorizontal);
         this.isPlacingActive = true;
     }
@@ -114,6 +115,14 @@ export class LetterPlacementService {
             else computedPosition.y++;
         }
         return computedPosition;
+    }
+
+    private setPropreties() {
+        this.startTile = { x: 0, y: 0 };
+        this.placedLetters = [];
+        this.isHorizontal = true;
+        this.isPlacingActive = false;
+        this.hasPlacingEnded = false;
     }
 
     private isOutOfBound(coordinate: Coordinate): boolean {

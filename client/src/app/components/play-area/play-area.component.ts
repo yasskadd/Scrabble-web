@@ -27,8 +27,36 @@ export class PlayAreaComponent implements AfterViewInit {
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
-        if (this.buttonPressed === 'Backspace') this.letterService.undoPlacement();
-        else this.letterService.handlePlacement(this.buttonPressed);
+        switch (this.buttonPressed) {
+            case 'Backspace': {
+                this.letterService.undoPlacement();
+                break;
+            }
+            case 'Enter': {
+                // statements;
+                break;
+            }
+            case 'Escape': {
+                this.letterService.undoEverything();
+                break;
+            }
+            default: {
+                this.letterService.handlePlacement(this.buttonPressed);
+                break;
+            }
+        }
+    }
+
+    @HostListener('document:click', ['$event'])
+    mouseClickOutside(event: MouseEvent) {
+        if (!this.gridCanvas.nativeElement.contains(event.target as Node)) this.letterService.undoEverything();
+    }
+
+    mouseHitDetect(event: MouseEvent) {
+        if (event.button === MouseButton.Left) {
+            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            this.letterService.placeLetterStartPosition(this.mousePosition);
+        }
     }
 
     ngAfterViewInit(): void {
@@ -41,12 +69,5 @@ export class PlayAreaComponent implements AfterViewInit {
 
     get height(): number {
         return constants.GRID_CANVAS_HEIGHT;
-    }
-
-    mouseHitDetect(event: MouseEvent) {
-        if (event.button === MouseButton.Left) {
-            this.mousePosition = { x: event.offsetX, y: event.offsetY };
-            this.letterService.placeLetterStartPosition(this.mousePosition);
-        }
     }
 }
