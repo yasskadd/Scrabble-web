@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 import { GameParameters } from '@app/classes/game-parameters';
 import { GameRoom } from '@app/classes/game-room';
@@ -372,6 +373,22 @@ describe('GameSession Service', () => {
         done();
     });
 
+    it('setRoomAvailable should call makeRoomAvailable with the room id of the player', (done: Mocha.Done) => {
+        const spy = sinon.spy(gameSessions, 'makeRoomAvailable' as never);
+        // eslint-disable-next-line dot-notation
+        gameSessions['setRoomAvailable'](sio, ROOM_ID);
+        expect(spy.calledOnceWith(ROOM_ID)).to.equal(true);
+        done();
+    });
+
+    it('setRoomUnavailable should call makeRoomUnavailable with the room id of the player', (done: Mocha.Done) => {
+        const spy = sinon.spy(gameSessions, 'makeRoomUnavailable' as never);
+        // eslint-disable-next-line dot-notation
+        gameSessions['setRoomUnavailable'](sio, ROOM_ID);
+        expect(spy.calledOnceWith(ROOM_ID)).to.equal(true);
+        done();
+    });
+
     it('getRoomId should return null if there is no room Available ', (done: Mocha.Done) => {
         // eslint-disable-next-line dot-notation
         const value = gameSessions['getRoomId'](serverSocket.id);
@@ -506,18 +523,19 @@ describe('GameSession Service', () => {
         const rejectByOtherPlayerSpy = sinon.stub(gameSessions, 'rejectByOtherPlayer' as never);
         const startScrabbleGameSpy = sinon.stub(gameSessions, 'startScrabbleGame' as never);
         const disconnectSpy = sinon.stub(gameSessions, 'disconnect' as never);
-        const callSocketEvent4 = 4;
-        const callSocketEvent5 = 5;
-        const callSocketEvent6 = 6;
+        const gameUnavailableSpy = sinon.stub(gameSessions, 'setRoomUnavailable' as never);
+        const gameAvailableSpy = sinon.stub(gameSessions, 'setRoomAvailable' as never);
 
         gameSessions.initSocketEvents();
         service.io.getCall(0).args[1](sio, serverSocket);
         service.io.getCall(1).args[1](sio, serverSocket);
         service.io.getCall(2).args[1](sio, serverSocket);
         service.io.getCall(3).args[1](sio, serverSocket);
-        service.io.getCall(callSocketEvent4).args[1](sio, serverSocket);
-        service.io.getCall(callSocketEvent5).args[1](sio, serverSocket);
-        service.io.getCall(callSocketEvent6).args[1](sio, serverSocket);
+        service.io.getCall(4).args[1](sio, serverSocket);
+        service.io.getCall(5).args[1](sio, serverSocket);
+        service.io.getCall(6).args[1](sio, serverSocket);
+        service.io.getCall(7).args[1](sio, serverSocket);
+        service.io.getCall(8).args[1](sio, serverSocket);
 
         service.on.getCall(0).args[1](serverSocket);
         service.on.getCall(1).args[1](serverSocket);
@@ -533,6 +551,8 @@ describe('GameSession Service', () => {
         expect(rejectByOtherPlayerSpy.called).to.be.eql(true);
         expect(startScrabbleGameSpy.called).to.be.eql(true);
         expect(disconnectSpy.called).to.be.eql(true);
+        expect(gameUnavailableSpy.called).to.be.eql(true);
+        expect(gameAvailableSpy.called).to.be.eql(true);
 
         expect(service.io.called).to.equal(true);
         expect(service.on.called).to.equal(true);
@@ -553,6 +573,7 @@ describe('GameSession Service', () => {
         expect(serverSocket.rooms).contain(playerJoiningRoom);
         done();
     });
+
     it('getRoomId should return the key of a socket ID ', (done: Mocha.Done) => {
         const gameRoomTest2: GameRoom = {
             socketID: [SOCKET_ID],

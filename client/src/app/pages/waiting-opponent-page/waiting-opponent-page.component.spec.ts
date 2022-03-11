@@ -1,18 +1,30 @@
+/* eslint-disable max-classes-per-file */
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
-import { ReplaySubject } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { WaitingOpponentPageComponent } from './waiting-opponent-page.component';
+
 @Component({
     template: '',
 })
 export class StubComponent {}
+
+export class MatDialogMock {
+    open() {
+        return {
+            afterClosed: () => of({ action: true }),
+        };
+    }
+}
+
 interface RoomInformation {
     playerName: string[];
     roomId: string;
@@ -82,6 +94,7 @@ describe('WaitingOpponentPageComponent', () => {
                         },
                     },
                 },
+                { provide: MatDialog, useClass: MatDialogMock },
             ],
         }).compileComponents();
     });

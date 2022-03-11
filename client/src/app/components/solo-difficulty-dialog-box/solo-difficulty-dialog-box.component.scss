@@ -16,8 +16,14 @@ h1 {
     background-color: #155724;
 }
 
-#expectMode {
+.expectMode {
     color: #f0fff3;
     width: 30%;
     background-color: #b42222;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    width: 30%;
+    color: #666666;
 }
