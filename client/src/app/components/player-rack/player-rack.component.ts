@@ -48,6 +48,20 @@ export class PlayerRackComponent implements OnInit {
         }
     }
 
+    // @HostListener('scroll', ['$event'])
+    onScroll(event: Event) {
+        // alert('scrolling!');
+        // console.log(this.getYPosition(event));
+        console.log('scrolling!');
+        console.log(event.composed);
+        // console.log(this.getYPosition(event));
+    }
+
+    // @HostListener('body:scroll', ['$event']) onScrollEvent() {
+    //     // console.log($event['Window']);
+    //     console.log('scrolling');
+    // }
+
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
