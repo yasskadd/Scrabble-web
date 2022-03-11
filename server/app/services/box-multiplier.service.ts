@@ -1,8 +1,8 @@
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTile } from '@common/services/letter-tile.class';
 import { Service } from 'typedi';
 
 const letterMultipliersByTwo: LetterTile[] = [];

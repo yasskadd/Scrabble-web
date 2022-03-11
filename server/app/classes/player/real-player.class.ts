@@ -1,8 +1,8 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
+import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTile } from '@common/services/letter-tile.class';
 import { Player } from './player.class';
 
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };

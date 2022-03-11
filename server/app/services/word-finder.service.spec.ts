@@ -6,8 +6,8 @@
 /* eslint-disable prettier/prettier */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTile } from '@common/services/letter-tile.class';
 import { expect } from 'chai';
 import { Container } from 'typedi';
 import { BoxMultiplierService } from './box-multiplier.service';

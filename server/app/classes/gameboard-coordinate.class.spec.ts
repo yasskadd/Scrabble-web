@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable prettier/prettier */
+import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTile } from '@common/services/letter-tile.class';
 import { expect } from 'chai';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports

@@ -4,8 +4,8 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { CommandInfo } from '@app/interfaces/command-info';
+import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTile } from '@common/services/letter-tile.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { BoxMultiplierService } from './box-multiplier.service';

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
+import { LetterTile } from '@common/classes/letter-tile.class';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
-import { LetterTile } from '@common/services/letter-tile.class';
 
 @Injectable({
     providedIn: 'root',

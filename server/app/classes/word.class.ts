@@ -1,5 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterTile } from '@common/services/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
 
 export class Word {
     isHorizontal: boolean;
