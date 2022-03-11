@@ -63,6 +63,23 @@ describe('GameConfigurationService', () => {
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.StartScrabbleGame, roomID);
     });
 
+    it("beginScrabbleGame() should assign the value of the opponent's name if called with", () => {
+        // eslint-disable-next-line dot-notation
+        const roomID = '1';
+        service.roomInformation.roomId = roomID;
+        service.beginScrabbleGame('Vincent');
+        expect(service.roomInformation.playerName[1]).toEqual('Vincent');
+    });
+
+    it("beginScrabbleGame() should  not assign the value of the opponent's name if not called with", () => {
+        // eslint-disable-next-line dot-notation
+        const roomID = '1';
+        service.roomInformation.roomId = roomID;
+        service.roomInformation.playerName[1] = '';
+        service.beginScrabbleGame();
+        expect(service.roomInformation.playerName[1]).toEqual('');
+    });
+
     it('joinPage() send a command to the server to tell that a player wants to join a multiplayer game', () => {
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
@@ -99,13 +116,29 @@ describe('GameConfigurationService', () => {
     });
 
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
-        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique' };
+        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique', isMultiplayer: true };
         const testStatusGame = "En Attente d'un Adversaire ...";
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         service.gameInitialization(testGameConfiguration);
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.CreateGame, testGameConfiguration);
         expect(service.roomInformation.playerName[0]).toEqual(testGameConfiguration.username);
+        expect(service.roomInformation.isCreator).toBeTruthy();
+        expect(service.roomInformation.statusGame).toEqual(testStatusGame);
+    });
+
+    it('gameInitialization() should  should set opponent game when the player wants to start a solo game', () => {
+        const testGameConfiguration = {
+            username: 'Pauline',
+            opponent: 'Bob',
+            dictionary: 'francais',
+            timer: 1,
+            mode: 'classique',
+            isMultiplayer: true,
+        };
+        const testStatusGame = 'Adversaire Trouvé';
+        service.gameInitialization(testGameConfiguration);
+        expect(service.roomInformation.playerName[1]).toEqual(testGameConfiguration.opponent);
         expect(service.roomInformation.isCreator).toBeTruthy();
         expect(service.roomInformation.statusGame).toEqual(testStatusGame);
     });
@@ -198,6 +231,24 @@ describe('GameConfigurationService', () => {
         const roomId = '3';
         socketEmulator.peerSideEmit(SocketEvents.GameCreatedConfirmation, roomId);
         expect(service.roomInformation.roomId).toEqual(roomId);
+    });
+
+    it('setGameUnavailable should send a event to the server with the room Id to make the room Unavailable', () => {
+        const roomId = '1';
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        service.roomInformation.roomId = roomId;
+        service.setGameUnavailable();
+        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameUnavailable, roomId);
+    });
+
+    it('setGameAvailable should send a event to the server with the room Id to make the room Available', () => {
+        const roomId = '1';
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        service.roomInformation.roomId = roomId;
+        service.setGameAvailable();
+        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameAvailable, roomId);
     });
 
     it('should handle foundOpponent event with the username of the opponent that wants to join his game', () => {

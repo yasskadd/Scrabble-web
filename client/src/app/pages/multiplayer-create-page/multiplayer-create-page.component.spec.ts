@@ -157,7 +157,7 @@ describe('MultiplayerCreatePageComponent', () => {
 
     it('createGame should call gameConfiguration.gameInitialization with the good Value', fakeAsync(() => {
         component.playerName = 'Vincent';
-        const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: 'francais', mode: 'classique' };
+        const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: 'francais', mode: 'classique', isMultiplayer: true };
         component.createGame();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);

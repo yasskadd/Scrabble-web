@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
 import { AbandonGameDialogBoxComponent } from './abandon-game-dialog-box.component';
-
 const MULTIPLAYER_HOME_PAGE = 'home';
 
 @Component({
@@ -26,6 +26,7 @@ describe('AbandonGameDialogBoxComponent', () => {
             declarations: [AbandonGameDialogBoxComponent],
             imports: [
                 MatSnackBarModule,
+                MatIconModule,
                 BrowserAnimationsModule,
                 RouterTestingModule.withRoutes([{ path: MULTIPLAYER_HOME_PAGE, component: StubComponent }]),
             ],

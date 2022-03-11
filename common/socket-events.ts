@@ -39,4 +39,7 @@ export enum SocketEvents {
     QuitGame = 'quitGame',
     ReserveCommand = 'reserveCommand',
     AllReserveLetters = 'allReserveLetters',
+    SetGameUnavailable = 'setGameUnavailable',
+    SetGameAvailable = 'setGameAvailable',
+    ClueCommand = 'clueCommand',
 }

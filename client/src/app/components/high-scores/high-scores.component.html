@@ -1,7 +1,8 @@
-<mat-card class="container">
-    <button class="returnButton" mat-icon-button routerLink="/home"><mat-icon>keyboard_return</mat-icon></button>
-
-    <mat-card-title class="containerTitle">Meilleurs Scores</mat-card-title>
+<div class="headerContent">
+    <button class="returnButton" mat-icon-button mat-button mat-dialog-close><mat-icon>keyboard_return</mat-icon></button>
+    <h1 class="containerTitle" mat-dialog-title>Meilleurs Scores</h1>
+</div>
+<div class="container" mat-dialog-content>
     <div class="wrapper">
         <mat-card-title>Partie Classique</mat-card-title>
         <mat-card class="highScoreTableClassic">
@@ -39,4 +40,4 @@
             </table>
         </mat-card>
     </div>
-</mat-card>
+</div>

@@ -1,12 +1,18 @@
 .container {
     display: flex;
     flex-direction: column;
-    width: 50%;
     margin: auto;
     background-color: rgb(105, 236, 193);
     top: 5%;
     border: 2px solid rgb(44, 223, 20);
     border-radius: 50px;
+}
+
+.headerContent {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    justify-content: space-between;
 }
 
 .wrapper {

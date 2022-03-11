@@ -1,15 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { PlayerRackComponent } from '@app/components/player-rack/player-rack.component';
 import { Vec2 } from '@app/interfaces/vec2';
+import { GameClientService } from '@app/services/game-client.service';
+import { Letter } from '@common/letter';
 
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
     let mouseEvent: MouseEvent;
+    let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
 
     beforeEach(async () => {
+        gameClientServiceSpy = jasmine.createSpyObj('GameClientService', ['updateGameboard'], {
+            playerOneTurn: true,
+            playerOne: { rack: [{ value: 'a' } as Letter] },
+        });
         await TestBed.configureTestingModule({
-            declarations: [PlayAreaComponent],
+            declarations: [PlayAreaComponent, PlayerRackComponent],
+            providers: [{ provide: GameClientService, useValue: gameClientServiceSpy }],
         }).compileComponents();
     });
 
