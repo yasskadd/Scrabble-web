@@ -21,7 +21,6 @@ interface RoomInformation {
     providedIn: 'root',
 })
 export class GameConfigurationService {
-    botNameList = ['robert', 'jean', 'albert'];
     roomInformation: RoomInformation;
     availableRooms: GameRoomClient[];
     isGameStarted: ReplaySubject<boolean>;
@@ -156,11 +155,10 @@ export class GameConfigurationService {
     }
 
     private createBotName(): void {
-        const tempBotName = this.botNameList;
-        const indexName: number = this.botNameList.indexOf(this.roomInformation.playerName[0].toLowerCase());
-        if (indexName !== INDEX_NOT_FOUND) this.botNameList.splice(indexName, 1);
-        this.roomInformation.playerName[1] = this.botNameList[Math.floor(Math.random() * this.botNameList.length)];
-        this.botNameList = tempBotName;
+        const botNameList = ['robert', 'jean', 'albert'];
+        const indexName: number = botNameList.indexOf(this.roomInformation.playerName[0].toLowerCase());
+        if (indexName !== INDEX_NOT_FOUND) botNameList.splice(indexName, 1);
+        this.roomInformation.playerName[1] = botNameList[Math.floor(Math.random() * botNameList.length)];
     }
 
     private gameCreatedConfirmationEvent(roomId: string) {
