@@ -1,13 +1,9 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable dot-notation */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-restricted-imports */
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
@@ -36,7 +32,7 @@ describe('Dictionary Validation Service', () => {
     });
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {
-        expect(dictionaryValidationService.dictionary).to.not.be.null;
+        expect(dictionaryValidationService.dictionary).to.not.equal(null);
         const jsonWordsLength: number = jsonDictionary.words.length;
         expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonWordsLength);
     });
@@ -46,7 +42,7 @@ describe('Dictionary Validation Service', () => {
         validWord2.isValid = false;
         const validWords: Word[] = [validWord1, validWord2];
         dictionaryValidationService['checkWordInDictionary'](validWords);
-        expect(validWord1.isValid && validWord2.isValid).to.be.true;
+        expect(validWord1.isValid && validWord2.isValid).to.equal(true);
     });
 
     it('checkWordInDictionary() should set word isValid attribute to false if they do not exist', () => {
@@ -54,7 +50,7 @@ describe('Dictionary Validation Service', () => {
         invalidWord2.isValid = true;
         const invalidWords: Word[] = [invalidWord1, invalidWord2];
         dictionaryValidationService['checkWordInDictionary'](invalidWords);
-        expect(invalidWord1.isValid && invalidWord2).to.be.false;
+        expect(invalidWord1.isValid && invalidWord2).to.equal(false);
     });
 
     it('should return an array if isolateInvalidWords() is called', () => {
@@ -85,7 +81,7 @@ describe('Dictionary Validation Service', () => {
         const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as any);
         const wordList: Word[] = [validWord1, validWord2];
         dictionaryValidationService.validateWords(wordList);
-        expect(spyIsolate.calledOnce && spyCheckWord.calledOnce).to.be.true;
+        expect(spyIsolate.calledOnce && spyCheckWord.calledOnce).to.equal(true);
     });
 
     it('should call calculatePoints() when validateWord is called for each word in the list if there is no invalid words', () => {
@@ -93,14 +89,14 @@ describe('Dictionary Validation Service', () => {
         const spyCalculate2 = Sinon.spy(validWord2, 'calculatePoints');
         const validWordList = [validWord1, validWord2];
         dictionaryValidationService.validateWords(validWordList);
-        expect(spyCalculate1.calledOnce && spyCalculate2.calledOnce).to.be.true;
+        expect(spyCalculate1.calledOnce && spyCalculate2.calledOnce).to.equal(true);
     });
 
     it('should not call calculatePoints() when validateWord() is called if there is at least one invalid word', () => {
         const spyCalculate1 = Sinon.spy(validWord1, 'calculatePoints');
         const wordList = [validWord1, validWord2, invalidWord2];
         dictionaryValidationService.validateWords(wordList);
-        expect(spyCalculate1.called).to.be.false;
+        expect(spyCalculate1.called).to.equal(false);
     });
 
     it('should return correct points number when validateWord() is called and wordList is valid', () => {

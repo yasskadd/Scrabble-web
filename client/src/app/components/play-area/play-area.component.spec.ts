@@ -3,7 +3,7 @@ import { PlayAreaComponent } from '@app/components/play-area/play-area.component
 import { PlayerRackComponent } from '@app/components/player-rack/player-rack.component';
 import { Vec2 } from '@app/interfaces/vec2';
 import { GameClientService } from '@app/services/game-client.service';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;

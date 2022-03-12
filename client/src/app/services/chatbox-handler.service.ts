@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/interfaces/chatbox-message';
-import { Coordinate } from '@common/coordinate';
-import { Letter } from '@common/letter';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
 import { ClientSocketService } from './client-socket.service';
 import { CommandHandlerService } from './command-handler.service';
 import { GameClientService } from './game-client.service';

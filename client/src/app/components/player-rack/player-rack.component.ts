@@ -3,7 +3,7 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -20,18 +20,16 @@ export class PlayerRackComponent implements OnInit {
 
     @ViewChild('info', { static: false }) info: ElementRef;
 
-    width = constants.RACK_WIDTH;
-    height = constants.RACK_HEIGHT;
-    buttonPressed = '';
-    currentSelection = 0;
-    previousSelection = constants.INVALID_INDEX;
-    lettersToExchange: number[] = [];
-    lettersToManipulate: number[] = [];
-    duplicates: number[] = [];
-    arrow: boolean = false;
-    absentFromRack: boolean = true;
-    clicked: number[] = [];
-
+    width: number;
+    height: number;
+    buttonPressed: string;
+    currentSelection: number;
+    previousSelection: number;
+    lettersToExchange: number[];
+    lettersToManipulate: number[];
+    duplicates: number[];
+    arrow: boolean;
+    absentFromRack: boolean;
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
     constructor(
@@ -39,7 +37,18 @@ export class PlayerRackComponent implements OnInit {
         public gameClient: GameClientService,
         private tmpService: GridService,
         private eRef: ElementRef,
-    ) {}
+    ) {
+        this.width = constants.RACK_WIDTH;
+        this.height = constants.RACK_HEIGHT;
+        this.buttonPressed = '';
+        this.currentSelection = 0;
+        this.previousSelection = constants.INVALID_INDEX;
+        this.lettersToExchange = [];
+        this.lettersToManipulate = [];
+        this.duplicates = [];
+        this.arrow = false;
+        this.absentFromRack = true;
+    }
 
     @HostListener('window: click', ['$event'])
     clickOutside(event: { target: unknown; preventDefault: () => void }) {

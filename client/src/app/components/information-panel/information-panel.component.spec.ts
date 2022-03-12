@@ -8,7 +8,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { of } from 'rxjs';
 import { InformationPanelComponent } from './information-panel.component';
 
