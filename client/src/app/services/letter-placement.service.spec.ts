@@ -199,4 +199,14 @@ fdescribe('LetterPlacementService', () => {
         // eslint-disable-next-line dot-notation
         expect(index).toEqual(INDEX_NOT_FOUND);
     });
+
+    it("treatLetter should return the same letter if the letter's in lowercase", () => {
+        // eslint-disable-next-line dot-notation
+        expect(service['treatLetter']('b')).toEqual('b');
+    });
+
+    it("treatLetter should return the white letter's value if the letter's in uppercase", () => {
+        // eslint-disable-next-line dot-notation
+        expect(service['treatLetter']('B')).toEqual('*');
+    });
 });
