@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
@@ -273,6 +274,97 @@ fdescribe('LetterPlacementService', () => {
 
         // eslint-disable-next-line dot-notation
         expect(service['placedLetters'].includes(LETTER)).not.toBeTruthy();
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
+    });
+
+    it("placeLetter shouldn't do anything if it's not the player's turn", () => {
+        const LETTER = {} as Letter;
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+        (Object.getOwnPropertyDescriptor(gameClientServiceSpy, 'playerOneTurn')?.get as jasmine.Spy<() => boolean>).and.returnValue(false);
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        service.placeLetter(LETTER);
+
+        // eslint-disable-next-line dot-notation
+        expect(service['placedLetters'].includes(LETTER)).not.toBeTruthy();
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
+    });
+
+    it('placeLetterStartPosition should update the view', () => {
+        gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
+
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+        const resetGameBoardViewSpy = spyOn(service, 'resetGameBoardView' as never);
+
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = false;
+
+        service.placeLetterStartPosition({ x: 0, y: 0 });
+
+        expect(updateLettersViewSpy).toHaveBeenCalled();
+        expect(resetGameBoardViewSpy).toHaveBeenCalled();
+    });
+
+    it('placeLetterStartPosition should change the direction if clicked on the same position and update the view', () => {
+        gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
+
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+
+        // eslint-disable-next-line dot-notation
+        service['isHorizontal'] = true;
+        // eslint-disable-next-line dot-notation
+        service['startTile'] = { x: 1, y: 1 };
+
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+
+        service.placeLetterStartPosition({ x: 0, y: 0 });
+
+        // eslint-disable-next-line dot-notation
+        expect(service['isHorizontal']).toBeFalse();
+        expect(updateLettersViewSpy).toHaveBeenCalled();
+    });
+
+    it("placeLetterStartPosition shouldn't do anything if it's not the player's turn", () => {
+        gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
+        (Object.getOwnPropertyDescriptor(gameClientServiceSpy, 'playerOneTurn')?.get as jasmine.Spy<() => boolean>).and.returnValue(false);
+
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+
+        service.placeLetterStartPosition({ x: 0, y: 0 });
+
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
+    });
+
+    it("placeLetterStartPosition shouldn't do anything if it's outOfBound", () => {
+        gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 16 });
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+
+        service.placeLetterStartPosition({ x: 0, y: 0 });
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
+    });
+
+    it("placeLetterStartPosition shouldn't do anything if it's the tile is occupied", () => {
+        gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTile);
+
+        service.placeLetterStartPosition({ x: 0, y: 0 });
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
+    });
+
+    it("placeLetterStartPosition shouldn't do anything if there's placed letters", () => {
+        gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'].push({} as Letter);
+
+        service.placeLetterStartPosition({ x: 0, y: 0 });
         expect(updateLettersViewSpy).not.toHaveBeenCalled();
     });
 });

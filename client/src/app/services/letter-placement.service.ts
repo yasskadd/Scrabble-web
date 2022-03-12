@@ -73,7 +73,7 @@ export class LetterPlacementService {
             return;
         if (this.startTile.x === position.x && this.startTile.y === position.y) {
             this.isHorizontal = !this.isHorizontal;
-            this.gridService.drawArrow(position, this.isHorizontal);
+            this.updateLettersView();
             return;
         }
         this.resetGameBoardView();
