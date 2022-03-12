@@ -15,7 +15,7 @@ type OnSioCallbackSignature = (sio: ioServer, socket: SocketType, ...args: unkno
 const TEST_ROOM = 'EldenRingHype';
 const TEST_MESSAGE = 'RipNoTime';
 const EVENT = 'eventTest';
-describe.only('SocketManager service tests', () => {
+describe('SocketManager service tests', () => {
     let service: SocketManager;
     let httpServer: Server;
     let clientSocket: Socket;
