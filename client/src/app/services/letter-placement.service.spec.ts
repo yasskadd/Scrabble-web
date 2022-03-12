@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { Letter } from '@common/letter';
+import { LetterTile } from '@common/letter-tile.class';
 import { of } from 'rxjs';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 import { LetterPlacementService } from './letter-placement.service';
 
-describe('LetterPlacementService', () => {
+fdescribe('LetterPlacementService', () => {
     let service: LetterPlacementService;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
     let chatboxServiceSpy: jasmine.SpyObj<ChatboxHandlerService>;
@@ -33,5 +35,110 @@ describe('LetterPlacementService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('isOutOfBound should return true if the coordinate is out of bound', () => {
+        const COORDINATE_OUT_OF_BOUND_1 = { x: 0, y: -1 };
+        const COORDINATE_OUT_OF_BOUND_2 = { x: 20, y: 500 };
+        // eslint-disable-next-line dot-notation
+        expect(service['isOutOfBound'](COORDINATE_OUT_OF_BOUND_1)).toBeTruthy();
+        // eslint-disable-next-line dot-notation
+        expect(service['isOutOfBound'](COORDINATE_OUT_OF_BOUND_2)).toBeTruthy();
+    });
+
+    it('isOutOfBound should return false if the coordinate is not out of bound', () => {
+        const COORDINATE_OUT_OF_BOUND_1 = { x: 5, y: 1 };
+        const COORDINATE_OUT_OF_BOUND_2 = { x: 15, y: 15 };
+        // eslint-disable-next-line dot-notation
+        expect(service['isOutOfBound'](COORDINATE_OUT_OF_BOUND_1)).toBeFalsy();
+        // eslint-disable-next-line dot-notation
+        expect(service['isOutOfBound'](COORDINATE_OUT_OF_BOUND_2)).toBeFalsy();
+    });
+
+    it('getArrayIndex should return the index of the element in the array', () => {
+        const COORDINATE_1 = { x: 1, y: 1 };
+        const COORDINATE_2 = { x: 15, y: 15 };
+        const EXPECTED_INDEX_1 = 0;
+        const EXPECTED_INDEX_2 = 224;
+        // eslint-disable-next-line dot-notation
+        expect(service['getArrayIndex'](COORDINATE_1)).toEqual(EXPECTED_INDEX_1);
+        // eslint-disable-next-line dot-notation
+        expect(service['getArrayIndex'](COORDINATE_2)).toEqual(EXPECTED_INDEX_2);
+    });
+
+    it('incrementByOne should increment the parameter.x by one if isHorizontal is true', () => {
+        const COORDINATE = { x: 1, y: 1 };
+        const EXPECTED_COORDINATE = { x: 2, y: 1 };
+        // eslint-disable-next-line dot-notation
+        service['isHorizontal'] = true;
+        // eslint-disable-next-line dot-notation
+        service['incrementByOne'](COORDINATE);
+        // eslint-disable-next-line dot-notation
+        expect(COORDINATE).toEqual(EXPECTED_COORDINATE);
+    });
+
+    it('incrementByOne should increment the parameter.y by one if isHorizontal is false', () => {
+        const COORDINATE = { x: 1, y: 1 };
+        const EXPECTED_COORDINATE = { x: 1, y: 2 };
+        // eslint-disable-next-line dot-notation
+        service['isHorizontal'] = false;
+        // eslint-disable-next-line dot-notation
+        service['incrementByOne'](COORDINATE);
+        // eslint-disable-next-line dot-notation
+        expect(COORDINATE).toEqual(EXPECTED_COORDINATE);
+    });
+
+    it('setPropreties should set the propreties accordingly', () => {
+        // eslint-disable-next-line dot-notation
+        service['setPropreties']();
+        // eslint-disable-next-line dot-notation
+        expect(service['startTile']).toEqual({ x: 0, y: 0 });
+        // eslint-disable-next-line dot-notation
+        expect(service['placedLetters']).toEqual([]);
+        // eslint-disable-next-line dot-notation
+        expect(service['isHorizontal']).toEqual(true);
+        // eslint-disable-next-line dot-notation
+        expect(service['isPlacingActive']).toEqual(false);
+        // eslint-disable-next-line dot-notation
+        expect(service['hasPlacingEnded']).toEqual(false);
+    });
+
+    it("computeNextCoordinate should return the same coordinate if the Tile isn't occupied", () => {
+        const COORDINATE = { x: 1, y: 1 };
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        // eslint-disable-next-line dot-notation
+        expect(service['computeNextCoordinate'](COORDINATE)).toEqual(COORDINATE);
+    });
+
+    it('computeNextCoordinate should increment until the next not occupied coordinate', () => {
+        const COORDINATE = { x: 1, y: 1 };
+        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        // eslint-disable-next-line dot-notation
+        service['isHorizontal'] = true;
+        // eslint-disable-next-line dot-notation
+        expect(service['computeNextCoordinate'](COORDINATE)).toEqual({ x: 3, y: 1 });
+    });
+
+    it("computeNextCoordinate should stop incrementing if it's outOfBound ", () => {
+        const COORDINATE = { x: 15, y: 15 };
+        gameClientServiceSpy.gameboard[224] = { isOccupied: true } as LetterTile;
+        // eslint-disable-next-line dot-notation
+        service['isHorizontal'] = true;
+        COORDINATE.x++;
+        // eslint-disable-next-line dot-notation
+        expect(service['computeNextCoordinate'](COORDINATE)).toEqual(COORDINATE);
+    });
+
+    it('updateLettersView should draw all Letters that are in placedLetters ', () => {
+        const START_COORDINATE = { x: 1, y: 1 };
+        const EXPECTED_CALLS = 2;
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'] = [{} as Letter, {} as Letter];
+        // eslint-disable-next-line dot-notation
+        service['startTile'] = START_COORDINATE;
+        // eslint-disable-next-line dot-notation
+        expect(gridServiceSpy.drawUnfinalizedLetter.calls.count()).toEqual(EXPECTED_CALLS);
     });
 });

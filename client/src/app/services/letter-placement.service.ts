@@ -110,7 +110,7 @@ export class LetterPlacementService {
         return '*';
     }
 
-    private findLetterFromRack(letterValue: string) {
+    private findLetterFromRack(letterValue: string): number {
         const letterTreated = this.treatLetter(letterValue);
         return this.gameClientService.playerOne.rack.findIndex((letter) => letter.value === letterTreated);
     }
@@ -137,12 +137,12 @@ export class LetterPlacementService {
         }
         return computedPosition;
     }
-
+    //
     private incrementByOne(coordinate: Coordinate) {
         if (this.isHorizontal) coordinate.x++;
         else coordinate.y++;
     }
-
+    //
     private setPropreties() {
         this.startTile = { x: 0, y: 0 };
         this.placedLetters = [];
@@ -150,13 +150,13 @@ export class LetterPlacementService {
         this.isPlacingActive = false;
         this.hasPlacingEnded = false;
     }
-
+    //
     private isOutOfBound(coordinate: Coordinate): boolean {
         return (
-            coordinate.x === 0 || coordinate.y === 0 || coordinate.x > constants.TOTAL_TILES_IN_ROW || coordinate.y > constants.TOTAL_TILES_IN_COLUMN
+            coordinate.x <= 0 || coordinate.y <= 0 || coordinate.x > constants.TOTAL_TILES_IN_ROW || coordinate.y > constants.TOTAL_TILES_IN_COLUMN
         );
     }
-
+    //
     private getArrayIndex(coordinate: Coordinate): number {
         const DISPLACEMENT = 1;
         return coordinate.x - DISPLACEMENT + (coordinate.y - DISPLACEMENT) * constants.TOTAL_TILES_IN_ROW;
