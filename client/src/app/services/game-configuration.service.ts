@@ -134,7 +134,6 @@ export class GameConfigurationService {
 
     beginScrabbleGame(opponentBot?: boolean) {
         if (opponentBot === true) {
-            console.log('allo');
             this.createBotName();
         }
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
