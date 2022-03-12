@@ -17,7 +17,6 @@ export class PlayerRackComponent {
     lettersToExchange: number[] = [];
     clicked: number[] = [];
     constructor(
-        // I think there's too many services in this component (╯‵□′)╯︵┻━┻
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,
         public letterPlacementService: LetterPlacementService,
@@ -59,15 +58,12 @@ export class PlayerRackComponent {
         }
     }
 
-    // Added function -------------------------------------
-    // TODO : TEST
     playPlacedLetters() {
         this.letterPlacementService.submitPlacement();
     }
     get noPlacedLetters(): boolean {
         return this.letterPlacementService.noLettersPlaced();
     }
-    // -----------------------------------------------------
 
     exchange() {
         let letters = '';

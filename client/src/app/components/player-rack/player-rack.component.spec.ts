@@ -27,7 +27,6 @@ describe('PlayerRackComponent', () => {
         });
         gridServiceServiceSpy = jasmine.createSpyObj('GridService', [], { letterSize: LETTER_SIZE });
         letterPlacementServiceSpy = jasmine.createSpyObj('LetterPlacementService', ['submitPlacement', 'noLettersPlaced']);
-        // letterPlacementServiceSpy.noLettersPlaced.and.returnValue(true);
         await TestBed.configureTestingModule({
             declarations: [PlayerRackComponent],
             providers: [
@@ -147,5 +146,16 @@ describe('PlayerRackComponent', () => {
         component.lettersToExchange = [0];
         component.cancel();
         expect(component.lettersToExchange.length).toEqual(0);
+    });
+
+    it('noPlacedLetters should return noLettersPlaced from letterPlacementService', () => {
+        const VALUE = true;
+        letterPlacementServiceSpy.noLettersPlaced.and.returnValue(VALUE);
+        expect(component.noPlacedLetters).toBeTruthy();
+    });
+
+    it('playPlacedLetters should call letterPlacementService.submitPlacement', () => {
+        component.playPlacedLetters();
+        expect(letterPlacementServiceSpy.submitPlacement).toHaveBeenCalled();
     });
 });
