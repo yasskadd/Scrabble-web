@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    margin: 7% 1% 1% 1%;
+    justify-content: space-around;
+    height: 30%;
+}
+
+h1 {
+    text-align: center;
+}
+
+#easyMode {
+    color: #f0fff3;
+    width: 30%;
+    background-color: #155724;
+}
+
+.expectMode {
+    color: #f0fff3;
+    width: 30%;
+    background-color: #b42222;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    width: 30%;
+    color: #666666;
+}

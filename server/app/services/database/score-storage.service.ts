@@ -2,7 +2,7 @@ import { Document } from 'mongodb';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 
-type ScoreInfo = { player: string; type: string; score: number };
+type ScoreInfo = { username: string; type: string; score: number };
 
 @Service()
 export class ScoreStorageService {
@@ -17,10 +17,33 @@ export class ScoreStorageService {
         const currentTopScores = await this.database.fetchDocuments({ type: scoreInfo.type });
         const scorePlace = this.getTopScoresPosition(currentTopScores, scoreInfo.score);
         if (scorePlace === ScoreStorageService.lastElement) return;
-        this.database.replaceDocument(
-            { position: scorePlace },
-            { position: scorePlace, player: scoreInfo.player, type: scoreInfo.type, score: scoreInfo.score },
-        );
+        const currentElement = currentTopScores[scorePlace - 1];
+        if (currentElement !== undefined) {
+            if (currentElement.score === scoreInfo.score && !this.isNameAlreadyThere(scoreInfo.username, currentElement.username)) {
+                this.database.replaceDocument(
+                    { position: scorePlace },
+                    {
+                        position: scorePlace,
+                        username: currentElement.username + ' - ' + scoreInfo.username,
+                        type: scoreInfo.type,
+                        score: scoreInfo.score,
+                    },
+                );
+            } else if (currentElement.score !== scoreInfo.score) {
+                currentTopScores.forEach((value) => {
+                    if (value.position >= scorePlace && value.position !== ScoreStorageService.lastElement) {
+                        this.database.replaceDocument(
+                            { position: value.position + 1 },
+                            { position: value.position + 1, username: value.username, type: value.type, score: value.score },
+                        );
+                    }
+                });
+                this.database.replaceDocument(
+                    { position: scorePlace },
+                    { position: scorePlace, username: scoreInfo.username, type: scoreInfo.type, score: scoreInfo.score },
+                );
+            }
+        }
     }
     async getLOG2990TopScores(): Promise<Document[]> {
         await this.populateDb();
@@ -61,5 +84,11 @@ export class ScoreStorageService {
             return b - a;
         });
         return scores.indexOf(score) + 1;
+    }
+    private isNameAlreadyThere(newPlayer: string, currentPlayer: string): boolean {
+        const notFound = -1;
+        const playerName = currentPlayer.split(' - ');
+        if (playerName.indexOf(newPlayer) === notFound) return false;
+        return true;
     }
 }

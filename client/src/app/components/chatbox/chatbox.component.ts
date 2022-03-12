@@ -1,8 +1,7 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 
-const MAX_LENGTH = 512;
 @Component({
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
@@ -13,7 +12,7 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     @ViewChild('chatbox', { static: false }) chatbox: ElementRef;
     @ViewChild('container') private scrollBox: ElementRef;
 
-    input = new FormControl(ChatboxComponent.inputInitialState, [Validators.maxLength(MAX_LENGTH)]);
+    input = new FormControl(ChatboxComponent.inputInitialState);
     constructor(public chatboxHandler: ChatboxHandlerService) {}
 
     @HostListener('click')
@@ -22,8 +21,10 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     }
 
     ngAfterViewInit() {
-        this.chatboxHandler.resetMessage();
-        this.chatbox.nativeElement.focus();
+        setTimeout(() => {
+            this.chatboxHandler.resetMessage();
+            this.chatbox.nativeElement.focus();
+        }, 0);
     }
 
     get messages() {
@@ -31,10 +32,8 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     }
 
     submit() {
-        if (this.input.valid) {
-            this.chatboxHandler.submitMessage(this.input.value);
-            this.resetInput();
-        }
+        this.chatboxHandler.submitMessage(this.input.value);
+        this.resetInput();
     }
 
     ngAfterViewChecked(): void {

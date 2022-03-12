@@ -1,5 +1,5 @@
 import * as letterTypes from '@app/letter-reserve';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { Service } from 'typedi';
 
 const NUMBER_OF_LETTERS_ON_RACK = 7;
@@ -25,21 +25,13 @@ export class LetterReserveService {
                 letter.quantity--;
             }
         });
-
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        this.lettersReserve = this.lettersReserve.filter((letter) => letter.quantity !== 0);
     }
 
     insertLetter(removedLetters: Letter[]): Letter[] {
         const updatedLetterReserve = this.lettersReserve;
         for (const letterToRemove of removedLetters) {
             const index = this.lettersReserve.findIndex((letter) => letter.value === letterToRemove.value);
-            if (index < 0) {
-                const newLetter = { value: letterToRemove.value, quantity: 1, points: letterToRemove.points };
-                updatedLetterReserve.push(newLetter);
-            } else {
-                updatedLetterReserve[index].quantity++;
-            }
+            updatedLetterReserve[index].quantity++;
         }
 
         return updatedLetterReserve;
@@ -47,8 +39,12 @@ export class LetterReserveService {
 
     distributeLetter(rack: Letter[]): void {
         const nLetters = this.lettersReserve.length;
-        const random = Math.floor(Math.random() * nLetters);
-        const letter = this.lettersReserve[random];
+        let random = Math.floor(Math.random() * nLetters);
+        let letter = this.lettersReserve[random];
+        while (this.lettersReserve[random].quantity === 0) {
+            random = Math.floor(Math.random() * nLetters);
+            letter = this.lettersReserve[random];
+        }
         this.removeLetter(letter);
         rack.push(letter);
     }

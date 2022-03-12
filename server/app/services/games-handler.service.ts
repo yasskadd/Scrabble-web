@@ -2,9 +2,10 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/command-info';
-import { LetterTile } from '@common/letter-tile.class';
-import { SocketEvents } from '@common/socket-events';
+import { CommandInfo } from '@app/interfaces/command-info';
+import { ScoreStorageService } from '@app/services/database/score-storage.service';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
@@ -20,6 +21,7 @@ interface GameHolder {
     players: RealPlayer[];
     roomId: string;
     isGameFinish: boolean;
+    timer: number;
 }
 
 interface GameScrabbleInformation {
@@ -34,7 +36,7 @@ export class GamesHandler {
     private players: Map<string, Player>;
     private games: Map<string, GameHolder>;
 
-    constructor(private socketManager: SocketManager) {
+    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService) {
         this.players = new Map();
         this.games = new Map();
     }
@@ -47,6 +49,10 @@ export class GamesHandler {
 
         this.socketManager.on(SocketEvents.Exchange, (socket, letters: string[]) => {
             this.exchange(socket, letters);
+        });
+
+        this.socketManager.on(SocketEvents.ReserveCommand, (socket) => {
+            this.reserveCommand(socket);
         });
 
         this.socketManager.on(SocketEvents.Skip, (socket) => {
@@ -66,6 +72,14 @@ export class GamesHandler {
         });
     }
 
+    private reserveCommand(this: this, socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const gameHolder = this.games.get(room) as GameHolder;
+        socket.emit(SocketEvents.AllReserveLetters, gameHolder.game?.letterReserve.lettersReserve);
+    }
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
 
@@ -127,7 +141,13 @@ export class GamesHandler {
 
     private createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
-        const newGameHolder: GameHolder = { game: undefined, players: [playerOne], roomId: gameInfo.roomId, isGameFinish: false };
+        const newGameHolder: GameHolder = {
+            game: undefined,
+            players: [playerOne],
+            roomId: gameInfo.roomId,
+            isGameFinish: false,
+            timer: gameInfo.timer,
+        };
         const playerTwo = this.setAndGetPlayer(gameInfo);
 
         newGameHolder.players.push(playerTwo);
@@ -143,7 +163,7 @@ export class GamesHandler {
         newGameHolder.game.turn.endTurn.subscribe(() => {
             this.changeTurn(gameInfo.roomId);
             if (newGameHolder.game?.turn.activePlayer === undefined) {
-                this.endGame(socket);
+                this.userConnected(gameInfo.socketId);
             }
         });
         newGameHolder.game.turn.countdown.subscribe((timer: number) => {
@@ -166,11 +186,10 @@ export class GamesHandler {
     }
 
     private createNewGame(gameParam: GameHolder) {
-        const oneMinute = 60;
         return new Game(
             gameParam.players[0],
             gameParam.players[1],
-            new Turn(oneMinute),
+            new Turn(gameParam.timer),
             new LetterReserveService(),
             Container.get(LetterPlacementService),
         );
@@ -211,11 +230,11 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         const game = this.games.get(room);
-        this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
-        game?.game?.abandon();
         this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
-        socket.leave(room);
+        this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         this.players.delete(socket.id);
+        socket.leave(room);
+        game?.game?.abandon();
     }
 
     private disconnect(socket: Socket) {
@@ -229,23 +248,22 @@ export class GamesHandler {
                 tempTime = tempTime - 1;
                 if (tempTime === 0) {
                     if (!this.players.has(socket.id)) return;
-                    this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
-                    roomInfomation.game?.abandon();
-                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
                     socket.leave(room);
                     this.players.delete(socket.id);
+                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+                    this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
+                    roomInfomation.game?.abandon();
                 }
             }, SECOND);
         } else {
-            this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
             socket.leave(room);
             this.players.delete(socket.id);
+            this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
         }
     }
 
-    private endGame(socket: Socket) {
-        if (!this.players.has(socket.id)) return;
-        const player = this.players.get(socket.id) as Player;
+    private endGame(socketId: string) {
+        const player = this.players.get(socketId) as Player;
         const room = player.room;
         const roomInfomation = this.games.get(room);
         if (roomInfomation?.players !== undefined && !roomInfomation.isGameFinish) {
@@ -254,9 +272,29 @@ export class GamesHandler {
                 players: roomInfomation.players,
                 roomId: roomInfomation.roomId,
                 isGameFinish: true,
+                timer: roomInfomation.timer,
             };
             this.games.set(room, newGameHolder);
             this.socketManager.emitRoom(room, SocketEvents.GameEnd);
+        }
+    }
+
+    private async sendHighScore(socketId: string) {
+        const player = this.players.get(socketId) as Player;
+        await this.scoreStorage.addTopScores({ username: player.name, type: 'Classique', score: player.score });
+    }
+
+    private async userConnected(socketId: string[]) {
+        if (this.players.get(socketId[0]) && this.players.get(socketId[1])) {
+            this.endGame(socketId[0]);
+            await this.sendHighScore(socketId[0]);
+            await this.sendHighScore(socketId[1]);
+        } else if (this.players.get(socketId[0])) {
+            this.endGame(socketId[0]);
+            await this.sendHighScore(socketId[0]);
+        } else if (this.players.get(socketId[1])) {
+            this.endGame(socketId[1]);
+            await this.sendHighScore(socketId[1]);
         }
     }
 }

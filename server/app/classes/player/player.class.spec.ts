@@ -1,4 +1,4 @@
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { Player } from './player.class';
 
@@ -17,5 +17,10 @@ describe('Player', () => {
         player.rack = [{} as Letter];
         const isEmpty = player.rackIsEmpty();
         expect(isEmpty).to.equal(false);
+    });
+
+    it('rackToString() should convert rack list to string', () => {
+        player.rack = [{ value: 'l' } as Letter, { value: 'e' } as Letter];
+        expect(player.rackToString()).to.eql(['l', 'e']);
     });
 });
