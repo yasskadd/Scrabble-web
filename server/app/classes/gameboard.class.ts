@@ -1,16 +1,16 @@
-/* eslint-disable prettier/prettier */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
 
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
 
 export class Gameboard {
-    gameboardCoords: LetterTile[] = new Array();
+    gameboardCoords: LetterTile[];
 
     constructor(@Inject() private boxMultiplierService: BoxMultiplierService) {
+        this.gameboardCoords = new Array();
         this.createLetterTiles();
         this.boxMultiplierService.applyBoxMultipliers(this);
     }

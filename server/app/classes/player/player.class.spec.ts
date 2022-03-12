@@ -1,4 +1,4 @@
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { Player } from './player.class';
 
