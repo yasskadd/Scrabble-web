@@ -162,7 +162,7 @@ fdescribe('LetterPlacementService', () => {
         expect(gridServiceSpy.drawArrow).toHaveBeenCalled();
     });
 
-    it("updateLettersView should'nt draw the arrow if it's outOfBound", () => {
+    it("updateLettersView shouldn't draw the arrow if it's outOfBound", () => {
         const START_COORDINATE = { x: 15, y: 15 };
 
         gameClientServiceSpy.gameboard[224] = { isOccupied: true } as LetterTile;
@@ -173,5 +173,30 @@ fdescribe('LetterPlacementService', () => {
         service['updateLettersView']();
         // eslint-disable-next-line dot-notation
         expect(gridServiceSpy.drawArrow).not.toHaveBeenCalled();
+    });
+
+    it("findLetterFromRack should return the index of the letter from the rack if it's a normal Letter", () => {
+        gameClientServiceSpy.playerOne.rack = [{ value: '*' } as Letter, { value: 'a' } as Letter];
+        // eslint-disable-next-line dot-notation
+        const index = service['findLetterFromRack']('a');
+        // eslint-disable-next-line dot-notation
+        expect(index).toEqual(1);
+    });
+
+    it("findLetterFromRack should return the index of the letter from the rack if it's a white Letter", () => {
+        gameClientServiceSpy.playerOne.rack = [{ value: '*' } as Letter, { value: 'a' } as Letter];
+        // eslint-disable-next-line dot-notation
+        const index = service['findLetterFromRack']('*');
+        // eslint-disable-next-line dot-notation
+        expect(index).toEqual(0);
+    });
+
+    it("findLetterFromRack should return -1 if the letter's not found", () => {
+        const INDEX_NOT_FOUND = -1;
+        gameClientServiceSpy.playerOne.rack = [{ value: '*' } as Letter, { value: 'a' } as Letter];
+        // eslint-disable-next-line dot-notation
+        const index = service['findLetterFromRack']('b');
+        // eslint-disable-next-line dot-notation
+        expect(index).toEqual(INDEX_NOT_FOUND);
     });
 });
