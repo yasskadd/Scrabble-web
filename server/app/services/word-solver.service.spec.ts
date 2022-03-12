@@ -10,12 +10,15 @@ import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordSolverService } from './word-solver.service';
 
-describe('Word solver service', () => {
+describe.only('Word solver service', () => {
     let wordSolverService: WordSolverService;
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
     let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
-
+    const NUMBER_7 = 7;
+    const NUMBER_8 = 8;
+    const NUMBER_10 = 10;
+    const NUMBER_12 = 12;
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();
         dictionaryValidationService.createTrieDictionary();
@@ -24,17 +27,18 @@ describe('Word solver service', () => {
         wordSolverService = new WordSolverService(dictionaryValidationService.trie, gameboard);
     });
 
-    // it('test', () => {
-    //     const rack: string[] = ['*'];
-    //     gameboard.placeLetter(new LetterTile(1, 12, { value: 'z' } as Letter));
-    //     gameboard.placeLetter(new LetterTile(2, 1, { value: 'x' } as Letter));
-    //     gameboard.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
-    //     gameboard.placeLetter(new LetterTile(7, 10, { value: 'a' } as Letter));
-    //     gameboard.placeLetter(new LetterTile(7, 8, { value: 'j' } as Letter));
-    //     gameboard.placeLetter(new LetterTile(8, 8, { value: 'e' } as Letter));
-    //     wordSolverService.findAllOptions(rack);
-    //     wordSolverService.commandInfoScore(wordSolverService['commandInfoList']);
-    // });
+    // TODO: Temporary test, need modifications
+    it('should find all options', () => {
+        const rack: string[] = ['*'];
+        gameboard.placeLetter(new LetterTile(1, NUMBER_12, { value: 'z' } as Letter));
+        gameboard.placeLetter(new LetterTile(2, 1, { value: 'x' } as Letter));
+        gameboard.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
+        gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_10, { value: 'a' } as Letter));
+        gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_8, { value: 'j' } as Letter));
+        gameboard.placeLetter(new LetterTile(NUMBER_8, NUMBER_8, { value: 'e' } as Letter));
+        wordSolverService.findAllOptions(rack);
+        expect(wordSolverService.commandInfoScore(wordSolverService['commandInfoList']).size).to.be.greaterThan(1);
+    });
 
     context('Coordinate manipulation tests', () => {
         let upLeftCoordinate: Coordinate;
@@ -80,9 +84,7 @@ describe('Word solver service', () => {
     });
 
     context('buildPartialWord() Tests', () => {
-        const NUMBER_8 = 8;
         const NUMBER_6 = 6;
-        const NUMBER_7 = 7;
         beforeEach(() => {
             gameboard.placeLetter(new LetterTile(NUMBER_8, NUMBER_8, { value: 's' } as Letter));
         });
@@ -123,7 +125,6 @@ describe('Word solver service', () => {
     context('getLimitNumber() Tests', () => {
         let anchorsList: LetterTile[];
         const NUMBER_5 = 5;
-        const NUMBER_8 = 8;
         beforeEach(() => {
             gameboard.placeLetter(new LetterTile(NUMBER_5, NUMBER_5, {} as Letter));
             anchorsList = gameboard.findAnchors();

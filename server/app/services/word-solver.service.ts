@@ -152,7 +152,6 @@ export class WordSolverService {
         }
         return result;
     }
-    // TESTED
     private getLimitNumber(startPosition: Coordinate, anchors: LetterTile[]): number {
         let limit = 0;
         while (!this.gameboard.getCoord(startPosition).isOccupied && !anchors.includes(this.gameboard.getCoord(startPosition))) {
@@ -162,7 +161,6 @@ export class WordSolverService {
         }
         return limit;
     }
-    // TESTED
     private buildPartialWord(scanCoord: Coordinate): string {
         let partialWord = '';
         while (this.gameboard.getCoord(scanCoord).isOccupied) {
@@ -172,14 +170,12 @@ export class WordSolverService {
         return partialWord;
     }
 
-    // TESTED
     private decrementCoord(coord: Coordinate, isHorizontal: boolean) {
         if (isHorizontal && coord.x !== 1) return { x: coord.x - 1, y: coord.y } as Coordinate;
         else if (!isHorizontal && coord.y !== 1) return { x: coord.x, y: coord.y - 1 } as Coordinate;
         return null;
     }
 
-    // TESTED
     private incrementCoord(coord: Coordinate, isHorizontal: boolean) {
         if (isHorizontal && coord.x !== COLUMN_NUMBERS) return { x: coord.x + 1, y: coord.y } as Coordinate;
         else if (!isHorizontal && coord.y !== ROW_NUMBERS) return { x: coord.x, y: coord.y + 1 } as Coordinate;
