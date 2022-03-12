@@ -10,5 +10,5 @@
     "eslint.workingDirectories": ["./client", "./server"],
     "eslint.probe": ["javascript", "typescript", "html", "vue", "markdown"],
     "eslint.validate": ["javascript", "typescript", "html", "vue", "markdown"],
-    "cSpell.words": ["gameboard"]
+    "cSpell.words": ["dictionnary", "gameboard", "Verif"]
 }

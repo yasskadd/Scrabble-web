@@ -7,6 +7,7 @@ import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
+import { Container } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
@@ -19,7 +20,7 @@ describe('Dictionary Validation Service', () => {
     let invalidWord2: Word;
 
     beforeEach(() => {
-        dictionaryValidationService = new DictionaryValidationService();
+        dictionaryValidationService = Container.get(DictionaryValidationService);
         const letterA = { points: 5 } as Letter;
         validWord1 = new Word(true, [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterA)]);
         validWord1.stringFormat = 'bonjour';
@@ -32,7 +33,7 @@ describe('Dictionary Validation Service', () => {
     });
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {
-        expect(dictionaryValidationService.dictionary).to.not.equal(null);
+        expect(dictionaryValidationService.dictionary).to.not.eql(null);
         const jsonWordsLength: number = jsonDictionary.words.length;
         expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonWordsLength);
     });
@@ -75,10 +76,8 @@ describe('Dictionary Validation Service', () => {
     });
 
     it('should call isolateInvalidWords and checkWordInDictionary when validateWord is called', () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as any);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as any);
+        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
+        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
         const wordList: Word[] = [validWord1, validWord2];
         dictionaryValidationService.validateWords(wordList);
         expect(spyIsolate.calledOnce && spyCheckWord.calledOnce).to.equal(true);

@@ -18,4 +18,13 @@ export class Player {
     rackIsEmpty(): boolean {
         return this.rack.length === 0;
     }
+
+    // TODO: Do we use this method ?
+    rackToString() {
+        const stringArray: string[] = [];
+        this.rack.forEach((letter) => {
+            stringArray.push(letter.value);
+        });
+        return stringArray;
+    }
 }

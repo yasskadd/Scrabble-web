@@ -17,6 +17,7 @@ export class DictionaryValidationService {
         jsonDictionary.words.forEach((word: string) => {
             this.dictionary.add(word);
         });
+        this.createTrieDictionary();
     }
 
     validateWords(enteredWords: Word[]): number {

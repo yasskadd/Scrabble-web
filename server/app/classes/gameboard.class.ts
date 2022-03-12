@@ -1,5 +1,6 @@
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterTile } from '@common/classes/letter-tile.class';
+import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
 
@@ -25,7 +26,8 @@ export class Gameboard {
         }
     }
 
-    getCoord(coord: LetterTile) {
+    getCoord(coord: Coordinate) {
+        if (coord === null) return {} as LetterTile;
         if (coord.x > ROW_NUMBERS || coord.x < 1 || coord.y > ROW_NUMBERS || coord.y < 1) return {} as LetterTile;
         return this.gameboardCoords.filter((gameboardCoord) => {
             return gameboardCoord.x === coord.x && gameboardCoord.y === coord.y;
@@ -40,5 +42,25 @@ export class Gameboard {
     removeLetter(letterCoord: LetterTile) {
         this.getCoord(letterCoord).letter = {} as Letter;
         this.getCoord(letterCoord).isOccupied = false;
+    }
+
+    isAnchor(tile: LetterTile): boolean {
+        if (tile.isOccupied) return false;
+        if (
+            this.getCoord({ x: tile.x - 1, y: tile.y } as Coordinate).isOccupied ||
+            this.getCoord({ x: tile.x + 1, y: tile.y } as Coordinate).isOccupied ||
+            this.getCoord({ x: tile.x, y: tile.y - 1 } as Coordinate).isOccupied ||
+            this.getCoord({ x: tile.x, y: tile.y + 1 } as Coordinate).isOccupied
+        )
+            return true;
+        return false;
+    }
+
+    findAnchors(): LetterTile[] {
+        const anchors: LetterTile[] = [];
+        for (const tile of this.gameboardCoords) {
+            if (this.isAnchor(tile)) anchors.push(tile);
+        }
+        return anchors;
     }
 }

@@ -94,4 +94,16 @@ describe('gameboard', () => {
         gameboard.placeLetter(coord);
         expect(gameboard.getCoord(coord)).to.eql({} as LetterTile);
     });
+
+    context('findAnchors() tests', () => {
+        beforeEach(() => {
+            gameboard.placeLetter(new LetterTile(7, 7, {} as Letter));
+        });
+
+        // TODO: Fix findAnchors() test
+        it('findAnchors() should return correct anchors tiles', () => {
+            const foundTiles: LetterTile[] = gameboard.findAnchors();
+            expect(foundTiles.length).to.be.greaterThan(0);
+        });
+    });
 });
