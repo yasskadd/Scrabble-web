@@ -209,4 +209,13 @@ fdescribe('LetterPlacementService', () => {
         // eslint-disable-next-line dot-notation
         expect(service['treatLetter']('B')).toEqual('*');
     });
+
+    it('normalizeLetter should return the letter with non special symbols', () => {
+        // eslint-disable-next-line dot-notation
+        expect(service['normalizeLetter']('Á')).toEqual('A');
+        // eslint-disable-next-line dot-notation
+        expect(service['normalizeLetter']('ç')).toEqual('c');
+        // eslint-disable-next-line dot-notation
+        expect(service['normalizeLetter']('é')).toEqual('e');
+    });
 });
