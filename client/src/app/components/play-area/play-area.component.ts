@@ -25,7 +25,6 @@ export class PlayAreaComponent implements AfterViewInit {
 
     constructor(private letterService: LetterPlacementService, private gridService: GridService) {}
 
-    // TODO : TESTS
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;

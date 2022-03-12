@@ -367,4 +367,73 @@ fdescribe('LetterPlacementService', () => {
         service.placeLetterStartPosition({ x: 0, y: 0 });
         expect(updateLettersViewSpy).not.toHaveBeenCalled();
     });
+
+    it('undoEverything should resetView and put the letters back in the rack', () => {
+        const resetViewSpy = spyOn(service, 'resetView' as never);
+        const LETTERS = [{ value: 'a' } as Letter, { value: 'b' } as Letter];
+
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'] = LETTERS;
+
+        service.undoEverything();
+
+        expect(gameClientServiceSpy.playerOne.rack).toEqual(LETTERS);
+        expect(resetViewSpy).toHaveBeenCalled();
+    });
+
+    it('undoPlacement should reset the view and put one letter back in the rack', () => {
+        const resetGameBoardViewSpy = spyOn(service, 'resetGameBoardView' as never);
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+
+        const LETTERS = [{ value: 'a' } as Letter, { value: 'b' } as Letter];
+
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'] = LETTERS;
+
+        service.undoPlacement();
+
+        expect(gameClientServiceSpy.playerOne.rack).toEqual([{ value: 'b' } as Letter]);
+        expect(resetGameBoardViewSpy).toHaveBeenCalled();
+        expect(updateLettersViewSpy).toHaveBeenCalled();
+    });
+
+    it("undoPlacement shouldn't do anything if there's no placed letters", () => {
+        const resetGameBoardViewSpy = spyOn(service, 'resetGameBoardView' as never);
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'] = [];
+
+        service.undoPlacement();
+
+        expect(resetGameBoardViewSpy).not.toHaveBeenCalled();
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
+    });
+
+    it("undoPlacement shouldn't do anything if there's no placed letters", () => {
+        const resetGameBoardViewSpy = spyOn(service, 'resetGameBoardView' as never);
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'] = [];
+
+        service.undoPlacement();
+
+        expect(resetGameBoardViewSpy).not.toHaveBeenCalled();
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
+    });
+
+    it("submitPlacement shouldn't do anything if there's no placed letters", () => {
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'].push({ value: 'a' } as Letter);
+        // eslint-disable-next-line dot-notation
+        service['startTile'] = { x: 1, y: 1 };
+        service.submitPlacement();
+        expect(chatboxServiceSpy.submitMessage).toHaveBeenCalledWith('!placer a1h a');
+    });
+
+    it("submitPlacement shouldn't do anything if there's no placed letters", () => {
+        service.submitPlacement();
+        expect(chatboxServiceSpy.submitMessage).not.toHaveBeenCalled();
+    });
 });

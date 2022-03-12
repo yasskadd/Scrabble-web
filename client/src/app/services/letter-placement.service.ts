@@ -34,7 +34,7 @@ export class LetterPlacementService {
         if (placedLetter.value === '*') placedLetter.value = letterValue;
         this.placeLetter(placedLetter);
     }
-
+    //
     submitPlacement() {
         if (this.noLettersPlaced()) return;
         const ASCII_ALPHABET_START = 96;
@@ -43,7 +43,7 @@ export class LetterPlacementService {
         const lettersToSubmit = this.placedLetters.map((letter) => letter.value).join('');
         this.chatboxService.submitMessage(`!placer ${verticalPlacement}${this.startTile.x}${direction} ${lettersToSubmit}`);
     }
-
+    //
     undoPlacement() {
         if (this.noLettersPlaced()) return;
         this.resetGameBoardView();
@@ -53,7 +53,7 @@ export class LetterPlacementService {
         this.hasPlacingEnded = false;
         this.updateLettersView();
     }
-
+    //
     undoEverything() {
         this.placedLetters.forEach((letter) => {
             letter.value = this.treatLetter(letter.value);
@@ -61,7 +61,7 @@ export class LetterPlacementService {
         });
         this.resetView();
     }
-
+    //
     placeLetterStartPosition(coordinate: Coordinate) {
         const position = this.gridService.getPosition(coordinate);
         if (
