@@ -223,6 +223,7 @@ describe('WaitingOpponentPageComponent', () => {
 
     it('should call soloMode() when the soloMode button is pressed and enable', fakeAsync(() => {
         gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = '';
         fixture.detectChanges();
         const spy = spyOn(component, 'soloMode');
         const button = fixture.debugElement.nativeElement.querySelector('.soloModeButton');

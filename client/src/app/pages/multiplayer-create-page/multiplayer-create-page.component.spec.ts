@@ -146,6 +146,7 @@ describe('MultiplayerCreatePageComponent', () => {
         const expectedURL = '/' + RETURN_ROUTE;
         expect(location.path()).toEqual(expectedURL);
     }));
+
     it('should call createGame() when the startButton is pressed', fakeAsync(() => {
         component.playerName = 'Vincent';
         fixture.detectChanges();
@@ -217,12 +218,14 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
     }));
+
     it('createGame should call navigatePage', fakeAsync(() => {
         const spy = spyOn(component, 'navigatePage');
         component.createGame();
 
         expect(spy).toHaveBeenCalled();
     }));
+
     it('createGame should call resetInput', fakeAsync(() => {
         // Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -232,7 +235,7 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('createGame should call gameConfiguration.beginScrabbleGame with the name of the bot in SoloMode', fakeAsync(() => {
+    it('createGame should call gameConfiguration.beginScrabbleGame when we create a SoloMode', fakeAsync(() => {
         component.playerName = 'Vincent';
         router.navigateByUrl(SOLO_MODE);
         tick();
@@ -244,6 +247,18 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
     }));
 
+    it('createGame should not call gameConfiguration.beginScrabbleGame when we create a multiplayer game', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        router.navigateByUrl(CREATE_MULTIPLAYER_GAME);
+        tick();
+        fixture.detectChanges();
+        component.createGame();
+        setTimeout(() => {
+            expect(gameConfigurationServiceSpy.beginScrabbleGame).not.toHaveBeenCalled();
+        }, 0);
+        flush();
+    }));
+
     it('secondToMinute() should convert second to minute display', () => {
         const TIMER1 = 180;
         const TIMER2 = 210;
@@ -251,14 +266,6 @@ describe('MultiplayerCreatePageComponent', () => {
         const expectedValue2 = '3:30 minutes';
         expect(component.secondToMinute(TIMER1)).toEqual(expectedValue1);
         expect(component.secondToMinute(TIMER2)).toEqual(expectedValue2);
-    });
-
-    it('createBotName() should return a name for the bot which is not the same as the player', () => {
-        const VALID_NAME = 'jean';
-        component.playerName = VALID_NAME;
-        // Testing private method
-        // eslint-disable-next-line dot-notation
-        expect(component['createBotName']()).not.toEqual(VALID_NAME);
     });
 
     it('ResetInput() should clear the playerName', () => {

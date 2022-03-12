@@ -5,6 +5,7 @@ import { SocketEvents } from '@common/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
+const INDEX_NOT_FOUND = -1;
 const FOUND_OPPONENT_MESSAGE = 'Adversaire Trouvé';
 const SEARCHING_OPPONENT = "En Attente d'un Adversaire ...";
 const WAITING_OPPONENT_CONFIRMATION = "En Attente de la confirmation de L'adversaire";
@@ -20,6 +21,7 @@ interface RoomInformation {
     providedIn: 'root',
 })
 export class GameConfigurationService {
+    botNameList = ['robert', 'jean', 'albert'];
     roomInformation: RoomInformation;
     availableRooms: GameRoomClient[];
     isGameStarted: ReplaySubject<boolean>;
@@ -115,10 +117,6 @@ export class GameConfigurationService {
 
     gameInitialization(parameters: GameParameters) {
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
-        if (parameters.opponent !== undefined) {
-            this.roomInformation.playerName[1] = parameters.opponent;
-            this.roomInformation.statusGame = FOUND_OPPONENT_MESSAGE;
-        }
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
         this.roomInformation.playerName[0] = parameters.username;
@@ -134,9 +132,10 @@ export class GameConfigurationService {
         this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
-    beginScrabbleGame(opponent?: string) {
-        if (opponent !== undefined) {
-            this.roomInformation.playerName[1] = opponent;
+    beginScrabbleGame(opponentBot?: boolean) {
+        if (opponentBot === true) {
+            console.log('allo');
+            this.createBotName();
         }
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
@@ -155,6 +154,14 @@ export class GameConfigurationService {
         this.roomInformation.playerName[0] = playerName;
         this.roomInformation.roomId = roomToJoinId;
         this.clientSocket.send(SocketEvents.PlayerJoinGameAvailable, { id: roomToJoinId, name: playerName });
+    }
+
+    private createBotName(): void {
+        const tempBotName = this.botNameList;
+        const indexName: number = this.botNameList.indexOf(this.roomInformation.playerName[0].toLowerCase());
+        if (indexName !== INDEX_NOT_FOUND) this.botNameList.splice(indexName, 1);
+        this.roomInformation.playerName[1] = this.botNameList[Math.floor(Math.random() * this.botNameList.length)];
+        this.botNameList = tempBotName;
     }
 
     private gameCreatedConfirmationEvent(roomId: string) {
