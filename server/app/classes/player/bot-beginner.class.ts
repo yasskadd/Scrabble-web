@@ -18,7 +18,7 @@ const PROB_4 = 4;
 const PROB_5 = 5;
 const PROB_7 = 7;
 
-interface BotInformation {
+export interface BotInformation {
     game: Game;
     socketManager: SocketManager;
     roomId: string;
@@ -33,8 +33,8 @@ export class BeginnerBot extends Player {
 
     choosePlayMove() {
         const randomNumber = this.getRandomNumber(MAX_NUMBER);
-        if (this.inRange(randomNumber, 1, 1)) this.skipTurn();
-        else if (this.inRange(randomNumber, 2, 2)) this.exchangeLetter();
+        if (randomNumber === 1) this.skipTurn();
+        else if (randomNumber === 2) this.exchangeLetter();
         else this.placeLetter();
     }
 
