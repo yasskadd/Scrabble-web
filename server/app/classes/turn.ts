@@ -1,5 +1,3 @@
-// import { Message } from '@app/message';
-// import { DateService } from '@app/services/date.service';
 import { ReplaySubject } from 'rxjs';
 import { Player } from './player/player.class';
 
@@ -11,11 +9,12 @@ export class Turn {
     inactivePlayer: string | undefined;
     endTurn: ReplaySubject<string | undefined>;
     countdown: ReplaySubject<number | undefined>;
-    private skipCounter: number = 0;
+    private skipCounter: number;
     private time: number;
     private timeOut: unknown;
 
     constructor(time: number) {
+        this.skipCounter = 0;
         this.time = time;
         this.endTurn = new ReplaySubject(1);
         this.countdown = new ReplaySubject(1);

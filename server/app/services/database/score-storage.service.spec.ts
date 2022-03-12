@@ -68,13 +68,11 @@ describe('scoreStorage Service', () => {
     it('getLOG2990TopScores() should return the LOG2990 top scores from the database', async () => {
         databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
         const scoresLOG2990 = await scoreStorageService.getLOG2990TopScores();
-        // eslint-disable-next-line dot-notation
         expect(scoresLOG2990).to.be.deep.equal(TOP_SCORES);
     });
     it('getClassicTopScores() should return the classic top scores from the database', async () => {
         databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
         const scoresClassic = await scoreStorageService.getClassicTopScores();
-        // eslint-disable-next-line dot-notation
         expect(scoresClassic).to.be.deep.equal(TOP_SCORES);
     });
     it('getTopScoresPosition() should return the position of the score', () => {
@@ -82,7 +80,6 @@ describe('scoreStorage Service', () => {
         const EXPECTED_POSTITION = 3;
         // eslint-disable-next-line dot-notation
         const scoresClassic = scoreStorageService['getTopScoresPosition'](TOP_SCORES, TEST_SCORE);
-        // eslint-disable-next-line dot-notation
         expect(scoresClassic).to.be.deep.equal(EXPECTED_POSTITION);
     });
 
@@ -90,7 +87,6 @@ describe('scoreStorage Service', () => {
         const PLAYER_NAME = 'Paul';
         // eslint-disable-next-line dot-notation
         const playerNameAlready = scoreStorageService['isNameAlreadyThere'](TOP_SCORES_CLASSIC[0].username, PLAYER_NAME);
-        // eslint-disable-next-line dot-notation
         expect(playerNameAlready).to.be.deep.equal(true);
     });
 
@@ -98,7 +94,6 @@ describe('scoreStorage Service', () => {
         const PLAYER_NAME = 'Paul';
         // eslint-disable-next-line dot-notation
         const playerNameAlready = scoreStorageService['isNameAlreadyThere'](TOP_SCORES_CLASSIC[1].username, PLAYER_NAME);
-        // eslint-disable-next-line dot-notation
         expect(playerNameAlready).to.be.deep.equal(false);
     });
     it("populateDb() should populate the database if it's not populated", async () => {
@@ -121,7 +116,6 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.addDocument.resolves();
         // eslint-disable-next-line dot-notation
         await scoreStorageService['populateDb']();
-        // eslint-disable-next-line dot-notation
         expect(databaseServiceStub.addDocument.called).to.be.equal(false);
     });
     it("addTopScores() should replace a top score with the score info if it's legible ", async () => {
@@ -138,7 +132,6 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
         await scoreStorageService['addTopScores'](scoreInfo);
-        // eslint-disable-next-line dot-notation
         expect(databaseServiceStub.replaceDocument.withArgs({ position: POSITION }, { ...scoreInfo, position: POSITION }).callCount).to.be.equal(1);
     });
 
@@ -160,7 +153,6 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
         await scoreStorageService['addTopScores'](scoreInfo);
-        // eslint-disable-next-line dot-notation
         expect(
             databaseServiceStub.replaceDocument.withArgs(
                 { position: POSITION },
@@ -187,7 +179,6 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
         await scoreStorageService['addTopScores'](scoreInfo);
-        // eslint-disable-next-line dot-notation
         expect(
             databaseServiceStub.replaceDocument.withArgs(
                 { position: POSITION },
@@ -209,7 +200,6 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
         await scoreStorageService['addTopScores'](scoreInfo);
-        // eslint-disable-next-line dot-notation
         expect(databaseServiceStub.replaceDocument.callCount).to.be.equal(0);
     });
 });

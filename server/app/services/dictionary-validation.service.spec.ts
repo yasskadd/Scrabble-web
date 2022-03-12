@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
