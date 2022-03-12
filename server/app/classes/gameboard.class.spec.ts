@@ -100,9 +100,10 @@ describe('gameboard', () => {
             gameboard.placeLetter(new LetterTile(7, 7, {} as Letter));
         });
 
+        // TODO: Fix findAnchors() test
         it('findAnchors() should return correct anchors tiles', () => {
             const foundTiles: LetterTile[] = gameboard.findAnchors();
-            console.log(foundTiles);
+            expect(foundTiles.length).to.eql(null);
         });
     });
 });
