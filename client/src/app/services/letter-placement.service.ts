@@ -34,7 +34,7 @@ export class LetterPlacementService {
         if (placedLetter.value === '*') placedLetter.value = letterValue;
         this.placeLetter(placedLetter);
     }
-    //
+
     submitPlacement() {
         if (this.noLettersPlaced()) return;
         const ASCII_ALPHABET_START = 96;
@@ -43,7 +43,7 @@ export class LetterPlacementService {
         const lettersToSubmit = this.placedLetters.map((letter) => letter.value).join('');
         this.chatboxService.submitMessage(`!placer ${verticalPlacement}${this.startTile.x}${direction} ${lettersToSubmit}`);
     }
-    //
+
     undoPlacement() {
         if (this.noLettersPlaced()) return;
         this.resetGameBoardView();
@@ -53,7 +53,7 @@ export class LetterPlacementService {
         this.hasPlacingEnded = false;
         this.updateLettersView();
     }
-    //
+
     undoEverything() {
         this.placedLetters.forEach((letter) => {
             letter.value = this.treatLetter(letter.value);
@@ -61,7 +61,7 @@ export class LetterPlacementService {
         });
         this.resetView();
     }
-    //
+
     placeLetterStartPosition(coordinate: Coordinate) {
         const position = this.gridService.getPosition(coordinate);
         if (
@@ -82,40 +82,40 @@ export class LetterPlacementService {
         this.isPlacingActive = true;
         this.updateLettersView();
     }
-    //
+
     placeLetter(letter: Letter) {
         if (!this.gameClientService.playerOneTurn) return;
         this.placedLetters.push(letter);
         this.updateLettersView();
     }
-    //
+
     resetView() {
         this.resetGameBoardView();
         this.setPropreties();
     }
-    //
+
     resetGameBoardView() {
         this.gridService.drawGrid(this.gameClientService.gameboard);
     }
-    //
+
     noLettersPlaced() {
         return this.placedLetters.length === 0;
     }
-    //
+
     private normalizeLetter(letterValue: string): string {
         return letterValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '');
     }
-    //
+
     private treatLetter(letterValue: string): string {
         if (letterValue === letterValue.toLowerCase()) return letterValue;
         return '*';
     }
-    //
+
     private findLetterFromRack(letterValue: string): number {
         const letterTreated = this.treatLetter(letterValue);
         return this.gameClientService.playerOne.rack.findIndex((letter) => letter.value === letterTreated);
     }
-    //
+
     private updateLettersView() {
         let placementPosition = this.startTile;
         this.placedLetters.forEach((letter) => {
@@ -130,7 +130,7 @@ export class LetterPlacementService {
         }
         this.gridService.drawArrow(placementPosition, this.isHorizontal);
     }
-    //
+
     private computeNextCoordinate(startingPoint: Coordinate): Coordinate {
         const computedPosition = { ...startingPoint };
         while (!this.isOutOfBound(computedPosition) && this.gameClientService.gameboard[this.getArrayIndex(computedPosition)].isOccupied) {
@@ -138,12 +138,12 @@ export class LetterPlacementService {
         }
         return computedPosition;
     }
-    //
+
     private incrementByOne(coordinate: Coordinate) {
         if (this.isHorizontal) coordinate.x++;
         else coordinate.y++;
     }
-    //
+
     private setPropreties() {
         this.startTile = { x: 0, y: 0 };
         this.placedLetters = [];
@@ -151,13 +151,13 @@ export class LetterPlacementService {
         this.isPlacingActive = false;
         this.hasPlacingEnded = false;
     }
-    //
+
     private isOutOfBound(coordinate: Coordinate): boolean {
         return (
             coordinate.x <= 0 || coordinate.y <= 0 || coordinate.x > constants.TOTAL_TILES_IN_ROW || coordinate.y > constants.TOTAL_TILES_IN_COLUMN
         );
     }
-    //
+
     private getArrayIndex(coordinate: Coordinate): number {
         const DISPLACEMENT = 1;
         return coordinate.x - DISPLACEMENT + (coordinate.y - DISPLACEMENT) * constants.TOTAL_TILES_IN_ROW;

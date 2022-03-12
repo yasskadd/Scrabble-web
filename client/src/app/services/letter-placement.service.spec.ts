@@ -8,7 +8,7 @@ import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 import { LetterPlacementService } from './letter-placement.service';
 
-fdescribe('LetterPlacementService', () => {
+describe('LetterPlacementService', () => {
     let service: LetterPlacementService;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
     let chatboxServiceSpy: jasmine.SpyObj<ChatboxHandlerService>;
@@ -423,7 +423,18 @@ fdescribe('LetterPlacementService', () => {
         expect(updateLettersViewSpy).not.toHaveBeenCalled();
     });
 
-    it("submitPlacement shouldn't do anything if there's no placed letters", () => {
+    it('submitPlacement should send the letters placed when the direction is horizontal', () => {
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'].push({ value: 'a' } as Letter);
+        // eslint-disable-next-line dot-notation
+        service['startTile'] = { x: 1, y: 1 };
+        service.submitPlacement();
+        expect(chatboxServiceSpy.submitMessage).toHaveBeenCalledWith('!placer a1h a');
+    });
+
+    it('submitPlacement should send the letters placed when the direction is vertical', () => {
+        // eslint-disable-next-line dot-notation
+        service['isHorizontal'] = false;
         // eslint-disable-next-line dot-notation
         service['placedLetters'].push({ value: 'a' } as Letter);
         // eslint-disable-next-line dot-notation
@@ -435,5 +446,78 @@ fdescribe('LetterPlacementService', () => {
     it("submitPlacement shouldn't do anything if there's no placed letters", () => {
         service.submitPlacement();
         expect(chatboxServiceSpy.submitMessage).not.toHaveBeenCalled();
+    });
+
+    it("handlePlacement should place a nomral letter if it's in the rack", () => {
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        // eslint-disable-next-line dot-notation
+        service['hasPlacingEnded'] = false;
+
+        const LETTER = { value: 'a' } as Letter;
+        const placeLetterSpy = spyOn(service, 'placeLetter' as never);
+        gameClientServiceSpy.playerOne.rack.push(LETTER);
+        service.handlePlacement('a');
+        expect(placeLetterSpy).toHaveBeenCalled();
+    });
+
+    it("handlePlacement should place a white letter if it's in the rack", () => {
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        // eslint-disable-next-line dot-notation
+        service['hasPlacingEnded'] = false;
+        const LETTER = { value: '*' } as Letter;
+        const placeLetterSpy = spyOn(service, 'placeLetter' as never);
+        gameClientServiceSpy.playerOne.rack.push(LETTER);
+        service.handlePlacement('E');
+        expect(placeLetterSpy).toHaveBeenCalled();
+    });
+
+    it("handlePlacement should place a special letter if it's in the rack", () => {
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        // eslint-disable-next-line dot-notation
+        service['hasPlacingEnded'] = false;
+        const LETTER = { value: 'e' } as Letter;
+        const placeLetterSpy = spyOn(service, 'placeLetter' as never);
+        gameClientServiceSpy.playerOne.rack.push(LETTER);
+        service.handlePlacement('é');
+        expect(placeLetterSpy).toHaveBeenCalled();
+    });
+
+    it("handlePlacement shouldn't place a letter if it's not in the rack", () => {
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        // eslint-disable-next-line dot-notation
+        service['hasPlacingEnded'] = false;
+        const LETTER = { value: 'a' } as Letter;
+        const placeLetterSpy = spyOn(service, 'placeLetter' as never);
+        gameClientServiceSpy.playerOne.rack.push(LETTER);
+        service.handlePlacement('e');
+        expect(placeLetterSpy).not.toHaveBeenCalled();
+    });
+
+    it("handlePlacement shouldn't the placement isn't active", () => {
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = false;
+        // eslint-disable-next-line dot-notation
+        service['hasPlacingEnded'] = false;
+        const LETTER = { value: 'a' } as Letter;
+        const placeLetterSpy = spyOn(service, 'placeLetter' as never);
+        gameClientServiceSpy.playerOne.rack.push(LETTER);
+        service.handlePlacement('a');
+        expect(placeLetterSpy).not.toHaveBeenCalled();
+    });
+
+    it("handlePlacement shouldn't the placement has ended", () => {
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        // eslint-disable-next-line dot-notation
+        service['hasPlacingEnded'] = true;
+        const LETTER = { value: 'a' } as Letter;
+        const placeLetterSpy = spyOn(service, 'placeLetter' as never);
+        gameClientServiceSpy.playerOne.rack.push(LETTER);
+        service.handlePlacement('a');
+        expect(placeLetterSpy).not.toHaveBeenCalled();
     });
 });
