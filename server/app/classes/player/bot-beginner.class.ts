@@ -1,18 +1,22 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/command-info';
 import { Game } from '@app/services/game.service';
+import { SocketManager } from '@app/services/socket-manager.service';
+import { SocketEvents } from '@common/socket-events';
 import { Player } from './player.class';
 
 const MAX_NUMBER = 10;
+const CHAR_ASCII = 96;
 
 export class BeginnerBot extends Player {
     game: Game;
     isPlayerOne: boolean;
-
-    constructor(game: Game, isPlayerOne: boolean, name: string) {
+    roomId: string;
+    constructor(game: Game, isPlayerOne: boolean, name: string, private socketManager: SocketManager, roomId: string) {
         super(name);
         this.game = game;
         this.isPlayerOne = isPlayerOne;
+        this.roomId = roomId;
     }
 
     choosePlayMove(commandInfoMap: Map<CommandInfo, number>) {
@@ -34,11 +38,13 @@ export class BeginnerBot extends Player {
             lettersToExchange.push(rack.splice(this.getRandomNumber(rack.length), 1)[0]);
             numberOfLetters--;
         }
+        this.socketManager.emitRoom(this.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         this.rack = this.game.exchange(lettersToExchange, this);
     }
 
     skipTurn(): void {
         if (this.game === undefined) return;
+        this.socketManager.emitRoom(this.roomId, SocketEvents.GameMessage, '!passer');
         this.game.skip(this.name);
     }
 
@@ -64,6 +70,14 @@ export class BeginnerBot extends Player {
         }
         // chose a random commandInfo
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
+        this.socketManager.emitRoom(
+            this.roomId,
+            SocketEvents.GameMessage,
+            `!placer ${String.fromCharCode(CHAR_ASCII + randomCommandInfo.firstCoordinate.y)}${randomCommandInfo.firstCoordinate.x}${
+                randomCommandInfo.direction
+            } 
+            ${randomCommandInfo.lettersPlaced}`,
+        );
         return this.game.play(this, randomCommandInfo);
     }
 
