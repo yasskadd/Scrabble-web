@@ -218,4 +218,18 @@ fdescribe('LetterPlacementService', () => {
         // eslint-disable-next-line dot-notation
         expect(service['normalizeLetter']('é')).toEqual('e');
     });
+
+    it('noLettersPlaced should return true if placedLetters is empty', () => {
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'] = [];
+        // eslint-disable-next-line dot-notation
+        expect(service['noLettersPlaced']()).toBeTruthy();
+    });
+
+    it('noLettersPlaced should return false if placedLetters is not empty', () => {
+        // eslint-disable-next-line dot-notation
+        service['placedLetters'] = [{} as Letter];
+        // eslint-disable-next-line dot-notation
+        expect(service['noLettersPlaced']()).toBeFalsy();
+    });
 });
