@@ -3,11 +3,11 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@app/interfaces/command-info';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-handler.service';
-import { Letter } from '@common/letter';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
@@ -716,6 +716,20 @@ describe('GamesHandler Service', () => {
         expect(updatePlayerInfoSpy.called).to.not.be.equal(true);
     });
     context('CreateGame() Tests', () => {
+        let createNewGameStub: sinon.SinonStub<unknown[], unknown>;
+        beforeEach(() => {
+            gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager, scoreStorageStub as unknown as ScoreStorageService);
+            createNewGameStub = sinon.stub(gamesHandler, 'createNewGame' as never);
+            const gameStub = {
+                letterReserve: { lettersReserve: [] },
+                turn: { endTurn: new Observable(), countdown: new Observable() },
+                gameboard: { gameboardCoords: [] },
+            };
+            createNewGameStub.returns(gameStub);
+            sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+            sinon.stub(gamesHandler, 'userConnected' as never);
+            sinon.stub(gamesHandler, 'sendTimer' as never);
+        });
         it('CreateGame() should call setAndGetPlayer()', (done) => {
             const setAndGetPlayer = sinon.spy(gamesHandler, 'setAndGetPlayer' as never);
             // eslint-disable-next-line dot-notation
@@ -724,24 +738,20 @@ describe('GamesHandler Service', () => {
             done();
         });
         it('CreateGame() should call createNewGame()', (done) => {
-            const createNewGameSpy = sinon.spy(gamesHandler, 'createNewGame' as never);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
-            expect(createNewGameSpy.called).to.equal(true);
+            expect(createNewGameStub.called).to.equal(true);
             done();
         });
         it('CreateGame() should emit game information to the room', () => {
-            sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
-            const createNewGameStub = sinon.stub(gamesHandler, 'createNewGame' as never);
+            serverSocket.join(ROOM);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](serverSocket, gameInfo);
             const gameStub = {
                 letterReserve: { lettersReserve: [] },
                 turn: { endTurn: new Observable(), countdown: new Observable() },
                 gameboard: { gameboardCoords: [] },
             };
-            createNewGameStub.returns(gameStub);
-            serverSocket.join(ROOM);
-            // eslint-disable-next-line dot-notation
-            gamesHandler['createGame'](serverSocket, gameInfo);
             expect(
                 socketManagerStub.emitRoom.calledWithExactly(
                     gameInfo.roomId,

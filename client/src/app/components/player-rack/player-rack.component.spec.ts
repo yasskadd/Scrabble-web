@@ -1,11 +1,11 @@
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { PlayerRackComponent } from '@app/components/player-rack/player-rack.component';
 import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { of, Subject } from 'rxjs';
-import { PlayerRackComponent } from './player-rack.component';
 
 const LETTER_SIZE = 5;
 class MockElementRef extends ElementRef {}
