@@ -11,15 +11,19 @@ import { Letter } from '@common/interfaces/letter';
     styleUrls: ['./player-rack.component.scss'],
 })
 export class PlayerRackComponent {
-    width = constants.RACK_WIDTH;
-    height = constants.RACK_HEIGHT;
-    lettersToExchange: number[] = [];
+    width: number;
+    height: number;
+    lettersToExchange: number[];
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,
         private tmpService: GridService,
         private eRef: ElementRef,
-    ) {}
+    ) {
+        this.width = constants.RACK_WIDTH;
+        this.height = constants.RACK_HEIGHT;
+        this.lettersToExchange = [];
+    }
 
     @HostListener('document:click', ['$event'])
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
