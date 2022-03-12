@@ -6,7 +6,6 @@ import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 
-// might put it somewhere else later
 const INDEX_NOT_FOUND = -1;
 
 @Injectable({
@@ -99,11 +98,6 @@ export class LetterPlacementService {
         this.gridService.drawGrid(this.gameClientService.gameboard);
     }
 
-    // Might not be the best place to put it
-    setCanvas(canvas: CanvasRenderingContext2D) {
-        this.gridService.gridContext = canvas;
-    }
-
     noLettersPlaced() {
         return this.placedLetters.length === 0;
     }
@@ -136,11 +130,8 @@ export class LetterPlacementService {
         this.gridService.drawArrow(placementPosition, this.isHorizontal);
     }
 
-    // TODO: refactor if positionFromStart isn't useful
-    private computeNextCoordinate(startingPoint: Coordinate, positionFromStart: number = 0): Coordinate {
-        const computedPosition = this.isHorizontal
-            ? { ...startingPoint, x: startingPoint.x + positionFromStart }
-            : { ...startingPoint, y: startingPoint.y + positionFromStart };
+    private computeNextCoordinate(startingPoint: Coordinate): Coordinate {
+        const computedPosition = { ...startingPoint };
         while (!this.isOutOfBound(computedPosition) && this.gameClientService.gameboard[this.getArrayIndex(computedPosition)].isOccupied) {
             this.incrementByOne(computedPosition);
         }

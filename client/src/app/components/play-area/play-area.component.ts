@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { Vec2 } from '@app/classes/vec2';
 import * as constants from '@app/constants';
+import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 
 export enum MouseButton {
@@ -22,8 +23,9 @@ export class PlayAreaComponent implements AfterViewInit {
     mousePosition: Vec2 = { x: 0, y: 0 };
     buttonPressed = '';
 
-    constructor(private letterService: LetterPlacementService) {}
+    constructor(private letterService: LetterPlacementService, private gridService: GridService) {}
 
+    // TODO : TESTS
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
@@ -63,7 +65,7 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.letterService.setCanvas(this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D);
+        this.gridService.gridContext = this.gridCanvas.nativeElement.getContext('2d') as CanvasRenderingContext2D;
     }
 
     get width(): number {
