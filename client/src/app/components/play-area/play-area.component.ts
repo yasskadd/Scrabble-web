@@ -54,7 +54,6 @@ export class PlayAreaComponent implements AfterViewInit {
 
     @HostListener('document:click', ['$event'])
     mouseClickOutside(event: MouseEvent) {
-        console.log(event.target);
         if (!this.gridCanvas.nativeElement.contains(event.target as Node)) this.letterService.undoEverything();
     }
 
