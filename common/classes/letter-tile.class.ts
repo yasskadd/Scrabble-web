@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Coordinate } from '../interfaces/coordinate';
 import { Letter } from '../interfaces/letter';
 

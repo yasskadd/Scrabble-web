@@ -86,9 +86,9 @@ export class ScoreStorageService {
         return scores.indexOf(score) + 1;
     }
     private isNameAlreadyThere(newPlayer: string, currentPlayer: string): boolean {
+        const notFound = -1;
         const playerName = currentPlayer.split(' - ');
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        if (playerName.indexOf(newPlayer) === -1) return false;
+        if (playerName.indexOf(newPlayer) === notFound) return false;
         return true;
     }
 }

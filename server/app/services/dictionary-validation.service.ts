@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
@@ -38,7 +36,7 @@ export class DictionaryValidationService {
 
     private checkWordInDictionary(wordList: Word[]): void {
         wordList.forEach((word) => {
-            !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
+            return !this.dictionary.has(word.stringFormat) ? (word.isValid = false) : (word.isValid = true);
         });
     }
 

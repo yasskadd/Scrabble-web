@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable import/no-unresolved */
-/* eslint-disable prettier/prettier */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
 import { LetterTile } from '@common/classes/letter-tile.class';
@@ -58,7 +54,7 @@ describe('WordFinderService', () => {
         const placedLetters: LetterTile[] = [new LetterTile(2, 1, letterA), new LetterTile(4, 1, letterB), new LetterTile(6, 1, letterC)];
         const word: Word = wordFinderService.buildFirstWord(gameboard, placedLetters);
         expect(word.stringFormat).to.eql('aabbcc');
-        expect(word.isHorizontal).to.be.true;
+        expect(word.isHorizontal).to.equal(true);
     });
 
     it('buildFirstWord should build string if there is already occupied squares between placedLetters', () => {
@@ -71,7 +67,7 @@ describe('WordFinderService', () => {
         const placedLetters: LetterTile[] = [new LetterTile(1, 5, letterA), new LetterTile(1, 3, letterB), new LetterTile(1, 1, letterC)];
         const word: Word = wordFinderService.buildFirstWord(gameboard, placedLetters);
         expect(word.stringFormat).to.eql('aabbcc');
-        expect(word.isHorizontal).to.be.false;
+        expect(word.isHorizontal).to.equal(false);
     });
 
     it('buildFirstWord should return empty word if coordList is empty', () => {
@@ -161,7 +157,7 @@ describe('WordFinderService', () => {
         const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetter);
         expect(words).to.have.lengthOf(1);
         expect(words[0].stringFormat).to.eql('abc');
-        expect(words[0].isHorizontal).to.be.true;
+        expect(words[0].isHorizontal).to.equal(true);
     });
 
     it('findNewWords should return a single word if there is one placedLetter and letters are vertical', () => {
@@ -172,7 +168,7 @@ describe('WordFinderService', () => {
         const words: Word[] = wordFinderService.findNewWords(gameboard, placedLetter);
         expect(words).to.have.lengthOf(1);
         expect(words[0].stringFormat).to.eql('abc');
-        expect(words[0].isHorizontal).to.be.false;
+        expect(words[0].isHorizontal).to.equal(false);
     });
 
     it('findNewWords should return an array of 2 words if there is one placedLetter related to 2 words', () => {

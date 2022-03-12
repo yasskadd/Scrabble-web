@@ -1,8 +1,4 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-console */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable prettier/prettier */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
@@ -11,7 +7,6 @@ import * as Sinon from 'sinon';
 import { Container } from 'typedi';
 import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 
 describe('Word', () => {
     let word: Word;
@@ -39,7 +34,7 @@ describe('Word', () => {
         const coordList: LetterTile[] = [new LetterTile(0, 0, letterA), new LetterTile(1, 0, letterB), new LetterTile(2, 0, letterC)];
         word = new Word(true, coordList);
         expect(word.stringFormat).to.eql('abc');
-        expect(word.isHorizontal).to.be.true;
+        expect(word.isHorizontal).to.equal(true);
     });
 
     it('stringFormat attribute should be the abcd if constructed word is vertical', () => {
@@ -94,7 +89,6 @@ describe('Word', () => {
     });
 
     it('should correctly calculate points if word is on a Letter and a word multiplier', () => {
-        // eslint-disable-next-line max-len
         const coordList: LetterTile[] = [
             new LetterTile(1, 8, letterA),
             new LetterTile(2, 8, letterB),
