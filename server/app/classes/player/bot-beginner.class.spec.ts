@@ -132,4 +132,30 @@ describe.only('BotBeginner', () => {
             expect(gameStub.exchange.called).to.equal(false);
         });
     });
+
+    context.only('skipTurn() tests', () => {
+        let mockSocketManager: Sinon.SinonMock;
+        beforeEach(() => {
+            mockSocketManager = Sinon.mock(botBeginner['botInfo'].socketManager);
+        });
+
+        afterEach(() => {
+            mockSocketManager.restore();
+        });
+
+        it.only('should not call game.skip() if game is undefined', () => {
+            const expectation = mockSocketManager.expects('emitRoom').never();
+            botBeginner.game = undefined as never;
+            botBeginner.skipTurn();
+            expectation.verify();
+            expect(gameStub.skip.called).to.equal(false);
+        });
+
+        it.only('should call game.skip() with correct name as an argument if game is not undefined', () => {
+            const expectation = mockSocketManager.expects('emitRoom').exactly(1).withArgs(botBeginner['botInfo'].roomId);
+            botBeginner.skipTurn();
+            expectation.verify();
+            expect(gameStub.skip.calledOnce).to.equal(true);
+        });
+    });
 });
