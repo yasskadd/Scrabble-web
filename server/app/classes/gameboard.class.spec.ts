@@ -103,7 +103,7 @@ describe('gameboard', () => {
         // TODO: Fix findAnchors() test
         it('findAnchors() should return correct anchors tiles', () => {
             const foundTiles: LetterTile[] = gameboard.findAnchors();
-            expect(foundTiles.length).to.eql(null);
+            expect(foundTiles.length).to.be.greaterThan(0);
         });
     });
 });
