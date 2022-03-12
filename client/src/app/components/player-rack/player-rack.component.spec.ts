@@ -4,6 +4,7 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { Letter } from '@common/letter';
 import { PlayerRackComponent } from './player-rack.component';
 
@@ -16,6 +17,7 @@ describe('PlayerRackComponent', () => {
     let chatBoxHandlerSpy: jasmine.SpyObj<ChatboxHandlerService>;
     let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
     let gridServiceServiceSpy: jasmine.SpyObj<GridService>;
+    let letterPlacementServiceSpy: jasmine.SpyObj<LetterPlacementService>;
 
     beforeEach(async () => {
         chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage']);
@@ -24,12 +26,15 @@ describe('PlayerRackComponent', () => {
             playerOne: { rack: [{ value: 'a' } as Letter] },
         });
         gridServiceServiceSpy = jasmine.createSpyObj('GridService', [], { letterSize: LETTER_SIZE });
+        letterPlacementServiceSpy = jasmine.createSpyObj('LetterPlacementService', ['submitPlacement', 'noLettersPlaced']);
+        // letterPlacementServiceSpy.noLettersPlaced.and.returnValue(true);
         await TestBed.configureTestingModule({
             declarations: [PlayerRackComponent],
             providers: [
                 { provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy },
                 { provide: GameClientService, useValue: gameClientServiceSpy },
                 { provide: GridService, useValue: gridServiceServiceSpy },
+                { provide: LetterPlacementService, useValue: letterPlacementServiceSpy },
                 { provide: ElementRef, useClass: MockElementRef },
             ],
         }).compileComponents();

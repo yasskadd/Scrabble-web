@@ -29,7 +29,6 @@ export class InformationPanelComponent {
 
     updateFontSize(): void {
         this.gridService.letterSize = this.value;
-        // TODO : Change test for this one
         this.letterService.resetGameBoardView();
     }
 
