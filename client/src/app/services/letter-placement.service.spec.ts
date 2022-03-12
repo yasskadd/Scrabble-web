@@ -5,15 +5,13 @@ import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 import { LetterPlacementService } from './letter-placement.service';
 
-fdescribe('LetterPlacementService', () => {
+describe('LetterPlacementService', () => {
     let service: LetterPlacementService;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
     let chatboxServiceSpy: jasmine.SpyObj<ChatboxHandlerService>;
     let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
-    // let updatedGameSubscribableStub: Observable;
 
     beforeEach(() => {
-        // updatedGameSubscribableStub = of({});
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawUnfinalizedLetter', 'getPosition', 'drawArrow', 'drawGrid']);
         chatboxServiceSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage']);
         gameClientServiceSpy = jasmine.createSpyObj('GameClientService', [''], {
