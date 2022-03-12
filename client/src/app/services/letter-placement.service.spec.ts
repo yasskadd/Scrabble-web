@@ -134,11 +134,44 @@ fdescribe('LetterPlacementService', () => {
     it('updateLettersView should draw all Letters that are in placedLetters ', () => {
         const START_COORDINATE = { x: 1, y: 1 };
         const EXPECTED_CALLS = 2;
+
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+
         // eslint-disable-next-line dot-notation
         service['placedLetters'] = [{} as Letter, {} as Letter];
         // eslint-disable-next-line dot-notation
         service['startTile'] = START_COORDINATE;
         // eslint-disable-next-line dot-notation
+        service['updateLettersView']();
+        // eslint-disable-next-line dot-notation
         expect(gridServiceSpy.drawUnfinalizedLetter.calls.count()).toEqual(EXPECTED_CALLS);
+    });
+
+    it("updateLettersView should draw the arrow if it's not outOfBound", () => {
+        const START_COORDINATE = { x: 1, y: 1 };
+
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+
+        // eslint-disable-next-line dot-notation
+        service['startTile'] = START_COORDINATE;
+        // eslint-disable-next-line dot-notation
+        service['updateLettersView']();
+        // eslint-disable-next-line dot-notation
+        expect(gridServiceSpy.drawArrow).toHaveBeenCalled();
+    });
+
+    it("updateLettersView should'nt draw the arrow if it's outOfBound", () => {
+        const START_COORDINATE = { x: 15, y: 15 };
+
+        gameClientServiceSpy.gameboard[224] = { isOccupied: true } as LetterTile;
+
+        // eslint-disable-next-line dot-notation
+        service['startTile'] = START_COORDINATE;
+        // eslint-disable-next-line dot-notation
+        service['updateLettersView']();
+        // eslint-disable-next-line dot-notation
+        expect(gridServiceSpy.drawArrow).not.toHaveBeenCalled();
     });
 });
