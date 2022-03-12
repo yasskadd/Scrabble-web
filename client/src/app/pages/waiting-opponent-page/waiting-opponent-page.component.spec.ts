@@ -154,6 +154,20 @@ describe('WaitingOpponentPageComponent', () => {
         expect(button).toBeTruthy();
     });
 
+    it('should have a button to convert to soloMode when you are waiting for an opponent', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.soloModeButton');
+        expect(button).toBeTruthy();
+    });
+
+    it('should  not have a button to convert to soloMode when you are joining someone else game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.soloModeButton');
+        expect(button).toBeFalsy();
+    });
+
     it('should not have a button to start the game when you did not created the game', () => {
         gameConfigurationServiceSpy.roomInformation.isCreator = false;
         fixture.detectChanges();
@@ -201,6 +215,17 @@ describe('WaitingOpponentPageComponent', () => {
         fixture.detectChanges();
         const spy = spyOn(component, 'startGame');
         const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should call soloMode() when the soloMode button is pressed and enable', fakeAsync(() => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const spy = spyOn(component, 'soloMode');
+        const button = fixture.debugElement.nativeElement.querySelector('.soloModeButton');
         button.click();
         tick();
         fixture.detectChanges();
