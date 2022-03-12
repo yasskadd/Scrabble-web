@@ -1,9 +1,9 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree, LetterTreeNode } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@app/command-info';
-import { Coordinate } from '@common/coordinate';
-import { LetterTile } from '@common/letter-tile.class';
+import { CommandInfo } from '@app/interfaces/command-info';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Coordinate } from '@common/interfaces/coordinate';
 import { Container, Service } from 'typedi';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
