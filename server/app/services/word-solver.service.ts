@@ -4,7 +4,7 @@ import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/command-info';
 import { Coordinate } from '@common/coordinate';
 import { LetterTile } from '@common/letter-tile.class';
-import Container, { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordFinderService } from './word-finder.service';
@@ -12,17 +12,16 @@ import { WordFinderService } from './word-finder.service';
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
+const INDEX_NOT_FOUND = -1;
 // TODO: NEED 100% COVERAGE
 @Service()
 export class WordSolverService {
     private crossCheckResults: Map<Coordinate, string[]> = new Map();
     private isHorizontal: boolean;
-    private index: number = 0;
     private commandInfoList: CommandInfo[] = new Array();
     constructor(private trie: LetterTree, private gameboard: Gameboard) {}
 
     findAllOptions(rack: string[]): CommandInfo[] {
-        console.log('FINDALLOPTIONS CALLED');
         this.commandInfoList.length = 0;
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
@@ -64,13 +63,13 @@ export class WordSolverService {
     }
     // Tested
     private createCommandInfo(word: string, lastPosition: Coordinate) {
-        console.log(`${this.index++} Word found : ${word}`);
+        // console.log(`${this.index++} Word found : ${word}`);
         let wordIndex = word.length - 1;
         let wordCopy = word.slice();
         const placedLetters: string[] = [];
         while (wordIndex >= 0) {
             if (!this.gameboard.getCoord(lastPosition).isOccupied) placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
-            wordCopy = wordCopy.slice(0, -1);
+            wordCopy = wordCopy.slice(0, INDEX_NOT_FOUND);
             wordIndex--;
             if (wordIndex >= 0) lastPosition = this.decrementCoord(lastPosition, this.isHorizontal) as Coordinate;
         }
