@@ -29,6 +29,7 @@ export class BeginnerBot extends Player {
     constructor(@Inject() private wordSolver: WordSolverService, isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
         super(name);
         this.isPlayerOne = isPlayerOne;
+        this.game = botInfo.game;
     }
 
     choosePlayMove() {
@@ -45,12 +46,12 @@ export class BeginnerBot extends Player {
         if (this.game === undefined) return;
         const rack: string[] = [...this.rackToString()];
         let numberOfLetters = this.getRandomNumber(rack.length);
-        const lettersToExchange: string[] = new Array(numberOfLetters);
+        const lettersToExchange: string[] = new Array();
         while (numberOfLetters > 0) {
-            lettersToExchange.push(rack.splice(this.getRandomNumber(rack.length), 1)[0]);
+            lettersToExchange.push(rack.splice(this.getRandomNumber(rack.length) - 1, 1)[0]);
             numberOfLetters--;
         }
-        this.botInfo.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
+        this.botInfo.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
         this.rack = this.game.exchange(lettersToExchange, this);
     }
 

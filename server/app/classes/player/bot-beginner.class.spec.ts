@@ -3,6 +3,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { Container } from 'typedi';
@@ -10,7 +11,7 @@ import { BeginnerBot, BotInformation } from './bot-beginner.class';
 
 describe.only('BotBeginner', () => {
     let botBeginner: BeginnerBot;
-    let gameStub: Game;
+    let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
     let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
     let stubMathRandom: Sinon.SinonStub<[], number>;
@@ -20,7 +21,7 @@ describe.only('BotBeginner', () => {
 
     beforeEach(() => {
         wordSolverStub = Sinon.createStubInstance(WordSolverService) as Sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
-        gameStub = {} as Game;
+        gameStub = Sinon.createStubInstance(Game) as Sinon.SinonStubbedInstance<Game> & Game;
         botInfo = { game: gameStub, socketManager: Container.get(SocketManager), roomId: 'testRoom' };
         botBeginner = new BeginnerBot(wordSolverStub, true, 'robot', botInfo);
     });
@@ -107,5 +108,28 @@ describe.only('BotBeginner', () => {
         });
     });
 
-    context('exchangeLetters() tests', () => {});
+    context.only('exchangeLetters() tests', () => {
+        let stubGetRandom: Sinon.SinonStub<unknown[], unknown>;
+        let mockSocketManager: Sinon.SinonMock;
+        beforeEach(() => {
+            stubGetRandom = Sinon.stub(botBeginner, 'getRandomNumber' as keyof BeginnerBot);
+            botBeginner.rack = [{ value: 'a' } as Letter, { value: 'b' } as Letter, { value: 'c' } as Letter];
+            mockSocketManager = Sinon.mock(botBeginner['botInfo'].socketManager);
+        });
+        it.only('should call game.exchange() with correct letters to exchange and this parameter', () => {
+            stubGetRandom.onFirstCall().returns(2);
+            stubGetRandom.returns(1);
+            const expectedRack: string[] = ['a', 'b'];
+            const expectation = mockSocketManager.expects('emitRoom');
+            expectation.withArgs(botBeginner['botInfo'].roomId);
+            botBeginner.exchangeLetter();
+            mockSocketManager.verify();
+            expect(gameStub.exchange.calledOnceWithExactly(expectedRack, botBeginner)).to.equal(true);
+        });
+
+        it.only('should not call game.exchange() if this.game is undefined', () => {
+            botBeginner.game = undefined as never;
+            expect(gameStub.exchange.called).to.equal(false);
+        });
+    });
 });
