@@ -19,7 +19,7 @@ fdescribe('LetterPlacementService', () => {
         gameClientServiceSpy = jasmine.createSpyObj('GameClientService', [''], {
             gameboardUpdated: of({}),
             playerOne: { rack: [] },
-            playerOneTurn: false,
+            playerOneTurn: true,
             gameboard: [],
         });
 
@@ -231,5 +231,48 @@ fdescribe('LetterPlacementService', () => {
         service['placedLetters'] = [{} as Letter];
         // eslint-disable-next-line dot-notation
         expect(service['noLettersPlaced']()).toBeFalsy();
+    });
+
+    it('resetGameBoardView should redraw the gameboard', () => {
+        // eslint-disable-next-line dot-notation
+        service['resetGameBoardView']();
+        expect(gridServiceSpy.drawGrid).toHaveBeenCalled();
+    });
+
+    it('resetView should reset the propreties and redraw the gameboard', () => {
+        const setPropretiesSpy = spyOn(service, 'setPropreties' as never);
+        const resetGameBoardViewSpy = spyOn(service, 'resetGameBoardView' as never);
+        // eslint-disable-next-line dot-notation
+        service['resetView']();
+        expect(resetGameBoardViewSpy).toHaveBeenCalled();
+        expect(setPropretiesSpy).toHaveBeenCalled();
+    });
+
+    it('placeLetter should add the letter to the placedLetters and update the view', () => {
+        const LETTER = {} as Letter;
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+        gameClientServiceSpy.playerOneTurn = true;
+
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        // eslint-disable-next-line dot-notation
+        service.placeLetter(LETTER);
+        // eslint-disable-next-line dot-notation
+        expect(service['placedLetters'].includes(LETTER)).toBeTruthy();
+        expect(updateLettersViewSpy).toHaveBeenCalled();
+    });
+
+    it("placeLetter shouldn't do anything if it's not the player's turn", () => {
+        const LETTER = {} as Letter;
+        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
+        // eslint-disable-next-line prettier/prettier
+        (Object.getOwnPropertyDescriptor(gameClientServiceSpy, 'playerOneTurn')?.get as jasmine.Spy<() => boolean>).and.returnValue(false);
+        // eslint-disable-next-line dot-notation
+        service['isPlacingActive'] = true;
+        service.placeLetter(LETTER);
+
+        // eslint-disable-next-line dot-notation
+        expect(service['placedLetters'].includes(LETTER)).not.toBeTruthy();
+        expect(updateLettersViewSpy).not.toHaveBeenCalled();
     });
 });

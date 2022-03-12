@@ -82,30 +82,30 @@ export class LetterPlacementService {
         this.isPlacingActive = true;
         this.updateLettersView();
     }
-
+    //
     placeLetter(letter: Letter) {
-        if (!(this.gameClientService.playerOneTurn || this.isPlacingActive)) return;
+        if (!this.gameClientService.playerOneTurn) return;
         this.placedLetters.push(letter);
         this.updateLettersView();
     }
-
+    //
     resetView() {
         this.resetGameBoardView();
         this.setPropreties();
     }
-
+    //
     resetGameBoardView() {
         this.gridService.drawGrid(this.gameClientService.gameboard);
     }
-
+    //
     noLettersPlaced() {
         return this.placedLetters.length === 0;
     }
-
+    //
     private normalizeLetter(letterValue: string): string {
         return letterValue.normalize('NFD').replace(/([\u0300-\u036f]|[^0-9a-zA-Z])/g, '');
     }
-
+    //
     private treatLetter(letterValue: string): string {
         if (letterValue === letterValue.toLowerCase()) return letterValue;
         return '*';
