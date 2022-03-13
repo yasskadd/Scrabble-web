@@ -6,6 +6,7 @@ import { Letter } from '@common/interfaces/letter';
 // TODO: TEMPORARY WAITING FOR REFACTOR
 const setPoints = (tile: LetterTile) => {
     const letterType = letterTypes.LETTERS.filter((letter) => {
+        if (tile.letter.value === tile.letter.value.toUpperCase()) return letter.value === '*';
         return letter.value === tile.letter.value.toLocaleLowerCase();
     })[0];
     tile.letter = { value: tile.letter.value, points: letterType.points } as Letter;
