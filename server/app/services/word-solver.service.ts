@@ -93,6 +93,7 @@ export class WordSolverService {
         };
         this.commandInfoList.push(commandInfo);
     }
+
     // Tested
     private findLeftPart(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, rack: string[], limit: number) {
         this.extendRight(partialWord, currentNode, rack, anchor, false);
@@ -101,8 +102,9 @@ export class WordSolverService {
                 const isBlankLetter: boolean = rack.includes('*') ? true : false;
                 if (rack.includes(nextLetter) || isBlankLetter) {
                     const letterToRemove = isBlankLetter ? '*' : nextLetter;
+                    const letter = isBlankLetter ? nextLetter.toUpperCase() : nextLetter;
                     rack.splice(rack.indexOf(letterToRemove), 1);
-                    this.findLeftPart(partialWord + nextLetter, currentNode.children.get(nextLetter) as LetterTreeNode, anchor, rack, limit - 1);
+                    this.findLeftPart(partialWord + letter, currentNode.children.get(nextLetter) as LetterTreeNode, anchor, rack, limit - 1);
                     rack.push(letterToRemove);
                 }
             }
@@ -118,10 +120,21 @@ export class WordSolverService {
                 const isBlankLetter: boolean = rack.includes('*') ? true : false;
                 const crossCheckVerif = this.crossCheckResults.get(this.gameboard.getCoord(nextPosition))?.includes(nextLetter);
                 if ((rack.includes(nextLetter) || isBlankLetter) && crossCheckVerif) {
-                    const letterToRemove = isBlankLetter ? '*' : nextLetter;
+                    let letterToRemove = nextLetter;
+                    let letter = nextLetter;
+                    if (isBlankLetter) {
+                        letterToRemove = '*';
+                        letter = letter.toUpperCase();
+                    }
                     rack.splice(rack.indexOf(letterToRemove), 1); // remove to letter from the rack to avoid reusing it
                     const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
-                    this.extendRight(partialWord + nextLetter, currentNode.children.get(nextLetter) as LetterTreeNode, rack, nextPos, true);
+                    this.extendRight(
+                        partialWord + letter,
+                        currentNode.children.get(nextLetter.toLocaleLowerCase()) as LetterTreeNode,
+                        rack,
+                        nextPos,
+                        true,
+                    );
                     rack.push(letterToRemove);
                 }
             }
