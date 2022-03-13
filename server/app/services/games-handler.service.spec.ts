@@ -18,6 +18,7 @@ import { io as Client, Socket } from 'socket.io-client';
 import { Game } from './game.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
+import { WordSolverService } from './word-solver.service';
 
 interface GameHolder {
     game: Game | undefined;
@@ -32,6 +33,7 @@ describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
+    let wordSolverStub: sinon.SinonStubbedInstance<WordSolverService>;
     let httpServer: Server;
     let clientSocket: Socket;
     let serverSocket: ServerSocket;
@@ -47,7 +49,22 @@ describe('GamesHandler Service', () => {
         scoreStorageStub = sinon.createStubInstance(ScoreStorageService);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         scoreStorageStub.addTopScores.callsFake(async (): Promise<void> => {});
-        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager, scoreStorageStub as unknown as ScoreStorageService);
+
+        wordSolverStub = sinon.createStubInstance(WordSolverService);
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        wordSolverStub.setGameboard.callsFake(() => {});
+
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        wordSolverStub.findAllOptions.callsFake((): CommandInfo[] => {
+            return [{ firstCoordinate: { x: 0, y: 0 }, lettersPlaced: ['a', 'v'] as string[], direction: 'v' } as unknown as CommandInfo];
+        });
+
+        gamesHandler = new GamesHandler(
+            socketManagerStub as unknown as SocketManager,
+            scoreStorageStub as unknown as ScoreStorageService,
+            wordSolverStub as unknown as WordSolverService,
+        );
 
         httpServer = createServer();
         sio = new ioServer(httpServer);
@@ -718,7 +735,11 @@ describe('GamesHandler Service', () => {
     context('CreateGame() Tests', () => {
         let createNewGameStub: sinon.SinonStub<unknown[], unknown>;
         beforeEach(() => {
-            gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager, scoreStorageStub as unknown as ScoreStorageService);
+            gamesHandler = new GamesHandler(
+                socketManagerStub as unknown as SocketManager,
+                scoreStorageStub as unknown as ScoreStorageService,
+                wordSolverStub as unknown as WordSolverService,
+            );
             createNewGameStub = sinon.stub(gamesHandler, 'createNewGame' as never);
             const gameStub = {
                 letterReserve: { lettersReserve: [] },
