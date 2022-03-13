@@ -10,7 +10,7 @@ import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordSolverService } from './word-solver.service';
 
-describe('Word solver service', () => {
+describe.only('Word solver service', () => {
     let wordSolverService: WordSolverService;
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
@@ -29,10 +29,9 @@ describe('Word solver service', () => {
     });
 
     // TODO: Temporary test, need modifications
-    it('should find all options', () => {
+    it.only('should find all options', () => {
         const rack: string[] = ['*'];
         gameboard.placeLetter(new LetterTile(1, NUMBER_12, { value: 'z' } as Letter));
-        gameboard.placeLetter(new LetterTile(2, 1, { value: 'x' } as Letter));
         gameboard.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
         gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_10, { value: 'a' } as Letter));
         gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_8, { value: 'j' } as Letter));

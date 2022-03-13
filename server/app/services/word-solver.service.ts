@@ -14,6 +14,8 @@ const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
 const INDEX_NOT_FOUND = -1;
 // TODO: NEED 100% COVERAGE
+
+// Temporary function, waiting for refactor.
 @Service()
 export class WordSolverService {
     private trie: LetterTree;
