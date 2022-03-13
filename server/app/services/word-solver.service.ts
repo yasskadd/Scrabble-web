@@ -76,14 +76,18 @@ export class WordSolverService {
         let wordIndex = word.length - 1;
         let wordCopy = word.slice();
         const placedLetters: string[] = [];
+        let firstCoordinate: Coordinate = lastPosition;
         while (wordIndex >= 0) {
-            if (!this.gameboard.getCoord(lastPosition).isOccupied) placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
+            if (!this.gameboard.getCoord(lastPosition).isOccupied) {
+                firstCoordinate = lastPosition;
+                placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
+            }
             wordCopy = wordCopy.slice(0, INDEX_NOT_FOUND);
             wordIndex--;
             if (wordIndex >= 0) lastPosition = this.decrementCoord(lastPosition, this.isHorizontal) as Coordinate;
         }
         const commandInfo: CommandInfo = {
-            firstCoordinate: this.gameboard.getCoord(lastPosition),
+            firstCoordinate: this.gameboard.getCoord(firstCoordinate),
             direction: this.isHorizontal ? 'h' : 'v',
             lettersPlaced: placedLetters,
         };
@@ -113,7 +117,7 @@ export class WordSolverService {
             for (const nextLetter of currentNode.children.keys()) {
                 const isBlankLetter: boolean = rack.includes('*') ? true : false;
                 const crossCheckVerif = this.crossCheckResults.get(this.gameboard.getCoord(nextPosition))?.includes(nextLetter);
-                if ((rack.includes(nextLetter) && crossCheckVerif) || isBlankLetter) {
+                if ((rack.includes(nextLetter) || isBlankLetter) && crossCheckVerif) {
                     const letterToRemove = isBlankLetter ? '*' : nextLetter;
                     rack.splice(rack.indexOf(letterToRemove), 1); // remove to letter from the rack to avoid reusing it
                     const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
