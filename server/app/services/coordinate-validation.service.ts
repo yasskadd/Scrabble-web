@@ -71,9 +71,7 @@ export class GameboardCoordinateValidationService {
     private verifyLettersContact(letterCoords: LetterTile[], gameboard: Gameboard): boolean {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) return true;
         for (const coord of letterCoords) {
-            if (this.isThereAdjacentLetters(coord, gameboard)) {
-                return true;
-            }
+            if (this.isThereAdjacentLetters(coord, gameboard)) return true;
         }
         return false;
     }
