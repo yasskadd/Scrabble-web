@@ -3,7 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import * as constants from '@app/constants';
 import { GridService } from '@app/services/grid.service';
-import { Letter } from '@common/letter';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 
 describe('GridService', () => {
     let gridService: GridService;
@@ -78,7 +79,7 @@ describe('GridService', () => {
 
     it(" drawGrid shouldn't call drawLetterPoints when gameboard doesn't have any occupied tiles", () => {
         const drawLetterSpy = spyOn(gridService, 'drawLetterPoints').and.callThrough();
-        gridService.drawGrid([]);
+        gridService.drawGrid([{ isOccupied: false } as LetterTile]);
         expect(drawLetterSpy).not.toHaveBeenCalled();
     });
 
