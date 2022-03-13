@@ -27,7 +27,6 @@ export class WordSolverService {
     }
 
     setGameboard(gameboard: Gameboard) {
-        // console.log(gameboard);
         this.gameboard = gameboard;
     }
 

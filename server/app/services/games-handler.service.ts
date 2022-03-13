@@ -84,15 +84,18 @@ export class GamesHandler {
         const room = player.room;
         const gameHolder = this.games.get(room) as GameHolder;
         this.wordSolver.setGameboard(gameHolder.game?.gameboard as Gameboard);
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        setTimeout(() => {}, 0);
         player.rack.forEach((letter) => {
             letterString.push(letter.value);
         });
         const wordPossible: CommandInfo[] = this.wordSolver.findAllOptions(letterString);
-        const random = Math.floor(Math.random() * wordPossible.length);
-        console.log(wordPossible[random]);
-        socket.emit(SocketEvents.ClueCommand, [wordPossible[random]]);
+        const wordToChoose: CommandInfo[] = [];
+        for (let i = 0; i < 3; i++) {
+            if (wordPossible.length === 0) break;
+            const random = Math.floor(Math.random() * wordPossible.length);
+            wordToChoose.push(wordPossible[random]);
+            wordPossible.splice(random, 1);
+        }
+        socket.emit(SocketEvents.ClueCommand, wordToChoose);
     }
 
     private reserveCommand(this: this, socket: Socket) {
