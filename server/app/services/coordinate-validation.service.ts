@@ -60,10 +60,10 @@ export class GameboardCoordinateValidationService {
             if (gameboard.getCoord(new LetterTile(letterCoord.x, letterCoord.y + 1, {} as Letter)).isOccupied) isValid = true;
         }
         if (letterCoord.x !== COLUMN_NUMBER) {
-            if (gameboard.getCoord(new LetterTile(letterCoord.x - 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
+            if (gameboard.getCoord(new LetterTile(letterCoord.x + 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
         if (letterCoord.x !== 1) {
-            if (gameboard.getCoord(new LetterTile(letterCoord.x + 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
+            if (gameboard.getCoord(new LetterTile(letterCoord.x - 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
         return isValid;
     }
@@ -71,7 +71,9 @@ export class GameboardCoordinateValidationService {
     private verifyLettersContact(letterCoords: LetterTile[], gameboard: Gameboard): boolean {
         if (gameboard.gameboardCoords.every((coord) => coord.isOccupied === false)) return true;
         for (const coord of letterCoords) {
-            if (this.isThereAdjacentLetters(coord, gameboard)) return true;
+            if (this.isThereAdjacentLetters(coord, gameboard)) {
+                return true;
+            }
         }
         return false;
     }
