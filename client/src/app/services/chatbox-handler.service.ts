@@ -17,8 +17,8 @@ const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
 interface CommandInfo {
     firstCoordinate: Coordinate;
-    direction: boolean;
-    lettersPlaced: string;
+    direction: string;
+    lettersPlaced: string[];
 }
 @Injectable({
     providedIn: 'root',
@@ -95,9 +95,9 @@ export class ChatboxHandlerService {
             clueCommand.forEach((clue) => {
                 this.messages.push({
                     type: 'system-message',
-                    data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${clue.direction} ${
-                        clue.lettersPlaced
-                    }`,
+                    data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${
+                        clue.direction
+                    } ${clue.lettersPlaced.join('')}`,
                 });
             });
 

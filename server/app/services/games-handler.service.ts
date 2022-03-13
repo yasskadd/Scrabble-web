@@ -12,6 +12,7 @@ import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
+import { WordSolverService } from './word-solver.service';
 
 const SECOND = 1000;
 const CHAR_ASCII = 96;
@@ -36,7 +37,7 @@ export class GamesHandler {
     private players: Map<string, Player>;
     private games: Map<string, GameHolder>;
 
-    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService) {
+    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService, private wordSolver: WordSolverService) {
         this.players = new Map();
         this.games = new Map();
     }
@@ -55,6 +56,10 @@ export class GamesHandler {
             this.reserveCommand(socket);
         });
 
+        this.socketManager.on(SocketEvents.ClueCommand, (socket) => {
+            this.clueCommand(socket);
+        });
+
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
@@ -70,6 +75,24 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.QuitGame, (socket) => {
             this.disconnect(socket);
         });
+    }
+
+    private clueCommand(this: this, socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+        const letterString: string[] = [];
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const gameHolder = this.games.get(room) as GameHolder;
+        this.wordSolver.setGameboard(gameHolder.game?.gameboard as Gameboard);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        setTimeout(() => {}, 0);
+        player.rack.forEach((letter) => {
+            letterString.push(letter.value);
+        });
+        const wordPossible: CommandInfo[] = this.wordSolver.findAllOptions(letterString);
+        const random = Math.floor(Math.random() * wordPossible.length);
+        console.log(wordPossible[random]);
+        socket.emit(SocketEvents.ClueCommand, [wordPossible[random]]);
     }
 
     private reserveCommand(this: this, socket: Socket) {

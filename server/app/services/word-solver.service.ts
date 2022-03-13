@@ -16,10 +16,20 @@ const INDEX_NOT_FOUND = -1;
 // TODO: NEED 100% COVERAGE
 @Service()
 export class WordSolverService {
+    private trie: LetterTree;
+    private gameboard: Gameboard;
     private crossCheckResults: Map<Coordinate, string[]> = new Map();
     private isHorizontal: boolean;
     private commandInfoList: CommandInfo[] = new Array();
-    constructor(private trie: LetterTree, private gameboard: Gameboard) {}
+    constructor() {
+        const dictionary = Container.get(DictionaryValidationService);
+        this.trie = dictionary.trie;
+    }
+
+    setGameboard(gameboard: Gameboard) {
+        // console.log(gameboard);
+        this.gameboard = gameboard;
+    }
 
     findAllOptions(rack: string[]): CommandInfo[] {
         this.commandInfoList.length = 0;
