@@ -1,8 +1,11 @@
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
+import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
@@ -156,6 +159,22 @@ describe.only('BotBeginner', () => {
             botBeginner.skipTurn();
             expectation.verify();
             expect(gameStub.skip.calledOnce).to.equal(true);
+        });
+    });
+
+    context.only('emitPlacementCommand() tests', () => {
+        it.only('should emitRoom() with correct arguments', () => {
+            const commandInfoStub: CommandInfo = {
+                firstCoordinate: new LetterTile(1, 1, {} as Letter),
+                direction: 'h',
+                lettersPlaced: ['t', 'e', 's', 't'],
+            };
+            const expectedCommand = 'a1h test';
+            const mockSocketManager = Sinon.mock(botBeginner['botInfo'].socketManager);
+            const expectation = mockSocketManager.expects('emitRoom').exactly(1);
+            expectation.withExactArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
+            botBeginner['emitPlaceCommand'](commandInfoStub);
+            expectation.verify();
         });
     });
 });
