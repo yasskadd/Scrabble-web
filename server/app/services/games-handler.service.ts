@@ -88,6 +88,10 @@ export class GamesHandler {
             letterString.push(letter.value);
         });
         const wordPossible: CommandInfo[] = this.wordSolver.findAllOptions(letterString);
+        wordPossible.forEach((word) => {
+            console.log(word);
+        });
+        console.log(wordPossible.length);
         const wordToChoose: CommandInfo[] = [];
         for (let i = 0; i < 3; i++) {
             if (wordPossible.length === 0) break;

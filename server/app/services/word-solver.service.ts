@@ -109,8 +109,8 @@ export class WordSolverService {
             for (const nextLetter of currentNode.children.keys()) {
                 const isBlankLetter: boolean = rack.includes('*') ? true : false;
                 if (rack.includes(nextLetter) || isBlankLetter) {
-                    const letterToRemove = isBlankLetter ? '*' : nextLetter;
-                    const letter = isBlankLetter ? nextLetter.toUpperCase() : nextLetter;
+                    const letterToRemove = rack.includes(nextLetter) ? nextLetter : '*';
+                    const letter = letterToRemove === '*' ? nextLetter.toUpperCase() : nextLetter;
                     rack.splice(rack.indexOf(letterToRemove), 1);
                     this.findLeftPart(partialWord + letter, currentNode.children.get(nextLetter) as LetterTreeNode, anchor, rack, limit - 1);
                     rack.push(letterToRemove);
@@ -119,6 +119,7 @@ export class WordSolverService {
         }
     }
     // TESTED
+    // eslint-disable-next-line complexity
     private extendRight(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
         if (currentNode.isWord && this.verifyConditions(nextPosition) && anchorFilled)
             this.createCommandInfo(partialWord, this.decrementCoord(nextPosition, this.isHorizontal) as Coordinate);
@@ -128,12 +129,8 @@ export class WordSolverService {
                 const isBlankLetter: boolean = rack.includes('*') ? true : false;
                 const crossCheckVerif = this.crossCheckResults.get(this.gameboard.getCoord(nextPosition))?.includes(nextLetter);
                 if ((rack.includes(nextLetter) || isBlankLetter) && crossCheckVerif) {
-                    let letterToRemove = nextLetter;
-                    let letter = nextLetter;
-                    if (isBlankLetter) {
-                        letterToRemove = '*';
-                        letter = letter.toUpperCase();
-                    }
+                    const letterToRemove = rack.includes(nextLetter) ? nextLetter : '*';
+                    const letter = letterToRemove === '*' ? nextLetter.toUpperCase() : nextLetter;
                     rack.splice(rack.indexOf(letterToRemove), 1); // remove to letter from the rack to avoid reusing it
                     const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
                     this.extendRight(
