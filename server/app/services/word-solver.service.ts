@@ -34,6 +34,7 @@ export class WordSolverService {
         this.commandInfoList.length = 0;
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
+            this.firstTurnOrEmpty(this.gameboard, rack);
             const anchors = this.gameboard.findAnchors();
             this.crossCheckResults = this.crossCheck();
             for (const anchor of anchors) {
@@ -92,6 +93,13 @@ export class WordSolverService {
             lettersPlaced: placedLetters,
         };
         this.commandInfoList.push(commandInfo);
+    }
+
+    private firstTurnOrEmpty(gameboard: Gameboard, rack: string[]) {
+        if (!gameboard.findAnchors().length) {
+            const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
+            this.findLeftPart('', this.trie.root, anchor, rack, 7);
+        }
     }
 
     // Tested
