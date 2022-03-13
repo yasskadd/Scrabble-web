@@ -16,6 +16,7 @@ const RANGE_18 = 18;
 const PROB_4 = 4;
 const PROB_5 = 5;
 const PROB_7 = 7;
+const TIME_SKIP = 20;
 
 export interface BotInformation {
     game: Game;
@@ -71,7 +72,7 @@ export class BeginnerBot extends Player {
         const commandInfoList: CommandInfo[] = new Array();
         this.addCommandInfoToList(commandInfoMap, commandInfoList, randomNumber);
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
-        if (this.timer >= 3 && this.timer <= 20) {
+        if (this.timer >= 3 && this.timer <= TIME_SKIP) {
             this.emitPlaceCommand(randomCommandInfo);
             this.game.play(this, randomCommandInfo);
             return;
