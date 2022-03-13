@@ -8,7 +8,7 @@ import { Container } from 'typedi';
 import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
 
-describe.only('Word', () => {
+describe('Word', () => {
     let word: Word;
     const letterA = {} as Letter;
     const letterB = {} as Letter;
