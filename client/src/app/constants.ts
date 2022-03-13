@@ -37,3 +37,4 @@ export const LIGHT_BLUE = '#cee7f7';
 export const DARK_BLUE = '#93cff1';
 export const PINK = '#f0b8b8';
 export const RED = '#fe6e54';
+export const GREEN = '#60E961';

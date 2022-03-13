@@ -440,7 +440,7 @@ describe('LetterPlacementService', () => {
         // eslint-disable-next-line dot-notation
         service['startTile'] = { x: 1, y: 1 };
         service.submitPlacement();
-        expect(chatboxServiceSpy.submitMessage).toHaveBeenCalledWith('!placer a1h a');
+        expect(chatboxServiceSpy.submitMessage).toHaveBeenCalledWith('!placer a1v a');
     });
 
     it("submitPlacement shouldn't do anything if there's no placed letters", () => {

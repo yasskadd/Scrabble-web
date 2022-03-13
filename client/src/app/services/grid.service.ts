@@ -29,39 +29,6 @@ export class GridService {
         this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
-    // added Functions :
-
-    getPosition(coords: Coordinate): Coordinate {
-        return { x: Math.floor(coords.x / GridService.squareWidth), y: Math.floor(coords.y / GridService.squareWidth) };
-    }
-
-    drawArrow(coords: Coordinate, isHorizontal: boolean) {
-        this.gridContext.fillStyle = '#60E961';
-        this.fillTile(coords);
-        const arrow = isHorizontal ? '⇨' : '⇩';
-        this.gridContext.fillStyle = 'green';
-        this.gridContext.font = GridService.squareHeight + 'px system-ui';
-        this.gridContext.textAlign = 'center';
-        this.gridContext.textBaseline = 'top';
-        this.gridContext.fillStyle = 'black';
-        this.gridContext.fillText(
-            arrow,
-            GridService.squareWidth * coords.x + GridService.halfSquareWidth,
-            GridService.squareHeight * coords.y,
-            GridService.squareWidth,
-        );
-    }
-
-    drawUnfinalizedLetter(coordinate: Coordinate, letter: Letter) {
-        this.gridContext.fillStyle = '#60E961';
-        this.fillTile(coordinate);
-        this.gridContext.fillStyle = 'black';
-        this.drawLetter(coordinate, letter.value.toUpperCase());
-        this.drawLetterPoints(coordinate, String(letter.points));
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------------------------------
-
     drawGrid(gameboard: LetterTile[]) {
         this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
         this.drawRowNumbers();
@@ -112,6 +79,23 @@ export class GridService {
         this.gridContext.fill();
     }
 
+    drawArrow(coords: Coordinate, isHorizontal: boolean) {
+        this.gridContext.fillStyle = constants.GREEN;
+        this.gridContext.strokeStyle = 'black';
+        this.fillTile(coords);
+        const arrow = isHorizontal ? '⇨' : '⇩';
+        this.gridContext.font = GridService.squareHeight + 'px system-ui';
+        this.gridContext.textAlign = 'center';
+        this.gridContext.textBaseline = 'top';
+        this.gridContext.fillStyle = 'black';
+        this.gridContext.fillText(
+            arrow,
+            GridService.squareWidth * coords.x + GridService.halfSquareWidth,
+            GridService.squareHeight * coords.y,
+            GridService.squareWidth,
+        );
+    }
+
     drawRowNumbers() {
         this.setFontSize(this.boardTileSize);
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
@@ -134,6 +118,15 @@ export class GridService {
         this.setFontSize(this.letterSize);
         this.gridContext.textBaseline = 'middle';
         this.drawText(position, char);
+    }
+
+    drawUnfinalizedLetter(coordinate: Coordinate, letter: Letter) {
+        this.gridContext.fillStyle = constants.GREEN;
+        this.gridContext.strokeStyle = 'black';
+        this.fillTile(coordinate);
+        this.gridContext.fillStyle = 'black';
+        this.drawLetter(coordinate, letter.value.toUpperCase());
+        this.drawLetterPoints(coordinate, String(letter.points));
     }
 
     drawBasicTiles() {
@@ -252,5 +245,9 @@ export class GridService {
             GridService.squareHeight * position.y + halfSize + GridService.halfSquareHeight,
             weightSize,
         );
+    }
+
+    getPosition(coords: Coordinate): Coordinate {
+        return { x: Math.floor(coords.x / GridService.squareWidth), y: Math.floor(coords.y / GridService.squareWidth) };
     }
 }
