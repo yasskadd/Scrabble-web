@@ -13,18 +13,31 @@ const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
 const INDEX_NOT_FOUND = -1;
+const LIMIT = 7;
 // TODO: NEED 100% COVERAGE
+
+// Temporary function, waiting for refactor.
 @Service()
 export class WordSolverService {
+    private trie: LetterTree;
+    private gameboard: Gameboard;
     private crossCheckResults: Map<Coordinate, string[]> = new Map();
     private isHorizontal: boolean;
     private commandInfoList: CommandInfo[] = new Array();
-    constructor(private trie: LetterTree, private gameboard: Gameboard) {}
+    constructor() {
+        const dictionary = Container.get(DictionaryValidationService);
+        this.trie = dictionary.trie;
+    }
+
+    setGameboard(gameboard: Gameboard) {
+        this.gameboard = gameboard;
+    }
 
     findAllOptions(rack: string[]): CommandInfo[] {
         this.commandInfoList.length = 0;
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
+            this.firstTurnOrEmpty(this.gameboard, rack);
             const anchors = this.gameboard.findAnchors();
             this.crossCheckResults = this.crossCheck();
             for (const anchor of anchors) {
@@ -67,19 +80,31 @@ export class WordSolverService {
         let wordIndex = word.length - 1;
         let wordCopy = word.slice();
         const placedLetters: string[] = [];
+        let firstCoordinate: Coordinate = lastPosition;
         while (wordIndex >= 0) {
-            if (!this.gameboard.getCoord(lastPosition).isOccupied) placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
+            if (!this.gameboard.getCoord(lastPosition).isOccupied) {
+                firstCoordinate = lastPosition;
+                placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
+            }
             wordCopy = wordCopy.slice(0, INDEX_NOT_FOUND);
             wordIndex--;
             if (wordIndex >= 0) lastPosition = this.decrementCoord(lastPosition, this.isHorizontal) as Coordinate;
         }
         const commandInfo: CommandInfo = {
-            firstCoordinate: this.gameboard.getCoord(lastPosition),
+            firstCoordinate: this.gameboard.getCoord(firstCoordinate),
             direction: this.isHorizontal ? 'h' : 'v',
             lettersPlaced: placedLetters,
         };
         this.commandInfoList.push(commandInfo);
     }
+
+    private firstTurnOrEmpty(gameboard: Gameboard, rack: string[]) {
+        if (!gameboard.findAnchors().length) {
+            const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
+            this.findLeftPart('', this.trie.root, anchor, rack, LIMIT);
+        }
+    }
+
     // Tested
     private findLeftPart(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, rack: string[], limit: number) {
         this.extendRight(partialWord, currentNode, rack, anchor, false);
@@ -87,15 +112,17 @@ export class WordSolverService {
             for (const nextLetter of currentNode.children.keys()) {
                 const isBlankLetter: boolean = rack.includes('*') ? true : false;
                 if (rack.includes(nextLetter) || isBlankLetter) {
-                    const letterToRemove = isBlankLetter ? '*' : nextLetter;
+                    const letterToRemove = rack.includes(nextLetter) ? nextLetter : '*';
+                    const letter = letterToRemove === '*' ? nextLetter.toUpperCase() : nextLetter;
                     rack.splice(rack.indexOf(letterToRemove), 1);
-                    this.findLeftPart(partialWord + nextLetter, currentNode.children.get(nextLetter) as LetterTreeNode, anchor, rack, limit - 1);
+                    this.findLeftPart(partialWord + letter, currentNode.children.get(nextLetter) as LetterTreeNode, anchor, rack, limit - 1);
                     rack.push(letterToRemove);
                 }
             }
         }
     }
     // TESTED
+    // eslint-disable-next-line complexity
     private extendRight(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
         if (currentNode.isWord && this.verifyConditions(nextPosition) && anchorFilled)
             this.createCommandInfo(partialWord, this.decrementCoord(nextPosition, this.isHorizontal) as Coordinate);
@@ -104,11 +131,18 @@ export class WordSolverService {
             for (const nextLetter of currentNode.children.keys()) {
                 const isBlankLetter: boolean = rack.includes('*') ? true : false;
                 const crossCheckVerif = this.crossCheckResults.get(this.gameboard.getCoord(nextPosition))?.includes(nextLetter);
-                if ((rack.includes(nextLetter) && crossCheckVerif) || isBlankLetter) {
-                    const letterToRemove = isBlankLetter ? '*' : nextLetter;
+                if ((rack.includes(nextLetter) || isBlankLetter) && crossCheckVerif) {
+                    const letterToRemove = rack.includes(nextLetter) ? nextLetter : '*';
+                    const letter = letterToRemove === '*' ? nextLetter.toUpperCase() : nextLetter;
                     rack.splice(rack.indexOf(letterToRemove), 1); // remove to letter from the rack to avoid reusing it
                     const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
-                    this.extendRight(partialWord + nextLetter, currentNode.children.get(nextLetter) as LetterTreeNode, rack, nextPos, true);
+                    this.extendRight(
+                        partialWord + letter,
+                        currentNode.children.get(nextLetter.toLocaleLowerCase()) as LetterTreeNode,
+                        rack,
+                        nextPos,
+                        true,
+                    );
                     rack.push(letterToRemove);
                 }
             }

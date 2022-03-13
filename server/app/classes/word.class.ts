@@ -1,5 +1,16 @@
 import { Gameboard } from '@app/classes/gameboard.class';
+import * as letterTypes from '@app/letter-reserve';
 import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
+
+// TODO: TEMPORARY WAITING FOR REFACTOR
+const setPoints = (tile: LetterTile) => {
+    const letterType = letterTypes.LETTERS.filter((letter) => {
+        if (tile.letter.value === tile.letter.value.toUpperCase()) return letter.value === '*';
+        return letter.value === tile.letter.value.toLocaleLowerCase();
+    })[0];
+    tile.letter = { value: tile.letter.value, points: letterType.points } as Letter;
+};
 
 export class Word {
     isHorizontal: boolean;
@@ -21,6 +32,9 @@ export class Word {
 
     calculatePoints(gameboard: Gameboard) {
         const letterCoords: LetterTile[] = this.coords;
+        letterCoords.forEach((tile) => {
+            setPoints(tile);
+        });
         this.addLetterPoints(letterCoords, gameboard);
         this.addWordMultiplierPoints(letterCoords, gameboard);
         return this.points;

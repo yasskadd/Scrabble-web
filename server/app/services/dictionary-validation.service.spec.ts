@@ -21,7 +21,7 @@ describe('Dictionary Validation Service', () => {
 
     beforeEach(() => {
         dictionaryValidationService = Container.get(DictionaryValidationService);
-        const letterA = { points: 5 } as Letter;
+        const letterA = { points: 5, value: 'a' } as Letter;
         validWord1 = new Word(true, [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterA)]);
         validWord1.stringFormat = 'bonjour';
         validWord2 = new Word(true, [new LetterTile(2, 2, letterA), new LetterTile(2, 3, letterA)]);

@@ -12,6 +12,7 @@ import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
+import { WordSolverService } from './word-solver.service';
 
 const SECOND = 1000;
 const CHAR_ASCII = 96;
@@ -36,7 +37,7 @@ export class GamesHandler {
     private players: Map<string, Player>;
     private games: Map<string, GameHolder>;
 
-    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService) {
+    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService, private wordSolver: WordSolverService) {
         this.players = new Map();
         this.games = new Map();
     }
@@ -70,6 +71,31 @@ export class GamesHandler {
         this.socketManager.on(SocketEvents.QuitGame, (socket) => {
             this.disconnect(socket);
         });
+
+        this.socketManager.on(SocketEvents.ClueCommand, (socket) => {
+            this.clueCommand(socket);
+        });
+    }
+
+    private clueCommand(this: this, socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+        const letterString: string[] = [];
+        const player = this.players.get(socket.id) as Player;
+        const room = player.room;
+        const gameHolder = this.games.get(room) as GameHolder;
+        this.wordSolver.setGameboard(gameHolder.game?.gameboard as Gameboard);
+        player.rack.forEach((letter) => {
+            letterString.push(letter.value);
+        });
+        const wordPossible: CommandInfo[] = this.wordSolver.findAllOptions(letterString);
+        const wordToChoose: CommandInfo[] = [];
+        for (let i = 0; i < 3; i++) {
+            if (wordPossible.length === 0) break;
+            const random = Math.floor(Math.random() * wordPossible.length);
+            wordToChoose.push(wordPossible[random]);
+            wordPossible.splice(random, 1);
+        }
+        socket.emit(SocketEvents.ClueCommand, wordToChoose);
     }
 
     private reserveCommand(this: this, socket: Socket) {
