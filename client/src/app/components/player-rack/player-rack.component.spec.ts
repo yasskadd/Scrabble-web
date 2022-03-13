@@ -5,6 +5,7 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { of, Subject } from 'rxjs';
 
 const LETTER_SIZE = 5;
@@ -16,6 +17,7 @@ describe('PlayerRackComponent', () => {
     let chatBoxHandlerSpy: jasmine.SpyObj<ChatboxHandlerService>;
     let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
     let gridServiceServiceSpy: jasmine.SpyObj<GridService>;
+    let letterPlacementServiceSpy: jasmine.SpyObj<LetterPlacementService>;
 
     beforeEach(async () => {
         chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage']);
@@ -68,12 +70,14 @@ describe('PlayerRackComponent', () => {
             },
         });
         gridServiceServiceSpy = jasmine.createSpyObj('GridService', [], { letterSize: LETTER_SIZE });
+        letterPlacementServiceSpy = jasmine.createSpyObj('LetterPlacementService', ['submitPlacement', 'noLettersPlaced']);
         await TestBed.configureTestingModule({
             declarations: [PlayerRackComponent],
             providers: [
                 { provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy },
                 { provide: GameClientService, useValue: gameClientServiceSpy },
                 { provide: GridService, useValue: gridServiceServiceSpy },
+                { provide: LetterPlacementService, useValue: letterPlacementServiceSpy },
                 { provide: ElementRef, useClass: MockElementRef },
             ],
         }).compileComponents();
@@ -209,6 +213,16 @@ describe('PlayerRackComponent', () => {
         expect(component.lettersToExchange.length).toEqual(0);
     });
 
+    it('noPlacedLetters should return noLettersPlaced from letterPlacementService', () => {
+        const VALUE = true;
+        letterPlacementServiceSpy.noLettersPlaced.and.returnValue(VALUE);
+        expect(component.noPlacedLetters).toBeTruthy();
+    });
+
+    it('playPlacedLetters should call letterPlacementService.submitPlacement', () => {
+        component.playPlacedLetters();
+        expect(letterPlacementServiceSpy.submitPlacement).toHaveBeenCalled();
+    });
     it('repositionRack should call moveLeft', () => {
         const spy = spyOn(component, 'moveLeft');
         component.buttonPressed = 'ArrowLeft';

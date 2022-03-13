@@ -3,6 +3,7 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { Letter } from '@common/interfaces/letter';
 import { Subject } from 'rxjs';
 
@@ -35,7 +36,8 @@ export class PlayerRackComponent implements OnInit {
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,
-        private tmpService: GridService,
+        public letterPlacementService: LetterPlacementService,
+        private gridService: GridService,
         private eRef: ElementRef,
     ) {
         this.width = constants.RACK_WIDTH;
@@ -66,10 +68,10 @@ export class PlayerRackComponent implements OnInit {
     }
 
     get letterSize(): number {
-        return this.tmpService.letterSize;
+        return this.gridService.letterSize;
     }
     get pointsSize(): number {
-        return this.tmpService.letterSize * constants.LETTER_WEIGHT_RATIO;
+        return this.gridService.letterSize * constants.LETTER_WEIGHT_RATIO;
     }
     get rack(): Letter[] {
         return this.gameClient.playerOne.rack;
@@ -141,6 +143,13 @@ export class PlayerRackComponent implements OnInit {
                 this.lettersToExchange.splice(index, 1);
             }
         }
+    }
+
+    playPlacedLetters() {
+        this.letterPlacementService.submitPlacement();
+    }
+    get noPlacedLetters(): boolean {
+        return this.letterPlacementService.noLettersPlaced();
     }
 
     onLeftClick(event: MouseEvent, letter: number) {

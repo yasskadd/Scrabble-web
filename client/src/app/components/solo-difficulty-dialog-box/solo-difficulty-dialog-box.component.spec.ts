@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -49,11 +49,31 @@ describe('SoloDifficultyDialogBoxComponent', () => {
 
     it('easySoloMode should call gameConfiguration.beginScrabbleGame', () => {
         component.easySoloMode();
-        expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalledWith('Vincent');
+        expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalledWith(true);
     });
 
     it('returnWaiting should call gameConfiguration.setGameAvailable', () => {
         component.returnWaiting();
         expect(gameConfigurationServiceSpy.setGameAvailable).toHaveBeenCalled();
     });
+
+    it('should call easySoloMode() when the startButton is pressed', fakeAsync(() => {
+        fixture.detectChanges();
+        const spy = spyOn(component, 'easySoloMode');
+        const button = fixture.debugElement.nativeElement.querySelector('#easyMode');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should call returnWaiting() when the returnButton is pressed', fakeAsync(() => {
+        fixture.detectChanges();
+        const spy = spyOn(component, 'returnWaiting');
+        const button = fixture.debugElement.nativeElement.querySelector('.button');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
 });
