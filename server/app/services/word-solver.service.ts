@@ -71,6 +71,8 @@ export class WordSolverService {
                 this.gameboard.removeLetter(tile);
             });
         });
+        console.log(commandInfoMap);
+        console.log(this.gameboard);
         return commandInfoMap;
     }
     // Tested

@@ -8,7 +8,7 @@ import { Container } from 'typedi';
 import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
 
-describe('Word', () => {
+describe.only('Word', () => {
     let word: Word;
     const letterA = {} as Letter;
     const letterB = {} as Letter;
@@ -21,11 +21,11 @@ describe('Word', () => {
         letterA.value = 'a';
         letterA.points = 1;
         letterB.value = 'b';
-        letterB.points = 2;
+        letterB.points = 3;
         letterC.value = 'c';
-        letterC.points = 5;
+        letterC.points = 3;
         letterD.value = 'd';
-        letterD.points = 4;
+        letterD.points = 2;
         boxMultiplierService = Container.get(BoxMultiplierService);
         gameboard = new Gameboard(boxMultiplierService);
     });
