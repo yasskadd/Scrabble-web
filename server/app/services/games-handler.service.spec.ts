@@ -57,7 +57,7 @@ describe('GamesHandler Service', () => {
 
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         wordSolverStub.findAllOptions.callsFake((): CommandInfo[] => {
-            return [{ firstCoordinate: { x: 0, y: 0 }, lettersPlaced: ['a', 'v'] as string[], direction: 'v' } as unknown as CommandInfo];
+            return [];
         });
 
         gamesHandler = new GamesHandler(
@@ -93,9 +93,10 @@ describe('GamesHandler Service', () => {
         const disconnectSpy = sinon.stub(gamesHandler, 'disconnect' as never);
         const abandonGameSpy = sinon.stub(gamesHandler, 'abandonGame' as never);
         const reserveCommandSpy = sinon.stub(gamesHandler, 'reserveCommand' as never);
+        const clueCommandSpy = sinon.stub(gamesHandler, 'clueCommand' as never);
 
         gamesHandler.initSocketsEvents();
-        const CALL_NUMBER = 8;
+        const CALL_NUMBER = 9;
         for (let i = 0; i < CALL_NUMBER; i++) {
             socketManagerStub.on.getCall(i).args[1](serverSocket);
         }
@@ -107,6 +108,7 @@ describe('GamesHandler Service', () => {
         expect(disconnectSpy.called).to.be.eql(true);
         expect(abandonGameSpy.called).to.be.eql(true);
         expect(reserveCommandSpy.called).to.be.eql(true);
+        expect(clueCommandSpy.called).to.be.eql(true);
         expect(socketManagerStub.on.called).to.equal(true);
 
         done();
@@ -139,6 +141,96 @@ describe('GamesHandler Service', () => {
         gamesHandler['reserveCommand'](serverSocket);
     });
 
+    it('clueCommand() should call wordSolver.setGameboard and findAllOptions ', () => {
+        const player = {
+            rack: [
+                { value: 'c', quantity: 2, points: 1 },
+                { value: 'r', quantity: 2, points: 1 },
+                { value: 'p', quantity: 2, points: 1 },
+            ],
+            room: ROOM,
+        } as Player;
+        const game = sinon.createStubInstance(Game);
+        game.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+        const gameHolder = { game, players: [], isGameFinish: false };
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['clueCommand'](serverSocket);
+        // eslint-disable-next-line dot-notation
+        expect(wordSolverStub.setGameboard.called).to.equal(true);
+        expect(wordSolverStub.findAllOptions.called).to.equal(true);
+    });
+
+    it('clueCommand() should emit one placement possible when there is only one available ', (done) => {
+        const placementPossible = [
+            { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: ['p', 'a', 'r'] as string[], direction: 'v' } as unknown as CommandInfo,
+        ];
+        const player = {
+            rack: [
+                { value: 'c', quantity: 2, points: 1 },
+                { value: 'r', quantity: 2, points: 1 },
+                { value: 'p', quantity: 2, points: 1 },
+            ],
+            room: ROOM,
+        } as Player;
+        const game = sinon.createStubInstance(Game);
+        game.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+        const gameHolder = { game, players: [], isGameFinish: false };
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
+        wordSolverStub.findAllOptions.returns(placementPossible);
+
+        clientSocket.on(SocketEvents.ClueCommand, (information) => {
+            expect(information).to.be.eql([
+                { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: ['p', 'a', 'r'] as string[], direction: 'v' } as unknown as CommandInfo,
+            ]);
+            done();
+        });
+        // eslint-disable-next-line dot-notation
+        gamesHandler['clueCommand'](serverSocket);
+        // eslint-disable-next-line dot-notation
+    });
+
+    it('clueCommand() should emit three placement possible when there is three or more available ', (done) => {
+        const placementPossible = [
+            { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: ['p', 'a', 'r'] as string[], direction: 'v' } as unknown as CommandInfo,
+            { firstCoordinate: { x: 4, y: 4 }, lettersPlaced: ['r', 'a', 'p'] as string[], direction: 'v' } as unknown as CommandInfo,
+            { firstCoordinate: { x: 8, y: 8 }, lettersPlaced: ['c', 'a', 'r'] as string[], direction: 'h' } as unknown as CommandInfo,
+        ];
+        const player = {
+            rack: [
+                { value: 'c', quantity: 2, points: 1 },
+                { value: 'r', quantity: 2, points: 1 },
+                { value: 'p', quantity: 2, points: 1 },
+            ],
+            room: ROOM,
+        } as Player;
+        const game = sinon.createStubInstance(Game);
+        game.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+        const gameHolder = { game, players: [], isGameFinish: false };
+        // eslint-disable-next-line dot-notation
+        gamesHandler['players'].set(serverSocket.id, player);
+        // eslint-disable-next-line dot-notation
+        gamesHandler['games'].set(ROOM, gameHolder as unknown as GameHolder);
+        wordSolverStub.findAllOptions.returns(placementPossible);
+
+        clientSocket.on(SocketEvents.ClueCommand, (information) => {
+            expect(information).to.deep.include.members([
+                { firstCoordinate: { x: 0, y: 0 }, lettersPlaced: ['p', 'a', 'r'] as string[], direction: 'v' } as unknown as CommandInfo,
+                { firstCoordinate: { x: 4, y: 4 }, lettersPlaced: ['r', 'a', 'p'] as string[], direction: 'v' } as unknown as CommandInfo,
+                { firstCoordinate: { x: 8, y: 8 }, lettersPlaced: ['c', 'a', 'r'] as string[], direction: 'h' } as unknown as CommandInfo,
+            ]);
+            done();
+        });
+        // eslint-disable-next-line dot-notation
+        gamesHandler['clueCommand'](serverSocket);
+        // eslint-disable-next-line dot-notation
+    });
     it('skip() should call player.skipTurn()', (done) => {
         const player = sinon.createStubInstance(RealPlayer);
         const game = sinon.createStubInstance(Game);

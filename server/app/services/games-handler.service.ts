@@ -56,10 +56,6 @@ export class GamesHandler {
             this.reserveCommand(socket);
         });
 
-        this.socketManager.on(SocketEvents.ClueCommand, (socket) => {
-            this.clueCommand(socket);
-        });
-
         this.socketManager.on(SocketEvents.Skip, (socket) => {
             this.skip(socket);
         });
@@ -74,6 +70,10 @@ export class GamesHandler {
 
         this.socketManager.on(SocketEvents.QuitGame, (socket) => {
             this.disconnect(socket);
+        });
+
+        this.socketManager.on(SocketEvents.ClueCommand, (socket) => {
+            this.clueCommand(socket);
         });
     }
 
