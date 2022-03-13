@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@
 import * as constants from '@app/constants';
 import { Vec2 } from '@app/interfaces/vec2';
 import { GridService } from '@app/services/grid.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { Subject } from 'rxjs';
 
 export enum MouseButton {
@@ -24,9 +25,8 @@ export class PlayAreaComponent implements AfterViewInit {
     clickParentSubject: Subject<MouseEvent>;
     mousePosition: Vec2;
     buttonPressed;
-    private canvasSize = { x: constants.GRID_CANVAS_WIDTH, y: constants.GRID_CANVAS_HEIGHT };
 
-    constructor(private readonly gridService: GridService) {
+    constructor(private readonly gridService: GridService, private letterService: LetterPlacementService) {
         this.keyboardParentSubject = new Subject();
         this.clickParentSubject = new Subject();
         this.mousePosition = { x: 0, y: 0 };
@@ -36,7 +36,40 @@ export class PlayAreaComponent implements AfterViewInit {
     @HostListener('keydown', ['$event'])
     buttonDetect(event: KeyboardEvent) {
         this.buttonPressed = event.key;
+        switch (this.buttonPressed) {
+            case 'Backspace': {
+                this.letterService.undoPlacement();
+                break;
+            }
+            case 'Enter': {
+                this.letterService.submitPlacement();
+                break;
+            }
+            case 'Shift': {
+                break;
+            }
+            case 'Escape': {
+                this.letterService.undoEverything();
+                break;
+            }
+            default: {
+                this.letterService.handlePlacement(this.buttonPressed);
+                break;
+            }
+        }
         this.keyboardParentSubject.next(event);
+    }
+
+    @HostListener('document:click', ['$event'])
+    mouseClickOutside(event: MouseEvent) {
+        if (!this.gridCanvas.nativeElement.contains(event.target as Node)) this.letterService.undoEverything();
+    }
+
+    mouseHitDetect(event: MouseEvent) {
+        if (event.button === MouseButton.Left) {
+            this.mousePosition = { x: event.offsetX, y: event.offsetY };
+            this.letterService.placeLetterStartPosition(this.mousePosition);
+        }
     }
 
     ngAfterViewInit(): void {
@@ -44,16 +77,10 @@ export class PlayAreaComponent implements AfterViewInit {
     }
 
     get width(): number {
-        return this.canvasSize.x;
+        return constants.GRID_CANVAS_WIDTH;
     }
 
     get height(): number {
-        return this.canvasSize.y;
-    }
-
-    mouseHitDetect(event: MouseEvent) {
-        if (event.button === MouseButton.Left) {
-            this.mousePosition = { x: event.offsetX, y: event.offsetY };
-        }
+        return constants.GRID_CANVAS_HEIGHT;
     }
 }

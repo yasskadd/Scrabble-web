@@ -1,5 +1,8 @@
 #container-wrapper {
-    flex-direction: row;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
 }
 #canvas {
     background-color: #fff;

@@ -3,6 +3,7 @@ import * as constants from '@app/constants';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
 
 @Injectable({
     providedIn: 'root',
@@ -37,7 +38,8 @@ export class GridService {
         this.drawMiddleTile();
         gameboard.forEach((letterTile) => {
             if (letterTile.isOccupied) {
-                this.drawBasicTile({ x: letterTile.x, y: letterTile.y });
+                this.gridContext.fillStyle = '#52B7BE';
+                this.fillTile({ x: letterTile.x, y: letterTile.y });
                 this.drawLetter({ x: letterTile.x, y: letterTile.y }, letterTile.letter.value.toUpperCase());
                 this.drawLetterPoints({ x: letterTile.x, y: letterTile.y }, String(letterTile.letter.points));
             }
@@ -77,6 +79,23 @@ export class GridService {
         this.gridContext.fill();
     }
 
+    drawArrow(coords: Coordinate, isHorizontal: boolean) {
+        this.gridContext.fillStyle = constants.GREEN;
+        this.gridContext.strokeStyle = 'black';
+        this.fillTile(coords);
+        const arrow = isHorizontal ? '⇨' : '⇩';
+        this.gridContext.font = GridService.squareHeight + 'px system-ui';
+        this.gridContext.textAlign = 'center';
+        this.gridContext.textBaseline = 'top';
+        this.gridContext.fillStyle = 'black';
+        this.gridContext.fillText(
+            arrow,
+            GridService.squareWidth * coords.x + GridService.halfSquareWidth,
+            GridService.squareHeight * coords.y,
+            GridService.squareWidth,
+        );
+    }
+
     drawRowNumbers() {
         this.setFontSize(this.boardTileSize);
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
@@ -99,6 +118,15 @@ export class GridService {
         this.setFontSize(this.letterSize);
         this.gridContext.textBaseline = 'middle';
         this.drawText(position, char);
+    }
+
+    drawUnfinalizedLetter(coordinate: Coordinate, letter: Letter) {
+        this.gridContext.fillStyle = constants.GREEN;
+        this.gridContext.strokeStyle = 'black';
+        this.fillTile(coordinate);
+        this.gridContext.fillStyle = 'black';
+        this.drawLetter(coordinate, letter.value.toUpperCase());
+        this.drawLetterPoints(coordinate, String(letter.points));
     }
 
     drawBasicTiles() {
@@ -217,5 +245,9 @@ export class GridService {
             GridService.squareHeight * position.y + halfSize + GridService.halfSquareHeight,
             weightSize,
         );
+    }
+
+    getPosition(coords: Coordinate): Coordinate {
+        return { x: Math.floor(coords.x / GridService.squareWidth), y: Math.floor(coords.y / GridService.squareWidth) };
     }
 }
