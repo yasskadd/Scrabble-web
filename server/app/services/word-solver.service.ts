@@ -13,6 +13,7 @@ const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
 const INDEX_NOT_FOUND = -1;
+const LIMIT = 7;
 // TODO: NEED 100% COVERAGE
 
 // Temporary function, waiting for refactor.
@@ -71,8 +72,6 @@ export class WordSolverService {
                 this.gameboard.removeLetter(tile);
             });
         });
-        console.log(commandInfoMap);
-        console.log(this.gameboard);
         return commandInfoMap;
     }
     // Tested
@@ -102,7 +101,7 @@ export class WordSolverService {
     private firstTurnOrEmpty(gameboard: Gameboard, rack: string[]) {
         if (!gameboard.findAnchors().length) {
             const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
-            this.findLeftPart('', this.trie.root, anchor, rack, 7);
+            this.findLeftPart('', this.trie.root, anchor, rack, LIMIT);
         }
     }
 
