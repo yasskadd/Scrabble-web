@@ -1,4 +1,3 @@
-import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket-manager.service';
@@ -26,10 +25,14 @@ export interface BotInformation {
 
 export class BeginnerBot extends Player {
     isPlayerOne: boolean;
+    private timer: number;
     constructor(@Inject() private wordSolver: WordSolverService, isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
         super(name);
         this.isPlayerOne = isPlayerOne;
         this.game = botInfo.game;
+        this.game.turn.countdown.subscribe((timer) => {
+            this.timer = timer as number;
+        });
     }
 
     choosePlayMove() {
@@ -62,15 +65,31 @@ export class BeginnerBot extends Player {
     }
 
     /* What to do if there is no commandInfo associated with the score range */
-    placeLetter(): [boolean, Gameboard] | string {
-        if (this.game === undefined) return 'error';
-        const commandInfoMap = this.wordSolver.commandInfoScore(this.wordSolver.findAllOptions(this.rackToString()));
+    async placeLetter() {
+        const commandInfoMap = await this.processWordSolver();
         const randomNumber: number = this.getRandomNumber(MAX_NUMBER);
         const commandInfoList: CommandInfo[] = new Array();
         this.addCommandInfoToList(commandInfoMap, commandInfoList, randomNumber);
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
-        this.emitPlaceCommand(randomCommandInfo);
-        return this.game.play(this, randomCommandInfo);
+        if (this.timer >= 3 && this.timer <= 20) {
+            this.emitPlaceCommand(randomCommandInfo);
+            this.game.play(this, randomCommandInfo);
+            return;
+        }
+        if (this.timer < 3) {
+            setTimeout(() => {
+                this.emitPlaceCommand(randomCommandInfo);
+                this.game.play(this, randomCommandInfo);
+            }, this.timer - 3);
+            return;
+        }
+        this.skipTurn();
+    }
+
+    private async processWordSolver() {
+        return new Promise<Map<CommandInfo, number>>((resolve) => {
+            resolve(this.wordSolver.commandInfoScore(this.wordSolver.findAllOptions(this.rackToString())));
+        });
     }
 
     private addCommandInfoToList(commandInfoMap: Map<CommandInfo, number>, commandInfoList: CommandInfo[], randomNumber: number) {

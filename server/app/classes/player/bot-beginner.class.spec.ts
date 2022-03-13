@@ -215,4 +215,6 @@ describe.only('BotBeginner', () => {
             expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, commandInfoList, RANDOM_NUMBER).length).to.equal(1);
         });
     });
+
+    context();
 });
