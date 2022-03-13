@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/interfaces/command-info';
@@ -175,6 +176,43 @@ describe.only('BotBeginner', () => {
             expectation.withExactArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
             botBeginner['emitPlaceCommand'](commandInfoStub);
             expectation.verify();
+        });
+    });
+
+    context.only('addCommandInfoToList() tests', () => {
+        let commandInfoMapStub: Map<CommandInfo, number>;
+        beforeEach(() => {
+            commandInfoMapStub = new Map();
+        });
+
+        it.only('should add commandInfo to list with random number being 3 and commandInfo score in range from 1 to 6', () => {
+            const RANDOM_NUMBER = 3;
+            commandInfoMapStub.set({} as CommandInfo, 1);
+            commandInfoMapStub.set({} as CommandInfo, 3);
+            commandInfoMapStub.set({} as CommandInfo, 6);
+            commandInfoMapStub.set({} as CommandInfo, 8);
+            const commandInfoList: CommandInfo[] = new Array();
+            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, commandInfoList, RANDOM_NUMBER).length).to.equal(3);
+        });
+
+        it.only('should add commandInfo to list with random number being 6 and commandInfo score in range from 7 to 12', () => {
+            const RANDOM_NUMBER = 6;
+            commandInfoMapStub.set({} as CommandInfo, 1);
+            commandInfoMapStub.set({} as CommandInfo, 3);
+            commandInfoMapStub.set({} as CommandInfo, 7);
+            commandInfoMapStub.set({} as CommandInfo, 12);
+            const commandInfoList: CommandInfo[] = new Array();
+            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, commandInfoList, RANDOM_NUMBER).length).to.equal(2);
+        });
+
+        it.only('should add commandInfo to list with random number being 8 and commandInfo score in range from 13 to 18', () => {
+            const RANDOM_NUMBER = 8;
+            commandInfoMapStub.set({} as CommandInfo, 1);
+            commandInfoMapStub.set({} as CommandInfo, 3);
+            commandInfoMapStub.set({} as CommandInfo, 7);
+            commandInfoMapStub.set({} as CommandInfo, 15);
+            const commandInfoList: CommandInfo[] = new Array();
+            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, commandInfoList, RANDOM_NUMBER).length).to.equal(1);
         });
     });
 });
