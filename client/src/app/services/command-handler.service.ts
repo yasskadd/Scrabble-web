@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Coordinate } from '@common/coordinate';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Coordinate } from '@common/interfaces/coordinate';
 import { ClientSocketService } from './client-socket.service';
 
 @Injectable({
@@ -29,6 +29,10 @@ export class CommandHandlerService {
                 this.clientSocket.send(SocketEvents.ReserveCommand);
                 break;
             }
+            case '!indice': {
+                this.clientSocket.send(SocketEvents.ClueCommand);
+                break;
+            }
             // No default
         }
     }
@@ -54,9 +58,11 @@ export class CommandHandlerService {
     private isDigit(information: string) {
         return information >= '0' && information <= '9';
     }
+
     private getCommandType(stringArr: string[]) {
         return stringArr[0];
     }
+
     private getCoordsAndDirection(stringArr: string[]) {
         const placementArray = stringArr[1].split('');
         const coordinateRatio = 9;

@@ -1,12 +1,15 @@
-<div class="rack-info">
+<div class="rack-info" #info>
     <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>
     <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
     <div id="player-letters">
         <div
             *ngFor="let letter of rack; index as i"
-            [className]="this.lettersToExchange.includes(i) ? 'rack-Letter-selected' : 'rack-Letter'"
+            [className]="this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter'"
+            [className]="this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'"
+            (click)="onLeftClick($event, i)"
             (contextmenu)="onRightClick($event, i)"
         >
+            <div [style.background]="letter.value === buttonPressed ? 'green' : '#red'"></div>
             <div class="letter-value" [style.font-size]="letterSize + 'px'">
                 {{ letter.value.toUpperCase() }}
             </div>

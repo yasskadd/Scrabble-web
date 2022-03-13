@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { CommandHandlerService } from './command-handler.service';
 describe('CommandHandlerService', () => {
     let service: CommandHandlerService;
@@ -45,7 +45,7 @@ describe('CommandHandlerService', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('sendCommand() should call emit an event to the server if the command valid is to skip the turn', () => {
+    it('sendCommand() should emit an event to the server if the command valid is to skip the turn', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocket'], 'send');
@@ -56,6 +56,19 @@ describe('CommandHandlerService', () => {
         service['sendCommand'](TEST_COMMAND);
         expect(spy).toHaveBeenCalledWith(SocketEvents.Skip);
     });
+
+    it('sendCommand() should emit an event to the server if the command valid is to have a clue', () => {
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        const TEST_COMMAND = '!indice';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['sendCommand'](TEST_COMMAND);
+        expect(spy).toHaveBeenCalledWith(SocketEvents.ClueCommand);
+    });
+
     it('sendCommandPlacer() should send to the server all the information of the command in an object', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation

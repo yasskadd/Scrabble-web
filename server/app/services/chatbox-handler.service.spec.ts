@@ -1,4 +1,4 @@
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { expect } from 'chai';
 import { createServer, Server as HttpServer } from 'http';
 import { AddressInfo } from 'net';

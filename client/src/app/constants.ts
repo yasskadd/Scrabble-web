@@ -3,6 +3,7 @@ export const TOTAL_ROWS = 16;
 
 export const TOTAL_TILES_IN_COLUMN = TOTAL_COLUMNS - 1;
 export const TOTAL_TILES_IN_ROW = TOTAL_ROWS - 1;
+export const INVALID_INDEX = -1;
 
 export const GRID_CANVAS_WIDTH = 600;
 export const GRID_CANVAS_HEIGHT = 600;

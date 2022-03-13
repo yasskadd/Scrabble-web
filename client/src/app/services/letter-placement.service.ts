@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
-import { Coordinate } from '@common/coordinate';
-import { Letter } from '@common/letter';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';

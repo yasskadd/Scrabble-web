@@ -1,7 +1,7 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { CommandInfo } from '@app/command-info';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { CommandInfo } from '@app/interfaces/command-info';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 import { Service } from 'typedi';
 
 const COLUMN_NUMBER = 15;
@@ -14,11 +14,12 @@ export class GameboardCoordinateValidationService {
         let stringLength: number = commandInfo.lettersPlaced.length;
         let currentCoord: LetterTile = gameboard.getCoord(commandInfo.firstCoordinate);
         const direction = commandInfo.direction;
+        const lettersPlaced: string[] = commandInfo.lettersPlaced.slice();
         if (direction === 'h') {
             while (stringLength !== 0) {
                 if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
-                    const letter = { value: commandInfo.lettersPlaced.shift() as string } as Letter;
+                    const letter = { value: lettersPlaced.shift() as string } as Letter;
                     coordOfLetters.push(new LetterTile(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }
@@ -29,7 +30,7 @@ export class GameboardCoordinateValidationService {
             while (stringLength !== 0) {
                 if (Object.keys(gameboard.getCoord(currentCoord)).length === 0 || gameboard.getCoord(currentCoord) === undefined) return [];
                 if (!gameboard.getCoord(currentCoord).isOccupied) {
-                    const letter = { value: commandInfo.lettersPlaced.shift() as string } as Letter;
+                    const letter = { value: lettersPlaced.shift() as string } as Letter;
                     coordOfLetters.push(new LetterTile(currentCoord.x, currentCoord.y, letter));
                     stringLength--;
                 }

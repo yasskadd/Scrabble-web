@@ -1,12 +1,10 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { Player } from '@app/classes/player.class';
+import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/command-info';
+import { CommandInfo } from '@app/interfaces/command-info';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
@@ -22,7 +20,9 @@ describe('Game tests', () => {
 
     beforeEach(() => {
         player1 = new Player('player1');
+        player1.name = 'OriginalName1';
         player2 = new Player('player2');
+        player2.name = 'OriginalName2';
         turn = createStubInstance(Turn) as SinonStubbedInstance<Turn> & Turn;
         letterReserveService = createStubInstance(LetterReserveService);
         letterPlacementService = createStubInstance(LetterPlacementService) as SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
@@ -39,37 +39,37 @@ describe('Game tests', () => {
     });
 
     it('start() should call determinePlayer', () => {
-        game.start();
-        expect(turn.determinePlayer.called).to.be.true;
+        game.start(player1, player2);
+        expect(turn.determinePlayer.called).to.equal(true);
     });
 
     it('start() should call start of turn', () => {
-        game.start();
-        expect(turn.start.called).to.be.true;
+        game.start(player1, player2);
+        expect(turn.start.called).to.equal(true);
     });
 
     it('end() should called end of turn', () => {
         game.end();
-        expect(turn.end.called).to.be.true;
+        expect(turn.end.called).to.equal(true);
     });
 
     it('skip() should return false if no player has skipped', () => {
         const skip = game.skip('undefined');
-        expect(skip).to.be.false;
+        expect(skip).to.equal(false);
     });
 
     it('skip() should return true and end turn of player on skip', () => {
         turn.validating.returns(true);
         const skip = game.skip(player1.name);
-        expect(skip).to.be.true;
-        expect(turn.skipTurn.called).to.be.true;
+        expect(skip).to.equal(true);
+        expect(turn.skipTurn.called).to.equal(true);
     });
 
     it('skip() should return false if a player wants to skip but it is not his turn', () => {
         turn.validating.returns(false);
         const skip = game.skip(player1.name);
-        expect(skip).to.be.false;
-        expect(turn.skipTurn.called).to.be.false;
+        expect(skip).to.equal(false);
+        expect(turn.skipTurn.called).to.equal(false);
     });
 
     context('play test', () => {
@@ -92,19 +92,19 @@ describe('Game tests', () => {
         it('play() should return invalid message if the command is invalid and end turn of player1 on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], 'Invalid']);
-            const play = game.play(player1.name, commandInfo);
+            const play = game.play(player1, commandInfo);
             expect(play).to.equal('Invalid');
-            expect(turn.resetSkipCounter.called).to.be.true;
-            expect(turn.end.called).to.be.true;
+            expect(turn.resetSkipCounter.called).to.equal(true);
+            expect(turn.end.called).to.equal(true);
         });
 
         it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], 'Invalid']);
-            const play = game.play(player2.name, commandInfo);
+            const play = game.play(player2, commandInfo);
             expect(play).to.equal('Invalid');
-            expect(turn.resetSkipCounter.called).to.be.true;
-            expect(turn.end.called).to.be.true;
+            expect(turn.resetSkipCounter.called).to.equal(true);
+            expect(turn.end.called).to.equal(true);
         });
 
         it('play() should return the gameboard if the command is valid of player1 on play', () => {
@@ -112,7 +112,7 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([false, game.gameboard]);
-            const play = game.play(player1.name, commandInfo);
+            const play = game.play(player1, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
         });
 
@@ -121,14 +121,14 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([false, game.gameboard]);
-            const play = game.play(player2.name, commandInfo);
+            const play = game.play(player2, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
         });
 
         it('play() should return the false and the gameboard if the player wants to play but it is not its turn', () => {
             const expected = [false, game.gameboard];
             turn.validating.returns(false);
-            const play = game.play(player1.name, commandInfo);
+            const play = game.play(player1, commandInfo);
             expect(play).to.deep.equal(expected);
         });
 
@@ -136,8 +136,8 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
-            game.play(player1.name, commandInfo);
-            expect(letterReserveService.generateLetters.called).to.be.true;
+            game.play(player1, commandInfo);
+            expect(letterReserveService.generateLetters.called).to.equal(true);
         });
 
         it('play() should call end if the rack of the player1 and the letter reserve is empty on play', () => {
@@ -147,8 +147,8 @@ describe('Game tests', () => {
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
-            game.play(player1.name, commandInfo);
-            expect(endSpy.called).to.be.true;
+            game.play(player1, commandInfo);
+            expect(endSpy.called).to.equal(true);
         });
 
         it('play() should call end if the rack of the player2 and the letter reserve is empty on play', () => {
@@ -158,8 +158,8 @@ describe('Game tests', () => {
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
-            game.play(player2.name, commandInfo);
-            expect(endSpy.called).to.be.true;
+            game.play(player2, commandInfo);
+            expect(endSpy.called).to.equal(true);
         });
 
         it('play() should call resetSkipCounter and end of turn if the rack of the player1 or/and the letter reserve is not empty on play', () => {
@@ -167,9 +167,9 @@ describe('Game tests', () => {
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
             letterReserveService.isEmpty.returns(false);
-            game.play(player1.name, commandInfo);
-            expect(turn.end.called).to.be.true;
-            expect(turn.resetSkipCounter.called).to.be.true;
+            game.play(player1, commandInfo);
+            expect(turn.end.called).to.equal(true);
+            expect(turn.resetSkipCounter.called).to.equal(true);
         });
 
         it('play() should call resetSkipCounter and end of turn if the rack of the player2 or/and the letter reserve is not empty on play', () => {
@@ -177,9 +177,9 @@ describe('Game tests', () => {
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
             player2.rack = [];
-            game.play(player2.name, commandInfo);
-            expect(turn.end.called).to.be.true;
-            expect(turn.resetSkipCounter.called).to.be.true;
+            game.play(player2, commandInfo);
+            expect(turn.end.called).to.equal(true);
+            expect(turn.resetSkipCounter.called).to.equal(true);
         });
     });
 
@@ -189,9 +189,9 @@ describe('Game tests', () => {
             return letter.value;
         });
         turn.validating.returns(true);
-        const exchange = game.exchange(lettersToExchange, player1.name);
+        const exchange = game.exchange(lettersToExchange, player1);
         expect(exchange).to.not.equal(lettersToExchange);
-        expect(turn.end.called).to.be.true;
+        expect(turn.end.called).to.equal(true);
         expect(oldPlayer2Rack).to.equal(player2.rack);
     });
 
@@ -201,9 +201,9 @@ describe('Game tests', () => {
             return letter.value;
         });
         turn.validating.returns(true);
-        const exchange = game.exchange(lettersToExchange, player2.name);
+        const exchange = game.exchange(lettersToExchange, player2);
         expect(exchange).to.not.equal(lettersToExchange);
-        expect(turn.end.called).to.be.true;
+        expect(turn.end.called).to.equal(true);
         expect(oldPlayer1Rack).to.equal(player1.rack);
     });
 
@@ -212,10 +212,10 @@ describe('Game tests', () => {
             return letter.value;
         });
         turn.validating.returns(true);
-        game.exchange(lettersToExchange, player1.name);
+        game.exchange(lettersToExchange, player1);
 
-        expect(turn.resetSkipCounter.called).to.be.true;
-        expect(turn.end.called).to.be.true;
+        expect(turn.resetSkipCounter.called).to.equal(true);
+        expect(turn.end.called).to.equal(true);
     });
 
     it('exchange() should return an empty array if a player wants to exchange but it is not his turn', () => {
@@ -223,14 +223,14 @@ describe('Game tests', () => {
             return letter.value;
         });
         turn.validating.returns(false);
-        const exchange = game.exchange(lettersToExchange, player1.name);
+        const exchange = game.exchange(lettersToExchange, player1);
         expect(exchange).to.deep.equal([]);
     });
 
     it('abandon() should called end of game', () => {
         const endSpy = spy(game, 'end');
         game.abandon();
-        expect(endSpy.called).to.be.true;
-        expect(turn.end.called).to.be.true;
+        expect(endSpy.called).to.equal(true);
+        expect(turn.end.called).to.equal(true);
     });
 });

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Vec2 } from '@app/classes/vec2';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
+import { Vec2 } from '@app/interfaces/vec2';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 
 describe('PlayAreaComponent', () => {

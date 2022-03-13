@@ -2,6 +2,7 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,6 +38,8 @@ describe('MultiplayerCreatePageComponent', () => {
                 MatOptionModule,
                 MatIconModule,
                 MatCardModule,
+                FormsModule,
+                ReactiveFormsModule,
                 RouterTestingModule.withRoutes([
                     { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
                     { path: RETURN_ROUTE, component: StubComponent },
@@ -56,6 +59,7 @@ describe('MultiplayerCreatePageComponent', () => {
                         },
                     },
                 },
+                { provide: FormBuilder },
             ],
         }).compileComponents();
     });
@@ -126,8 +130,9 @@ describe('MultiplayerCreatePageComponent', () => {
         const timerOptions = fixture.debugElement.queryAll(By.css('#timer-options'));
         timerOptions[3].nativeElement.click();
         tick();
+        fixture.detectChanges();
         flush();
-        expect(component.timer.toString()).toEqual(component.timerList[3].toString());
+        expect(component.form.get('timer')?.value).toEqual(component.timerList[3]);
     }));
 
     it('should set display the timer option selected', fakeAsync(() => {
@@ -152,7 +157,7 @@ describe('MultiplayerCreatePageComponent', () => {
 
     it('createGame should call gameConfiguration.gameInitialization with the good Value', fakeAsync(() => {
         component.playerName = 'Vincent';
-        const TEST_PLAYER = { username: component.playerName, timer: component.timer, dictionary: 'francais', mode: 'classique' };
+        const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: 'francais', mode: 'classique', isMultiplayer: true };
         component.createGame();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);

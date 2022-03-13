@@ -1,10 +1,10 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { Player } from '@app/classes/player.class';
+import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@app/command-info';
-import { Coordinate } from '@common/coordinate';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { CommandInfo } from '@app/interfaces/command-info';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
 import { Service } from 'typedi';
 import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
@@ -139,9 +139,10 @@ export class LetterPlacementService {
     }
 
     private updatePlayerRack(letterCoords: LetterTile[], player: Player): void {
+        const INDEX_NOT_FOUND = -1;
         letterCoords.forEach((letterCoord) => {
             const value = player.rack.filter((item) => item.value === letterCoord.letter.value)[0];
-            if (player.rack.includes(value)) {
+            if (player.rack.indexOf(value) > INDEX_NOT_FOUND) {
                 const index = player.rack.indexOf(value);
                 player.rack.splice(index, 1);
             }
