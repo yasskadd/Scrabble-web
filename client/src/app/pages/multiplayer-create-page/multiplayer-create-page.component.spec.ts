@@ -158,6 +158,12 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
+    it('createBotName should assign a name to the opponent', () => {
+        // eslint-disable-next-line dot-notation
+        component['createBotName']();
+        expect(component.botName).not.toEqual('');
+    });
+
     it('should  not call createGame() if the player did not enter his name before trying to click the button', fakeAsync(() => {
         fixture.detectChanges();
         const spy = spyOn(component, 'createGame');

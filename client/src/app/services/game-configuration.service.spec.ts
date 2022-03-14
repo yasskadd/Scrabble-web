@@ -234,23 +234,6 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.statusGame).toEqual(statusGame);
     });
 
-    it('createBotName should assign a name to the opponent that is not the same as the first player', () => {
-        const playerName = 'jean';
-        service.roomInformation.playerName[0] = playerName;
-        // eslint-disable-next-line dot-notation
-        service['createBotName']();
-        expect(service.roomInformation.playerName[1]).not.toEqual(playerName);
-    });
-
-    it('createBotName should assign a name to the opponent', () => {
-        const playerName = 'Luc';
-        service.roomInformation.playerName[0] = playerName;
-        service.roomInformation.playerName[1] = '';
-        // eslint-disable-next-line dot-notation
-        service['createBotName']();
-        expect(service.roomInformation.playerName[1]).not.toEqual('');
-    });
-
     it('should handle gameAboutToStart event to inform the player of the room that the game is about to start ', () => {
         const spyONGameAboutToStartEvent = spyOn(service, 'gameAboutToStartEvent' as never);
         socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart);
@@ -364,7 +347,7 @@ describe('GameConfigurationService', () => {
         service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service, 'createBotName' as never);
-        service.beginScrabbleGame(true);
+        service.beginScrabbleGame('robert');
         expect(spyOnSocket).toHaveBeenCalled();
     });
 
