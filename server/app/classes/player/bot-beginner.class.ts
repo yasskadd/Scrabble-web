@@ -17,6 +17,8 @@ const PROB_4 = 4;
 const PROB_5 = 5;
 const PROB_7 = 7;
 const TIME_SKIP = 20;
+const SECOND_3 = 3000;
+const SECOND_1 = 1000;
 
 export interface BotInformation {
     timer: number;
@@ -30,7 +32,7 @@ export class BeginnerBot extends Player {
     roomId: string;
     game: Game;
     private timer: number;
-    private countup: number;
+    private countUp: number;
 
     constructor(isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
         super(name);
@@ -46,12 +48,12 @@ export class BeginnerBot extends Player {
 
     start() {
         this.game.turn.countdown.subscribe((countdown) => {
-            this.countup = this.timer - (countdown as number);
-            if (this.countup === TIME_SKIP && this.name === this.game.turn.activePlayer) this.skipTurn();
+            this.countUp = this.timer - (countdown as number);
+            if (this.countUp === TIME_SKIP && this.name === this.game.turn.activePlayer) this.skipTurn();
         });
         this.game.turn.endTurn.subscribe((activePlayer) => {
             if (activePlayer === this.name) {
-                this.countup = 0;
+                this.countUp = 0;
                 this.choosePlayMove();
             }
         });
@@ -100,20 +102,18 @@ export class BeginnerBot extends Player {
             this.skipTurn();
             return;
         }
-        if (this.countup >= 3 && this.countup <= TIME_SKIP) {
+        if (this.countUp >= 3 && this.countUp <= TIME_SKIP) {
             this.emitPlaceCommand(randomCommandInfo);
             this.game.play(this, randomCommandInfo);
             this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
             return;
         }
-        if (this.countup < 3) {
+        if (this.countUp < 3) {
             setTimeout(() => {
-                console.log('ENTERED 2');
-                console.log(this.countup);
                 this.emitPlaceCommand(randomCommandInfo);
                 this.game.play(this, randomCommandInfo);
                 this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
-            }, 3000 - this.countup * 1000);
+            }, SECOND_3 - this.countUp * SECOND_1);
             return;
         }
     }
