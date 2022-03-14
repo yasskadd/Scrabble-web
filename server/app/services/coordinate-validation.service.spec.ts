@@ -191,7 +191,7 @@ describe('Coordinate validation service', () => {
         it('should not call getCoord with specific arguments if coordinate.y or coordinate.x equals 1', () => {
             const spyGetCoord = Sinon.spy(gameboard, 'getCoord');
             const arg1 = new LetterTile(upLeftCoord.x, upLeftCoord.y - 1, {} as Letter);
-            const arg2 = new LetterTile(upLeftCoord.x + 1, upLeftCoord.y, {} as Letter);
+            const arg2 = new LetterTile(upLeftCoord.x - 1, upLeftCoord.y, {} as Letter);
             coordinateValidation['isThereAdjacentLetters'](upLeftCoord, gameboard);
             expect(spyGetCoord.calledWithExactly(arg1)).to.equal(false);
             expect(spyGetCoord.calledWithExactly(arg2)).to.equal(false);
@@ -200,7 +200,7 @@ describe('Coordinate validation service', () => {
         it('should not call getCoord with specific arguments if coordinate.y or coordinate.x equals 15', () => {
             const spyGetCoord = Sinon.spy(gameboard, 'getCoord');
             const arg1 = new LetterTile(downRightCoord.x, downRightCoord.y + 1, {} as Letter);
-            const arg2 = new LetterTile(downRightCoord.x - 1, downRightCoord.y, {} as Letter);
+            const arg2 = new LetterTile(downRightCoord.x + 1, downRightCoord.y, {} as Letter);
             coordinateValidation['isThereAdjacentLetters'](downRightCoord, gameboard);
             expect(spyGetCoord.calledWithExactly(arg1)).to.equal(false);
             expect(spyGetCoord.calledWithExactly(arg2)).to.equal(false);

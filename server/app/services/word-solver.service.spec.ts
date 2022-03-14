@@ -24,20 +24,30 @@ describe.only('Word solver service', () => {
         dictionaryValidationService.createTrieDictionary();
         boxMultiplierService = Sinon.createStubInstance(BoxMultiplierService);
         gameboard = new Gameboard(boxMultiplierService);
-        wordSolverService = new WordSolverService(dictionaryValidationService.trie, gameboard);
+        wordSolverService = new WordSolverService();
+        wordSolverService['gameboard'] = gameboard;
     });
 
     // TODO: Temporary test, need modifications
     it('should find all options', () => {
         const rack: string[] = ['*'];
         gameboard.placeLetter(new LetterTile(1, NUMBER_12, { value: 'z' } as Letter));
-        gameboard.placeLetter(new LetterTile(2, 1, { value: 'x' } as Letter));
         gameboard.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
         gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_10, { value: 'a' } as Letter));
         gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_8, { value: 'j' } as Letter));
         gameboard.placeLetter(new LetterTile(NUMBER_8, NUMBER_8, { value: 'e' } as Letter));
         wordSolverService.findAllOptions(rack);
         expect(wordSolverService.commandInfoScore(wordSolverService['commandInfoList']).size).to.be.greaterThan(1);
+    });
+
+    it(' setGameboard should set the gameboard attribute of the service', () => {
+        const gameboardStub = new Gameboard(boxMultiplierService);
+        gameboardStub.placeLetter(new LetterTile(1, NUMBER_12, { value: 'z' } as Letter));
+        gameboardStub.placeLetter(new LetterTile(2, 1, { value: 'x' } as Letter));
+        gameboardStub.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
+        gameboardStub.placeLetter(new LetterTile(NUMBER_7, NUMBER_10, { value: 'a' } as Letter));
+        wordSolverService.setGameboard(gameboardStub);
+        expect(wordSolverService['gameboard']).to.equal(gameboardStub);
     });
 
     context('Coordinate manipulation tests', () => {

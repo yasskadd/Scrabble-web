@@ -60,10 +60,10 @@ export class GameboardCoordinateValidationService {
             if (gameboard.getCoord(new LetterTile(letterCoord.x, letterCoord.y + 1, {} as Letter)).isOccupied) isValid = true;
         }
         if (letterCoord.x !== COLUMN_NUMBER) {
-            if (gameboard.getCoord(new LetterTile(letterCoord.x - 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
+            if (gameboard.getCoord(new LetterTile(letterCoord.x + 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
         if (letterCoord.x !== 1) {
-            if (gameboard.getCoord(new LetterTile(letterCoord.x + 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
+            if (gameboard.getCoord(new LetterTile(letterCoord.x - 1, letterCoord.y, {} as Letter)).isOccupied) isValid = true;
         }
         return isValid;
     }
