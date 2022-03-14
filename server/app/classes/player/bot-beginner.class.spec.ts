@@ -98,7 +98,7 @@ describe.only('BotBeginner', () => {
             stubPlaceLetter = Sinon.stub(botBeginner, 'placeLetter');
         });
 
-        it('should call skipTurn() if random number is equal to 1', () => {
+        it.only('should call skipTurn() if random number is equal to 1', () => {
             stubGetRandom.returns(1);
             botBeginner.choosePlayMove();
             expect(spySkipTurn.calledOnce).to.equal(true);
@@ -210,8 +210,7 @@ describe.only('BotBeginner', () => {
             commandInfoMapStub.set({} as CommandInfo, 3);
             commandInfoMapStub.set({} as CommandInfo, 6);
             commandInfoMapStub.set({} as CommandInfo, 8);
-            const commandInfoList: CommandInfo[] = new Array();
-            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, commandInfoList, RANDOM_NUMBER).length).to.equal(3);
+            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, RANDOM_NUMBER).length).to.equal(3);
         });
 
         it('should add commandInfo to list with random number being 6 and commandInfo score in range from 7 to 12', () => {
@@ -220,8 +219,7 @@ describe.only('BotBeginner', () => {
             commandInfoMapStub.set({} as CommandInfo, 3);
             commandInfoMapStub.set({} as CommandInfo, 7);
             commandInfoMapStub.set({} as CommandInfo, 12);
-            const commandInfoList: CommandInfo[] = new Array();
-            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, commandInfoList, RANDOM_NUMBER).length).to.equal(2);
+            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, RANDOM_NUMBER).length).to.equal(2);
         });
 
         it('should add commandInfo to list with random number being 8 and commandInfo score in range from 13 to 18', () => {
@@ -230,12 +228,11 @@ describe.only('BotBeginner', () => {
             commandInfoMapStub.set({} as CommandInfo, 3);
             commandInfoMapStub.set({} as CommandInfo, 7);
             commandInfoMapStub.set({} as CommandInfo, 15);
-            const commandInfoList: CommandInfo[] = new Array();
-            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, commandInfoList, RANDOM_NUMBER).length).to.equal(1);
+            expect(botBeginner['addCommandInfoToList'](commandInfoMapStub, RANDOM_NUMBER).length).to.equal(1);
         });
     });
 
-    context.only('start() tests with timer of 60 seconds', () => {
+    context('start() tests with timer of 60 seconds', () => {
         let spySkipTurn: Sinon.SinonSpy<[], void>;
         let spyChoosePlayMove: Sinon.SinonSpy<[], void>;
         beforeEach(() => {
