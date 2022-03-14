@@ -26,7 +26,7 @@ export class PlayerRackComponent implements OnInit {
     previousScrollPosition = 0;
     lettersToExchange: number[] = [];
     lettersToManipulate: number[] = [];
-    duplicates: number[] = [];
+
     clicked: number[] = [];
 
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
@@ -75,7 +75,7 @@ export class PlayerRackComponent implements OnInit {
         this.chatBoxHandler.submitMessage('!passer');
     }
     selectManipulation(event: KeyboardEvent) {
-        this.duplicates = [];
+        const duplicates: number[] = [];
 
         if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
             this.repositionRack();
@@ -84,21 +84,17 @@ export class PlayerRackComponent implements OnInit {
 
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === event.key.toLowerCase()) {
-                this.duplicates.push(i);
+                duplicates.push(i);
             }
         }
 
-        if (this.duplicates.length === 1) {
-            this.previousSelection = constants.INVALID_INDEX;
-            this.currentSelection = this.duplicates[0];
-        } else if (this.duplicates.length > 1) {
-            this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
+        if (duplicates.length) {
+            this.currentSelection = duplicates[(duplicates.indexOf(this.currentSelection) + 1) % duplicates.length];
             this.previousSelection = this.currentSelection;
+            this.lettersToManipulate.push(this.currentSelection);
         } else {
             this.cancel();
-            return;
         }
-        this.lettersToManipulate.push(this.currentSelection);
     }
 
     repositionRack() {
@@ -168,7 +164,7 @@ export class PlayerRackComponent implements OnInit {
             this.currentSelection -= 1;
         }
 
-        // this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
+        // this.currentSelection = duplicates[(duplicates.indexOf(this.currentSelection) + 1) % duplicates.length];
         this.lettersToManipulate.push(this.currentSelection);
     }
 
