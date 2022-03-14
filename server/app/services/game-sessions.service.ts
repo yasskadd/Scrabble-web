@@ -1,6 +1,6 @@
-import { GameParameters } from '@app/classes/game-parameters';
-import { GameRoom } from '@app/classes/game-room';
-import { SocketEvents } from '@common/socket-events';
+import { GameParameters } from '@app/interfaces/game-parameters';
+import { GameRoom } from '@app/interfaces/game-room';
+import { SocketEvents } from '@common/constants/socket-events';
 import { Server, Socket } from 'socket.io';
 // import { Socket } from 'socket.io';
 import { Service } from 'typedi';
@@ -114,15 +114,15 @@ export class GameSessions {
         const username = parameters.name;
 
         const roomIsAvailable = this.roomStatus(roomId);
-        const userNotTheSame = !this.sameUsernameExists(username, roomId);
+        const userTheSame = this.sameUsernameExists(username, roomId);
 
-        if (roomIsAvailable && userNotTheSame) {
+        if (roomIsAvailable && !userTheSame) {
             socket.leave(PLAYERS_JOINING_ROOM);
             socket.join(roomId);
             this.addUserToRoom(username, socket.id, roomId);
             socket.emit(SocketEvents.JoinValidGame, this.getOpponentName(username, roomId));
             socket.broadcast.to(roomId).emit(SocketEvents.FoundAnOpponent, username);
-        } else if (!userNotTheSame) socket.emit(SocketEvents.ErrorJoining, SAME_USER_IN_ROOM_ERROR);
+        } else if (userTheSame) socket.emit(SocketEvents.ErrorJoining, SAME_USER_IN_ROOM_ERROR);
         else socket.emit(SocketEvents.ErrorJoining, ROOM_NOT_AVAILABLE_ERROR);
 
         sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());

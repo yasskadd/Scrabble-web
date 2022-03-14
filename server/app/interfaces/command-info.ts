@@ -1,4 +1,4 @@
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
 
 export interface CommandInfo {
     firstCoordinate: LetterTile;

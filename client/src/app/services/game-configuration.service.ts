@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoomClient } from '@app/interfaces/game-room-client';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
+const INDEX_NOT_FOUND = -1;
 const FOUND_OPPONENT_MESSAGE = 'Adversaire Trouvé';
 const SEARCHING_OPPONENT = "En Attente d'un Adversaire ...";
 const WAITING_OPPONENT_CONFIRMATION = "En Attente de la confirmation de L'adversaire";
@@ -115,10 +116,6 @@ export class GameConfigurationService {
 
     gameInitialization(parameters: GameParameters) {
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
-        if (parameters.opponent !== undefined) {
-            this.roomInformation.playerName[1] = parameters.opponent;
-            this.roomInformation.statusGame = FOUND_OPPONENT_MESSAGE;
-        }
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
         this.roomInformation.playerName[0] = parameters.username;
@@ -134,9 +131,9 @@ export class GameConfigurationService {
         this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
-    beginScrabbleGame(opponent?: string) {
-        if (opponent !== undefined) {
-            this.roomInformation.playerName[1] = opponent;
+    beginScrabbleGame(opponentBot?: boolean) {
+        if (opponentBot === true) {
+            this.createBotName();
         }
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
@@ -155,6 +152,13 @@ export class GameConfigurationService {
         this.roomInformation.playerName[0] = playerName;
         this.roomInformation.roomId = roomToJoinId;
         this.clientSocket.send(SocketEvents.PlayerJoinGameAvailable, { id: roomToJoinId, name: playerName });
+    }
+
+    private createBotName(): void {
+        const botNameList = ['robert', 'jean', 'albert'];
+        const indexName: number = botNameList.indexOf(this.roomInformation.playerName[0].toLowerCase());
+        if (indexName !== INDEX_NOT_FOUND) botNameList.splice(indexName, 1);
+        this.roomInformation.playerName[1] = botNameList[Math.floor(Math.random() * botNameList.length)];
     }
 
     private gameCreatedConfirmationEvent(roomId: string) {

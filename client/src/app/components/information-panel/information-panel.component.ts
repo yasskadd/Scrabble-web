@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AbandonGameDialogBoxComponent } from '@app/components/abandon-game-dialog-box/abandon-game-dialog-box.component';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 
 @Component({
     selector: 'app-information-panel',
@@ -15,7 +16,13 @@ export class InformationPanelComponent {
     value: number;
     private readonly dialogWidth: string = '40%';
 
-    constructor(public gridService: GridService, public gameClientService: GameClientService, public dialog: MatDialog, public router: Router) {}
+    constructor(
+        public gridService: GridService,
+        public gameClientService: GameClientService,
+        private letterService: LetterPlacementService,
+        public dialog: MatDialog,
+        public router: Router,
+    ) {}
 
     formatLabel(value: number): string {
         return value + 'px';
@@ -24,6 +31,7 @@ export class InformationPanelComponent {
     updateFontSize(event: MatSliderChange): void {
         this.gridService.letterSize = event.value as number;
         this.gameClientService.updateGameboard();
+        this.letterService.resetGameBoardView();
     }
 
     abandonGame(): void {

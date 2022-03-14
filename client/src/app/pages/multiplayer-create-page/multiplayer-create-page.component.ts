@@ -26,6 +26,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     form: FormGroup;
     navigator: Navigator;
     gameMode: string;
+    difficultyList = ['Débutant'];
     timerList = [
         TimeOptions.ThirtySecond,
         TimeOptions.OneMinute,
@@ -48,6 +49,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        // Get current route to instantiate solo from multiplayer
         this.gameConfiguration.resetRoomInformation();
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({
@@ -60,14 +62,20 @@ export class MultiplayerCreatePageComponent implements OnInit {
             timer: this.form.get('timer')?.value,
             dictionary: 'francais',
             mode: this.gameMode,
-            isMultiplayer: true,
+            isMultiplayer: this.isSoloMode() ? false : true,
         });
+        if (this.isSoloMode()) {
+            setTimeout(() => {
+                this.gameConfiguration.beginScrabbleGame(true);
+            }, 0);
+        }
         this.resetInput();
         this.navigatePage();
     }
 
     navigatePage() {
-        this.router.navigate([`/multijoueur/salleAttente/${this.gameMode}`]);
+        if (this.isSoloMode()) this.router.navigate(['/game']);
+        else this.router.navigate([`/multijoueur/salleAttente/${this.gameMode}`]);
     }
     secondToMinute(time: number): string {
         const minute = Math.floor(time / TimeOptions.OneMinute);
@@ -78,6 +86,10 @@ export class MultiplayerCreatePageComponent implements OnInit {
         } else {
             return minute.toString() + ':30 minutes';
         }
+    }
+    isSoloMode() {
+        if (this.router.url === '/solo/classique') return true;
+        return false;
     }
     private resetInput() {
         this.playerName = '';

@@ -8,7 +8,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
-import { Letter } from '@common/letter';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { Letter } from '@common/interfaces/letter';
 import { of } from 'rxjs';
 import { InformationPanelComponent } from './information-panel.component';
 
@@ -55,12 +56,15 @@ describe('InformationPanelComponent', () => {
     let component: InformationPanelComponent;
     let fixture: ComponentFixture<InformationPanelComponent>;
     let gameClientSpy: jasmine.SpyObj<GameClientService>;
+    let letterPlacementService: jasmine.SpyObj<LetterPlacementService>;
+
     beforeEach(async () => {
         gameClientSpy = jasmine.createSpyObj('GameClientService', ['startTimer', 'quitGame', 'updateGameboard'], {
             playerOne: PLAYER_ONE,
             secondPlayer: PLAYER_TWO,
             gameTimer: TIMER,
         });
+        letterPlacementService = jasmine.createSpyObj('LetterPlacementService', ['resetGameBoardView']);
         await TestBed.configureTestingModule({
             imports: [
                 MatSliderModule,
@@ -71,6 +75,7 @@ describe('InformationPanelComponent', () => {
             declarations: [InformationPanelComponent],
             providers: [
                 { provide: GameClientService, useValue: gameClientSpy },
+                { provide: LetterPlacementService, useValue: letterPlacementService },
                 { provide: MatDialog, useClass: MatDialogMock },
             ],
         }).compileComponents();
@@ -109,6 +114,11 @@ describe('InformationPanelComponent', () => {
         const testedValue = component.formatLabel(valueToFormat);
         expect(testedValue).toEqual(expectedValue);
     });
+
+    // it('should call the method letterPlacementService.resetGameBoardView if updateFontSize is called', () => {
+    //     component.updateFontSize();
+    //     expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
+    // });
 
     it('should have a div with the timer when it is your turn to play', () => {
         gameClientSpy.playerOneTurn = true;
@@ -207,6 +217,7 @@ describe('InformationPanelComponent', () => {
         component.updateFontSize(mockSlider);
         fixture.detectChanges();
         expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
+        expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
     });
 
     it('timerToMinute() should return number of minute in the timer', () => {
