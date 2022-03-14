@@ -47,7 +47,7 @@ export class BeginnerBot extends Player {
     start() {
         this.game.turn.countdown.subscribe((countdown) => {
             this.countup = this.timer - (countdown as number);
-            if (this.countup === TIME_SKIP) this.skipTurn();
+            if (this.countup === TIME_SKIP && this.name === this.game.turn.activePlayer) this.skipTurn();
         });
         this.game.turn.endTurn.subscribe((activePlayer) => {
             if (activePlayer === this.name) {
