@@ -9,7 +9,7 @@ import { CommandInfo } from '@common/command-info';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
-import { ErrorType, LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
+import { ErrorType, LetterPlacementService } from './letter-placement.service';
 
 describe('Game tests', () => {
     let player1: Player;
@@ -113,8 +113,7 @@ describe('Game tests', () => {
             expect(game.play(player1, commandInfo)).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
         });
 
-        // 4
-        it.only('play() should return the gameboard if the command is valid of player2 on play', () => {
+        it('play() should return the gameboard if the command is valid of player2 on play', () => {
             const validWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([validWord, null]);
@@ -123,16 +122,13 @@ describe('Game tests', () => {
             expect(game.play(player2, commandInfo)).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
         });
 
-        // 5
         it('play() should return false and the gameboard if the player wants to play but it is not its turn', () => {
-            const expected: PlaceLettersReturn = {
+            turn.validating.returns(false);
+            expect(game.play(player1, commandInfo)).to.eql({
                 hasPassed: false,
                 gameboard: game.gameboard,
-                invalidWords: [new Word(commandInfo, game.gameboard)],
-            };
-            turn.validating.returns(false);
-            const play: string | PlaceLettersReturn = game.play(player1, commandInfo);
-            expect(play).to.deep.equal(expected);
+                invalidWords: [] as Word[],
+            });
         });
 
         it('play() should call generateLetter of letterReserveService if placeLetters of letterPlacementService return true', () => {
