@@ -16,9 +16,6 @@ export class PlayerRackComponent implements OnInit {
     @Input()
     keyboardParentSubject: Subject<KeyboardEvent>;
 
-    @Input()
-    clickParentSubject: Subject<EventTarget>;
-
     @ViewChild('info', { static: false }) info: ElementRef;
 
     width: number;
@@ -52,6 +49,13 @@ export class PlayerRackComponent implements OnInit {
         this.absentFromRack = true;
     }
 
+    @HostListener('mousewheel', ['$event'])
+    onScrollEvent(event: WheelEvent) {
+        this.cancel();
+        this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
+        this.repositionRack();
+    }
+
     @HostListener('window: click', ['$event'])
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
         if (!this.eRef.nativeElement.contains(event.target)) {
@@ -80,13 +84,10 @@ export class PlayerRackComponent implements OnInit {
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
     }
-
     selectManipulation(event: KeyboardEvent) {
         this.duplicates = [];
-        this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
 
-        if (this.arrow) {
-            this.previousSelection = constants.INVALID_INDEX;
+        if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
             this.repositionRack();
             return;
         }
@@ -94,34 +95,20 @@ export class PlayerRackComponent implements OnInit {
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === event.key.toLowerCase()) {
                 this.duplicates.push(i);
-                this.absentFromRack = false;
             }
         }
 
-        if (this.duplicates.length === 1) {
-            this.previousSelection = constants.INVALID_INDEX;
-            this.currentSelection = this.duplicates[0];
-        } else if (this.duplicates.length > 1) {
-            if (this.previousSelection === constants.INVALID_INDEX) {
-                this.currentSelection = this.duplicates[0];
-                this.previousSelection = this.currentSelection;
-            } else {
-                if (this.previousSelection === this.duplicates[this.duplicates.length - 1]) {
-                    this.currentSelection = this.duplicates[0];
-                    this.previousSelection = this.currentSelection;
-                } else {
-                    this.currentSelection = this.duplicates[this.duplicates.indexOf(this.currentSelection) + 1];
-                    this.previousSelection = this.currentSelection;
-                }
-            }
+        if (this.duplicates.length) {
+            this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
+            this.previousSelection = this.currentSelection;
+            this.lettersToManipulate.push(this.currentSelection);
         } else {
             this.cancel();
-            return;
         }
-        this.lettersToManipulate.push(this.currentSelection);
     }
 
     repositionRack() {
+        this.previousSelection = constants.INVALID_INDEX;
         if (this.buttonPressed === 'ArrowLeft') {
             this.moveLeft();
         }
