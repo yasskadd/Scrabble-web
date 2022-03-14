@@ -19,20 +19,37 @@ const PROB_7 = 7;
 const TIME_SKIP = 20;
 
 export interface BotInformation {
-    game: Game;
-    socketManager: SocketManager;
+    timer: number;
     roomId: string;
 }
 
 export class BeginnerBot extends Player {
+    @Inject() private wordSolver: WordSolverService;
+    @Inject() private socketManager: SocketManager;
     isPlayerOne: boolean;
+    roomId: string;
+    game: Game;
     private timer: number;
-    constructor(@Inject() private wordSolver: WordSolverService, isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
+    private countup: number;
+
+    constructor(isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
         super(name);
         this.isPlayerOne = isPlayerOne;
-        this.game = botInfo.game;
-        this.game.turn.countdown.subscribe((timer) => {
-            this.timer = timer as number;
+        this.room = botInfo.roomId;
+        this.timer = botInfo.timer;
+    }
+
+    setGame(game: Game) {
+        this.game = game;
+        if (game.turn.activePlayer === this.name) this.choosePlayMove();
+    }
+
+    start() {
+        this.game.turn.countdown.subscribe((countdown) => {
+            this.countup = this.timer - (countdown as number);
+        });
+        this.game.turn.endTurn.subscribe((activePlayer) => {
+            if (activePlayer === this.name) this.choosePlayMove();
         });
     }
 
@@ -55,33 +72,33 @@ export class BeginnerBot extends Player {
             lettersToExchange.push(rack.splice(this.getRandomNumber(rack.length) - 1, 1)[0]);
             numberOfLetters--;
         }
-        this.botInfo.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
+        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
         this.rack = this.game.exchange(lettersToExchange, this);
     }
 
     skipTurn(): void {
         if (this.game === undefined) return;
-        this.botInfo.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, '!passer');
+        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, '!passer');
         this.game.skip(this.name);
     }
 
     /* What to do if there is no commandInfo associated with the score range */
     async placeLetter() {
         const commandInfoMap = await this.processWordSolver();
-        const randomNumber: number = this.getRandomNumber(MAX_NUMBER);
+        if (!commandInfoMap.size) this.skipTurn();
         const commandInfoList: CommandInfo[] = new Array();
-        this.addCommandInfoToList(commandInfoMap, commandInfoList, randomNumber);
+        this.addCommandInfoToList(commandInfoMap, commandInfoList, this.getRandomNumber(MAX_NUMBER));
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
-        if (this.timer >= 3 && this.timer <= TIME_SKIP) {
+        if (this.countup >= 3 && this.countup <= TIME_SKIP) {
             this.emitPlaceCommand(randomCommandInfo);
             this.game.play(this, randomCommandInfo);
             return;
         }
-        if (this.timer < 3) {
+        if (this.countup < 3) {
             setTimeout(() => {
                 this.emitPlaceCommand(randomCommandInfo);
                 this.game.play(this, randomCommandInfo);
-            }, this.timer - 3);
+            }, 3 - this.countup);
             return;
         }
         this.skipTurn();
@@ -114,7 +131,7 @@ export class BeginnerBot extends Player {
     private emitPlaceCommand(randomCommandInfo: CommandInfo) {
         const coordString = `${String.fromCharCode(CHAR_ASCII + randomCommandInfo.firstCoordinate.y)}${randomCommandInfo.firstCoordinate.x}`;
         const placeCommand = `${coordString}${randomCommandInfo.direction} ${randomCommandInfo.lettersPlaced.join('')}`;
-        this.botInfo.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, placeCommand);
+        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, placeCommand);
     }
 
     private getRandomNumber(maxNumber: number): number {
