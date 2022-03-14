@@ -10,7 +10,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 export enum ErrorType {
     commandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
     lettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
-    invalidFirstWordPlacement = 'Le mot doit etre attaché à un autre mot (ou passer par la case du milieu si c<est le premier tour)',
+    invalidFirstWordPlacement = "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
     invalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
 }
 
@@ -38,6 +38,19 @@ export class LetterPlacementService {
         if (!this.wordIsPlacedCorrectly(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
 
         return [commandWord, null];
+    }
+
+    placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): PlaceLettersReturn {
+        this.placeNewLettersOnBoard(commandInfo, commandWord, gameboard);
+
+        const validateWordReturn = this.dictionaryService.validateWord(commandWord, gameboard);
+        if (validateWordReturn.points === 0) {
+            this.removeLettersFromBoard(commandWord, gameboard);
+            return { hasPassed: false, gameboard, invalidWords: validateWordReturn.invalidWords };
+        }
+        this.updatePlayerScore(validateWordReturn.points, commandWord, player);
+        this.updatePlayerRack(commandInfo.letters, player);
+        return { hasPassed: true, gameboard, invalidWords: [] as Word[] };
     }
 
     private validateCommandCoordinate(commandCoord: Coordinate, gameboard: Gameboard): boolean {
@@ -112,8 +125,11 @@ export class LetterPlacementService {
     }
 
     private isWordIsAttachedToBoardLetter(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
-        let up, down, left, right: Coordinate;
-        let lettersWithAdjacency: number = 0;
+        let up;
+        let down;
+        let left;
+        let right: Coordinate;
+        let lettersWithAdjacency = 0;
 
         letterCoords.forEach((coord) => {
             up = { x: coord.x, y: coord.y-- };
@@ -134,19 +150,6 @@ export class LetterPlacementService {
             gameboard.getLetterTile(left).isOccupied ||
             gameboard.getLetterTile(right).isOccupied
         );
-    }
-
-    public placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): PlaceLettersReturn {
-        this.placeNewLettersOnBoard(commandInfo, commandWord, gameboard);
-
-        const validateWordReturn = this.dictionaryService.validateWord(commandWord, gameboard);
-        if (validateWordReturn.points === 0) {
-            this.removeLettersFromBoard(commandWord, gameboard);
-            return { hasPassed: false, gameboard: gameboard, invalidWords: validateWordReturn.invalidWords };
-        }
-        this.updatePlayerScore(validateWordReturn.points, commandWord, player);
-        this.updatePlayerRack(commandInfo.letters, player);
-        return { hasPassed: true, gameboard: gameboard, invalidWords: [] as Word[] };
     }
 
     private placeNewLettersOnBoard(commandInfo: CommandInfo, commandWord: Word, gameboard: Gameboard) {
