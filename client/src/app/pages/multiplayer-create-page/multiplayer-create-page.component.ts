@@ -60,10 +60,15 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.form = this.fb.group({
             timer: [defaultTimer, Validators.required],
         });
+        this.giveNameToBot();
+    }
+
+    giveNameToBot(): void {
         if (this.isSoloMode()) {
             this.createBotName();
         }
     }
+
     createGame() {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
@@ -111,7 +116,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         });
     }
 
-    private resetInput() {
+    private resetInput(): void {
         this.playerName = '';
     }
 
