@@ -3,7 +3,6 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
-import { RackManipulationService } from '@app/services/rack-manipulation.service';
 import { Letter } from '@common/letter';
 import { Subject } from 'rxjs';
 
@@ -33,7 +32,6 @@ export class PlayerRackComponent implements OnInit {
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
-        public rackManipulation: RackManipulationService,
         public gameClient: GameClientService,
         private tmpService: GridService,
         private eRef: ElementRef,

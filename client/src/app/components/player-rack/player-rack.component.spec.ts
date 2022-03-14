@@ -228,7 +228,6 @@ describe('PlayerRackComponent', () => {
         const mockKey = new KeyboardEvent('keydown');
         component.buttonPressed = 'ArrowLeft';
         component.selectManipulation(mockKey);
-        expect(component.arrow).toBeTruthy();
         expect(spy).toHaveBeenCalled();
     });
 
@@ -237,7 +236,6 @@ describe('PlayerRackComponent', () => {
         const mockKey = new KeyboardEvent('keydown');
         component.buttonPressed = 'ArrowRight';
         component.selectManipulation(mockKey);
-        expect(component.arrow).toBeTruthy();
         expect(spy).toHaveBeenCalled();
     });
 
@@ -246,7 +244,6 @@ describe('PlayerRackComponent', () => {
         const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
         component.selectManipulation(mockKey);
-        expect(component.arrow).toBeFalsy();
         expect(spy).not.toHaveBeenCalled();
     });
 
@@ -274,15 +271,7 @@ describe('PlayerRackComponent', () => {
         component.selectManipulation(mockKey);
         component.selectManipulation(mockKey);
         component.selectManipulation(mockKey);
-        expect(component.duplicates.length).toEqual(2);
         expect(component.previousSelection).not.toEqual(invalidIndex);
-    });
-
-    it('selectManipulation should have a duplicates array of length 2', () => {
-        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
-        component.buttonPressed = 'a';
-        component.selectManipulation(mockKey);
-        expect(component.duplicates.length).toEqual(2);
     });
 
     it('moveRight should move letter to the beginning of the rack when the letter selected is at the end', () => {
