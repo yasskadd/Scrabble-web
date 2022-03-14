@@ -26,7 +26,6 @@ export class PlayerRackComponent implements OnInit {
     lettersToExchange: number[];
     lettersToManipulate: number[];
     duplicates: number[];
-    arrow: boolean;
     absentFromRack: boolean;
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
@@ -45,7 +44,6 @@ export class PlayerRackComponent implements OnInit {
         this.lettersToExchange = [];
         this.lettersToManipulate = [];
         this.duplicates = [];
-        this.arrow = false;
         this.absentFromRack = true;
     }
 
