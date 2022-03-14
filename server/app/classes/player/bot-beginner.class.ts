@@ -17,8 +17,12 @@ const PROB_4 = 4;
 const PROB_5 = 5;
 const PROB_7 = 7;
 const TIME_SKIP = 20;
+<<<<<<< HEAD
 const SECOND_3 = 3000;
 const SECOND_1 = 1000;
+=======
+const SECOND = 1000;
+>>>>>>> a65a2ef1860dc39a27e3ad7650031b0e6d848981
 
 export interface BotInformation {
     timer: number;
@@ -32,13 +36,15 @@ export class BeginnerBot extends Player {
     roomId: string;
     game: Game;
     private timer: number;
-    private countUp: number;
+    private countup: number;
+    private playedTurned: boolean;
 
     constructor(isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
         super(name);
         this.isPlayerOne = isPlayerOne;
         this.room = botInfo.roomId;
         this.timer = botInfo.timer;
+        this.playedTurned = false;
     }
 
     setGame(game: Game) {
@@ -56,21 +62,27 @@ export class BeginnerBot extends Player {
                 this.countUp = 0;
                 this.choosePlayMove();
             }
+            this.playedTurned = false;
         });
     }
 
     choosePlayMove() {
         const randomNumber = this.getRandomNumber(MAX_NUMBER);
-        if (randomNumber === 1) this.skipTurn();
-        else if (randomNumber === 2) this.exchangeLetter();
-        else this.placeLetter();
+        if (randomNumber < 3) {
+            setTimeout(() => {
+                if (randomNumber === 1) this.skipTurn();
+                else this.exchangeLetter();
+            }, 3 * SECOND - this.countup * SECOND);
+            return;
+        }
+        this.placeLetter();
     }
 
     /* Take a random number of letters to exchange (between 1 and length of rack)
         and take random indexes from the player rack in order to exchange them, if there is not enough letter
         in the reserve, skipTurn() */
     exchangeLetter(): void {
-        if (this.game === undefined) return;
+        if (this.game === undefined || this.playedTurned) return;
         const rack: string[] = [...this.rackToString()];
         let numberOfLetters = this.getRandomNumber(rack.length);
         const lettersToExchange: string[] = new Array();
@@ -80,12 +92,14 @@ export class BeginnerBot extends Player {
         }
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
         this.rack = this.game.exchange(lettersToExchange, this);
+        this.playedTurned = true;
     }
 
     skipTurn(): void {
-        if (this.game === undefined) return;
+        if (this.game === undefined || this.playedTurned) return;
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, '!passer');
         this.game.skip(this.name);
+        this.playedTurned = true;
     }
 
     /* What to do if there is no commandInfo associated with the score range */
@@ -98,10 +112,15 @@ export class BeginnerBot extends Player {
         const commandInfoList: CommandInfo[] = new Array();
         this.addCommandInfoToList(commandInfoMap, commandInfoList, this.getRandomNumber(MAX_NUMBER));
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
-        if (randomCommandInfo === undefined) {
+        if (this.countup >= 3 && this.countup < TIME_SKIP) this.play(randomCommandInfo);
+        else if (this.countup < 3) setTimeout(() => this.play(randomCommandInfo), 3 * SECOND - this.countup * SECOND);
+    }
+    private play(commandInfo: CommandInfo) {
+        if (commandInfo === undefined || this.playedTurned) {
             this.skipTurn();
             return;
         }
+<<<<<<< HEAD
         if (this.countUp >= 3 && this.countUp <= TIME_SKIP) {
             this.emitPlaceCommand(randomCommandInfo);
             this.game.play(this, randomCommandInfo);
@@ -116,6 +135,12 @@ export class BeginnerBot extends Player {
             }, SECOND_3 - this.countUp * SECOND_1);
             return;
         }
+=======
+        this.emitPlaceCommand(commandInfo);
+        this.game.play(this, commandInfo);
+        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
+        this.playedTurned = true;
+>>>>>>> a65a2ef1860dc39a27e3ad7650031b0e6d848981
     }
 
     private processWordSolver() {
