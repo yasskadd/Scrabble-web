@@ -17,12 +17,8 @@ const PROB_4 = 4;
 const PROB_5 = 5;
 const PROB_7 = 7;
 const TIME_SKIP = 20;
-<<<<<<< HEAD
 const SECOND_3 = 3000;
 const SECOND_1 = 1000;
-=======
-const SECOND = 1000;
->>>>>>> a65a2ef1860dc39a27e3ad7650031b0e6d848981
 
 export interface BotInformation {
     timer: number;
@@ -36,7 +32,7 @@ export class BeginnerBot extends Player {
     roomId: string;
     game: Game;
     private timer: number;
-    private countup: number;
+    private countUp: number;
     private playedTurned: boolean;
 
     constructor(isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
@@ -45,6 +41,7 @@ export class BeginnerBot extends Player {
         this.room = botInfo.roomId;
         this.timer = botInfo.timer;
         this.playedTurned = false;
+        this.countUp = 0;
     }
 
     setGame(game: Game) {
@@ -72,7 +69,7 @@ export class BeginnerBot extends Player {
             setTimeout(() => {
                 if (randomNumber === 1) this.skipTurn();
                 else this.exchangeLetter();
-            }, 3 * SECOND - this.countup * SECOND);
+            }, SECOND_3 - this.countUp * SECOND_1);
             return;
         }
         this.placeLetter();
@@ -112,35 +109,18 @@ export class BeginnerBot extends Player {
         const commandInfoList: CommandInfo[] = new Array();
         this.addCommandInfoToList(commandInfoMap, commandInfoList, this.getRandomNumber(MAX_NUMBER));
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
-        if (this.countup >= 3 && this.countup < TIME_SKIP) this.play(randomCommandInfo);
-        else if (this.countup < 3) setTimeout(() => this.play(randomCommandInfo), 3 * SECOND - this.countup * SECOND);
+        if (this.countUp >= 3 && this.countUp < TIME_SKIP) this.play(randomCommandInfo);
+        else if (this.countUp < 3) setTimeout(() => this.play(randomCommandInfo), SECOND_3 - this.countUp * SECOND_1);
     }
     private play(commandInfo: CommandInfo) {
         if (commandInfo === undefined || this.playedTurned) {
             this.skipTurn();
             return;
         }
-<<<<<<< HEAD
-        if (this.countUp >= 3 && this.countUp <= TIME_SKIP) {
-            this.emitPlaceCommand(randomCommandInfo);
-            this.game.play(this, randomCommandInfo);
-            this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
-            return;
-        }
-        if (this.countUp < 3) {
-            setTimeout(() => {
-                this.emitPlaceCommand(randomCommandInfo);
-                this.game.play(this, randomCommandInfo);
-                this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
-            }, SECOND_3 - this.countUp * SECOND_1);
-            return;
-        }
-=======
         this.emitPlaceCommand(commandInfo);
         this.game.play(this, commandInfo);
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
         this.playedTurned = true;
->>>>>>> a65a2ef1860dc39a27e3ad7650031b0e6d848981
     }
 
     private processWordSolver() {
