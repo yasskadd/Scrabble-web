@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
@@ -5,7 +6,6 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@common/command-info';
-import { Coordinate } from '@common/coordinate';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
@@ -39,12 +39,8 @@ describe('Letter Placement Service', () => {
     });
 
     context('validateCommandCoordinate() tests', () => {
-        it('validateCommandCoordinate() should return false if letterCoords list is empty and position is not Occupied', () => {
-            expect(placementService['validateCommandCoordinate']({} as Coordinate, gameboard)).to.equal(false);
-        });
-
         it('validateCommandCoordinate() should return true if coord is valid and position is not Occupied', () => {
-            expect(placementService['validateCommandCoordinate']({ x: 1, y: 1 }, gameboard)).to.equal(false);
+            expect(placementService['validateCommandCoordinate']({ x: 1, y: 1 }, gameboard)).to.equal(true);
         });
 
         it('validateCommandCoordinate() should return false if coord is outOfBounds and position is not Occupied', () => {
@@ -67,23 +63,23 @@ describe('Letter Placement Service', () => {
 
     context('areLettersInRack() tests', () => {
         it('areLettersInRack() should return true if letter is in rack', () => {
-            /*TODO*/
+            expect(placementService['areLettersInRack'](['b'], player)).to.equal(true);
         });
 
         it('areLettersInRack() should return false if letter is not in rack', () => {
-            /*TODO*/
+            expect(placementService['areLettersInRack'](['c'], player)).to.equal(false);
         });
 
         it('return a list of 1 letter if only 1 letter is in command and it is present in rack', () => {
-            expect(placementService['associateLettersWithRack']('a', player).length).to.eql(1);
+            expect(placementService['findLettersPresentInRack'](['a'], player.rack).length).to.eql(1);
         });
 
         it('return empty list if letters are not in the rack', () => {
-            expect(placementService['associateLettersWithRack']('c', player)).to.eql([]);
+            expect(placementService['findLettersPresentInRack'](['c'], player.rack)).to.eql([]);
         });
 
         it('return empty list if not every letters match the rack', () => {
-            expect(placementService['associateLettersWithRack']('c', player)).to.eql([]);
+            expect(placementService['findLettersPresentInRack'](['c'], player.rack)).to.eql([]);
         });
 
         // TODO
@@ -98,7 +94,7 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return false if there is only one letter not matching the player rack', () => {
-            expect(placementService['areLettersInRack'](['a', 'b'], player)).to.equal(false);
+            expect(placementService['areLettersInRack'](['a', 'c'], player)).to.equal(false);
         });
 
         it('should return false if player rack is empty', () => {
@@ -180,50 +176,89 @@ describe('Letter Placement Service', () => {
     context('globalCommandVerification() tests', () => {
         let validateCommandCoordinateStub: Sinon.SinonStub<unknown[], unknown>;
         let lettersInRackStub: Sinon.SinonStub<unknown[], unknown>;
-        let invalidFirstPlacementStub: Sinon.SinonStub<unknown[], unknown>;
-        let letterCoords: Coordinate[];
+        let wordIsPlacedCorrectlyStub: Sinon.SinonStub<unknown[], unknown>;
         beforeEach(() => {
             validateCommandCoordinateStub = Sinon.stub(placementService, 'validateCommandCoordinate' as never);
             lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as never);
-            invalidFirstPlacementStub = Sinon.stub(placementService, 'verifyFirstTurn' as never);
-            letterCoords = [
-                { x: 0, y: 0 },
-                { x: 0, y: 1 },
-            ];
+            wordIsPlacedCorrectlyStub = Sinon.stub(placementService, 'wordIsPlacedCorrectly' as never);
+            // letterCoords = [
+            //     { x: 0, y: 0 },
+            //     { x: 0, y: 1 },
+            // ];
         });
 
         afterEach(() => {
             validateCommandCoordinateStub.restore();
             lettersInRackStub.restore();
-            invalidFirstPlacementStub.restore();
+            wordIsPlacedCorrectlyStub.restore();
         });
 
-        it('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
+        it('should return array with empty Word object and commandCoordinateOutOfBounds string if validateCommandCoordinate() returns false', () => {
             validateCommandCoordinateStub.withArgs(commandInfo, gameboard).returns(false);
-            const expectedReturn = [letterCoords, 'Placement invalide pour la premiere coordonnée'];
+            const expectedReturn = [{}, 'Placement invalide pour la premiere coordonnée'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
-        it('should return array with letterCoords and lettersNotInRack string if areLettersInRack() returns false', () => {
+        it('should return array with empty Word object and lettersNotInRack string if areLettersInRack() returns false', () => {
             validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(false);
-            const expectedReturn = [letterCoords, 'Lettres absents du chevalet'];
+            const expectedReturn = [{}, 'Les lettres ne sont pas dans le chavalet'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
-        it('should return letterCoords and invalidFirstPlacement string if verifyFirstTurn() returns false', () => {
+        it('should return array with empty Word object and invalidFirstWordPlacement string if wordIsPlacedCorrectly() returns false', () => {
             validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(true);
-            invalidFirstPlacementStub.returns(false);
-            const expectedReturn = [letterCoords, 'Placement du premier tour pas valide'];
+            wordIsPlacedCorrectlyStub.returns(false);
+            const expectedReturn = [{}, "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)"];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
-        it('should return letterCoords and null if verification is valid', () => {
+        it('should return array with empty Word object and invalidWordBuild if newly word created is out of bounce', () => {
             validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(true);
-            invalidFirstPlacementStub.returns(true);
-            const expectedReturn = [letterCoords, null];
+            const commandInfoOutOfBounce = {
+                firstCoordinate: { x: 15, y: 1 },
+                isHorizontal: true,
+                letters: ['a', 'l', 'l'],
+            };
+            const expectedReturn = [{}, "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau"];
+            expect(placementService.globalCommandVerification(commandInfoOutOfBounce, gameboard, player)).to.eql(expectedReturn);
+        });
+
+        it('should return array with empty Word object and invalidWordBuild if newly word created has only one letter', () => {
+            validateCommandCoordinateStub.returns(true);
+            lettersInRackStub.returns(true);
+            const commandInfoOneLetter = {
+                firstCoordinate: { x: 1, y: 1 },
+                isHorizontal: true,
+                letters: ['a'],
+            };
+            const expectedReturn = [{}, "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau"];
+            expect(placementService.globalCommandVerification(commandInfoOneLetter, gameboard, player)).to.eql(expectedReturn);
+        });
+
+        it('should return array with Word object and null if verification is valid', () => {
+            validateCommandCoordinateStub.returns(true);
+            lettersInRackStub.returns(true);
+            wordIsPlacedCorrectlyStub.returns(true);
+            const expectedWord = {
+                isValid: true,
+                isHorizontal: true,
+                stringFormat: 'all',
+                points: 0,
+                newLetterCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+                wordCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+            };
+            const expectedReturn = [expectedWord, null];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
     });
@@ -232,34 +267,102 @@ describe('Letter Placement Service', () => {
         const bonusPoint = 50;
         const points = 10;
         beforeEach(() => {
-            word = {} as Word;
-            commandInfo = {} as CommandInfo;
+            word = {
+                isValid: true,
+                isHorizontal: true,
+                stringFormat: 'all',
+                points: 0,
+                newLetterCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+                wordCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+            } as Word;
         });
 
         it('should call validateWord() once', () => {
+            dictionaryValidation.validateWord.returns({
+                points: 0,
+                invalidWords: [] as Word[],
+            });
             placementService.placeLetters(word, commandInfo, player, gameboard);
             expect(dictionaryValidation.validateWord.calledOnce).to.equal(true);
         });
 
         it('should return false and the gameboard if validateWord returns 0', () => {
-            dictionaryValidation.validateWord.returns({ points: 0, invalidWords: [] as Word[] });
-            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([false, gameboard, {} as Word]);
+            const validateWordReturn = {
+                points: 0,
+                invalidWords: [
+                    {
+                        isValid: false,
+                        isHorizontal: true,
+                        stringFormat: 'a',
+                        points: 0,
+                        newLetterCoords: [{ x: 1, y: 1 }],
+                        wordCoords: [{ x: 1, y: 1 }],
+                    } as Word,
+                ] as Word[],
+            };
+            dictionaryValidation.validateWord.returns(validateWordReturn);
+
+            const expected = { hasPassed: false, gameboard, invalidWords: validateWordReturn.invalidWords };
+            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
         });
 
         it('should change player score if validateWord() doesnt return 0', () => {
-            dictionaryValidation.validateWord.returns({ points: points, invalidWords: {} as Word[] });
+            const validateWordReturn = {
+                points: 10,
+                invalidWords: [] as Word[],
+            };
+            dictionaryValidation.validateWord.returns(validateWordReturn);
             placementService.placeLetters(word, commandInfo, player, gameboard);
-            expect(player.score).to.equal(points);
+            expect(player.score).to.equal(validateWordReturn.points);
         });
 
         it('should return true and gameboard if validateWord() doesnt return 0', () => {
-            dictionaryValidation.validateWord.returns({ points: points, invalidWords: {} as Word[] });
-            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([true, gameboard, {} as Word]);
+            dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
+            const expected = { hasPassed: true, gameboard, invalidWords: [] };
+            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
         });
 
         it('should give a bonus of 50 points', () => {
-            dictionaryValidation.validateWord.returns({ points: points, invalidWords: {} as Word[] });
-            placementService.placeLetters(word, commandInfo, player, gameboard);
+            const sevenLetterWord = {
+                isValid: true,
+                isHorizontal: true,
+                stringFormat: 'a',
+                points: 10,
+                newLetterCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                    { x: 5, y: 1 },
+                    { x: 6, y: 1 },
+                    { x: 7, y: 1 },
+                ],
+                wordCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                    { x: 5, y: 1 },
+                    { x: 6, y: 1 },
+                    { x: 7, y: 1 },
+                ],
+            } as Word;
+
+            const newCommandInfo = {
+                firstCoordinate: { x: 1, y: 1 },
+                isHorizontal: true,
+                letters: ['a', 'l', 'l', 'a', 'l', 'l', 'l', 'l'],
+            };
+            dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
+            placementService.placeLetters(sevenLetterWord, newCommandInfo, player, gameboard);
             expect(player.score).to.equal(points + bonusPoint);
         });
     });

@@ -112,8 +112,11 @@ export class LetterPlacementService {
     }
 
     private isWordIsAttachedToBoardLetter(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
-        let up, down, left, right: Coordinate;
-        let lettersWithAdjacency: number = 0;
+        let up;
+        let down;
+        let left;
+        let right: Coordinate;
+        let lettersWithAdjacency = 0;
 
         letterCoords.forEach((coord) => {
             up = { x: coord.x, y: coord.y-- };

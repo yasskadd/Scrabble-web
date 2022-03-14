@@ -8,7 +8,7 @@ import { Service } from 'typedi';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
-export interface validatWordReturn {
+export interface ValidateWordReturn {
     points: number;
     invalidWords: Word[];
 }
@@ -25,7 +25,7 @@ export class DictionaryValidationService {
         });
     }
 
-    validateWord(word: Word, gameboard: Gameboard): validatWordReturn {
+    validateWord(word: Word, gameboard: Gameboard): ValidateWordReturn {
         const foundWords = Word.findAdjacentWords(word, gameboard);
         this.checkWordInDictionary(foundWords);
         return this.calculateTurnPoints(foundWords, gameboard);
@@ -41,11 +41,11 @@ export class DictionaryValidationService {
         });
     }
 
-    private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): validatWordReturn {
+    private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): ValidateWordReturn {
         const invalidWords: [boolean, Word[]] = this.isolateInvalidWords(foundWords);
         if (this.isolateInvalidWords(foundWords)[0]) return { points: 0, invalidWords: invalidWords[1] };
         else {
-            let pointsForTurn: number = 0;
+            let pointsForTurn = 0;
             foundWords.forEach((foundWord: Word) => {
                 pointsForTurn += foundWord.calculateWordPoints(gameboard);
             });
