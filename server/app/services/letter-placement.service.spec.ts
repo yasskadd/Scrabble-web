@@ -11,7 +11,7 @@ import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
 
-describe.only('Letter Placement Service', () => {
+describe('Letter Placement Service', () => {
     let player: Player;
     let commandInfo: CommandInfo;
     let gameboard: Gameboard;
