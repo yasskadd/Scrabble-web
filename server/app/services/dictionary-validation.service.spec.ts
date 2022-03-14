@@ -14,7 +14,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
-describe.only('Dictionary Validation Service', () => {
+describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
 
