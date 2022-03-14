@@ -3,7 +3,7 @@ import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
-import { Inject } from 'typedi';
+import { Container } from 'typedi';
 import { Player } from './player.class';
 
 const MAX_NUMBER = 10;
@@ -24,8 +24,8 @@ export interface BotInformation {
 }
 
 export class BeginnerBot extends Player {
-    @Inject() private wordSolver: WordSolverService;
-    @Inject() private socketManager: SocketManager;
+    wordSolver: WordSolverService = Container.get(WordSolverService);
+    socketManager: SocketManager = Container.get(SocketManager);
     isPlayerOne: boolean;
     roomId: string;
     game: Game;
@@ -47,9 +47,13 @@ export class BeginnerBot extends Player {
     start() {
         this.game.turn.countdown.subscribe((countdown) => {
             this.countup = this.timer - (countdown as number);
+            if (this.countup === TIME_SKIP) this.skipTurn();
         });
         this.game.turn.endTurn.subscribe((activePlayer) => {
-            if (activePlayer === this.name) this.choosePlayMove();
+            if (activePlayer === this.name) {
+                this.countup = 0;
+                this.choosePlayMove();
+            }
         });
     }
 
@@ -83,31 +87,40 @@ export class BeginnerBot extends Player {
     }
 
     /* What to do if there is no commandInfo associated with the score range */
-    async placeLetter() {
-        const commandInfoMap = await this.processWordSolver();
-        if (!commandInfoMap.size) this.skipTurn();
+    placeLetter() {
+        const commandInfoMap = this.processWordSolver();
+        if (commandInfoMap.size === 0) {
+            this.skipTurn();
+            return;
+        }
         const commandInfoList: CommandInfo[] = new Array();
         this.addCommandInfoToList(commandInfoMap, commandInfoList, this.getRandomNumber(MAX_NUMBER));
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
+        if (randomCommandInfo === undefined) {
+            this.skipTurn();
+            return;
+        }
         if (this.countup >= 3 && this.countup <= TIME_SKIP) {
             this.emitPlaceCommand(randomCommandInfo);
             this.game.play(this, randomCommandInfo);
+            this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
             return;
         }
         if (this.countup < 3) {
             setTimeout(() => {
+                console.log('ENTERED 2');
+                console.log(this.countup);
                 this.emitPlaceCommand(randomCommandInfo);
                 this.game.play(this, randomCommandInfo);
-            }, 3 - this.countup);
+                this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
+            }, 3000 - this.countup * 1000);
             return;
         }
-        this.skipTurn();
     }
 
-    private async processWordSolver() {
-        return new Promise<Map<CommandInfo, number>>((resolve) => {
-            resolve(this.wordSolver.commandInfoScore(this.wordSolver.findAllOptions(this.rackToString())));
-        });
+    private processWordSolver() {
+        this.wordSolver.setGameboard(this.game.gameboard);
+        return this.wordSolver.commandInfoScore(this.wordSolver.findAllOptions(this.rackToString()));
     }
 
     private addCommandInfoToList(commandInfoMap: Map<CommandInfo, number>, commandInfoList: CommandInfo[], randomNumber: number) {
@@ -130,7 +143,7 @@ export class BeginnerBot extends Player {
 
     private emitPlaceCommand(randomCommandInfo: CommandInfo) {
         const coordString = `${String.fromCharCode(CHAR_ASCII + randomCommandInfo.firstCoordinate.y)}${randomCommandInfo.firstCoordinate.x}`;
-        const placeCommand = `${coordString}${randomCommandInfo.direction} ${randomCommandInfo.lettersPlaced.join('')}`;
+        const placeCommand = `!placer ${coordString}${randomCommandInfo.direction} ${randomCommandInfo.lettersPlaced.join('')}`;
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, placeCommand);
     }
 
