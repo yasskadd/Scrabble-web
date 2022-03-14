@@ -128,7 +128,7 @@ export class GamesHandler {
                 play.invalidWords.forEach((invalidWord: Word) =>
                     socket.emit(
                         SocketEvents.ImpossibleCommandError,
-                        'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionaire français',
+                        'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionnaire français',
                     ),
                 );
             } else {

@@ -10,7 +10,7 @@ import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
-import { ErrorType, LetterPlacementService } from './letter-placement.service';
+import { ErrorType, LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 
 describe('Game tests', () => {
     let player1: Player;
@@ -93,18 +93,18 @@ describe('Game tests', () => {
 
         it('play() should return invalid message if the command is invalid and end turn of player1 on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, '' as ErrorType]);
-            const play = game.play(player1, commandInfo);
-            expect(play).to.equal('');
+            letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
+            const play: string | PlaceLettersReturn = game.play(player1, commandInfo);
+            expect(play[0]).to.equal('');
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
 
         it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, '' as ErrorType]);
-            const play = game.play(player2, commandInfo);
-            expect(play).to.equal('');
+            letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
+            const play: string | PlaceLettersReturn = game.play(player2, commandInfo);
+            expect(play[0]).to.equal('');
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
@@ -113,8 +113,8 @@ describe('Game tests', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: {} as Word[] });
-            const play = game.play(player1, commandInfo);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            const play: string | PlaceLettersReturn = game.play(player1, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
         });
 
@@ -122,15 +122,19 @@ describe('Game tests', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: {} as Word[] });
-            const play = game.play(player2, commandInfo);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            const play: string | PlaceLettersReturn = game.play(player2, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
         });
 
-        it('play() should return the false and the gameboard if the player wants to play but it is not its turn', () => {
-            const expected = [false, game.gameboard];
+        it('play() should return false and the gameboard if the player wants to play but it is not its turn', () => {
+            const expected: PlaceLettersReturn = {
+                hasPassed: false,
+                gameboard: game.gameboard,
+                invalidWords: [new Word(commandInfo, game.gameboard)],
+            };
             turn.validating.returns(false);
-            const play = game.play(player1, commandInfo);
+            const play: string | PlaceLettersReturn = game.play(player1, commandInfo);
             expect(play).to.deep.equal(expected);
         });
 
