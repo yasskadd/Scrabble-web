@@ -120,6 +120,26 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('scrolling in rack should reposition rack', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockScroll = new WheelEvent('scroll');
+        component.onScrollEvent(mockScroll);
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+        expect(component.buttonPressed).toEqual('ArrowRight');
+    });
+
+    it('clicking outside the rack should call clickOutside', () => {
+        const indexLetter = 0;
+        const spy = spyOn(component, 'clickOutside');
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        window.dispatchEvent(new MouseEvent('click'));
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    });
+
     it('clicking outside the rack should deselect all selected letters', () => {
         const spy = spyOn(component, 'cancel');
         spyOn(fixture.debugElement.nativeElement, 'contains').and.callFake(() => {
