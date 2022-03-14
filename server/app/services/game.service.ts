@@ -1,7 +1,8 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { Word } from '@app/classes/word.class';
+import { LetterPlacementService, PlaceLettersReturn } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
@@ -40,8 +41,8 @@ export class Game {
         return true;
     }
 
-    play(player: Player, commandInfo: CommandInfo): [boolean, Gameboard] | string {
-        let gameboard: [boolean, Gameboard] = [false, this.gameboard];
+    play(player: Player, commandInfo: CommandInfo): PlaceLettersReturn | string {
+        let placeLettersReturn: PlaceLettersReturn = { hasPassed: false, gameboard: this.gameboard, invalidWords: [] as Word[] };
         const numberOfLetterPlaced = commandInfo.letters.length;
         if (this.turn.validating(player.name)) {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
@@ -51,9 +52,9 @@ export class Game {
                 this.turn.resetSkipCounter();
                 return errorType as string;
             }
-            gameboard = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
+            placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
 
-            if (gameboard[0] === true) {
+            if (placeLettersReturn.hasPassed === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
             }
 
@@ -63,10 +64,8 @@ export class Game {
                 this.turn.resetSkipCounter();
                 this.turn.end();
             }
-            return gameboard;
         }
-
-        return gameboard;
+        return placeLettersReturn;
     }
 
     exchange(letters: string[], player: Player): Letter[] {

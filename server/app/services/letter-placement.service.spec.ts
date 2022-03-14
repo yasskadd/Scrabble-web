@@ -147,7 +147,7 @@ describe('Letter Placement Service', () => {
             );
             const allUnoccupied = gameboard.gameboardTiles.every((tile) => tile.isOccupied === false);
             expect(allUnoccupied).to.equal(true);
-            expect(placementService['verifyFirstTurn'](word.wordCoords, gameboard)).to.equal(true);
+            expect(placementService['verifyFirstTurn'](word.wordCoords)).to.equal(true);
         });
 
         it('should return true if gameboard has no placed letters and letterCoords do not include middle coordinate', () => {
@@ -161,33 +161,27 @@ describe('Letter Placement Service', () => {
             );
             const allUnoccupied = gameboard.gameboardTiles.every((tile) => tile.isOccupied === false);
             expect(allUnoccupied).to.equal(true);
-            expect(placementService['verifyFirstTurn'](word.wordCoords, gameboard)).to.equal(false);
+            expect(placementService['verifyFirstTurn'](word.wordCoords)).to.equal(false);
         });
 
         it('should return true if gameboard has no placed letters and letterCoords includes middle coordinate', () => {
             const allEqual = gameboard.gameboardTiles.every((tile) => tile.isOccupied === false);
             expect(allEqual).to.equal(true);
             expect(
-                placementService['verifyFirstTurn'](
-                    [
-                        { x: 8, y: 8 },
-                        { x: 8, y: 9 },
-                    ],
-                    gameboard,
-                ),
+                placementService['verifyFirstTurn']([
+                    { x: 8, y: 8 },
+                    { x: 8, y: 9 },
+                ]),
             ).to.equal(true);
         });
 
         it('should return true if there is placed letters on the gameboard', () => {
             gameboard.placeLetter({ x: 1, y: 1 }, 'a');
             expect(
-                placementService['verifyFirstTurn'](
-                    [
-                        { x: 8, y: 8 },
-                        { x: 8, y: 9 },
-                    ],
-                    gameboard,
-                ),
+                placementService['verifyFirstTurn']([
+                    { x: 8, y: 8 },
+                    { x: 8, y: 9 },
+                ]),
             ).to.equal(true);
         });
     });
@@ -257,23 +251,23 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return false and the gameboard if validateWord returns 0', () => {
-            dictionaryValidation.validateWord.returns(0);
-            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([false, gameboard]);
+            dictionaryValidation.validateWord.returns([0, {} as Word[]]);
+            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([false, gameboard, {} as Word]);
         });
 
         it('should change player score if validateWord() doesnt return 0', () => {
-            dictionaryValidation.validateWord.returns(points);
+            dictionaryValidation.validateWord.returns([points, {} as Word[]]);
             placementService.placeLetters(word, commandInfo, player, gameboard);
             expect(player.score).to.equal(points);
         });
 
         it('should return true and gameboard if validateWord() doesnt return 0', () => {
-            dictionaryValidation.validateWord.returns(points);
-            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([true, gameboard]);
+            dictionaryValidation.validateWord.returns([points, {} as Word[]]);
+            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([true, gameboard, {} as Word]);
         });
 
         it('should give a bonus of 50 points', () => {
-            dictionaryValidation.validateWord.returns(points);
+            dictionaryValidation.validateWord.returns([points, {} as Word[]]);
             placementService.placeLetters(word, commandInfo, player, gameboard);
             expect(player.score).to.equal(points + bonusPoint);
         });

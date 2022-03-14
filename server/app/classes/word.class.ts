@@ -16,20 +16,18 @@ export class Word {
         this.isHorizontal = commandInfo.isHorizontal;
         this.points = 0;
 
-        this.checkIfCommandContainsOneLetterWithoutDirection(commandInfo, gameboard);
-        const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
-        this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
-    }
-
-    private checkIfCommandContainsOneLetterWithoutDirection(commandInfo: CommandInfo, gameboard: Gameboard) {
         if (commandInfo.isHorizontal === undefined && commandInfo.letters.length === 1) {
             this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
         }
+
+        const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
+        this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
     }
 
     private setIsHorizontal(firstCoord: Coordinate, gameboard: Gameboard) {
         if (this.upDownIsOccupied(gameboard, firstCoord)) this.isHorizontal = false;
         else if (this.leftRightIsOccupied(gameboard, firstCoord)) this.isHorizontal = true;
+        else this.isValid = false;
     }
 
     private upDownIsOccupied(gameboard: Gameboard, firstCoord: Coordinate) {

@@ -1,7 +1,7 @@
-import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
+import { Word } from '@app/classes/word.class';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { CommandInfo } from '@common/command-info';
 import { LetterTile } from '@common/letter-tile.class';
@@ -9,7 +9,7 @@ import { SocketEvents } from '@common/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
-import { LetterPlacementService } from './letter-placement.service';
+import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 
@@ -112,20 +112,26 @@ export class GamesHandler {
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
         const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as RealPlayer;
-        const play = player.placeLetter(commandInfo) as [boolean, Gameboard] | string;
+        const play = player.placeLetter(commandInfo) as PlaceLettersReturn | string;
+        console.log(play);
 
-        if (typeof play[0] === 'string') {
+        if (typeof play === 'string') {
             socket.emit(SocketEvents.ImpossibleCommandError, play);
         } else if (typeof play !== 'string') {
             const playerInfo: PlayInfo = {
-                gameboard: play[1].gameboardTiles,
+                gameboard: play.gameboard.gameboardTiles,
                 activePlayer: player.game.turn.activePlayer,
             };
             this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playerInfo);
             this.updatePlayerInfo(socket, player.room, player.game);
 
-            if (!play[0]) {
-                socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayez de mettre ne forment pas de mots valides');
+            if (!play.hasPassed) {
+                play.invalidWords.forEach((invalidWord: Word) =>
+                    socket.emit(
+                        SocketEvents.ImpossibleCommandError,
+                        'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionaire français',
+                    ),
+                );
             } else {
                 const direction = commandInfo.isHorizontal ? 'h' : 'v';
                 socket.broadcast

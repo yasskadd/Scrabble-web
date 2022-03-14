@@ -1,5 +1,5 @@
-import { Gameboard } from '@app/classes/gameboard.class';
 import { Game } from '@app/services/game.service';
+import { PlaceLettersReturn } from '@app/services/letter-placement.service';
 import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
 import { LetterTile } from '@common/letter-tile.class';
@@ -16,7 +16,7 @@ export class RealPlayer extends Player {
         this.isPlayerOne = isPlayerOne;
     }
 
-    placeLetter(commandInfo: CommandInfo): [boolean, Gameboard] | string {
+    placeLetter(commandInfo: CommandInfo): PlaceLettersReturn | string {
         if (this.game === undefined) return 'error';
         return this.game.play(this, commandInfo);
     }

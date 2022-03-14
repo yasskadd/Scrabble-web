@@ -3,6 +3,7 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
+import { Word } from '@app/classes/word.class';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-handler.service';
 import { CommandInfo } from '@common/command-info';
@@ -517,7 +518,7 @@ describe('GamesHandler Service', () => {
             });
 
             gameStub.turn = { activePlayer: '' } as unknown as Turn;
-            player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+            player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard, {} as Word[]]);
             const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
             player.game = gameStub as unknown as Game;
 
@@ -617,7 +618,7 @@ describe('GamesHandler Service', () => {
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         player.game = gameStub as unknown as Game;
-        player.placeLetter.returns([RETURNED_STRING as never, { gameboardCoords: [] } as unknown as Gameboard]);
+        player.placeLetter.returns([RETURNED_STRING as never, { gameboardCoords: [] } as unknown as Gameboard, {} as Word[]]);
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
         clientSocket.on(SocketEvents.ImpossibleCommandError, (information) => {
             expect(information[0]).to.be.equal(RETURNED_STRING);
@@ -648,7 +649,7 @@ describe('GamesHandler Service', () => {
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         player.game = gameStub as unknown as Game;
-        player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+        player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard, {} as Word[]]);
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
 
         // eslint-disable-next-line dot-notation
@@ -672,7 +673,7 @@ describe('GamesHandler Service', () => {
         const gameStub = sinon.createStubInstance(Game);
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
-        player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+        player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard, {} as Word[]]);
         player.game = gameStub as unknown as Game;
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
 
@@ -703,7 +704,7 @@ describe('GamesHandler Service', () => {
         });
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
-        player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard]);
+        player.placeLetter.returns([RETURNED_BOOLEAN, { gameboardCoords: [] } as unknown as Gameboard, {} as Word[]]);
         player.game = gameStub as unknown as Game;
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
 

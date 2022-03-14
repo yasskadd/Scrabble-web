@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
 
-describe.only('Word', () => {
+describe('Word', () => {
     let gameboard: Gameboard;
     let word: Word;
 

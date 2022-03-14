@@ -20,7 +20,7 @@ export class DictionaryValidationService {
         });
     }
 
-    validateWord(word: Word, gameboard: Gameboard): number {
+    validateWord(word: Word, gameboard: Gameboard): [number, Word[]] {
         const foundWords = Word.findAdjacentWords(word, gameboard);
         this.checkWordInDictionary(foundWords);
         return this.calculateTurnPoints(foundWords, gameboard);
@@ -36,14 +36,15 @@ export class DictionaryValidationService {
         });
     }
 
-    private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): number {
-        if (this.isolateInvalidWords(foundWords)[0]) return 0;
+    private calculateTurnPoints(foundWords: Word[], gameboard: Gameboard): [number, Word[]] {
+        const invalidWords: [boolean, Word[]] = this.isolateInvalidWords(foundWords);
+        if (this.isolateInvalidWords(foundWords)[0]) return [0, invalidWords[1]];
         else {
             let pointsForTurn: number = 0;
             foundWords.forEach((foundWord: Word) => {
                 pointsForTurn += foundWord.calculateWordPoints(gameboard);
             });
-            return pointsForTurn;
+            return [pointsForTurn, invalidWords[1]];
         }
     }
 

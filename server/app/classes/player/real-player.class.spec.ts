@@ -4,6 +4,7 @@ import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
+import { Word } from '../word.class';
 import { RealPlayer } from './real-player.class';
 
 describe('RealPlayer', () => {
@@ -22,7 +23,7 @@ describe('RealPlayer', () => {
     it('placeLetter() should call game.play() and return the result', () => {
         const gameStub = sinon.createStubInstance(Game);
         player.game = gameStub as unknown as Game;
-        gameStub.play.returns([true, {} as Gameboard]);
+        gameStub.play.returns([true, {} as Gameboard, {} as Word[]]);
         const command = {} as CommandInfo;
         const result = player.placeLetter(command);
         expect(result).to.deep.equal([true, {} as Gameboard]);
@@ -31,7 +32,7 @@ describe('RealPlayer', () => {
 
     it("placeLetter() shouln't do anything if game is undefined", () => {
         const gameStub = sinon.createStubInstance(Game);
-        gameStub.play.returns([true, {} as Gameboard]);
+        gameStub.play.returns([true, {} as Gameboard, {} as Word[]]);
         const command = {} as CommandInfo;
         player.placeLetter(command);
         expect(gameStub.play.called).to.be.equal(false);
