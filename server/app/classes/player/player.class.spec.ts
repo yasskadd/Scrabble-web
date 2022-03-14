@@ -26,6 +26,7 @@ describe('Player', () => {
         player.rack = [{ value: 'l' } as Letter, { value: 'e' } as Letter];
         expect(player.rackToString()).to.eql(['l', 'e']);
     });
+
     it("getInformation() should return the player's information", () => {
         const gameStub = sinon.createStubInstance(Game);
         gameStub.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
@@ -40,6 +41,7 @@ describe('Player', () => {
         const result = player.getInformation();
         expect(result).to.be.deep.equal(info);
     });
+
     it('getInformation() should send an empty object if game is undefined', () => {
         const result = player.getInformation();
         expect(result).to.be.equal({});
