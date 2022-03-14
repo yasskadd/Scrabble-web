@@ -27,8 +27,6 @@ export class PlayerRackComponent implements OnInit {
     lettersToExchange: number[] = [];
     lettersToManipulate: number[] = [];
     duplicates: number[] = [];
-    arrow: boolean = false;
-    absentFromRack: boolean = true;
     clicked: number[] = [];
 
     temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
@@ -78,9 +76,8 @@ export class PlayerRackComponent implements OnInit {
     }
     selectManipulation(event: KeyboardEvent) {
         this.duplicates = [];
-        this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
 
-        if (this.arrow) {
+        if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
             this.repositionRack();
             return;
         }
@@ -88,7 +85,6 @@ export class PlayerRackComponent implements OnInit {
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === event.key.toLowerCase()) {
                 this.duplicates.push(i);
-                this.absentFromRack = false;
             }
         }
 
@@ -171,6 +167,8 @@ export class PlayerRackComponent implements OnInit {
 
             this.currentSelection -= 1;
         }
+
+        // this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
         this.lettersToManipulate.push(this.currentSelection);
     }
 
