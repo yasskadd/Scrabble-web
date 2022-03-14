@@ -29,7 +29,7 @@ interface GameHolder {
 }
 
 const ROOM = '0';
-describe('GamesHandler Service', () => {
+describe.only('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
@@ -622,14 +622,10 @@ describe('GamesHandler Service', () => {
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         player.game = gameStub as unknown as Game;
-        player.placeLetter.returns({
-            hasPassed: RETURNED_STRING as never,
-            gameboard: { gameboardCoords: [] } as unknown as Gameboard,
-            invalidWords: {} as Word[],
-        });
+        player.placeLetter.returns(RETURNED_STRING);
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
         clientSocket.on(SocketEvents.ImpossibleCommandError, (information) => {
-            expect(information[0]).to.be.equal(RETURNED_STRING);
+            expect(information).to.be.equal(RETURNED_STRING);
             done();
         });
         // eslint-disable-next-line dot-notation
