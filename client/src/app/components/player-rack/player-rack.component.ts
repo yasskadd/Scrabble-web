@@ -85,7 +85,7 @@ export class PlayerRackComponent implements OnInit {
         this.chatBoxHandler.submitMessage('!passer');
     }
     selectManipulation(event: KeyboardEvent) {
-        const duplicates: number[] = [];
+        this.duplicates = [];
 
         if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
             this.repositionRack();
@@ -94,12 +94,12 @@ export class PlayerRackComponent implements OnInit {
 
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === event.key.toLowerCase()) {
-                duplicates.push(i);
+                this.duplicates.push(i);
             }
         }
 
-        if (duplicates.length) {
-            this.currentSelection = duplicates[(duplicates.indexOf(this.currentSelection) + 1) % duplicates.length];
+        if (this.duplicates.length) {
+            this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
             this.previousSelection = this.currentSelection;
             this.lettersToManipulate.push(this.currentSelection);
         } else {
@@ -180,8 +180,6 @@ export class PlayerRackComponent implements OnInit {
 
             this.currentSelection -= 1;
         }
-
-        // this.currentSelection = duplicates[(duplicates.indexOf(this.currentSelection) + 1) % duplicates.length];
         this.lettersToManipulate.push(this.currentSelection);
     }
 

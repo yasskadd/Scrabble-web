@@ -265,8 +265,17 @@ describe('PlayerRackComponent', () => {
         const invalidIndex = -1;
         const mockKey = new KeyboardEvent('keydown', { key: 'o' });
         component.buttonPressed = 'o';
-        component.selectManipulation(mockKey);
         expect(component.previousSelection).toEqual(invalidIndex);
+        component.selectManipulation(mockKey);
+        expect(component.previousSelection).not.toEqual(invalidIndex);
+    });
+
+    it('lettersToManipulate should be empty if key pressed is not present on player rack', () => {
+        const empty = 0;
+        const mockKey = new KeyboardEvent('keydown', { key: 'q' });
+        component.buttonPressed = 'q';
+        component.selectManipulation(mockKey);
+        expect(component.lettersToManipulate.length).toEqual(empty);
     });
 
     it('selectManipulation should manipulate second iteration of a letter when the key has been pressed twice', () => {
@@ -285,6 +294,7 @@ describe('PlayerRackComponent', () => {
         component.selectManipulation(mockKey);
         component.selectManipulation(mockKey);
         component.selectManipulation(mockKey);
+        expect(component.duplicates.length).toEqual(2);
         expect(component.previousSelection).not.toEqual(invalidIndex);
     });
 
