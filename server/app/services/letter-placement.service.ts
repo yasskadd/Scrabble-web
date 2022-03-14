@@ -10,7 +10,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 export enum ErrorType {
     commandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
     lettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
-    invalidFirstWordPlacement = 'Le mot doit etre attaché à un autre mot (ou passer par la case du milieu si c<est le premier tour)',
+    invalidFirstWordPlacement = "Le mot doit etre attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
     invalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
 }
 
@@ -140,7 +140,7 @@ export class LetterPlacementService {
         this.placeNewLettersOnBoard(commandInfo, commandWord, gameboard);
 
         const validateWordReturn = this.dictionaryService.validateWord(commandWord, gameboard);
-        if (validateWordReturn.points === 0) {
+        if (!validateWordReturn.points) {
             this.removeLettersFromBoard(commandWord, gameboard);
             return { hasPassed: false, gameboard: gameboard, invalidWords: validateWordReturn.invalidWords };
         }

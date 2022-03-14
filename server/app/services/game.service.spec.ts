@@ -6,13 +6,12 @@ import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/command-info';
-import { Letter } from '@common/letter';
 import { expect } from 'chai';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
 import { ErrorType, LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 
-describe('Game tests', () => {
+describe.only('Game tests', () => {
     let player1: Player;
     let player2: Player;
     let turn: SinonStubbedInstance<Turn> & Turn;
@@ -75,40 +74,36 @@ describe('Game tests', () => {
     });
 
     context('play test', () => {
-        let letterA: Letter;
-        let posX: number;
-        let posY: number;
         let commandInfo: CommandInfo;
 
         beforeEach(() => {
-            letterA = { value: 'a', quantity: 8, points: 1 };
-            posX = 8;
-            posY = 8;
             commandInfo = {
-                firstCoordinate: { x: posX, y: posY },
+                firstCoordinate: { x: 8, y: 8 },
                 isHorizontal: true,
-                letters: [letterA.value, letterA.value],
+                letters: ['a', 'a'],
             };
         });
 
-        it('play() should return invalid message if the command is invalid and end turn of player1 on play', () => {
+        // 1
+        it('play() should return invalid message, resetSkipCounter and endTurn() if the command word does not exist in dictionary for player1 on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
-            const play: string | PlaceLettersReturn = game.play(player1, commandInfo);
-            expect(play[0]).to.equal('');
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
+            expect(game.play(player1, commandInfo)[0]).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
 
+        // 2
         it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
             const play: string | PlaceLettersReturn = game.play(player2, commandInfo);
-            expect(play[0]).to.equal('');
+            expect(play).to.equal('InvalidMessage');
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
 
+        // 3
         it('play() should return the gameboard if the command is valid of player1 on play', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
@@ -118,15 +113,21 @@ describe('Game tests', () => {
             expect(play[1]).to.equal(expectedGameboard);
         });
 
+        // 4
         it('play() should return the gameboard if the command is valid of player2 on play', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterPlacementService.placeLetters.returns({
+                hasPassed: true,
+                gameboard: game.gameboard,
+                invalidWords: {} as Word[],
+            } as PlaceLettersReturn);
             const play: string | PlaceLettersReturn = game.play(player2, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
         });
 
+        // 5
         it('play() should return false and the gameboard if the player wants to play but it is not its turn', () => {
             const expected: PlaceLettersReturn = {
                 hasPassed: false,
