@@ -622,14 +622,10 @@ describe('GamesHandler Service', () => {
 
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         player.game = gameStub as unknown as Game;
-        player.placeLetter.returns({
-            hasPassed: RETURNED_STRING as never,
-            gameboard: { gameboardCoords: [] } as unknown as Gameboard,
-            invalidWords: {} as Word[],
-        });
+        player.placeLetter.returns(RETURNED_STRING);
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
         clientSocket.on(SocketEvents.ImpossibleCommandError, (information) => {
-            expect(information[0]).to.be.equal(RETURNED_STRING);
+            expect(information).to.be.equal(RETURNED_STRING);
             done();
         });
         // eslint-disable-next-line dot-notation
@@ -640,10 +636,11 @@ describe('GamesHandler Service', () => {
         gamesHandler['playGame'](serverSocket, commandInfo);
     });
 
-    it('playGame() should emit playerInfo', () => {
+    it('playGame() should emit the play info', () => {
         serverSocket.join(ROOM);
         const RETURNED_BOOLEAN = true;
         sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+
         const EXPECTED_INFORMATION = {
             gameboard: [],
             activePlayer: '',
@@ -659,7 +656,7 @@ describe('GamesHandler Service', () => {
         player.game = gameStub as unknown as Game;
         player.placeLetter.returns({
             hasPassed: RETURNED_BOOLEAN,
-            gameboard: { gameboardCoords: [] } as unknown as Gameboard,
+            gameboard: { gameboardTiles: [] } as unknown as Gameboard,
             invalidWords: {} as Word[],
         });
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
@@ -687,7 +684,7 @@ describe('GamesHandler Service', () => {
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         player.placeLetter.returns({
             hasPassed: RETURNED_BOOLEAN,
-            gameboard: { gameboardCoords: [] } as unknown as Gameboard,
+            gameboard: { gameboardTiles: [] } as unknown as Gameboard,
             invalidWords: [] as Word[],
         });
         player.game = gameStub as unknown as Game;
@@ -705,7 +702,7 @@ describe('GamesHandler Service', () => {
     it('playGame() should return an impossible command error if boolean is true', (done) => {
         serverSocket.join(ROOM);
         const RETURNED_BOOLEAN = false;
-        const EXPECTED_MESSAGE = 'Les lettres que vous essayez de mettre ne forment pas de mots valides';
+        const EXPECTED_MESSAGE = 'Le mot "' + 'HELLO' + '" ne fait pas partie du dictionnaire français';
         sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
 
         const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[] } as unknown as CommandInfo;
@@ -722,8 +719,8 @@ describe('GamesHandler Service', () => {
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         player.placeLetter.returns({
             hasPassed: RETURNED_BOOLEAN,
-            gameboard: { gameboardCoords: [] } as unknown as Gameboard,
-            invalidWords: {} as Word[],
+            gameboard: { gameboardTiles: [] } as unknown as Gameboard,
+            invalidWords: [{ stringFormat: 'HELLO' }] as Word[],
         });
         player.game = gameStub as unknown as Game;
         const gameHolder = { game: gameStub as unknown as Game } as GameHolder;
