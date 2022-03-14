@@ -44,11 +44,7 @@ export class PlayerRackComponent implements OnInit {
     @HostListener('mousewheel', ['$event'])
     onScrollEvent(event: WheelEvent) {
         this.cancel();
-        if (event.deltaY < 0) {
-            this.buttonPressed = 'ArrowLeft';
-        } else {
-            this.buttonPressed = 'ArrowRight';
-        }
+        this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
         this.repositionRack();
     }
 
@@ -132,8 +128,6 @@ export class PlayerRackComponent implements OnInit {
                 this.lettersToExchange.splice(index, 1);
             }
         }
-
-        // this.rackManipulation.selectExchange(event, letter);
     }
 
     onLeftClick(event: MouseEvent, letter: number) {
