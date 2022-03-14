@@ -2,25 +2,26 @@ import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
 import * as sinon from 'sinon';
-import * as io from 'socket.io';
+import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { Container } from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
-type SioSignature = SocketManager['sio'];
-type SocketType = io.Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, unknown>;
+type SocketType = ServerSocket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, unknown>;
 type CallbackSignature = (socket: SocketType, ...args: unknown[]) => void;
-type OnSioCallbackSignature = (sio: io.Server, socket: SocketType, ...args: unknown[]) => void;
+type OnSioCallbackSignature = (sio: ioServer, socket: SocketType, ...args: unknown[]) => void;
 
 const TEST_ROOM = 'EldenRingHype';
 const TEST_MESSAGE = 'RipNoTime';
 const EVENT = 'eventTest';
 describe('SocketManager service tests', () => {
     let service: SocketManager;
-    let serverSocket: io.Socket;
+    let httpServer: Server;
     let clientSocket: Socket;
-    let sio: SioSignature;
+    let serverSocket: ServerSocket;
+    let port: number;
+    let sio: ioServer;
 
     let joinCallbackOn: CallbackSignature;
     let emitMessageCallbackOn: CallbackSignature;
@@ -30,8 +31,6 @@ describe('SocketManager service tests', () => {
     let changeBooleanCallbackSio: OnSioCallbackSignature;
     let testBoolean1: boolean;
     let testBoolean2: boolean;
-    let port: number;
-    let httpServer: Server;
 
     beforeEach((done) => {
         joinCallbackOn = (socket) => socket.join(TEST_ROOM);
@@ -45,7 +44,6 @@ describe('SocketManager service tests', () => {
             o.to(TEST_ROOM).emit(TEST_MESSAGE);
         };
         service = Container.get(SocketManager);
-
         httpServer = createServer();
         service.init(httpServer);
         // eslint-disable-next-line dot-notation
@@ -62,7 +60,7 @@ describe('SocketManager service tests', () => {
 
     afterEach(() => {
         sio.close();
-
+        clientSocket.close();
         sinon.restore();
     });
 
@@ -103,40 +101,34 @@ describe('SocketManager service tests', () => {
         expect(callBackEventArray?.pop()).to.be.equal(emitMessageCallbackSio);
         expect(callBackEventArray?.pop()).to.be.equal(joinCallbackSio);
     });
-
     it('handleSockets() should subscribe all the events to the sockets', (done) => {
         testBoolean1 = false;
         testBoolean2 = false;
-        const timeoutWait = 200;
 
+        clientSocket = Client(`http://localhost:${port}`);
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackOn = (_) => {
             testBoolean1 = true;
+            expect(testBoolean1).to.be.equal(true);
         };
 
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackSio = (i, _) => {
             testBoolean2 = true;
+            expect(testBoolean2).to.be.equal(true);
+            done();
         };
-        service.io(EVENT, changeBooleanCallbackSio);
-
-        service.on(EVENT, changeBooleanCallbackOn);
-
         service.handleSockets();
         const addr = httpServer.address() as AddressInfo;
         port = addr.port;
 
-        clientSocket = Client(`http://localhost:${port}`);
-        clientSocket.on('connect', done);
-        setTimeout(() => {
-            clientSocket.open();
-            clientSocket.emit(EVENT);
-            expect(testBoolean1).to.be.equal(true);
-            expect(testBoolean2).to.be.equal(true);
-            clientSocket.close();
-            done();
-        }, timeoutWait);
+        service.io(EVENT, changeBooleanCallbackSio);
+
+        service.on(EVENT, changeBooleanCallbackOn);
+
+        clientSocket.emit(EVENT);
     });
+
     it('emitRoom() should send information to the room', (done) => {
         const ROOM = '0';
         const EVENT_TEST = 'TEST';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Coordinate } from '@common/coordinate';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Coordinate } from '@common/interfaces/coordinate';
 import { ClientSocketService } from './client-socket.service';
 
 @Injectable({

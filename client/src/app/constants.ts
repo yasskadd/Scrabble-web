@@ -1,6 +1,8 @@
 export const TOTAL_COLUMNS = 16;
 export const TOTAL_ROWS = 16;
 
+export const TOTAL_TILES_IN_COLUMN = TOTAL_COLUMNS - 1;
+export const TOTAL_TILES_IN_ROW = TOTAL_ROWS - 1;
 export const INVALID_INDEX = -1;
 
 export const GRID_CANVAS_WIDTH = 600;
@@ -36,3 +38,4 @@ export const LIGHT_BLUE = '#cee7f7';
 export const DARK_BLUE = '#93cff1';
 export const PINK = '#f0b8b8';
 export const RED = '#fe6e54';
+export const GREEN = '#60E961';

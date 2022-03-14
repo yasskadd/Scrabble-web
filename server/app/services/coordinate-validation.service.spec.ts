@@ -1,9 +1,9 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Gameboard } from '@app/classes/gameboard.class';
-import { CommandInfo } from '@app/command-info';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { CommandInfo } from '@app/interfaces/command-info';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { BoxMultiplierService } from './box-multiplier.service';
@@ -191,7 +191,7 @@ describe('Coordinate validation service', () => {
         it('should not call getCoord with specific arguments if coordinate.y or coordinate.x equals 1', () => {
             const spyGetCoord = Sinon.spy(gameboard, 'getCoord');
             const arg1 = new LetterTile(upLeftCoord.x, upLeftCoord.y - 1, {} as Letter);
-            const arg2 = new LetterTile(upLeftCoord.x + 1, upLeftCoord.y, {} as Letter);
+            const arg2 = new LetterTile(upLeftCoord.x - 1, upLeftCoord.y, {} as Letter);
             coordinateValidation['isThereAdjacentLetters'](upLeftCoord, gameboard);
             expect(spyGetCoord.calledWithExactly(arg1)).to.equal(false);
             expect(spyGetCoord.calledWithExactly(arg2)).to.equal(false);
@@ -200,7 +200,7 @@ describe('Coordinate validation service', () => {
         it('should not call getCoord with specific arguments if coordinate.y or coordinate.x equals 15', () => {
             const spyGetCoord = Sinon.spy(gameboard, 'getCoord');
             const arg1 = new LetterTile(downRightCoord.x, downRightCoord.y + 1, {} as Letter);
-            const arg2 = new LetterTile(downRightCoord.x - 1, downRightCoord.y, {} as Letter);
+            const arg2 = new LetterTile(downRightCoord.x + 1, downRightCoord.y, {} as Letter);
             coordinateValidation['isThereAdjacentLetters'](downRightCoord, gameboard);
             expect(spyGetCoord.calledWithExactly(arg1)).to.equal(false);
             expect(spyGetCoord.calledWithExactly(arg2)).to.equal(false);

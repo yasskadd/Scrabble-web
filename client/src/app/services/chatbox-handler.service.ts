@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/interfaces/chatbox-message';
-import { Coordinate } from '@common/coordinate';
-import { Letter } from '@common/letter';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
 import { ClientSocketService } from './client-socket.service';
 import { CommandHandlerService } from './command-handler.service';
 import { GameClientService } from './game-client.service';
@@ -17,8 +17,8 @@ const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
 interface CommandInfo {
     firstCoordinate: Coordinate;
-    direction: boolean;
-    lettersPlaced: string;
+    direction: string;
+    lettersPlaced: string[];
 }
 @Injectable({
     providedIn: 'root',
@@ -95,9 +95,9 @@ export class ChatboxHandlerService {
             clueCommand.forEach((clue) => {
                 this.messages.push({
                     type: 'system-message',
-                    data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${clue.direction} ${
-                        clue.lettersPlaced
-                    }`,
+                    data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${
+                        clue.direction
+                    } ${clue.lettersPlaced.join('')}`,
                 });
             });
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { BoxMultiplierService } from '@app/services/box-multiplier.service';
-import { Letter } from '@common/letter';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
@@ -93,5 +93,17 @@ describe('gameboard', () => {
         const coord = new LetterTile(16, 16, {} as Letter);
         gameboard.placeLetter(coord);
         expect(gameboard.getCoord(coord)).to.eql({} as LetterTile);
+    });
+
+    context('findAnchors() tests', () => {
+        beforeEach(() => {
+            gameboard.placeLetter(new LetterTile(7, 7, {} as Letter));
+        });
+
+        // TODO: Fix findAnchors() test
+        it('findAnchors() should return correct anchors tiles', () => {
+            const foundTiles: LetterTile[] = gameboard.findAnchors();
+            expect(foundTiles.length).to.be.greaterThan(0);
+        });
     });
 });

@@ -1,19 +1,30 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterTile } from '@common/letter-tile.class';
+import * as letterTypes from '@app/letter-reserve';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
+
+// TODO: TEMPORARY WAITING FOR REFACTOR
+const setPoints = (tile: LetterTile) => {
+    const letterType = letterTypes.LETTERS.filter((letter) => {
+        if (tile.letter.value === tile.letter.value.toUpperCase()) return letter.value === '*';
+        return letter.value === tile.letter.value.toLocaleLowerCase();
+    })[0];
+    tile.letter = { value: tile.letter.value, points: letterType.points } as Letter;
+};
 
 export class Word {
     isHorizontal: boolean;
     isValid: boolean;
-    points: number = 0;
-    isFirstWord: boolean = false;
+    points: number;
     coords: LetterTile[];
-    stringFormat: string = '';
+    stringFormat: string;
 
     constructor(isHorizontal: boolean, coordList: LetterTile[]) {
         this.isHorizontal = isHorizontal;
         this.isValid = false;
-        this.coords = coordList;
         this.points = 0;
+        this.coords = coordList;
+        this.stringFormat = '';
         coordList.forEach((coord: LetterTile) => {
             this.stringFormat += coord.letter.value?.toLowerCase();
         });
@@ -21,6 +32,9 @@ export class Word {
 
     calculatePoints(gameboard: Gameboard) {
         const letterCoords: LetterTile[] = this.coords;
+        letterCoords.forEach((tile) => {
+            setPoints(tile);
+        });
         this.addLetterPoints(letterCoords, gameboard);
         this.addWordMultiplierPoints(letterCoords, gameboard);
         return this.points;

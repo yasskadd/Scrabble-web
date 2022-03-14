@@ -1,4 +1,6 @@
-<div #info class="rack-info">
+<div class="rack-info" #info>
+    <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>
+    <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
     <div id="player-letters">
         <div
             *ngFor="let letter of rack; index as i"
@@ -14,8 +16,6 @@
             <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
         </div>
     </div>
-    <button mat-raised-button disabled>valider le mot</button>
-    <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
     <button
         id="exchange"
         mat-raised-button
@@ -24,5 +24,5 @@
     >
         échanger
     </button>
-    <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>
+    <button mat-raised-button (click)="this.playPlacedLetters()" [disabled]="this.letterPlacementService.noLettersPlaced()">Jouer</button>
 </div>

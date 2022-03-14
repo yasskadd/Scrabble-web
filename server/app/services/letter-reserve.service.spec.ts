@@ -1,5 +1,5 @@
 import * as letterTypes from '@app/letter-reserve';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { LetterReserveService } from './letter-reserve.service';
 
