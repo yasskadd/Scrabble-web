@@ -95,14 +95,11 @@ describe('Game tests', () => {
             expect(turn.end.called).to.be.true;
         });
 
-        // 2
-        it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
+        it.only('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
-            const play: string | PlaceLettersReturn = game.play(player2, commandInfo);
-            expect(play).to.equal('InvalidMessage');
+            expect(game.play(player2, commandInfo)).to.equal('InvalidMessage');
             expect(turn.resetSkipCounter.called).to.be.true;
-            expect(turn.end.called).to.be.true;
         });
 
         // 3

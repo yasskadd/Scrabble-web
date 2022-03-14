@@ -55,9 +55,6 @@ export class Game {
                 return errorType as string;
             }
             placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
-            console.log('PLACE LETTERS RETURN VALUE : ' + placeLettersReturn.hasPassed);
-            console.log('PLACE LETTERS RETURN VALUE : ' + placeLettersReturn.gameboard);
-            console.log('PLACE LETTERS RETURN VALUE : ' + placeLettersReturn.invalidWords);
 
             if (placeLettersReturn.hasPassed === true) {
                 this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
@@ -70,7 +67,6 @@ export class Game {
                 this.turn.end();
             }
         }
-        console.log('MA');
         return placeLettersReturn;
     }
 
