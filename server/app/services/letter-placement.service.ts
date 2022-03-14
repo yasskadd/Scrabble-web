@@ -34,8 +34,6 @@ export class LetterPlacementService {
         if (!this.areLettersInRack(commandInfo.letters, player)) return [{} as Word, ErrorType.lettersNotInRack];
 
         const commandWord = new Word(commandInfo, gameboard);
-        console.log(commandInfo.letters);
-        console.log(commandWord);
         if (!commandWord.isValid) return [{} as Word, ErrorType.invalidWordBuild];
         if (!this.wordIsPlacedCorrectly(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
 

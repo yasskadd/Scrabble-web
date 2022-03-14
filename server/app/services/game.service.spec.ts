@@ -113,7 +113,7 @@ describe('Game tests', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns([false, game.gameboard, {} as Word[]]);
+            letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: {} as Word[] });
             const play = game.play(player1, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
         });
@@ -122,7 +122,7 @@ describe('Game tests', () => {
             const expectedGameboard = game.gameboard;
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns([false, game.gameboard, {} as Word[]]);
+            letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: {} as Word[] });
             const play = game.play(player2, commandInfo);
             expect(play[1]).to.equal(expectedGameboard);
         });
@@ -137,7 +137,7 @@ describe('Game tests', () => {
         it('play() should call generateLetter of letterReserveService if placeLetters of letterPlacementService return true', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns([true, game.gameboard, {} as Word[]]);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             game.play(player1, commandInfo);
             expect(letterReserveService.generateLetters.called).to.be.true;
         });
@@ -146,7 +146,7 @@ describe('Game tests', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns([true, game.gameboard, {} as Word[]]);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
             game.play(player1, commandInfo);
@@ -157,7 +157,7 @@ describe('Game tests', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns([true, game.gameboard, {} as Word[]]);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
             game.play(player2, commandInfo);
@@ -167,7 +167,7 @@ describe('Game tests', () => {
         it('play() should call resetSkipCounter and end of turn if the rack of the player1 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns([true, game.gameboard, {} as Word[]]);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserveService.isEmpty.returns(false);
             game.play(player1, commandInfo);
             expect(turn.end.called).to.be.true;
@@ -177,7 +177,7 @@ describe('Game tests', () => {
         it('play() should call resetSkipCounter and end of turn if the rack of the player2 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns([true, game.gameboard, {} as Word[]]);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             player2.rack = [];
             game.play(player2, commandInfo);
             expect(turn.end.called).to.be.true;

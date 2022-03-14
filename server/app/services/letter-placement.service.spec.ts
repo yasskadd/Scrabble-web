@@ -33,15 +33,6 @@ describe('Letter Placement Service', () => {
             letters: ['a', 'l', 'l'],
         };
 
-        word = new Word(
-            {
-                firstCoordinate: { x: 1, y: 1 },
-                isHorizontal: true,
-                letters: ['t', 'o', 'u', 't'],
-            },
-            gameboard,
-        );
-
         gameboard = new Gameboard();
         dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService);
         placementService = new LetterPlacementService(dictionaryValidation as unknown as DictionaryValidationService);
@@ -251,23 +242,23 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return false and the gameboard if validateWord returns 0', () => {
-            dictionaryValidation.validateWord.returns([0, {} as Word[]]);
+            dictionaryValidation.validateWord.returns({ points: 0, invalidWords: [] as Word[] });
             expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([false, gameboard, {} as Word]);
         });
 
         it('should change player score if validateWord() doesnt return 0', () => {
-            dictionaryValidation.validateWord.returns([points, {} as Word[]]);
+            dictionaryValidation.validateWord.returns({ points: points, invalidWords: {} as Word[] });
             placementService.placeLetters(word, commandInfo, player, gameboard);
             expect(player.score).to.equal(points);
         });
 
         it('should return true and gameboard if validateWord() doesnt return 0', () => {
-            dictionaryValidation.validateWord.returns([points, {} as Word[]]);
+            dictionaryValidation.validateWord.returns({ points: points, invalidWords: {} as Word[] });
             expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql([true, gameboard, {} as Word]);
         });
 
         it('should give a bonus of 50 points', () => {
-            dictionaryValidation.validateWord.returns([points, {} as Word[]]);
+            dictionaryValidation.validateWord.returns({ points: points, invalidWords: {} as Word[] });
             placementService.placeLetters(word, commandInfo, player, gameboard);
             expect(player.score).to.equal(points + bonusPoint);
         });

@@ -113,7 +113,6 @@ export class GamesHandler {
         const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as RealPlayer;
         const play = player.placeLetter(commandInfo) as PlaceLettersReturn | string;
-        console.log(play);
 
         if (typeof play === 'string') {
             socket.emit(SocketEvents.ImpossibleCommandError, play);
