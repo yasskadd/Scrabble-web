@@ -11,7 +11,7 @@ import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
 import { ErrorType, LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 
-describe.only('Game tests', () => {
+describe('Game tests', () => {
     let player1: Player;
     let player2: Player;
     let turn: SinonStubbedInstance<Turn> & Turn;
@@ -84,11 +84,13 @@ describe.only('Game tests', () => {
             };
         });
 
-        // 1
-        it('play() should return invalid message, resetSkipCounter and endTurn() if the command word does not exist in dictionary for player1 on play', () => {
+        it('play() should return ReturnLetterReturn object and resetSkipCounter and endTurn() if the command word does not exist in dictionary for player1 on play', () => {
+            game.gameboard.placeLetter({ x: 10, y: 8 }, 'a');
+            const invalidWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
-            expect(game.play(player1, commandInfo)[0]).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
+            letterPlacementService.globalCommandVerification.returns([invalidWord, null]);
+            letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
+            expect(game.play(player1, commandInfo)).to.eql({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
