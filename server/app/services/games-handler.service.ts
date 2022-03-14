@@ -117,11 +117,11 @@ export class GamesHandler {
         if (typeof play === 'string') {
             socket.emit(SocketEvents.ImpossibleCommandError, play);
         } else if (typeof play !== 'string') {
-            const playerInfo: PlayInfo = {
+            const playInfo: PlayInfo = {
                 gameboard: play.gameboard.gameboardTiles,
                 activePlayer: player.game.turn.activePlayer,
             };
-            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playerInfo);
+            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playInfo);
             this.updatePlayerInfo(socket, player.room, player.game);
 
             if (!play.hasPassed) {
