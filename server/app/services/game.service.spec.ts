@@ -104,7 +104,7 @@ describe('Game tests', () => {
             expect(turn.resetSkipCounter.called).to.be.true;
         });
 
-        it.only('play() should return the gameboard if the command is valid of player1 on play', () => {
+        it('play() should return the gameboard if the command is valid of player1 on play', () => {
             const validWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([validWord, null]);
@@ -114,17 +114,13 @@ describe('Game tests', () => {
         });
 
         // 4
-        it('play() should return the gameboard if the command is valid of player2 on play', () => {
-            const expectedGameboard = game.gameboard;
+        it.only('play() should return the gameboard if the command is valid of player2 on play', () => {
+            const validWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({
-                hasPassed: true,
-                gameboard: game.gameboard,
-                invalidWords: {} as Word[],
-            } as PlaceLettersReturn);
-            const play: string | PlaceLettersReturn = game.play(player2, commandInfo);
-            expect(play[1]).to.equal(expectedGameboard);
+            letterPlacementService.globalCommandVerification.returns([validWord, null]);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
+
+            expect(game.play(player2, commandInfo)).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
         });
 
         // 5
