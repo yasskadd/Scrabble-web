@@ -3,6 +3,7 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
+import { RackManipulationService } from '@app/services/rack-manipulation.service';
 import { Letter } from '@common/letter';
 import { Subject } from 'rxjs';
 
@@ -14,12 +15,6 @@ import { Subject } from 'rxjs';
 export class PlayerRackComponent implements OnInit {
     @Input()
     keyboardParentSubject: Subject<KeyboardEvent>;
-
-    @Input()
-    clickParentSubject: Subject<EventTarget>;
-
-    // @Input()
-    // scrollParentSubject: Subject<EventTarget>;
 
     @ViewChild('info', { static: false }) info: ElementRef;
 
@@ -40,10 +35,22 @@ export class PlayerRackComponent implements OnInit {
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
+        public rackManipulation: RackManipulationService,
         public gameClient: GameClientService,
         private tmpService: GridService,
         private eRef: ElementRef,
     ) {}
+
+    @HostListener('mousewheel', ['$event'])
+    onScrollEvent(event: WheelEvent) {
+        this.cancel();
+        if (event.deltaY < 0) {
+            this.buttonPressed = 'ArrowLeft';
+        } else {
+            this.buttonPressed = 'ArrowRight';
+        }
+        this.repositionRack();
+    }
 
     @HostListener('window: click', ['$event'])
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
@@ -51,30 +58,6 @@ export class PlayerRackComponent implements OnInit {
             this.cancel();
         }
     }
-
-    // @HostListener('scroll', ['$event'])
-    // onScroll(event: Event) {
-    //     // alert('scrolling!');
-    //     // console.log(this.getYPosition(event));
-    //     console.log('scrolling!');
-    //     console.log(event.composed);
-    //     // console.log(this.getYPosition(event));
-    // }
-
-    // @HostListener('window:scroll', ['$event'])
-    // onScrollEvent(event: Event) {
-    //     // console.log($event['Window']);
-    //     console.log('scrolling');
-    //     console.log(window.scrollY);
-    //     if (window.scrollY > this.previousScrollPosition) {
-    //         this.moveRight();
-    //         this.previousScrollPosition = window.scrollY;
-    //         return;
-    //     }
-    //     this.moveLeft();
-    //     this.previousScrollPosition = window.scrollY;
-    //     return;
-    // }
 
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
@@ -97,7 +80,6 @@ export class PlayerRackComponent implements OnInit {
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
     }
-
     selectManipulation(event: KeyboardEvent) {
         this.duplicates = [];
         this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
@@ -150,6 +132,8 @@ export class PlayerRackComponent implements OnInit {
                 this.lettersToExchange.splice(index, 1);
             }
         }
+
+        // this.rackManipulation.selectExchange(event, letter);
     }
 
     onLeftClick(event: MouseEvent, letter: number) {
