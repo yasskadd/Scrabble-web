@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayerRackComponent } from '@app/components/player-rack/player-rack.component';
