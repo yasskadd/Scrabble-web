@@ -12,9 +12,9 @@ import * as fs from 'fs';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('@app/../assets/dictionary.json', 'utf8'));
+const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
-describe('Dictionary Validation Service', () => {
+describe.only('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
 
@@ -110,7 +110,11 @@ describe('Dictionary Validation Service', () => {
     });
 
     it('should return 0 points when validateWord() is called and wordList is invalid', () => {
-        expect(dictionaryValidationService.validateWord(invalidWord1, gameboard)).to.equal(0);
+        expect(dictionaryValidationService.validateWord(invalidWord1, gameboard).points).to.equal(0);
+    });
+
+    it('should return array with invalidWord when validateWord() is called and wordList is invalid', () => {
+        expect(dictionaryValidationService.validateWord(invalidWord1, gameboard).invalidWords[0]).to.eql(invalidWord1);
     });
 
     context('Trie Dictionary tests', () => {
