@@ -90,26 +90,27 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([invalidWord, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
+
             expect(game.play(player1, commandInfo)).to.eql({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
             expect(turn.resetSkipCounter.called).to.be.true;
             expect(turn.end.called).to.be.true;
         });
 
-        it.only('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
+        it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
+
             expect(game.play(player2, commandInfo)).to.equal('InvalidMessage');
             expect(turn.resetSkipCounter.called).to.be.true;
         });
 
-        // 3
-        it('play() should return the gameboard if the command is valid of player1 on play', () => {
-            const expectedGameboard = game.gameboard;
+        it.only('play() should return the gameboard if the command is valid of player1 on play', () => {
+            const validWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
-            const play: string | PlaceLettersReturn = game.play(player1, commandInfo);
-            expect(play[1]).to.equal(expectedGameboard);
+            letterPlacementService.globalCommandVerification.returns([validWord, null]);
+            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
+
+            expect(game.play(player1, commandInfo)).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
         });
 
         // 4
