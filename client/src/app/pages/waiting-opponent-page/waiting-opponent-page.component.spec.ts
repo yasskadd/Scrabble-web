@@ -42,6 +42,7 @@ const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
 const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const MULTIPLAYER_CREATE_ROOM_ROUTE = 'multijoueur/creer/classique';
+const SOLO_ROUTE = 'solo/classique';
 const MULTIPLAYER_JOIN_ROOM_ROUTE = 'multijoueur/rejoindre/classique';
 const MULTIPLAYER_GAME_PAGE = 'game';
 describe('WaitingOpponentPageComponent', () => {
@@ -77,6 +78,7 @@ describe('WaitingOpponentPageComponent', () => {
                     { path: MULTIPLAYER_JOIN_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_GAME_PAGE, component: StubComponent },
                     { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
+                    { path: SOLO_ROUTE, component: StubComponent },
                 ]),
             ],
 
@@ -262,17 +264,6 @@ describe('WaitingOpponentPageComponent', () => {
         expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalled();
     });
 
-    it('should open a dialog box if the soloMode method is called', () => {
-        const dialogSpy = spyOn(component.dialog, 'open');
-        component.soloMode();
-        expect(dialogSpy).toHaveBeenCalled();
-    });
-
-    it('should call gameConfiguration.setGameUnavailable if the soloMode method is called', () => {
-        component.soloMode();
-        expect(gameConfigurationServiceSpy.setGameUnavailable).toHaveBeenCalled();
-    });
-
     it('should call joinGamePage when the isGameStarted value is true', () => {
         const spy = spyOn(component, 'joinGamePage');
         gameConfigurationServiceSpy.isGameStarted.next(true);
@@ -292,6 +283,20 @@ describe('WaitingOpponentPageComponent', () => {
         gameConfigurationServiceSpy.errorReason.next('');
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('soloMode() should navigate to solo/classique ', fakeAsync(() => {
+        const spyRouter = spyOn(router, 'navigate');
+        const expectedURL = '/' + SOLO_ROUTE;
+        component.soloMode();
+        tick();
+        fixture.detectChanges();
+        expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
+    }));
+
+    it('should call gameConfiguration.removeRoom if the soloMode method is called', () => {
+        component.soloMode();
+        expect(gameConfigurationServiceSpy.removeRoom).toHaveBeenCalled();
     });
 
     it('should call exitRoom when there is a errorReason', () => {

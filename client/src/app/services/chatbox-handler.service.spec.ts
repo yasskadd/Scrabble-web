@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
@@ -426,16 +426,17 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(message1);
     });
 
-    it('should emit 3 messages to show in the chatBox when the game is finish', () => {
+    it('should emit 3 messages to show in the chatBox when the game is finish', fakeAsync(() => {
         const message1 = { type: 'system-message', data: 'Fin de la partie : lettres restantes' };
         const message2 = { type: 'system-message', data: `${gameClientServiceSpy.playerOne.name} : crp` };
         const message3 = { type: 'system-message', data: `${gameClientServiceSpy.secondPlayer.name} : wkt` };
 
         service.endGameMessage();
+        tick();
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);
-    });
+    }));
 
     it('should add a message emit from the server when gameMessage event is emit', () => {
         const messageReceive = '!passer';
