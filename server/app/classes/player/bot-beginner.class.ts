@@ -19,7 +19,6 @@ const PROB_7 = 7;
 const TIME_SKIP = 20;
 const SECOND_3 = 3000;
 const SECOND_1 = 1000;
-const SECOND = 1000;
 
 export interface BotInformation {
     timer: number;
@@ -42,6 +41,7 @@ export class BeginnerBot extends Player {
         this.room = botInfo.roomId;
         this.timer = botInfo.timer;
         this.playedTurned = false;
+        this.countUp = 0;
     }
 
     setGame(game: Game) {
@@ -69,7 +69,7 @@ export class BeginnerBot extends Player {
             setTimeout(() => {
                 if (randomNumber === 1) this.skipTurn();
                 else this.exchangeLetter();
-            }, 3 * SECOND - this.countUp * SECOND);
+            }, SECOND_3 - this.countUp * SECOND_1);
             return;
         }
         this.placeLetter();
@@ -102,7 +102,7 @@ export class BeginnerBot extends Player {
         const commandInfoList = this.addCommandInfoToList(commandInfoMap, this.getRandomNumber(MAX_NUMBER));
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
         if (this.countUp >= 3 && this.countUp < TIME_SKIP) this.play(randomCommandInfo);
-        else if (this.countUp < 3) setTimeout(() => this.play(randomCommandInfo), 3 * SECOND - this.countUp * SECOND);
+        else if (this.countUp < 3) setTimeout(() => this.play(randomCommandInfo), SECOND_3 - this.countUp * SECOND_1);
     }
 
     private play(commandInfo: CommandInfo) {
@@ -110,16 +110,10 @@ export class BeginnerBot extends Player {
             this.skipTurn();
             return;
         }
-        if (this.countUp >= 3 && this.countUp <= TIME_SKIP) {
-            this.emitPlaceCommand(commandInfo);
-            return;
-        }
-        if (this.countUp < 3) {
-            setTimeout(() => {
-                this.emitPlaceCommand(commandInfo);
-            }, SECOND_3 - this.countUp * SECOND_1);
-            return;
-        }
+        this.emitPlaceCommand(commandInfo);
+        this.game.play(this, commandInfo);
+        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
+        this.playedTurned = true;
     }
 
     private processWordSolver() {

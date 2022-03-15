@@ -3,6 +3,8 @@
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
+import { SocketManager } from '@app/services/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
@@ -16,6 +18,9 @@ describe.only('BotBeginner', () => {
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
     let stubMathRandom: Sinon.SinonStub<[], number>;
+    let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService>;
+    let socketManagerStub: Sinon.SinonStubbedInstance<SocketManager>;
+
     before(() => {
         stubMathRandom = Sinon.stub(Math, 'random');
     });
@@ -25,6 +30,10 @@ describe.only('BotBeginner', () => {
         gameStub.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         botInfo = { timer: 60, roomId: 'testRoom' };
         botBeginner = new BeginnerBot(true, 'robot', botInfo);
+        wordSolverStub = Sinon.createStubInstance(WordSolverService);
+        botBeginner['wordSolver'] = wordSolverStub as never;
+        socketManagerStub = Sinon.createStubInstance(SocketManager);
+        botBeginner['socketManager'] = socketManagerStub as never;
     });
 
     context('setGame() tests', () => {
@@ -279,10 +288,9 @@ describe.only('BotBeginner', () => {
         });
     });
 
-    it.only('processWordSolver() should call setGameboard() and commandInfoScore()', () => {
-        const stubCommandInfoScore = Sinon.stub(botBeginner['wordSolver'], 'commandInfoScore');
-        const stubSetGameboard = Sinon.stub(botBeginner['wordSolver'], 'setGameboard');
+    it('processWordSolver() should call setGameboard() and commandInfoScore()', () => {
+        botBeginner.setGame(gameStub);
         botBeginner['processWordSolver']();
-        expect(stubCommandInfoScore.calledOnce && stubSetGameboard.calledOnce).to.equal(true);
+        expect(wordSolverStub.commandInfoScore.calledOnce && wordSolverStub.setGameboard.calledOnce).to.equal(true);
     });
 });
