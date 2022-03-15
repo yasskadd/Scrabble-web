@@ -10,7 +10,7 @@ import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 
-describe.only('Game tests', () => {
+describe('Game tests', () => {
     let player1: Player;
     let player2: Player;
     let turn: SinonStubbedInstance<Turn> & Turn;

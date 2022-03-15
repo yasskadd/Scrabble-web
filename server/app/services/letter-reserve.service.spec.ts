@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { spy } from 'sinon';
 import { LetterReserveService } from './letter-reserve.service';
 
-describe.only('LetterReserveService', () => {
+describe('LetterReserveService', () => {
     let letterReserveService: LetterReserveService;
     let sampleRack: Letter[];
     let emptyRack: Letter[];
