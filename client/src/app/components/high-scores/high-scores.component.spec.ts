@@ -1,12 +1,12 @@
 import { HttpClientModule } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpHandlerService } from '@app/services/http-handler.service';
 import { of } from 'rxjs';
 import { HighScoresComponent } from './high-scores.component';
-
+const TIMEOUT = 3001;
 const TEST_ERROR = 'Requête Impossible a faire au serveur';
 
 describe('HighScoresComponent', () => {
@@ -53,6 +53,22 @@ describe('HighScoresComponent', () => {
         expect(httpHandlerSpy.getClassicHighScore).toHaveBeenCalled();
         expect(httpHandlerSpy.getLOG2990HighScore).toHaveBeenCalled();
     });
+
+    it('getHighScores should not call openSnackbar if we receive data from the server after 3 seconds', fakeAsync(() => {
+        const spy = spyOn(component, 'openSnackBar');
+        component.getHighScores();
+        tick(TIMEOUT);
+        expect(spy).not.toHaveBeenCalledWith(TEST_ERROR);
+    }));
+
+    it('getHighScores should  call openSnackbar if we do not receive data from the server after 3 seconds', fakeAsync(() => {
+        const spy = spyOn(component, 'openSnackBar');
+        component.getHighScores();
+        component.highScoreClassic = undefined;
+        component.highScoreLOG29990 = undefined;
+        tick(TIMEOUT);
+        expect(spy).toHaveBeenCalledWith(TEST_ERROR);
+    }));
 
     it('openSnackBar should call the MatSnackBar open method', () => {
         const matSnackBarSpy = spyOn(matSnackBar, 'open').and.stub();

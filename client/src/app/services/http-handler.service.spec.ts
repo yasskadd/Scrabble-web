@@ -52,4 +52,14 @@ describe('HttpHandlerService', () => {
         // actually send the request
         req.flush(expectedMessage);
     });
+
+    it('should handle http error safely', () => {
+        service.getLOG2990HighScore().subscribe((response: HighScores[]) => {
+            expect(response).toEqual([]);
+        }, fail);
+
+        const req = httpMock.expectOne(`${baseUrl}/highScore/log2990`);
+        expect(req.request.method).toBe('GET');
+        req.error(new ErrorEvent('Random error occurred'));
+    });
 });
