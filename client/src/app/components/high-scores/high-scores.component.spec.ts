@@ -7,7 +7,7 @@ import { HttpHandlerService } from '@app/services/http-handler.service';
 import { of } from 'rxjs';
 import { HighScoresComponent } from './high-scores.component';
 const TIMEOUT = 3001;
-const TEST_ERROR = 'Requête Impossible a faire au serveur';
+const TEST_ERROR = "Impossible de recevoir l'information du serveur";
 
 describe('HighScoresComponent', () => {
     let component: HighScoresComponent;

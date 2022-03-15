@@ -53,11 +53,13 @@ export class ChatboxHandlerService {
     }
 
     endGameMessage(): void {
-        const myLetterLeft = this.getAllLetter(this.gameClient.playerOne.rack as never);
-        const opponentLetterLeft = this.getAllLetter(this.gameClient.secondPlayer.rack as never);
-        this.messages.push({ type: 'system-message', data: 'Fin de la partie : lettres restantes' });
-        this.messages.push({ type: 'system-message', data: `${this.gameClient.playerOne.name} : ${myLetterLeft}` });
-        this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
+        setTimeout(() => {
+            const myLetterLeft = this.getAllLetter(this.gameClient.playerOne.rack as never);
+            const opponentLetterLeft = this.getAllLetter(this.gameClient.secondPlayer.rack as never);
+            this.messages.push({ type: 'system-message', data: 'Fin de la partie : lettres restantes' });
+            this.messages.push({ type: 'system-message', data: `${this.gameClient.playerOne.name} : ${myLetterLeft}` });
+            this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
+        }, 0);
     }
 
     resetMessage() {
