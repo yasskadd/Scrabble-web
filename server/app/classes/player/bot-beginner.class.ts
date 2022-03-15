@@ -55,11 +55,11 @@ export class BeginnerBot extends Player {
             if (this.countUp === TIME_SKIP && this.name === this.game.turn.activePlayer) this.skipTurn();
         });
         this.game.turn.endTurn.subscribe((activePlayer) => {
+            this.playedTurned = false;
             if (activePlayer === this.name) {
                 this.countUp = 0;
                 this.choosePlayMove();
             }
-            this.playedTurned = false;
         });
     }
 
@@ -96,10 +96,14 @@ export class BeginnerBot extends Player {
         this.playedTurned = true;
     }
 
+    // TODO : maybe make a function for waiting till 3 seconds?
     placeLetter() {
         const commandInfoMap = this.processWordSolver();
-        if (commandInfoMap.size === 0) return;
         const commandInfoList = this.addCommandInfoToList(commandInfoMap, this.getRandomNumber(MAX_NUMBER));
+        if (commandInfoList.length === 0) {
+            setTimeout(() => this.skipTurn(), SECOND_3 - this.countUp * SECOND_1);
+            return;
+        }
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
         if (this.countUp >= 3 && this.countUp < TIME_SKIP) this.play(randomCommandInfo);
         else if (this.countUp < 3) setTimeout(() => this.play(randomCommandInfo), SECOND_3 - this.countUp * SECOND_1);
@@ -121,7 +125,7 @@ export class BeginnerBot extends Player {
         return this.wordSolver.commandInfoScore(this.wordSolver.findAllOptions(this.rackToString()));
     }
 
-    private addCommandInfoToList(commandInfoMap: Map<CommandInfo, number>, randomNumber: number) {
+    private addCommandInfoToList(commandInfoMap: Map<CommandInfo, number>, randomNumber: number): CommandInfo[] {
         const commandInfoList = new Array();
         if (this.inRange(randomNumber, 1, PROB_4)) {
             commandInfoMap.forEach((value, key) => {
@@ -136,7 +140,6 @@ export class BeginnerBot extends Player {
                 if (this.inRange(value, RANGE_13, RANGE_18)) commandInfoList.push(key);
             });
         }
-        if (!commandInfoList.length) this.skipTurn();
         return commandInfoList;
     }
 
