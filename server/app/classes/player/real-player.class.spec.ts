@@ -23,10 +23,8 @@ describe('RealPlayer', () => {
     it('placeLetter() should call game.play() and return the result', () => {
         const gameStub = sinon.createStubInstance(Game);
         player.game = gameStub as unknown as Game;
-        gameStub.play.returns({ hasPassed: true, gameboard: {} as Gameboard, invalidWords: {} as Word[] });
-        const command = {} as CommandInfo;
-        const result = player.placeLetter(command);
-        expect(result).to.deep.equal([true, {} as Gameboard]);
+        gameStub.play.returns({ hasPassed: true, gameboard: {} as Gameboard, invalidWords: [] as Word[] });
+        expect(player.placeLetter({} as CommandInfo)).to.eql({ hasPassed: true, gameboard: {} as Gameboard, invalidWords: [] as Word[] });
         expect(gameStub.play.called).to.equal(true);
     });
 

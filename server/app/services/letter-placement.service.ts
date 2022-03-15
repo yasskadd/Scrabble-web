@@ -10,7 +10,7 @@ import { DictionaryValidationService } from './dictionary-validation.service';
 export enum ErrorType {
     commandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
     lettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
-    invalidFirstWordPlacement = "Le mot doit etre attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
+    invalidFirstWordPlacement = "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
     invalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
 }
 
