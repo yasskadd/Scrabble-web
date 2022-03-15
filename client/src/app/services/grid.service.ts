@@ -234,16 +234,15 @@ export class GridService {
         const weightSize = this.letterSize * constants.LETTER_WEIGHT_RATIO;
         this.setFontSize(weightSize);
         this.gridContext.fillStyle = 'black';
-        this.gridContext.textAlign = 'left';
+        this.gridContext.textAlign = 'center';
         this.gridContext.textBaseline = 'middle';
-        const width = this.gridContext.measureText(string).width;
-        const plusX = width * constants.LETTER_WEIGHT_RATIO;
+        const quarterSquareWidth = GridService.halfSquareWidth / 2;
         const halfSize = weightSize / 2;
         this.gridContext.fillText(
             string,
-            GridService.squareWidth * position.x + GridService.halfSquareWidth + plusX,
+            GridService.squareWidth * position.x + GridService.halfSquareWidth + quarterSquareWidth,
             GridService.squareHeight * position.y + halfSize + GridService.halfSquareHeight,
-            weightSize,
+            GridService.halfSquareWidth,
         );
     }
 

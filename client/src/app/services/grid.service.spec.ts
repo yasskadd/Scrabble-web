@@ -89,9 +89,9 @@ describe('GridService', () => {
         expect(drawMiddleTileSpy).toHaveBeenCalled();
     });
 
-    it(' drawLetterPoints should have a middle baseline and left alignment ', () => {
+    it(' drawLetterPoints should have a middle baseline and center alignment ', () => {
         gridService.drawLetterPoints(POSITION_TEST, '1');
-        expect(gridService.gridContext.textAlign).toEqual('left');
+        expect(gridService.gridContext.textAlign).toEqual('center');
         expect(gridService.gridContext.textBaseline).toEqual('middle');
     });
 
@@ -250,12 +250,6 @@ describe('GridService', () => {
         gridService.setFontSize(testFontSize);
         expect(setFontSizeSpy).toHaveBeenCalled();
         expect(gridService.gridContext.font).toBe('23px system-ui');
-    });
-
-    it(' drawLetterPoints should call measureText once', () => {
-        const measureTextSpy = spyOn(gridService.gridContext, 'measureText').and.callThrough();
-        gridService.drawLetterPoints(POSITION_TEST, '6');
-        expect(measureTextSpy).toHaveBeenCalledTimes(1);
     });
 
     it(' getPosition should return the coordinates of the x and y positions of the tile', () => {
