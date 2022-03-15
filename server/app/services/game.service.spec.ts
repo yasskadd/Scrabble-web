@@ -10,11 +10,11 @@ import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 
-describe('Game tests', () => {
+describe.only('Game tests', () => {
     let player1: Player;
     let player2: Player;
     let turn: SinonStubbedInstance<Turn> & Turn;
-    let letterReserveService: SinonStubbedInstance<LetterReserveService>;
+    let letterReserveService: SinonStubbedInstance<LetterReserveService> & LetterReserveService;
     let letterPlacementService: SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
     let game: Game;
 
@@ -24,7 +24,7 @@ describe('Game tests', () => {
         player2 = new Player('player2');
         player2.name = 'OriginalName2';
         turn = createStubInstance(Turn) as SinonStubbedInstance<Turn> & Turn;
-        letterReserveService = createStubInstance(LetterReserveService);
+        letterReserveService = createStubInstance(LetterReserveService) as SinonStubbedInstance<LetterReserveService> & LetterReserveService;
         letterPlacementService = createStubInstance(LetterPlacementService) as SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
         game = new Game(player1, player2, turn, letterReserveService, letterPlacementService);
     });

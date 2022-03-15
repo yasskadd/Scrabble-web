@@ -38,15 +38,20 @@ export class LetterReserveService {
     }
 
     distributeLetter(rack: Letter[]): void {
-        const nLetters = this.lettersReserve.length;
-        let random = Math.floor(Math.random() * nLetters);
-        let letter = this.lettersReserve[random];
-        while (this.lettersReserve[random].quantity === 0) {
-            random = Math.floor(Math.random() * nLetters);
-            letter = this.lettersReserve[random];
+        const tempReserve: Letter[] = [];
+        for (const letter of this.lettersReserve) {
+            for (let i = 0; i < letter.quantity; i++) {
+                tempReserve.push(letter);
+            }
         }
-        this.removeLetter(letter);
-        rack.push(letter);
+
+        this.shuffleArray(tempReserve);
+        const nLetters = tempReserve.length;
+        const random = Math.floor(Math.random() * nLetters);
+        const randomLetter = tempReserve[random];
+
+        this.removeLetter(randomLetter);
+        rack.push(randomLetter);
     }
 
     removeLettersFromRack(toBeRemoved: string[], rack: Letter[]): [Letter[], Letter[]] {
@@ -101,5 +106,14 @@ export class LetterReserveService {
 
     isEmpty(): boolean {
         return this.lettersReserve.length === 0;
+    }
+
+    private shuffleArray(array: Letter[]) {
+        for (let i = 0; i < array.length - 1; i++) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
     }
 }

@@ -13,7 +13,7 @@ import { ReplaySubject } from 'rxjs';
 import * as Sinon from 'sinon';
 import { BeginnerBot, BotInformation } from './bot-beginner.class';
 
-describe.only('BotBeginner', () => {
+describe('BotBeginner', () => {
     let botBeginner: BeginnerBot;
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
