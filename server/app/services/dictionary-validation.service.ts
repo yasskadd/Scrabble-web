@@ -47,7 +47,7 @@ export class DictionaryValidationService {
         else {
             let pointsForTurn = 0;
             foundWords.forEach((foundWord: Word) => {
-                pointsForTurn += foundWord.calculateWordPoints(gameboard);
+                pointsForTurn += foundWord.calculateWordPoints(foundWords[0], gameboard);
             });
             return { points: pointsForTurn, invalidWords: invalidWords[1] };
         }

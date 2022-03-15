@@ -165,8 +165,63 @@ describe('Word', () => {
         });
     });
 
-    // TODO
-    context('isHorizontal is not specified', () => {});
+    context.only('isHorizontal is not specified', () => {
+        let commandInfo: CommandInfo;
+
+        beforeEach(() => {});
+
+        it('setIsHorizontal() should set isHorizontal to true if one letter is right from letter you want to place', () => {
+            commandInfo = {
+                firstCoordinate: { x: 8, y: 8 },
+                isHorizontal: undefined,
+                letters: ['s'],
+            };
+
+            gameboard.placeLetter({ x: 9, y: 8 }, 'i');
+            const word = new Word(commandInfo, gameboard);
+
+            expect(word.isHorizontal).to.be.true;
+        });
+
+        it('setIsHorizontal() should set isHorizontal to true if one letter is left from letter you want to place', () => {
+            commandInfo = {
+                firstCoordinate: { x: 9, y: 8 },
+                isHorizontal: undefined,
+                letters: ['i'],
+            };
+
+            gameboard.placeLetter({ x: 8, y: 8 }, 's');
+            const word = new Word(commandInfo, gameboard);
+
+            expect(word.isHorizontal).to.be.true;
+        });
+
+        it('setIsHorizontal() should set isHorizontal to false if one letter is up from letter you want to place', () => {
+            commandInfo = {
+                firstCoordinate: { x: 8, y: 9 },
+                isHorizontal: undefined,
+                letters: ['i'],
+            };
+
+            gameboard.placeLetter({ x: 8, y: 8 }, 's');
+            const word = new Word(commandInfo, gameboard);
+
+            expect(word.isHorizontal).to.be.false;
+        });
+
+        it('setIsHorizontal() should set isHorizontal to false if one letter is down from letter you want to place', () => {
+            commandInfo = {
+                firstCoordinate: { x: 8, y: 7 },
+                isHorizontal: undefined,
+                letters: ['s'],
+            };
+
+            gameboard.placeLetter({ x: 8, y: 8 }, 'i');
+            const word = new Word(commandInfo, gameboard);
+
+            expect(word.isHorizontal).to.be.false;
+        });
+    });
 
     describe('Find adjacent words', () => {
         let commandInfo: CommandInfo;
@@ -226,63 +281,63 @@ describe('Word', () => {
                 commandInfo = { isHorizontal: true, firstCoordinate: { x: 9, y: 8 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(2);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(2);
             });
 
             it('should correctly calculate points if word is Horizontal and on letterMultiplier by 2', () => {
                 commandInfo = { isHorizontal: true, firstCoordinate: { x: 4, y: 1 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(3);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(3);
             });
 
             it('should correctly calculate points if word is vertical and on letterMultiplier by 2', () => {
                 commandInfo = { isHorizontal: false, firstCoordinate: { x: 4, y: 1 }, letters: ['a', 'a'] };
                 word = new Word({ isHorizontal: false, firstCoordinate: { x: 4, y: 1 }, letters: ['a', 'a'] }, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(3);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(3);
             });
 
             it('should correctly calculate points if word is Horizontal and on letterMultiplier by 3', () => {
                 commandInfo = { isHorizontal: true, firstCoordinate: { x: 6, y: 2 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(4);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(4);
             });
 
             it('should correctly calculate points if word is vertical and on letterMultiplier by 3', () => {
                 commandInfo = { isHorizontal: false, firstCoordinate: { x: 6, y: 1 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(4);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(4);
             });
 
             it('should correctly calculate points if word is Horizontal and on wordMultiplier by 2', () => {
                 commandInfo = { isHorizontal: true, firstCoordinate: { x: 8, y: 8 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(4);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(4);
             });
 
             it('should correctly calculate points if word is vertical and on wordMultiplier by 2', () => {
                 commandInfo = { isHorizontal: false, firstCoordinate: { x: 8, y: 8 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(4);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(4);
             });
 
             it('should correctly calculate points if word is Horizontal and on wordMultiplier by 3', () => {
                 commandInfo = { isHorizontal: true, firstCoordinate: { x: 1, y: 8 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(6);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(6);
             });
 
             it('should correctly calculate points if word is vertical and on wordMultiplier by 3', () => {
                 commandInfo = { isHorizontal: false, firstCoordinate: { x: 1, y: 8 }, letters: ['a', 'a'] };
                 word = new Word(commandInfo, gameboard);
                 placeLettersWordTest(commandInfo, word, gameboard);
-                expect(word.calculateWordPoints(gameboard)).to.equal(6);
+                expect(word.calculateWordPoints(word, gameboard)).to.equal(6);
             });
         });
     });

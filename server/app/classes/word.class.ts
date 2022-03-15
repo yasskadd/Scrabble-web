@@ -16,9 +16,7 @@ export class Word {
         this.isHorizontal = commandInfo.isHorizontal;
         this.points = 0;
 
-        if (commandInfo.isHorizontal === undefined && commandInfo.letters.length === 1) {
-            this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
-        }
+        if (commandInfo.isHorizontal === undefined) this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
 
         const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
         this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
@@ -31,16 +29,20 @@ export class Word {
     }
 
     private upDownIsOccupied(gameboard: Gameboard, firstCoord: Coordinate) {
+        const up = { x: firstCoord.x, y: firstCoord.y - 1 };
+        const down = { x: firstCoord.x, y: firstCoord.y + 1 };
         return (
-            gameboard.getLetterTile({ x: firstCoord.x, y: firstCoord.y-- }).isOccupied ||
-            gameboard.getLetterTile({ x: firstCoord.x, y: firstCoord.y++ }).isOccupied
+            (gameboard.getLetterTile(up).isOccupied && this.isWithinBoardLimits(up)) ||
+            (gameboard.getLetterTile(down).isOccupied && this.isWithinBoardLimits(down))
         );
     }
 
     private leftRightIsOccupied(gameboard: Gameboard, firstCoord: Coordinate) {
+        const left = { x: firstCoord.x - 1, y: firstCoord.y };
+        const right = { x: firstCoord.x + 1, y: firstCoord.y };
         return (
-            gameboard.getLetterTile({ x: firstCoord.x--, y: firstCoord.y }).isOccupied ||
-            gameboard.getLetterTile({ x: firstCoord.x++, y: firstCoord.y }).isOccupied
+            (gameboard.getLetterTile(left).isOccupied && this.isWithinBoardLimits(left)) ||
+            (gameboard.getLetterTile(right).isOccupied && this.isWithinBoardLimits(right))
         );
     }
 
@@ -123,22 +125,23 @@ export class Word {
         if (newWord.wordCoords.length !== 1) allWords.push(newWord);
     }
 
-    public calculateWordPoints(gameboard: Gameboard): number {
-        this.addLetterPoints(gameboard);
-        this.addWordMultiplierPoints(gameboard);
+    public calculateWordPoints(placedWord: Word, gameboard: Gameboard): number {
+        this.addLetterPoints(placedWord, gameboard);
+        this.addWordMultiplierPoints(placedWord, gameboard);
         return this.points;
     }
 
-    private addLetterPoints(gameboard: Gameboard) {
+    private addLetterPoints(placedWord: Word, gameboard: Gameboard) {
         this.wordCoords.forEach((coord: Coordinate) => {
-            if (this.coordHasLetterMultiplier(gameboard, coord) && this.isNewLetterCoord(coord)) this.addLetterPointsWithMultiplier(gameboard, coord);
+            if (this.coordHasLetterMultiplier(gameboard, coord) && this.isNewLetterCoord(placedWord, coord))
+                this.addLetterPointsWithMultiplier(gameboard, coord);
             else this.addLetterPointsWithoutMultiplier(gameboard, coord);
         });
     }
 
-    private addWordMultiplierPoints(gameboard: Gameboard) {
+    private addWordMultiplierPoints(placedWord: Word, gameboard: Gameboard) {
         this.wordCoords.forEach((coord: Coordinate) => {
-            if (this.coordHasWordMultiplier(gameboard, coord) && this.isNewLetterCoord(coord)) this.multiplyWordPoints(gameboard, coord);
+            if (this.coordHasWordMultiplier(gameboard, coord) && this.isNewLetterCoord(placedWord, coord)) this.multiplyWordPoints(gameboard, coord);
         });
     }
 
@@ -162,7 +165,7 @@ export class Word {
         this.points *= gameboard.getLetterTile(coord).multiplier.number;
     }
 
-    private isNewLetterCoord(coord: Coordinate): boolean {
-        return this.newLetterCoords.filter((newLetterCoord) => coord.x === newLetterCoord.x && coord.y === newLetterCoord.y).length === 1;
+    private isNewLetterCoord(placedWord: Word, coord: Coordinate): boolean {
+        return placedWord.newLetterCoords.filter((newLetterCoord) => coord.x === newLetterCoord.x && coord.y === newLetterCoord.y).length === 1;
     }
 }

@@ -116,17 +116,17 @@ export class LetterPlacementService {
         let down;
         let left;
         let right: Coordinate;
-        let lettersWithAdjacency = 0;
+        let lettersWithAdjacencyCount = 0;
 
         letterCoords.forEach((coord) => {
             up = { x: coord.x, y: coord.y-- };
             down = { x: coord.x, y: coord.y++ };
             left = { x: coord.x--, y: coord.y };
             right = { x: coord.x++, y: coord.y };
-            if (this.upDownLeftOrRightAreOccupied(gameboard, up, down, left, right)) lettersWithAdjacency++;
+            if (this.upDownLeftOrRightAreOccupied(gameboard, up, down, left, right)) lettersWithAdjacencyCount++;
         });
 
-        if (!lettersWithAdjacency) return false;
+        if (lettersWithAdjacencyCount === 0) return false;
         else return true;
     }
 
