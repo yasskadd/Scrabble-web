@@ -165,7 +165,7 @@ describe('Word', () => {
         });
     });
 
-    context.only('isHorizontal is not specified', () => {
+    context('isHorizontal is not specified', () => {
         let commandInfo: CommandInfo;
 
         beforeEach(() => {});
@@ -220,6 +220,18 @@ describe('Word', () => {
             const word = new Word(commandInfo, gameboard);
 
             expect(word.isHorizontal).to.be.false;
+        });
+
+        it('setIsHorizontal() should set isValid to false if no letters are next to the one you want to place', () => {
+            commandInfo = {
+                firstCoordinate: { x: 8, y: 8 },
+                isHorizontal: undefined,
+                letters: ['s'],
+            };
+            const word = new Word(commandInfo, gameboard);
+
+            expect(word.isHorizontal).to.equal(undefined);
+            expect(word.isValid).to.be.false;
         });
     });
 
