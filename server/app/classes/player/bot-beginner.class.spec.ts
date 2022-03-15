@@ -98,7 +98,7 @@ describe.only('BotBeginner', () => {
             stubPlaceLetter = Sinon.stub(botBeginner, 'placeLetter');
         });
 
-        it.only('should call skipTurn() if random number is equal to 1', () => {
+        it('should call skipTurn() if random number is equal to 1', () => {
             stubGetRandom.returns(1);
             botBeginner.choosePlayMove();
             expect(spySkipTurn.calledOnce).to.equal(true);
@@ -277,5 +277,12 @@ describe.only('BotBeginner', () => {
             botBeginner.game.turn.endTurn.next('notBotName');
             expect(spyChoosePlayMove.called).to.equal(false);
         });
+    });
+
+    it.only('processWordSolver() should call setGameboard() and commandInfoScore()', () => {
+        const stubCommandInfoScore = Sinon.stub(botBeginner['wordSolver'], 'commandInfoScore');
+        const stubSetGameboard = Sinon.stub(botBeginner['wordSolver'], 'setGameboard');
+        botBeginner['processWordSolver']();
+        expect(stubCommandInfoScore.calledOnce && stubSetGameboard.calledOnce).to.equal(true);
     });
 });

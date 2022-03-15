@@ -3,7 +3,7 @@ import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Player } from './player.class';
 
 const MAX_NUMBER = 10;
