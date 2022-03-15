@@ -156,6 +156,7 @@ export class LetterPlacementService {
         const commandLettersCopy = commandInfo.letters.slice();
         commandWord.newLetterCoords.forEach((coord) => {
             gameboard.placeLetter(coord, commandLettersCopy[0]);
+            if (commandLettersCopy[0] === commandLettersCopy[0].toUpperCase()) gameboard.getLetterTile(coord).points = 0;
             commandLettersCopy.shift();
         });
     }
