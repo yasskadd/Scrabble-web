@@ -27,7 +27,6 @@ export class Turn {
             if (tempTime === 0) {
                 clearInterval(this.timeOut as number);
                 this.skipTurn();
-                this.end();
             }
             this.countdown.next(tempTime);
         }, SECOND);

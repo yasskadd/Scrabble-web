@@ -5,7 +5,7 @@ import { Turn } from './turn';
 
 const SECOND = 1000;
 
-describe('turn', () => {
+describe.only('turn', () => {
     let turn: Turn;
     let clock: SinonFakeTimers;
     let time: number;
@@ -27,19 +27,15 @@ describe('turn', () => {
 
     it('start() should start the timer and not end it when there is still time left on the clock', () => {
         turn.start();
-        const endSpy = spy(turn, 'end');
         const skipTurnSpy = spy(turn, 'skipTurn');
         clock.tick(SECOND);
-        expect(endSpy.called).to.equal(false);
         expect(skipTurnSpy.called).to.equal(false);
     });
 
     it('start() should start the timer and  end it when the time up', () => {
         turn.start();
-        const endSpy = spy(turn, 'end');
         const skipTurnSpy = spy(turn, 'skipTurn');
         clock.tick(time * SECOND);
-        expect(endSpy.called).to.equal(true);
         expect(skipTurnSpy.called).to.equal(true);
     });
 
