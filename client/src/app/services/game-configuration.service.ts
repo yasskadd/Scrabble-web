@@ -5,7 +5,6 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
-const INDEX_NOT_FOUND = -1;
 const FOUND_OPPONENT_MESSAGE = 'Adversaire Trouvé';
 const SEARCHING_OPPONENT = "En Attente d'un Adversaire ...";
 const WAITING_OPPONENT_CONFIRMATION = "En Attente de la confirmation de L'adversaire";
@@ -131,9 +130,9 @@ export class GameConfigurationService {
         this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
-    beginScrabbleGame(opponentBot?: boolean) {
-        if (opponentBot === true) {
-            this.createBotName();
+    beginScrabbleGame(opponentBot?: string) {
+        if (opponentBot !== undefined) {
+            this.roomInformation.playerName[1] = opponentBot;
         }
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
@@ -152,13 +151,6 @@ export class GameConfigurationService {
         this.roomInformation.playerName[0] = playerName;
         this.roomInformation.roomId = roomToJoinId;
         this.clientSocket.send(SocketEvents.PlayerJoinGameAvailable, { id: roomToJoinId, name: playerName });
-    }
-
-    private createBotName(): void {
-        const botNameList = ['robert', 'jean', 'albert'];
-        const indexName: number = botNameList.indexOf(this.roomInformation.playerName[0].toLowerCase());
-        if (indexName !== INDEX_NOT_FOUND) botNameList.splice(indexName, 1);
-        this.roomInformation.playerName[1] = botNameList[Math.floor(Math.random() * botNameList.length)];
     }
 
     private gameCreatedConfirmationEvent(roomId: string) {

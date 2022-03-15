@@ -35,6 +35,11 @@
             </mat-form-field>
         </form>
 
+        <form *ngIf="isSoloMode()" class="soloMode">
+            <mat-card-title>Nom Adversaire</mat-card-title>
+            <mat-label> {{ this.botName }} </mat-label>
+        </form>
+
         <div class="containerButton">
             <button class="returnButton" mat-icon-button routerLink="/home">
                 <mat-icon>navigate_before</mat-icon>
