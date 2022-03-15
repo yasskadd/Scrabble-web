@@ -3,6 +3,7 @@
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
+import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { SocketManager } from '@app/services/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { LetterTile } from '@common/classes/letter-tile.class';
@@ -34,6 +35,7 @@ describe.only('BotBeginner', () => {
         botBeginner['wordSolver'] = wordSolverStub as never;
         socketManagerStub = Sinon.createStubInstance(SocketManager);
         botBeginner['socketManager'] = socketManagerStub as never;
+        botBeginner.setGame(gameStub);
     });
 
     context('setGame() tests', () => {
@@ -42,7 +44,6 @@ describe.only('BotBeginner', () => {
             gameStub.turn = turn;
         });
         it('setGame() should set game attribute to the game passed as a parameter', () => {
-            botBeginner.setGame(gameStub);
             expect(botBeginner.game).to.not.equal(undefined);
             expect(botBeginner.game).to.eql(gameStub);
         });
@@ -100,17 +101,20 @@ describe.only('BotBeginner', () => {
         let spyExchangerLetters: Sinon.SinonSpy<[], void>;
         let stubPlaceLetter: Sinon.SinonStub<[], void>;
         let stubGetRandom: Sinon.SinonStub<unknown[], unknown>;
-        beforeEach(() => {
+        before(() => {
             spySkipTurn = Sinon.spy(botBeginner, 'skipTurn');
             spyExchangerLetters = Sinon.spy(botBeginner, 'exchangeLetter');
-            stubGetRandom = Sinon.stub(botBeginner, 'getRandomNumber' as keyof BeginnerBot);
+            stubGetRandom = Sinon.stub(botBeginner, 'getRandomNumber' as never);
             stubPlaceLetter = Sinon.stub(botBeginner, 'placeLetter');
         });
 
         it('should call skipTurn() if random number is equal to 1', () => {
+            botBeginner.setGame(gameStub);
             stubGetRandom.returns(1);
             botBeginner.choosePlayMove();
-            expect(spySkipTurn.calledOnce).to.equal(true);
+            setTimeout(() => {
+                expect(spySkipTurn.calledOnce).to.equal(true);
+            }, 3500);
         });
 
         it('should not call skipTurn() and placeLetter() if random number is not equal to 1', () => {
@@ -122,7 +126,9 @@ describe.only('BotBeginner', () => {
         it('should call exchangeLetter() if random number is equal to 2', () => {
             stubGetRandom.returns(2);
             botBeginner.choosePlayMove();
-            expect(spyExchangerLetters.calledOnce).to.equal(true);
+            setTimeout(() => {
+                expect(spyExchangerLetters.calledOnce).to.equal(true);
+            }, 3500);
         });
 
         it('should not call exchangeLetters() and placeLetter() if random number is not equal to 2', () => {
@@ -151,9 +157,6 @@ describe.only('BotBeginner', () => {
             stubGetRandom.onFirstCall().returns(2);
             stubGetRandom.returns(1);
             const expectedRack: string[] = ['a', 'b'];
-            const expectation = mockSocketManager.expects('emitRoom');
-            expectation.withArgs(botBeginner['botInfo'].roomId);
-            botBeginner.exchangeLetter();
             mockSocketManager.verify();
             expect(gameStub.exchange.calledOnceWithExactly(expectedRack, botBeginner)).to.equal(true);
         });
@@ -193,17 +196,23 @@ describe.only('BotBeginner', () => {
 
     context('emitPlacementCommand() tests', () => {
         it('should emitRoom() with correct arguments', () => {
+            botBeginner.setGame(gameStub);
+            gameStub.letterReserve = { lettersReserve: [] as Letter[] } as LetterReserveService;
             const commandInfoStub: CommandInfo = {
                 firstCoordinate: new LetterTile(1, 1, {} as Letter),
                 direction: 'h',
                 lettersPlaced: ['t', 'e', 's', 't'],
             };
             const expectedCommand = '!placer a1h test';
-            const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            const expectation = mockSocketManager.expects('emitRoom').exactly(1);
-            expectation.withArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
             botBeginner['emitPlaceCommand'](commandInfoStub);
-            expectation.verify();
+            expect(socketManagerStub.emitRoom.calledWithExactly(botBeginner.room, SocketEvents.GameMessage, expectedCommand)).to.equal(true);
+            expect(
+                socketManagerStub.emitRoom.calledWithExactly(
+                    botBeginner.room,
+                    SocketEvents.LetterReserveUpdated,
+                    gameStub.letterReserve.lettersReserve,
+                ),
+            ).to.be.equal(true);
         });
     });
 
