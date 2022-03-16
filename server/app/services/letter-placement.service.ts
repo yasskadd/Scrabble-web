@@ -35,15 +35,18 @@ export class LetterPlacementService {
 
         const commandWord = new Word(commandInfo, gameboard);
         if (!commandWord.isValid) return [{} as Word, ErrorType.invalidWordBuild];
-        if (!this.wordIsPlacedCorrectly(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
+        if (!this.wordIsPlacedCorrectly(commandWord.newLetterCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
 
         return [commandWord, null];
     }
 
     private validateCommandCoordinate(commandCoord: Coordinate, gameboard: Gameboard): boolean {
-        if (!gameboard.getLetterTile(commandCoord).isOccupied)
-            return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15;
+        if (!gameboard.getLetterTile(commandCoord).isOccupied) return this.isWithinBoardLimits(commandCoord);
         else return false;
+    }
+
+    private isWithinBoardLimits(coord: Coordinate): boolean {
+        return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
     }
 
     private createTempRack(player: Player): Letter[] {
@@ -112,17 +115,14 @@ export class LetterPlacementService {
     }
 
     private isWordIsAttachedToBoardLetter(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
-        let up;
-        let down;
-        let left;
+        let up: Coordinate;
+        let down: Coordinate;
+        let left: Coordinate;
         let right: Coordinate;
         let lettersWithAdjacencyCount = 0;
 
         letterCoords.forEach((coord) => {
-            up = { x: coord.x, y: coord.y - 1 };
-            down = { x: coord.x, y: coord.y + 1 };
-            left = { x: coord.x - 1, y: coord.y };
-            right = { x: coord.x + 1, y: coord.y };
+            this.setUpLeftDownRight(coord, up, left, down, right);
             if (this.upDownLeftOrRightAreOccupied(gameboard, up, down, left, right)) lettersWithAdjacencyCount++;
         });
 
@@ -130,12 +130,19 @@ export class LetterPlacementService {
         else return true;
     }
 
+    private setUpLeftDownRight(coord: Coordinate, up: Coordinate, left: Coordinate, down: Coordinate, right: Coordinate) {
+        up = { x: coord.x, y: coord.y - 1 };
+        down = { x: coord.x, y: coord.y + 1 };
+        left = { x: coord.x - 1, y: coord.y };
+        right = { x: coord.x + 1, y: coord.y };
+    }
+
     private upDownLeftOrRightAreOccupied(gameboard: Gameboard, up: Coordinate, down: Coordinate, left: Coordinate, right: Coordinate): boolean {
         return (
-            gameboard.getLetterTile(up).isOccupied ||
-            gameboard.getLetterTile(down).isOccupied ||
-            gameboard.getLetterTile(left).isOccupied ||
-            gameboard.getLetterTile(right).isOccupied
+            (gameboard.getLetterTile(up).isOccupied && this.isWithinBoardLimits(up)) ||
+            (gameboard.getLetterTile(down).isOccupied && this.isWithinBoardLimits(down)) ||
+            (gameboard.getLetterTile(left).isOccupied && this.isWithinBoardLimits(left)) ||
+            (gameboard.getLetterTile(right).isOccupied && this.isWithinBoardLimits(right))
         );
     }
 
