@@ -26,12 +26,12 @@ export class Word {
         const allWords: Word[] = [];
         allWords.push(word);
         word.newLetterCoords.forEach((coord: Coordinate) => {
-            this.pushNewAjacentWord(word, gameboard, coord, allWords);
+            this.pushNewAdjacentWord(word, gameboard, coord, allWords);
         });
         return allWords;
     }
 
-    static pushNewAjacentWord(word: Word, gameboard: Gameboard, coord: Coordinate, allWords: Word[]) {
+    static pushNewAdjacentWord(word: Word, gameboard: Gameboard, coord: Coordinate, allWords: Word[]) {
         const newWord = new Word(
             {
                 firstCoordinate: coord,
@@ -128,7 +128,8 @@ export class Word {
     }
 
     private isWithinBoardLimits(coord: Coordinate): boolean {
-        return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
+        const boardSize = 15;
+        return coord.x >= 1 && coord.x <= boardSize && coord.y >= 1 && coord.y <= boardSize;
     }
 
     private addLetterPoints(placedWord: Word, gameboard: Gameboard) {

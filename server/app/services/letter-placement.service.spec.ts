@@ -124,7 +124,7 @@ describe('Letter Placement Service', () => {
 
     context('verifyFirstTurn() tests', () => {
         it('should return true if gameboard has no placed letters and letterCoords include middle coordinate', () => {
-            const word = new Word(
+            word = new Word(
                 {
                     firstCoordinate: { x: 8, y: 8 },
                     isHorizontal: true,
@@ -138,7 +138,7 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return true if gameboard has no placed letters and letterCoords do not include middle coordinate', () => {
-            const word = new Word(
+            word = new Word(
                 {
                     firstCoordinate: { x: 1, y: 1 },
                     isHorizontal: true,
