@@ -118,13 +118,13 @@ export class GameClientService {
     }
 
     private updatePlayerInformationEvent(player: PlayerInformation) {
-        const updatedRack = this.treatRack(player.rack);
+        const updatedRack = this.updateRack(player.rack);
         this.playerOne = player;
         this.playerOne.rack = updatedRack;
         this.updateNewGameboard(player.gameboard);
     }
 
-    private treatRack(newRack: Letter[]): Letter[] {
+    private updateRack(newRack: Letter[]): Letter[] {
         const dictionary = new Map();
         newRack.forEach((letter) => {
             const dictionaryLetter = dictionary.get(letter.value);
@@ -170,7 +170,7 @@ export class GameClientService {
         this.gameboard = gameInfo.gameboard;
         const playerOneIndex = this.playerOne.name === gameInfo.players[0].name ? 0 : 1;
         const secondPlayerIndex = Math.abs(playerOneIndex - 1);
-        const updatedRack = this.treatRack(gameInfo.players[playerOneIndex].rack);
+        const updatedRack = this.updateRack(gameInfo.players[playerOneIndex].rack);
         this.playerOne = gameInfo.players[playerOneIndex];
         this.playerOne.rack = updatedRack;
         this.secondPlayer = gameInfo.players[secondPlayerIndex];
