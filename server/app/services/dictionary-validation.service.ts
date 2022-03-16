@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
@@ -23,6 +21,7 @@ export class DictionaryValidationService {
         jsonDictionary.words.forEach((word: string) => {
             this.dictionary.add(word);
         });
+        this.createTrieDictionary();
     }
 
     validateWord(word: Word, gameboard: Gameboard): ValidateWordReturn {

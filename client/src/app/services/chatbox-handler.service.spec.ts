@@ -1,8 +1,8 @@
 /* eslint-disable max-lines */
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { Letter } from '@common/letter';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Letter } from '@common/interfaces/letter';
 import { Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { ClientSocketService } from './client-socket.service';
@@ -361,27 +361,27 @@ describe('ChatboxHandlerService', () => {
     it('configureClueCommand should push  3 message with the possible word placements given by the command Indice if 3 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
-            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: 'aed' },
-            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: 'bille' },
-            { firstCoordinate: { x: 8, y: 8 }, direction: false, lettersPlaced: 'cadeau' },
+            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: ['a', 'l', 'r'] },
+            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: ['b', 'i', 'l', 'l', 'e'] },
+            { firstCoordinate: { x: 8, y: 8 }, direction: false, lettersPlaced: ['c', 'a', 'n', 'n', 'e'] },
         ];
         const message1 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
                 wordPlacements[0].direction
-            } ${wordPlacements[0].lettersPlaced}`,
+            } ${wordPlacements[0].lettersPlaced.join('')}`,
         };
         const message2 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
                 wordPlacements[1].direction
-            } ${wordPlacements[1].lettersPlaced}`,
+            } ${wordPlacements[1].lettersPlaced.join('')}`,
         };
         const message3 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[2].firstCoordinate.y)}${wordPlacements[2].firstCoordinate.x}${
                 wordPlacements[2].direction
-            } ${wordPlacements[2].lettersPlaced}`,
+            } ${wordPlacements[2].lettersPlaced.join('')}`,
         };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
@@ -394,20 +394,20 @@ describe('ChatboxHandlerService', () => {
     it('configureClueCommand should push 2 message with the possible word placements given by the command Indice if 2 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
-            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: 'aed' },
-            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: 'bille' },
+            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: ['a', 'l', 'r'] },
+            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: ['b', 'i', 'l', 'l', 'e'] },
         ];
         const message1 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
                 wordPlacements[0].direction
-            } ${wordPlacements[0].lettersPlaced}`,
+            } ${wordPlacements[0].lettersPlaced.join('')}`,
         };
         const message2 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
                 wordPlacements[1].direction
-            } ${wordPlacements[1].lettersPlaced}`,
+            } ${wordPlacements[1].lettersPlaced.join('')}`,
         };
         const message3 = { type: 'system-message', data: 'Aucune autre possibilité possible' };
         // Reason : testing a private method
@@ -426,16 +426,17 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(message1);
     });
 
-    it('should emit 3 messages to show in the chatBox when the game is finish', () => {
+    it('should emit 3 messages to show in the chatBox when the game is finish', fakeAsync(() => {
         const message1 = { type: 'system-message', data: 'Fin de la partie : lettres restantes' };
         const message2 = { type: 'system-message', data: `${gameClientServiceSpy.playerOne.name} : crp` };
         const message3 = { type: 'system-message', data: `${gameClientServiceSpy.secondPlayer.name} : wkt` };
 
         service.endGameMessage();
+        tick();
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);
-    });
+    }));
 
     it('should add a message emit from the server when gameMessage event is emit', () => {
         const messageReceive = '!passer';

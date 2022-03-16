@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
@@ -9,26 +10,45 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { MultiplayerCreatePageComponent } from './multiplayer-create-page.component';
+
 @Component({
     template: '',
 })
 export class StubComponent {}
 
+const TEST_ERROR = 'Vous avez le même nom que le Joueur Virtuelle';
 const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
+const SOLO_MODE = 'solo/classique';
+const CREATE_MULTIPLAYER_GAME = 'multijoueur/creer/classique';
 const RETURN_ROUTE = 'home';
+const GAME_ROUTE = 'game';
+
 describe('MultiplayerCreatePageComponent', () => {
     let component: MultiplayerCreatePageComponent;
     let fixture: ComponentFixture<MultiplayerCreatePageComponent>;
     let location: Location;
+    let router: Router;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
+
+    let matSnackBar: MatSnackBar;
+    const mockMatSnackBar = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        open: () => {},
+    };
+
     beforeEach(async () => {
-        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['gameInitialization', 'resetRoomInformation']);
+        gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', [
+            'gameInitialization',
+            'resetRoomInformation',
+            'beginScrabbleGame',
+        ]);
         await TestBed.configureTestingModule({
             imports: [
                 BrowserAnimationsModule,
@@ -43,12 +63,16 @@ describe('MultiplayerCreatePageComponent', () => {
                 RouterTestingModule.withRoutes([
                     { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
                     { path: RETURN_ROUTE, component: StubComponent },
+                    { path: SOLO_MODE, component: StubComponent },
+                    { path: CREATE_MULTIPLAYER_GAME, component: StubComponent },
+                    { path: GAME_ROUTE, component: StubComponent },
                 ]),
             ],
 
             declarations: [MultiplayerCreatePageComponent],
             providers: [
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
+                { provide: MatSnackBar, useValue: mockMatSnackBar },
                 {
                     provide: ActivatedRoute,
                     useValue: {
@@ -65,9 +89,11 @@ describe('MultiplayerCreatePageComponent', () => {
     });
 
     beforeEach(() => {
+        router = TestBed.inject(Router);
         fixture = TestBed.createComponent(MultiplayerCreatePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
+        matSnackBar = TestBed.inject(MatSnackBar);
         location = TestBed.inject(Location);
     });
 
@@ -75,12 +101,54 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('navigatePage should redirect to salleAttente', fakeAsync(() => {
+    it('navigatePage should redirect to salleAttente when we create a multiplayer Game', fakeAsync(() => {
         const expectedURL = '/' + MULTIPLAYER_WAITING_ROOM_ROUTE;
         component.navigatePage();
         tick();
         fixture.detectChanges();
         expect(location.path()).toEqual(expectedURL);
+    }));
+
+    it('navigatePage should redirect to game when we create a solo Game', fakeAsync(() => {
+        const expectedURL = '/' + GAME_ROUTE;
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        component.navigatePage();
+        tick();
+        fixture.detectChanges();
+        expect(location.path()).toEqual(expectedURL);
+    }));
+
+    it('using path solo/classique to navigate to this page should return true in the soloMode()', fakeAsync(() => {
+        router.navigateByUrl(SOLO_MODE);
+        component.isSoloMode();
+        tick();
+        fixture.detectChanges();
+        expect(component.isSoloMode()).toEqual(true);
+    }));
+
+    it('using path multijoueur/creer/classique to navigate to this page  should return false in the soloMode()', fakeAsync(() => {
+        router.navigateByUrl(CREATE_MULTIPLAYER_GAME);
+        component.isSoloMode();
+        tick();
+        fixture.detectChanges();
+        expect(component.isSoloMode()).toEqual(false);
+    }));
+
+    it('Should have a form with the solo Mode difficulty when we create a solo game', fakeAsync(() => {
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        fixture.detectChanges();
+        const form = fixture.debugElement.nativeElement.querySelector('.soloMode');
+        expect(form).toBeTruthy();
+    }));
+
+    it('Should  not have a form with the solo Mode difficulty when we create a multiplayer game', fakeAsync(() => {
+        router.navigateByUrl(CREATE_MULTIPLAYER_GAME);
+        tick();
+        fixture.detectChanges();
+        const form = fixture.debugElement.nativeElement.querySelector('.soloMode');
+        expect(form).toBeFalsy();
     }));
 
     it('returnButton should redirect to home', fakeAsync(() => {
@@ -91,6 +159,7 @@ describe('MultiplayerCreatePageComponent', () => {
         const expectedURL = '/' + RETURN_ROUTE;
         expect(location.path()).toEqual(expectedURL);
     }));
+
     it('should call createGame() when the startButton is pressed', fakeAsync(() => {
         component.playerName = 'Vincent';
         fixture.detectChanges();
@@ -102,12 +171,36 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
+    it('createBotName should assign a name to the opponent', () => {
+        // eslint-disable-next-line dot-notation
+        component['createBotName']();
+        expect(component.botName).not.toEqual('');
+    });
+
     it('should  not call createGame() if the player did not enter his name before trying to click the button', fakeAsync(() => {
         fixture.detectChanges();
         const spy = spyOn(component, 'createGame');
         const button = fixture.debugElement.nativeElement.querySelector('.startButton');
         button.click();
         tick();
+        fixture.detectChanges();
+        expect(spy).not.toHaveBeenCalled();
+    }));
+
+    it('giveNameToBot should call createBotName if  we use the path solo/classique to navigate to this page', fakeAsync(() => {
+        const spy = spyOn(component, 'createBotName');
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        component.giveNameToBot();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('giveNameToBot should not call createBotName if  we use the path multijoueur/creer/classique to navigate to this page', fakeAsync(() => {
+        const spy = spyOn(component, 'createBotName');
+        router.navigateByUrl(CREATE_MULTIPLAYER_GAME);
+        tick();
+        component.giveNameToBot();
         fixture.detectChanges();
         expect(spy).not.toHaveBeenCalled();
     }));
@@ -121,6 +214,18 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
         expect(timerOptions.length).toEqual(component.timerList.length);
     }));
+
+    it('openSnackBar should call the MatSnackBar open method', () => {
+        const matSnackBarSpy = spyOn(matSnackBar, 'open').and.stub();
+        component.openSnackBar(TEST_ERROR);
+        expect(matSnackBarSpy.calls.count()).toBe(1);
+        const args = matSnackBarSpy.calls.argsFor(0);
+        expect(args[0]).toBe(TEST_ERROR);
+        expect(args[1]).toBe('fermer');
+        expect(args[2]).toEqual({
+            verticalPosition: 'top',
+        });
+    });
 
     it('should set timer to timer option when one is select', fakeAsync(() => {
         const timerSelect = fixture.debugElement.nativeElement.querySelector('#timer-select');
@@ -162,12 +267,36 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
     }));
+
     it('createGame should call navigatePage', fakeAsync(() => {
         const spy = spyOn(component, 'navigatePage');
         component.createGame();
 
         expect(spy).toHaveBeenCalled();
     }));
+
+    it('validateName() should return true if the player and the bot do not have the same name', () => {
+        const VALID_NAME = 'robert';
+        component.playerName = VALID_NAME;
+        component.botName = 'Marc';
+        // Testing private method
+        // eslint-disable-next-line dot-notation
+        expect(component['validateName']()).toBeTruthy();
+    });
+
+    it('validateName() should return false if the player and the bot have the same name', () => {
+        const spy = spyOn(component, 'openSnackBar');
+        const spy2 = spyOn(component, 'resetInput' as never);
+        const VALID_NAME = 'robert';
+        component.playerName = VALID_NAME;
+        component.botName = VALID_NAME;
+        // Testing private method
+        // eslint-disable-next-line dot-notation
+        expect(component['validateName']()).toBeFalsy();
+        expect(spy).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
+    });
+
     it('createGame should call resetInput', fakeAsync(() => {
         // Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -175,6 +304,43 @@ describe('MultiplayerCreatePageComponent', () => {
 
         component.createGame();
         expect(spy).toHaveBeenCalled();
+    }));
+
+    it('createGame should call gameConfiguration.beginScrabbleGame when we create a SoloMode', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        fixture.detectChanges();
+        component.createGame();
+        setTimeout(() => {
+            expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalled();
+        }, 0);
+        flush();
+    }));
+
+    it('createGame should not call gameConfiguration.beginScrabbleGame when the bot and the player have the samen name', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        fixture.detectChanges();
+        component.botName = 'Vincent';
+        component.createGame();
+        setTimeout(() => {
+            expect(gameConfigurationServiceSpy.beginScrabbleGame).not.toHaveBeenCalled();
+        }, 0);
+        flush();
+    }));
+
+    it('createGame should not call gameConfiguration.beginScrabbleGame when we create a multiplayer game', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        router.navigateByUrl(CREATE_MULTIPLAYER_GAME);
+        tick();
+        fixture.detectChanges();
+        component.createGame();
+        setTimeout(() => {
+            expect(gameConfigurationServiceSpy.beginScrabbleGame).not.toHaveBeenCalled();
+        }, 0);
+        flush();
     }));
 
     it('secondToMinute() should convert second to minute display', () => {

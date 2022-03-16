@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
-import * as multipliers from '@common/board-multiplier-coords';
-import { Coordinate } from '@common/coordinate';
+import * as multipliers from '@common/constants/board-multiplier-coords';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/letter-tile-interface';
 
 @Injectable({
@@ -35,20 +36,12 @@ export class GridService {
         this.drawBasicTiles();
         this.drawMultipliers();
         this.drawMiddleTile();
-        gameboard.forEach((letterTileInterface: LetterTileInterface) => {
-            if (letterTileInterface.isOccupied) {
-                if (letterTileInterface._letter === undefined) {
-                    debugger;
-                }
-                this.drawBasicTile({ x: letterTileInterface.coordinate.x, y: letterTileInterface.coordinate.y });
-                this.drawLetter(
-                    { x: letterTileInterface.coordinate.x, y: letterTileInterface.coordinate.y },
-                    letterTileInterface._letter.toUpperCase(),
-                );
-                this.drawLetterPoints(
-                    { x: letterTileInterface.coordinate.x, y: letterTileInterface.coordinate.y },
-                    String(letterTileInterface.points),
-                );
+        gameboard.forEach((letterTile) => {
+            if (letterTile.isOccupied) {
+                this.gridContext.fillStyle = '#52B7BE';
+                this.fillTile({ x: letterTile.coordinate.x, y: letterTile.coordinate.y });
+                this.drawLetter({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, letterTile._letter.toUpperCase());
+                this.drawLetterPoints({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, String(letterTile.points));
             }
         });
     }
@@ -86,6 +79,23 @@ export class GridService {
         this.gridContext.fill();
     }
 
+    drawArrow(coords: Coordinate, isHorizontal: boolean) {
+        this.gridContext.fillStyle = constants.GREEN;
+        this.gridContext.strokeStyle = 'black';
+        this.fillTile(coords);
+        const arrow = isHorizontal ? '⇨' : '⇩';
+        this.gridContext.font = GridService.squareHeight + 'px system-ui';
+        this.gridContext.textAlign = 'center';
+        this.gridContext.textBaseline = 'top';
+        this.gridContext.fillStyle = 'black';
+        this.gridContext.fillText(
+            arrow,
+            GridService.squareWidth * coords.x + GridService.halfSquareWidth,
+            GridService.squareHeight * coords.y,
+            GridService.squareWidth,
+        );
+    }
+
     drawRowNumbers() {
         this.setFontSize(this.boardTileSize);
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
@@ -108,6 +118,15 @@ export class GridService {
         this.setFontSize(this.letterSize);
         this.gridContext.textBaseline = 'middle';
         this.drawText(position, char);
+    }
+
+    drawUnfinalizedLetter(coordinate: Coordinate, letter: Letter) {
+        this.gridContext.fillStyle = constants.GREEN;
+        this.gridContext.strokeStyle = 'black';
+        this.fillTile(coordinate);
+        this.gridContext.fillStyle = 'black';
+        this.drawLetter(coordinate, letter.value.toUpperCase());
+        this.drawLetterPoints(coordinate, String(letter.points));
     }
 
     drawBasicTiles() {
@@ -216,16 +235,19 @@ export class GridService {
         const weightSize = this.letterSize * constants.LETTER_WEIGHT_RATIO;
         this.setFontSize(weightSize);
         this.gridContext.fillStyle = 'black';
-        this.gridContext.textAlign = 'left';
+        this.gridContext.textAlign = 'center';
         this.gridContext.textBaseline = 'middle';
-        const width = this.gridContext.measureText(string).width;
-        const plusX = width * constants.LETTER_WEIGHT_RATIO;
+        const quarterSquareWidth = GridService.halfSquareWidth / 2;
         const halfSize = weightSize / 2;
         this.gridContext.fillText(
             string,
-            GridService.squareWidth * position.x + GridService.halfSquareWidth + plusX,
+            GridService.squareWidth * position.x + GridService.halfSquareWidth + quarterSquareWidth,
             GridService.squareHeight * position.y + halfSize + GridService.halfSquareHeight,
-            weightSize,
+            GridService.halfSquareWidth,
         );
+    }
+
+    getPosition(coords: Coordinate): Coordinate {
+        return { x: Math.floor(coords.x / GridService.squareWidth), y: Math.floor(coords.y / GridService.squareWidth) };
     }
 }

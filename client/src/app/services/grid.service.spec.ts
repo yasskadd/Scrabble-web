@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import * as constants from '@app/constants';
 import { GridService } from '@app/services/grid.service';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import { Letter } from '@common/interfaces/letter';
 
 describe('GridService', () => {
     let gridService: GridService;
@@ -75,15 +77,21 @@ describe('GridService', () => {
         expect(GAMEBOARD_TEST[0].isOccupied).toBeTruthy();
     });
 
+    it(" drawGrid shouldn't call drawLetterPoints when gameboard doesn't have any occupied tiles", () => {
+        const drawLetterSpy = spyOn(gridService, 'drawLetterPoints').and.callThrough();
+        gridService.drawGrid([{ isOccupied: false } as LetterTile]);
+        expect(drawLetterSpy).not.toHaveBeenCalled();
+    });
+
     it(' drawGrid should call drawMiddleTile', () => {
         const drawMiddleTileSpy = spyOn(gridService, 'drawMiddleTile').and.callThrough();
         gridService.drawGrid([]);
         expect(drawMiddleTileSpy).toHaveBeenCalled();
     });
 
-    it(' drawLetterPoints should have a middle baseline and left alignment ', () => {
+    it(' drawLetterPoints should have a middle baseline and center alignment ', () => {
         gridService.drawLetterPoints(POSITION_TEST, '1');
-        expect(gridService.gridContext.textAlign).toEqual('left');
+        expect(gridService.gridContext.textAlign).toEqual('center');
         expect(gridService.gridContext.textBaseline).toEqual('middle');
     });
 
@@ -244,9 +252,46 @@ describe('GridService', () => {
         expect(gridService.gridContext.font).toBe('23px system-ui');
     });
 
-    it(' drawLetterPoints should call measureText once', () => {
-        const measureTextSpy = spyOn(gridService.gridContext, 'measureText').and.callThrough();
-        gridService.drawLetterPoints(POSITION_TEST, '6');
-        expect(measureTextSpy).toHaveBeenCalledTimes(1);
+    it(' getPosition should return the coordinates of the x and y positions of the tile', () => {
+        const firstPosition = gridService.getPosition({ x: 55, y: 55 });
+        const lastPosition = gridService.getPosition({ x: 580, y: 580 });
+        expect(firstPosition).toEqual({ x: 1, y: 1 });
+        expect(lastPosition).toEqual({ x: 15, y: 15 });
+    });
+
+    it(' drawUnfinalizedLetter should draw the backgound of the tile', () => {
+        const fillTileSpy = spyOn(gridService, 'fillTile').and.callThrough();
+        gridService.drawUnfinalizedLetter({ x: 1, y: 1 }, { value: 'a', points: 0 } as Letter);
+        expect(fillTileSpy).toHaveBeenCalled();
+    });
+
+    it(' drawUnfinalizedLetter should draw the letter', () => {
+        const drawLetterSpy = spyOn(gridService, 'drawLetter').and.callThrough();
+        gridService.drawUnfinalizedLetter({ x: 1, y: 1 }, { value: 'a', points: 0 } as Letter);
+        expect(drawLetterSpy).toHaveBeenCalled();
+    });
+
+    it(" drawUnfinalizedLetter should draw the letter's points", () => {
+        const drawLetterPointsSpy = spyOn(gridService, 'drawLetterPoints').and.callThrough();
+        gridService.drawUnfinalizedLetter({ x: 1, y: 1 }, { value: 'a', points: 0 } as Letter);
+        expect(drawLetterPointsSpy).toHaveBeenCalled();
+    });
+
+    it(' drawArrow should draw the backgound of the tile', () => {
+        const fillTileSpy = spyOn(gridService, 'fillTile').and.callThrough();
+        gridService.drawArrow({ x: 1, y: 1 }, true);
+        expect(fillTileSpy).toHaveBeenCalled();
+    });
+
+    it(' drawArrow should draw the arrow horizontally', () => {
+        const fillTextSpy = spyOn(gridService.gridContext, 'fillText').and.callThrough();
+        gridService.drawArrow({ x: 1, y: 1 }, true);
+        expect(fillTextSpy).toHaveBeenCalled();
+    });
+
+    it(' drawArrow should draw the arrow vertically', () => {
+        const fillTextSpy = spyOn(gridService.gridContext, 'fillText').and.callThrough();
+        gridService.drawArrow({ x: 1, y: 1 }, false);
+        expect(fillTextSpy).toHaveBeenCalled();
     });
 });

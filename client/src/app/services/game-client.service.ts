@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Letter } from '@common/letter';
+import { SocketEvents } from '@common/constants/socket-events';
+import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/letter-tile-interface';
-import { SocketEvents } from '@common/socket-events';
+import { Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
-import { GridService } from './grid.service';
 
 type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
-type Player = { name: string; score: number; rack: Letter[]; room: string };
+type Player = { name: string; score: number; rack: Letter[] };
 type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
 
 @Injectable({
@@ -22,11 +22,13 @@ export class GameClientService {
     letterReserveLength: number;
     isGameFinish: boolean;
     winningMessage: string;
+    gameboardUpdated: Subject<boolean>;
 
-    constructor(private gridService: GridService, private clientSocketService: ClientSocketService) {
+    constructor(private clientSocketService: ClientSocketService) {
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
+        this.gameboardUpdated = new Subject();
         this.configureBaseSocketFeatures();
         this.gameboard = [];
     }
@@ -37,6 +39,7 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
+            this.secondPlayer = player;
             this.updateOpponentInformationEvent(player);
         });
 
@@ -65,7 +68,7 @@ export class GameClientService {
         });
     }
     updateGameboard() {
-        this.gridService.drawGrid(this.gameboard);
+        this.gameboardUpdated.next(true);
     }
 
     abandonGame() {
@@ -80,8 +83,8 @@ export class GameClientService {
     resetGameInformation() {
         this.timer = 0;
         this.gameboard = [];
-        this.playerOne = { name: '', score: 0, rack: [], room: '' };
-        this.secondPlayer = { name: '', score: 0, rack: [], room: '' };
+        this.playerOne = { name: '', score: 0, rack: [] };
+        this.secondPlayer = { name: '', score: 0, rack: [] };
         this.playerOneTurn = false;
         this.letterReserveLength = 0;
         this.isGameFinish = false;

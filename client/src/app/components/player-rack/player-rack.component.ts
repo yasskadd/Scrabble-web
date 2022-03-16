@@ -3,7 +3,8 @@ import * as constants from '@app/constants';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
-import { Letter } from '@common/letter';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { Letter } from '@common/interfaces/letter';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -15,31 +16,45 @@ export class PlayerRackComponent implements OnInit {
     @Input()
     keyboardParentSubject: Subject<KeyboardEvent>;
 
-    @Input()
-    clickParentSubject: Subject<EventTarget>;
-
     @ViewChild('info', { static: false }) info: ElementRef;
 
-    width = constants.RACK_WIDTH;
-    height = constants.RACK_HEIGHT;
-    buttonPressed = '';
-    currentSelection = 0;
-    previousSelection = constants.INVALID_INDEX;
-    lettersToExchange: number[] = [];
-    lettersToManipulate: number[] = [];
-    duplicates: number[] = [];
-    arrow: boolean = false;
-    absentFromRack: boolean = true;
-    clicked: number[] = [];
-
-    temp: Letter = { value: 'a', quantity: 2, points: 1 };
+    width: number;
+    height: number;
+    buttonPressed: string;
+    currentSelection: number;
+    previousSelection: number;
+    lettersToExchange: number[];
+    lettersToManipulate: number[];
+    duplicates: number[];
+    arrow: boolean;
+    absentFromRack: boolean;
+    temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
         public gameClient: GameClientService,
-        private tmpService: GridService,
+        public letterPlacementService: LetterPlacementService,
+        private gridService: GridService,
         private eRef: ElementRef,
-    ) {}
+    ) {
+        this.width = constants.RACK_WIDTH;
+        this.height = constants.RACK_HEIGHT;
+        this.buttonPressed = '';
+        this.currentSelection = 0;
+        this.previousSelection = constants.INVALID_INDEX;
+        this.lettersToExchange = [];
+        this.lettersToManipulate = [];
+        this.duplicates = [];
+        this.arrow = false;
+        this.absentFromRack = true;
+    }
+
+    @HostListener('mousewheel', ['$event'])
+    onScrollEvent(event: WheelEvent) {
+        this.cancel();
+        this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
+        this.repositionRack();
+    }
 
     @HostListener('window: click', ['$event'])
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
@@ -57,10 +72,10 @@ export class PlayerRackComponent implements OnInit {
     }
 
     get letterSize(): number {
-        return this.tmpService.letterSize;
+        return this.gridService.letterSize;
     }
     get pointsSize(): number {
-        return this.tmpService.letterSize * constants.LETTER_WEIGHT_RATIO;
+        return this.gridService.letterSize * constants.LETTER_WEIGHT_RATIO;
     }
     get rack(): Letter[] {
         return this.gameClient.playerOne.rack;
@@ -69,13 +84,10 @@ export class PlayerRackComponent implements OnInit {
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
     }
-
     selectManipulation(event: KeyboardEvent) {
         this.duplicates = [];
-        this.arrow = this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight';
 
-        if (this.arrow) {
-            this.previousSelection = constants.INVALID_INDEX;
+        if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
             this.repositionRack();
             return;
         }
@@ -83,34 +95,20 @@ export class PlayerRackComponent implements OnInit {
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === event.key.toLowerCase()) {
                 this.duplicates.push(i);
-                this.absentFromRack = false;
             }
         }
 
-        if (this.duplicates.length === 1) {
-            this.previousSelection = constants.INVALID_INDEX;
-            this.currentSelection = this.duplicates[0];
-        } else if (this.duplicates.length > 1) {
-            if (this.previousSelection === constants.INVALID_INDEX) {
-                this.currentSelection = this.duplicates[0];
-                this.previousSelection = this.currentSelection;
-            } else {
-                if (this.previousSelection === this.duplicates[this.duplicates.length - 1]) {
-                    this.currentSelection = this.duplicates[0];
-                    this.previousSelection = this.currentSelection;
-                } else {
-                    this.currentSelection = this.duplicates[this.duplicates.indexOf(this.currentSelection) + 1];
-                    this.previousSelection = this.currentSelection;
-                }
-            }
+        if (this.duplicates.length) {
+            this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
+            this.previousSelection = this.currentSelection;
+            this.lettersToManipulate.push(this.currentSelection);
         } else {
             this.cancel();
-            return;
         }
-        this.lettersToManipulate.push(this.currentSelection);
     }
 
     repositionRack() {
+        this.previousSelection = constants.INVALID_INDEX;
         if (this.buttonPressed === 'ArrowLeft') {
             this.moveLeft();
         }
@@ -132,6 +130,13 @@ export class PlayerRackComponent implements OnInit {
                 this.lettersToExchange.splice(index, 1);
             }
         }
+    }
+
+    playPlacedLetters() {
+        this.letterPlacementService.submitPlacement();
+    }
+    get noPlacedLetters(): boolean {
+        return this.letterPlacementService.noLettersPlaced();
     }
 
     onLeftClick(event: MouseEvent, letter: number) {

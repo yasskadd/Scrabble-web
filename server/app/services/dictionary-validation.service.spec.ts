@@ -1,7 +1,4 @@
-/* eslint-disable prettier/prettier */
 /* eslint-disable dot-notation */
-/* eslint-disable no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable no-restricted-imports */
 import { Gameboard } from '@app/classes/gameboard.class';

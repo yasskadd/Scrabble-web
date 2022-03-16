@@ -1,4 +1,4 @@
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 
 export const LETTERS: Letter[] = [
     {

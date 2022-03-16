@@ -99,4 +99,16 @@ describe('gameboard', () => {
         expect(gameboard.getLetterTile({ x: 8, y: 8 }).multiplier.number).to.equal(2);
         expect(gameboard.getLetterTile({ x: 8, y: 8 }).multiplier.type).to.equal('MOT');
     });
+
+    context('findAnchors() tests', () => {
+        beforeEach(() => {
+            gameboard.placeLetter({ x: 7, y: 7 }, '');
+        });
+
+        // TODO: Fix findAnchors() test
+        it('findAnchors() should return correct anchors tiles', () => {
+            const foundTiles: LetterTile[] = gameboard.findAnchors();
+            expect(foundTiles.length).to.be.greaterThan(0);
+        });
+    });
 });

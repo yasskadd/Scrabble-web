@@ -1,5 +1,5 @@
 import * as letterTypes from '@app/letter-reserve';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { Service } from 'typedi';
 
 const NUMBER_OF_LETTERS_ON_RACK = 7;

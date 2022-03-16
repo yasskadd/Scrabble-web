@@ -42,6 +42,7 @@ const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
 const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const MULTIPLAYER_CREATE_ROOM_ROUTE = 'multijoueur/creer/classique';
+const SOLO_ROUTE = 'solo/classique';
 const MULTIPLAYER_JOIN_ROOM_ROUTE = 'multijoueur/rejoindre/classique';
 const MULTIPLAYER_GAME_PAGE = 'game';
 describe('WaitingOpponentPageComponent', () => {
@@ -77,6 +78,7 @@ describe('WaitingOpponentPageComponent', () => {
                     { path: MULTIPLAYER_JOIN_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_GAME_PAGE, component: StubComponent },
                     { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
+                    { path: SOLO_ROUTE, component: StubComponent },
                 ]),
             ],
 
@@ -154,6 +156,20 @@ describe('WaitingOpponentPageComponent', () => {
         expect(button).toBeTruthy();
     });
 
+    it('should have a button to convert to soloMode when you are waiting for an opponent', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.soloModeButton');
+        expect(button).toBeTruthy();
+    });
+
+    it('should  not have a button to convert to soloMode when you are joining someone else game', () => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = false;
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('.soloModeButton');
+        expect(button).toBeFalsy();
+    });
+
     it('should not have a button to start the game when you did not created the game', () => {
         gameConfigurationServiceSpy.roomInformation.isCreator = false;
         fixture.detectChanges();
@@ -207,6 +223,18 @@ describe('WaitingOpponentPageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
+    it('should call soloMode() when the soloMode button is pressed and enable', fakeAsync(() => {
+        gameConfigurationServiceSpy.roomInformation.isCreator = true;
+        gameConfigurationServiceSpy.roomInformation.playerName[1] = '';
+        fixture.detectChanges();
+        const spy = spyOn(component, 'soloMode');
+        const button = fixture.debugElement.nativeElement.querySelector('.soloModeButton');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    }));
+
     it('should call rejectOpponent() when the rejectButton is pressed', fakeAsync(() => {
         gameConfigurationServiceSpy.roomInformation.playerName[1] = 'Vincent';
         gameConfigurationServiceSpy.roomInformation.isCreator = true;
@@ -236,17 +264,6 @@ describe('WaitingOpponentPageComponent', () => {
         expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalled();
     });
 
-    it('should open a dialog box if the soloMode method is called', () => {
-        const dialogSpy = spyOn(component.dialog, 'open');
-        component.soloMode();
-        expect(dialogSpy).toHaveBeenCalled();
-    });
-
-    it('should call gameConfiguration.setGameUnavailable if the soloMode method is called', () => {
-        component.soloMode();
-        expect(gameConfigurationServiceSpy.setGameUnavailable).toHaveBeenCalled();
-    });
-
     it('should call joinGamePage when the isGameStarted value is true', () => {
         const spy = spyOn(component, 'joinGamePage');
         gameConfigurationServiceSpy.isGameStarted.next(true);
@@ -266,6 +283,20 @@ describe('WaitingOpponentPageComponent', () => {
         gameConfigurationServiceSpy.errorReason.next('');
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('soloMode() should navigate to solo/classique ', fakeAsync(() => {
+        const spyRouter = spyOn(router, 'navigate');
+        const expectedURL = '/' + SOLO_ROUTE;
+        component.soloMode();
+        tick();
+        fixture.detectChanges();
+        expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
+    }));
+
+    it('should call gameConfiguration.removeRoom if the soloMode method is called', () => {
+        component.soloMode();
+        expect(gameConfigurationServiceSpy.removeRoom).toHaveBeenCalled();
     });
 
     it('should call exitRoom when there is a errorReason', () => {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoomClient } from '@app/interfaces/game-room-client';
-import { SocketEvents } from '@common/socket-events';
+import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
@@ -115,10 +115,6 @@ export class GameConfigurationService {
 
     gameInitialization(parameters: GameParameters) {
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
-        if (parameters.opponent !== undefined) {
-            this.roomInformation.playerName[1] = parameters.opponent;
-            this.roomInformation.statusGame = FOUND_OPPONENT_MESSAGE;
-        }
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
         this.roomInformation.playerName[0] = parameters.username;
@@ -134,9 +130,9 @@ export class GameConfigurationService {
         this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
-    beginScrabbleGame(opponent?: string) {
-        if (opponent !== undefined) {
-            this.roomInformation.playerName[1] = opponent;
+    beginScrabbleGame(opponentBot?: string) {
+        if (opponentBot !== undefined) {
+            this.roomInformation.playerName[1] = opponentBot;
         }
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }

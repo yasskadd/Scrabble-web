@@ -59,4 +59,24 @@ export class Gameboard {
         this.getLetterTile(position).letter = '';
         this.getLetterTile(position).isOccupied = false;
     }
+
+    isAnchor(tile: LetterTile): boolean {
+        if (tile.isOccupied) return false;
+        if (
+            this.getLetterTile({ x: tile.x - 1, y: tile.y } as Coordinate).isOccupied ||
+            this.getLetterTile({ x: tile.x + 1, y: tile.y } as Coordinate).isOccupied ||
+            this.getLetterTile({ x: tile.x, y: tile.y - 1 } as Coordinate).isOccupied ||
+            this.getLetterTile({ x: tile.x, y: tile.y + 1 } as Coordinate).isOccupied
+        )
+            return true;
+        return false;
+    }
+
+    findAnchors(): LetterTile[] {
+        const anchors: LetterTile[] = [];
+        for (const tile of this.gameboardTiles) {
+            if (this.isAnchor(tile)) anchors.push(tile);
+        }
+        return anchors;
+    }
 }
