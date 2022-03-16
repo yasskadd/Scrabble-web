@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
 const enum TimeOptions {
-    ThirtySecond = 30,
+    ThirtySecond = 3,
     OneMinute = 60,
     OneMinuteAndThirty = 90,
     TwoMinute = 120,
