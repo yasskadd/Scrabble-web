@@ -12,6 +12,7 @@ type Player = { name: string; score: number; rack: Letter[]; room: string };
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
 
+const TIMEOUT = 15;
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,
@@ -182,7 +183,7 @@ describe('GameClientService', () => {
         service.gameboard = PLAYER_INFO.gameboard;
         expect(service.gameboard).not.toEqual(GAME_INFO.gameboard);
         socketEmulator.peerSideEmit(SocketEvents.Skip, GAME_INFO);
-        tick();
+        tick(TIMEOUT);
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).toBeTruthy();
     }));
@@ -192,7 +193,7 @@ describe('GameClientService', () => {
         service.gameboard = PLAYER_INFO.gameboard;
         expect(service.gameboard).not.toEqual(GAME_INFO.gameboard);
         socketEmulator.peerSideEmit(SocketEvents.Skip, GAME_INFO);
-        tick();
+        tick(TIMEOUT);
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).not.toBeTruthy();
     }));

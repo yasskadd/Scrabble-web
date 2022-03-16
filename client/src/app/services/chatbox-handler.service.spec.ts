@@ -18,6 +18,7 @@ interface RoomInformation {
     isCreator: boolean;
     statusGame: string;
 }
+const TIMEOUT = 15;
 const ROOM_INFORMATION: RoomInformation = {
     playerName: ['Vincent', 'RICHARD'],
     roomId: '1',
@@ -451,7 +452,7 @@ describe('ChatboxHandlerService', () => {
         const message3 = { type: 'system-message', data: `${gameClientServiceSpy.secondPlayer.name} : wkt` };
 
         service.endGameMessage();
-        tick();
+        tick(TIMEOUT);
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);

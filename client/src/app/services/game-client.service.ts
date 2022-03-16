@@ -9,6 +9,7 @@ type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
 type Player = { name: string; score: number; rack: Letter[] };
 type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+const TIMEOUT = 15;
 
 @Injectable({
     providedIn: 'root',
@@ -63,7 +64,7 @@ export class GameClientService {
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
             setTimeout(() => {
                 this.skipEvent(gameInfo);
-            }, 0);
+            }, TIMEOUT);
         });
 
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
