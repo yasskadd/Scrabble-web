@@ -48,9 +48,9 @@ export class ChatboxHandlerService {
     submitMessage(userInput: string): void {
         if (userInput !== '') {
             this.addMessage(this.configureUserMessage(userInput));
-            if (this.isCommand(userInput)) {
-                if (this.validCommand(userInput)) {
-                    const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (this.isCommand(commandValid)) {
+                if (this.validCommand(commandValid)) {
                     this.commandHandler.sendCommand(commandValid);
                 }
             } else {
