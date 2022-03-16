@@ -44,6 +44,7 @@ export class Gameboard {
     }
 
     getLetterTile(position: Coordinate): LetterTile {
+        if (position === null) return {} as LetterTile;
         if (position.x > ROW_NUMBERS || position.x < 1 || position.y > ROW_NUMBERS || position.y < 1) return {} as LetterTile;
         return this.gameboardTiles.filter(
             (gameboardTile) => gameboardTile.coordinate.x === position.x && gameboardTile.coordinate.y === position.y,

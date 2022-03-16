@@ -99,7 +99,7 @@ export class WordSolverService {
             if (wordIndex >= 0) lastPosition = this.decrementCoord(lastPosition, this.isHorizontal) as Coordinate;
         }
         const commandInfo: CommandInfo = {
-            firstCoordinate: firstCoordinate,
+            firstCoordinate,
             isHorizontal: this.isHorizontal,
             letters: placedLetters,
         };
