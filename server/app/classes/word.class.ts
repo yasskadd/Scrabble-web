@@ -22,6 +22,33 @@ export class Word {
         this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
     }
 
+    static findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
+        const allWords: Word[] = [];
+        allWords.push(word);
+        word.newLetterCoords.forEach((coord: Coordinate) => {
+            this.pushNewAjacentWord(word, gameboard, coord, allWords);
+        });
+        return allWords;
+    }
+
+    static pushNewAjacentWord(word: Word, gameboard: Gameboard, coord: Coordinate, allWords: Word[]) {
+        const newWord = new Word(
+            {
+                firstCoordinate: coord,
+                isHorizontal: !word.isHorizontal,
+                letters: [''],
+            },
+            gameboard,
+        );
+        if (newWord.wordCoords.length !== 1) allWords.push(newWord);
+    }
+
+    calculateWordPoints(placedWord: Word, gameboard: Gameboard): number {
+        this.addLetterPoints(placedWord, gameboard);
+        this.addWordMultiplierPoints(placedWord, gameboard);
+        return this.points;
+    }
+
     private setIsHorizontal(firstCoord: Coordinate, gameboard: Gameboard) {
         if (this.upDownIsOccupied(gameboard, firstCoord)) this.isHorizontal = false;
         else if (this.leftRightIsOccupied(gameboard, firstCoord)) this.isHorizontal = true;
@@ -63,8 +90,8 @@ export class Word {
     }
 
     private setWordAttributes(firstCoord: Coordinate, commandLetters: string[], gameboard: Gameboard) {
-        let position: Coordinate = { ...firstCoord };
-        let commandLettersCopy: string[] = commandLetters.slice();
+        const position: Coordinate = { ...firstCoord };
+        const commandLettersCopy: string[] = commandLetters.slice();
 
         if (commandLettersCopy[0] === '') commandLettersCopy.shift();
 
@@ -102,33 +129,6 @@ export class Word {
 
     private isWithinBoardLimits(coord: Coordinate): boolean {
         return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
-    }
-
-    static findAdjacentWords(word: Word, gameboard: Gameboard): Word[] {
-        const allWords: Word[] = [];
-        allWords.push(word);
-        word.newLetterCoords.forEach((coord: Coordinate) => {
-            this.pushNewAjacentWord(word, gameboard, coord, allWords);
-        });
-        return allWords;
-    }
-
-    static pushNewAjacentWord(word: Word, gameboard: Gameboard, coord: Coordinate, allWords: Word[]) {
-        const newWord = new Word(
-            {
-                firstCoordinate: coord,
-                isHorizontal: !word.isHorizontal,
-                letters: [''],
-            },
-            gameboard,
-        );
-        if (newWord.wordCoords.length !== 1) allWords.push(newWord);
-    }
-
-    public calculateWordPoints(placedWord: Word, gameboard: Gameboard): number {
-        this.addLetterPoints(placedWord, gameboard);
-        this.addWordMultiplierPoints(placedWord, gameboard);
-        return this.points;
     }
 
     private addLetterPoints(placedWord: Word, gameboard: Gameboard) {
