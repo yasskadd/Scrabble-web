@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
@@ -111,6 +112,7 @@ describe('GameClientService', () => {
     });
 
     it('should update the player information', () => {
+        service.playerOne = { rack: [] as Letter[] } as Player;
         socketEmulator.peerSideEmit(SocketEvents.UpdatePlayerInformation, PLAYER_ONE);
         expect(service.playerOne).toEqual(PLAYER_ONE);
     });
@@ -331,5 +333,32 @@ describe('GameClientService', () => {
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
         expect(service.winningMessage).toEqual(messageWinner);
+    });
+
+    it(' updateRack should return the rack by pushing the new letters at the end and keeping the rest of the rack intact', () => {
+        const DUMMY_RACK_1 = [{ value: 'a' }, { value: '*' }, { value: 'f' }, { value: 'd' }, { value: 'e' }, { value: 's' }];
+        const DUMMY_RACK_2 = [{ value: 'a' }, { value: 'b' }, { value: 'c' }, { value: 'd' }, { value: 'e' }, { value: 'f' }];
+        const DUMMY_RACK_3 = [] as Letter[];
+
+        const NEW_RACK_1 = [{ value: 'a' }, { value: 'f' }, { value: 'e' }, { value: 's' }, { value: 'd' }, { value: 'j' }];
+        const NEW_RACK_2 = [{ value: 'f' }, { value: 'e' }, { value: 'b' }, { value: 'c' }, { value: 'd' }, { value: 'a' }];
+        const NEW_RACK_3 = [{ value: 'a' }, { value: 'a' }, { value: 'c' }, { value: 'd' }, { value: 'e' }, { value: 'f' }];
+
+        service.playerOne = { rack: DUMMY_RACK_1 as Letter[] } as Player;
+        // eslint-disable-next-line dot-notation
+        expect(service['updateRack'](NEW_RACK_1 as Letter[])).toEqual([
+            { value: 'a' },
+            { value: 'f' },
+            { value: 'd' },
+            { value: 'e' },
+            { value: 's' },
+            { value: 'j' },
+        ] as Letter[]);
+        service.playerOne.rack = DUMMY_RACK_2 as Letter[];
+        // eslint-disable-next-line dot-notation
+        expect(service['updateRack'](NEW_RACK_2 as Letter[])).toEqual(DUMMY_RACK_2 as Letter[]);
+        service.playerOne.rack = DUMMY_RACK_3 as Letter[];
+        // eslint-disable-next-line dot-notation
+        expect(service['updateRack'](NEW_RACK_3 as Letter[])).toEqual(NEW_RACK_3 as Letter[]);
     });
 });
