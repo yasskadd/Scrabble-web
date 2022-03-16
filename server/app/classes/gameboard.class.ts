@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
-import * as multipliers from '@common/board-multiplier-coords';
-import { Coordinate } from '@common/coordinate';
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
+import * as multipliers from '@common/constants/board-multiplier-coords';
+import { Coordinate } from '@common/interfaces/coordinate';
 
 const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
@@ -63,10 +63,10 @@ export class Gameboard {
     isAnchor(tile: LetterTile): boolean {
         if (tile.isOccupied) return false;
         if (
-            this.getLetterTile({ x: tile.x - 1, y: tile.y } as Coordinate).isOccupied ||
-            this.getLetterTile({ x: tile.x + 1, y: tile.y } as Coordinate).isOccupied ||
-            this.getLetterTile({ x: tile.x, y: tile.y - 1 } as Coordinate).isOccupied ||
-            this.getLetterTile({ x: tile.x, y: tile.y + 1 } as Coordinate).isOccupied
+            this.getLetterTile({ x: tile.coordinate.x - 1, y: tile.coordinate.y } as Coordinate).isOccupied ||
+            this.getLetterTile({ x: tile.coordinate.x + 1, y: tile.coordinate.y } as Coordinate).isOccupied ||
+            this.getLetterTile({ x: tile.coordinate.x, y: tile.coordinate.y - 1 } as Coordinate).isOccupied ||
+            this.getLetterTile({ x: tile.coordinate.x, y: tile.coordinate.y + 1 } as Coordinate).isOccupied
         )
             return true;
         return false;

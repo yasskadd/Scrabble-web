@@ -1,4 +1,4 @@
-import { Coordinate } from '@common/coordinate';
+import { Coordinate } from '@common/interfaces/coordinate';
 
 export interface CommandInfo {
     firstCoordinate: Coordinate;

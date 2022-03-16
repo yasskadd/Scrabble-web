@@ -1,6 +1,6 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-import { LetterTile } from '@common/letter-tile.class';
+import { LetterTile } from '@common/classes/letter-tile.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { Gameboard } from './gameboard.class';

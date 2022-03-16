@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import { CommandInfo } from '@common/command-info';
-import { Coordinate } from '@common/coordinate';
+import { Coordinate } from '@common/interfaces/coordinate';
 import { Gameboard } from './gameboard.class';
 
 export class Word {

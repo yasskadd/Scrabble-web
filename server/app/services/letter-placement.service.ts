@@ -2,8 +2,8 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@common/command-info';
-import { Coordinate } from '@common/coordinate';
-import { Letter } from '@common/letter';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Letter } from '@common/interfaces/letter';
 import { Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 

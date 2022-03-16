@@ -5,7 +5,7 @@ import { Word } from '@app/classes/word.class';
 import { LetterPlacementService, PlaceLettersReturn } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/command-info';
-import { Letter } from '@common/letter';
+import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;

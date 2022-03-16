@@ -28,7 +28,7 @@ export class PlayerRackComponent implements OnInit {
     duplicates: number[];
     arrow: boolean;
     absentFromRack: boolean;
-    temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
+    temp: Letter = { value: 'a', quantity: 2, points: 1 };
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
