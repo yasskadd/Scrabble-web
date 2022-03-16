@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/canvas-test-helper';
 import * as constants from '@app/constants';
 import { GridService } from '@app/services/grid.service';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 
 describe('GridService', () => {
     let gridService: GridService;
@@ -14,16 +14,13 @@ describe('GridService', () => {
     const CANVAS_HEIGHT = 600;
     const POSITION_TEST = { x: 2, y: 11 };
     const BOARD_SIZE = 15;
-    const GAMEBOARD_TEST = [
+    const GAMEBOARD_TEST: LetterTileInterface[] = [
         {
-            x: 2,
-            y: 5,
+            coordinate: { x: 2, y: 5 },
             isOccupied: true,
-            letter: { value: 'S', quantity: 2, points: 2 },
-            letterMultiplier: 1,
-            wordMultiplier: 2,
-            resetLetterMultiplier: () => {},
-            resetWordMultiplier: () => {},
+            _letter: 'S',
+            points: 2,
+            multiplier: { type: 'MOT', number: 2 },
         },
     ];
 
@@ -79,7 +76,7 @@ describe('GridService', () => {
 
     it(" drawGrid shouldn't call drawLetterPoints when gameboard doesn't have any occupied tiles", () => {
         const drawLetterSpy = spyOn(gridService, 'drawLetterPoints').and.callThrough();
-        gridService.drawGrid([{ isOccupied: false } as LetterTile]);
+        gridService.drawGrid([{ isOccupied: false } as LetterTileInterface]);
         expect(drawLetterSpy).not.toHaveBeenCalled();
     });
 

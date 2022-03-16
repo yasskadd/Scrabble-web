@@ -9,6 +9,7 @@ import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
 const CHAR_ASCII = 96;
+const TIMEOUT = 15;
 const VALID_COMMAND_REGEX_STRING =
     // eslint-disable-next-line max-len
     '^!r(é|e)serve$|^!indice$|^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
@@ -32,14 +33,24 @@ export class ChatboxHandlerService {
     ) {
         this.messages = [];
         this.configureBaseSocketFeatures();
+        this.listenToObserver();
+    }
+
+    listenToObserver() {
+        this.gameClient.turnFinish.subscribe((value) => {
+            if (value) {
+                this.addMessage(this.configureUserMessage('!passer'));
+                this.sendMessage('!passer');
+            }
+        });
     }
 
     submitMessage(userInput: string): void {
         if (userInput !== '') {
             this.addMessage(this.configureUserMessage(userInput));
-            if (this.isCommand(userInput)) {
-                if (this.validCommand(userInput)) {
-                    const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (this.isCommand(commandValid)) {
+                if (this.validCommand(commandValid)) {
                     this.commandHandler.sendCommand(commandValid);
                 }
             } else {
@@ -55,7 +66,7 @@ export class ChatboxHandlerService {
             this.messages.push({ type: 'system-message', data: 'Fin de la partie : lettres restantes' });
             this.messages.push({ type: 'system-message', data: `${this.gameClient.playerOne.name} : ${myLetterLeft}` });
             this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} : ${opponentLetterLeft}` });
-        }, 0);
+        }, TIMEOUT);
     }
 
     resetMessage() {

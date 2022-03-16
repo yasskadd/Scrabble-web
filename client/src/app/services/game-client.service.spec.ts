@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 type Player = { name: string; score: number; rack: Letter[]; room: string };
-type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
 
+const TIMEOUT = 15;
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,
@@ -39,14 +40,11 @@ const PLAYER_TWO: Player = {
 const PLAYER_INFO: PlayInfo = {
     gameboard: [
         {
-            x: 3,
-            y: 2,
+            coordinate: { x: 3, y: 2 },
             isOccupied: true,
-            letter: { value: 'b', quantity: 2, points: 1 },
-            letterMultiplier: 2,
-            wordMultiplier: 1,
-            resetLetterMultiplier: () => {},
-            resetWordMultiplier: () => {},
+            _letter: 'b',
+            points: 1,
+            multiplier: { type: 'LETTRE', number: 2 },
         },
     ],
     activePlayer: 'Paul',
@@ -54,14 +52,11 @@ const PLAYER_INFO: PlayInfo = {
 const GAME_INFO: GameInfo = {
     gameboard: [
         {
-            x: 3,
-            y: 2,
+            coordinate: { x: 3, y: 2 },
             isOccupied: true,
-            letter: { value: 'e', quantity: 2, points: 1 },
-            letterMultiplier: 2,
-            wordMultiplier: 1,
-            resetLetterMultiplier: () => {},
-            resetWordMultiplier: () => {},
+            _letter: 'e',
+            points: 1,
+            multiplier: { type: 'LETTRE', number: 2 },
         },
     ],
     players: [
@@ -176,25 +171,26 @@ describe('GameClientService', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('should update the gameboard information when the player skips his turn', () => {
+    it('should update the gameboard information when the player skips his turn', fakeAsync(() => {
         service.playerOne = PLAYER_ONE;
         service.secondPlayer = PLAYER_TWO;
         service.gameboard = PLAYER_INFO.gameboard;
         expect(service.gameboard).not.toEqual(GAME_INFO.gameboard);
         socketEmulator.peerSideEmit(SocketEvents.Skip, GAME_INFO);
+        tick(TIMEOUT);
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).toBeTruthy();
-    });
-
-    it('should update the playOneTurn to false if it is not your turn to play', () => {
+    }));
+    it('should update the playerOneTurn to false if it is not your turn to play', fakeAsync(() => {
         service.playerOne = PLAYER_TWO;
         service.secondPlayer = PLAYER_ONE;
         service.gameboard = PLAYER_INFO.gameboard;
         expect(service.gameboard).not.toEqual(GAME_INFO.gameboard);
         socketEmulator.peerSideEmit(SocketEvents.Skip, GAME_INFO);
+        tick(TIMEOUT);
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOneTurn).not.toBeTruthy();
-    });
+    }));
 
     it('should update the letter reserve length if SocketEvents.letterReserveUpdated event is called from the server', () => {
         socketEmulator.peerSideEmit('letterReserveUpdated', LETTER_RESERVE);
@@ -208,6 +204,36 @@ describe('GameClientService', () => {
 
     it('should  not update the time when the SocketEvents.TimerClientUpdate event is not called from the server', () => {
         expect(service.timer).not.toEqual(TIME);
+    });
+
+    it('timerClientUpdateEvent should call isTurnFinish', () => {
+        const spy = spyOn(service, 'isTurnFinish' as never);
+        // eslint-disable-next-line dot-notation
+        service['timerClientUpdateEvent'](TIME);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('isTurnFinish should call isTurnFinish', () => {
+        const spy = spyOn(service, 'isTurnFinish' as never);
+        // eslint-disable-next-line dot-notation
+        service['timerClientUpdateEvent'](TIME);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('isTurnFinish() should give the value of the turnFinish variable ', () => {
+        service.playerOneTurn = true;
+        const spy = spyOn(service.turnFinish, 'next');
+        // eslint-disable-next-line dot-notation
+        service['isTurnFinish'](0);
+        expect(spy).toHaveBeenCalledWith(true);
+    });
+
+    it('isTurnFinish() should  not give the value of the turnFinish variable if is not his turn', () => {
+        service.playerOneTurn = false;
+        const spy = spyOn(service.turnFinish, 'next');
+        // eslint-disable-next-line dot-notation
+        service['isTurnFinish'](0);
+        expect(spy).not.toHaveBeenCalledWith(true);
     });
 
     it('should  not update the letter reserve if SocketEvents.letterReserveUpdated  is not called from the server', () => {
@@ -276,7 +302,7 @@ describe('GameClientService', () => {
         service.secondPlayer = PLAYER_TWO;
         service.playerOne.score = 33;
         service.secondPlayer.score = 32;
-        const messageWinner = 'Bravo Vous avez gagné la partie de Scrabble';
+        const messageWinner = `Bravo ${service.playerOne.name} vous avez gagné`;
 
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
@@ -294,7 +320,7 @@ describe('GameClientService', () => {
         service.secondPlayer = PLAYER_TWO;
         service.playerOne.score = 32;
         service.secondPlayer.score = 42;
-        const messageWinner = "L'adversaire a gagné la partie";
+        const messageWinner = `Bravo ${service.secondPlayer.name} vous avez gagné`;
 
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();

@@ -61,6 +61,77 @@ describe('Letter Placement Service', () => {
         });
     });
 
+    context('wordIsPlacedCorrectly() tests', () => {
+        beforeEach(() => {
+            word = new Word(
+                {
+                    firstCoordinate: { x: 1, y: 1 },
+                    isHorizontal: true,
+                    letters: ['a', 'b'],
+                },
+                gameboard,
+            );
+        });
+
+        it('wordIsPlacedCorrectly() should call verifyFirstTurn() if isFirstTurn() returns true', () => {
+            const lettersInRackStub = Sinon.stub(placementService, 'isFirstTurn' as never);
+            lettersInRackStub.returns(true);
+            const verifyFirstTurnStub = Sinon.stub(placementService, 'verifyFirstTurn' as never);
+
+            placementService['wordIsPlacedCorrectly'](word.newLetterCoords, gameboard);
+            expect(verifyFirstTurnStub.calledOnce).to.equal(true);
+        });
+
+        it('wordIsPlacedCorrectly() should call isWordIsAttachedToBoardLetter() if isFirstTurn() returns false', () => {
+            const lettersInRackStub = Sinon.stub(placementService, 'isFirstTurn' as never);
+            lettersInRackStub.returns(false);
+            const isWordIsAttachedToBoardLetterStub = Sinon.stub(placementService, 'isWordIsAttachedToBoardLetter' as never);
+
+            placementService['wordIsPlacedCorrectly'](word.newLetterCoords, gameboard);
+            expect(isWordIsAttachedToBoardLetterStub.calledOnce).to.equal(true);
+        });
+
+        it('isFirstTurn() should return true if gameboard is empty', () => {
+            expect(placementService['isFirstTurn'](gameboard)).to.equal(true);
+        });
+
+        it('isFirstTurn() should return false if gameboard is not empty', () => {
+            gameboard.placeLetter({ x: 1, y: 1 }, 'a');
+            expect(placementService['isFirstTurn'](gameboard)).to.equal(false);
+        });
+    });
+
+    context('isWordIsAttachedToBoardLetter() tests ', () => {
+        it('isWordIsAttachedToBoardLetter() should return false if gameboard is empty', () => {
+            const upDownLeftOrRightAreOccupiedStub = Sinon.stub(placementService, 'upDownLeftOrRightAreOccupied' as never);
+            upDownLeftOrRightAreOccupiedStub.returns(false);
+            expect(
+                placementService['isWordIsAttachedToBoardLetter'](
+                    [
+                        { x: 1, y: 1 },
+                        { x: 2, y: 1 },
+                    ],
+                    gameboard,
+                ),
+            ).to.equal(false);
+        });
+
+        it('isWordIsAttachedToBoardLetter() should return true if gameboard contains letter next to word', () => {
+            const upDownLeftOrRightAreOccupied = Sinon.stub(placementService, 'upDownLeftOrRightAreOccupied' as never);
+            upDownLeftOrRightAreOccupied.returns(true);
+            gameboard.placeLetter({ x: 1, y: 2 }, 'a');
+            expect(
+                placementService['isWordIsAttachedToBoardLetter'](
+                    [
+                        { x: 1, y: 1 },
+                        { x: 2, y: 1 },
+                    ],
+                    gameboard,
+                ),
+            ).to.equal(true);
+        });
+    });
+
     context('areLettersInRack() tests', () => {
         it('areLettersInRack() should return true if letter is in rack', () => {
             expect(placementService['areLettersInRack'](['b'], player)).to.equal(true);
@@ -124,7 +195,7 @@ describe('Letter Placement Service', () => {
 
     context('verifyFirstTurn() tests', () => {
         it('should return true if gameboard has no placed letters and letterCoords include middle coordinate', () => {
-            const word = new Word(
+            word = new Word(
                 {
                     firstCoordinate: { x: 8, y: 8 },
                     isHorizontal: true,
@@ -138,7 +209,7 @@ describe('Letter Placement Service', () => {
         });
 
         it('should return true if gameboard has no placed letters and letterCoords do not include middle coordinate', () => {
-            const word = new Word(
+            word = new Word(
                 {
                     firstCoordinate: { x: 1, y: 1 },
                     isHorizontal: true,
@@ -181,10 +252,6 @@ describe('Letter Placement Service', () => {
             validateCommandCoordinateStub = Sinon.stub(placementService, 'validateCommandCoordinate' as never);
             lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as never);
             wordIsPlacedCorrectlyStub = Sinon.stub(placementService, 'wordIsPlacedCorrectly' as never);
-            // letterCoords = [
-            //     { x: 0, y: 0 },
-            //     { x: 0, y: 1 },
-            // ];
         });
 
         afterEach(() => {

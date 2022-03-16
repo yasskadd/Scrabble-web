@@ -7,11 +7,13 @@ import { Letter } from '@common/interfaces/letter';
 import { Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
+const BOARD_LENGTH = 15;
+
 export enum ErrorType {
-    commandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
-    lettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
-    invalidFirstWordPlacement = "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
-    invalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
+    CommandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
+    LettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
+    InvalidFirstWordPlacement = "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
+    InvalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
 }
 
 export interface PlaceLettersReturn {
@@ -30,20 +32,36 @@ export class LetterPlacementService {
     constructor(private dictionaryService: DictionaryValidationService) {}
 
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {
-        if (!this.validateCommandCoordinate(commandInfo.firstCoordinate, gameboard)) return [{} as Word, ErrorType.commandCoordinateOutOfBounds];
-        if (!this.areLettersInRack(commandInfo.letters, player)) return [{} as Word, ErrorType.lettersNotInRack];
+        if (!this.validateCommandCoordinate(commandInfo.firstCoordinate, gameboard)) return [{} as Word, ErrorType.CommandCoordinateOutOfBounds];
+        if (!this.areLettersInRack(commandInfo.letters, player)) return [{} as Word, ErrorType.LettersNotInRack];
 
         const commandWord = new Word(commandInfo, gameboard);
-        if (!commandWord.isValid) return [{} as Word, ErrorType.invalidWordBuild];
-        if (!this.wordIsPlacedCorrectly(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.invalidFirstWordPlacement];
+        if (!commandWord.isValid) return [{} as Word, ErrorType.InvalidWordBuild];
+        if (!this.wordIsPlacedCorrectly(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.InvalidFirstWordPlacement];
 
         return [commandWord, null];
     }
 
+    placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, currentGameboard: Gameboard): PlaceLettersReturn {
+        this.placeNewLettersOnBoard(commandInfo, commandWord, currentGameboard);
+
+        const validateWordReturn = this.dictionaryService.validateWord(commandWord, currentGameboard);
+        if (!validateWordReturn.points) {
+            this.removeLettersFromBoard(commandWord, currentGameboard);
+            return { hasPassed: false, gameboard: currentGameboard, invalidWords: validateWordReturn.invalidWords };
+        }
+        this.updatePlayerScore(validateWordReturn.points, commandWord, player);
+        this.updatePlayerRack(commandInfo.letters, player);
+        return { hasPassed: true, gameboard: currentGameboard, invalidWords: [] as Word[] };
+    }
+
     private validateCommandCoordinate(commandCoord: Coordinate, gameboard: Gameboard): boolean {
-        if (!gameboard.getLetterTile(commandCoord).isOccupied)
-            return commandCoord.x >= 1 && commandCoord.x <= 15 && commandCoord.y >= 1 && commandCoord.y <= 15;
+        if (!gameboard.getLetterTile(commandCoord).isOccupied) return this.isWithinBoardLimits(commandCoord);
         else return false;
+    }
+
+    private isWithinBoardLimits(coord: Coordinate): boolean {
+        return coord.x >= 1 && coord.x <= BOARD_LENGTH && coord.y >= 1 && coord.y <= BOARD_LENGTH;
     }
 
     private createTempRack(player: Player): Letter[] {
@@ -112,44 +130,23 @@ export class LetterPlacementService {
     }
 
     private isWordIsAttachedToBoardLetter(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
-        let up;
-        let down;
-        let left;
-        let right: Coordinate;
         let lettersWithAdjacencyCount = 0;
 
         letterCoords.forEach((coord) => {
-            up = { x: coord.x, y: coord.y - 1 };
-            down = { x: coord.x, y: coord.y + 1 };
-            left = { x: coord.x - 1, y: coord.y };
-            right = { x: coord.x + 1, y: coord.y };
-            if (this.upDownLeftOrRightAreOccupied(gameboard, up, down, left, right)) lettersWithAdjacencyCount++;
+            if (this.upDownLeftOrRightAreOccupied(gameboard, coord)) lettersWithAdjacencyCount++;
         });
 
         if (lettersWithAdjacencyCount === 0) return false;
         else return true;
     }
 
-    private upDownLeftOrRightAreOccupied(gameboard: Gameboard, up: Coordinate, down: Coordinate, left: Coordinate, right: Coordinate): boolean {
+    private upDownLeftOrRightAreOccupied(gameboard: Gameboard, coord: Coordinate): boolean {
         return (
-            gameboard.getLetterTile(up).isOccupied ||
-            gameboard.getLetterTile(down).isOccupied ||
-            gameboard.getLetterTile(left).isOccupied ||
-            gameboard.getLetterTile(right).isOccupied
+            (gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied && this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 })) ||
+            (gameboard.getLetterTile({ x: coord.x, y: coord.y + 1 }).isOccupied && this.isWithinBoardLimits({ x: coord.x, y: coord.y + 1 })) ||
+            (gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied && this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y })) ||
+            (gameboard.getLetterTile({ x: coord.x + 1, y: coord.y }).isOccupied && this.isWithinBoardLimits({ x: coord.x + 1, y: coord.y }))
         );
-    }
-
-    public placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, gameboard: Gameboard): PlaceLettersReturn {
-        this.placeNewLettersOnBoard(commandInfo, commandWord, gameboard);
-
-        const validateWordReturn = this.dictionaryService.validateWord(commandWord, gameboard);
-        if (!validateWordReturn.points) {
-            this.removeLettersFromBoard(commandWord, gameboard);
-            return { hasPassed: false, gameboard: gameboard, invalidWords: validateWordReturn.invalidWords };
-        }
-        this.updatePlayerScore(validateWordReturn.points, commandWord, player);
-        this.updatePlayerRack(commandInfo.letters, player);
-        return { hasPassed: true, gameboard: gameboard, invalidWords: [] as Word[] };
     }
 
     private placeNewLettersOnBoard(commandInfo: CommandInfo, commandWord: Word, gameboard: Gameboard) {
@@ -174,7 +171,7 @@ export class LetterPlacementService {
         const INDEX_NOT_FOUND = -1;
         letters.forEach((letter) => {
             if (letter === letter.toUpperCase()) letter = '*';
-            const itemInRack = player.rack.filter((item: Letter) => item.value == letter)[0];
+            const itemInRack = player.rack.filter((item: Letter) => item.value === letter)[0];
             const index = player.rack.indexOf(itemInRack);
             if (index > INDEX_NOT_FOUND) player.rack.splice(index, 1);
         });

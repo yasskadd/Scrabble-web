@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/letter-tile-interface';
-import { Subject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
 type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
 type Player = { name: string; score: number; rack: Letter[] };
 type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
+const TIMEOUT = 15;
 
 @Injectable({
     providedIn: 'root',
@@ -23,12 +24,14 @@ export class GameClientService {
     isGameFinish: boolean;
     winningMessage: string;
     gameboardUpdated: Subject<boolean>;
+    turnFinish: ReplaySubject<boolean>;
 
     constructor(private clientSocketService: ClientSocketService) {
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
         this.gameboardUpdated = new Subject();
+        this.turnFinish = new ReplaySubject<boolean>(1);
         this.configureBaseSocketFeatures();
         this.gameboard = [];
     }
@@ -60,7 +63,9 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
-            this.skipEvent(gameInfo);
+            setTimeout(() => {
+                this.skipEvent(gameInfo);
+            }, TIMEOUT);
         });
 
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
@@ -97,6 +102,14 @@ export class GameClientService {
 
     private timerClientUpdateEvent(newTimer: number) {
         this.timer = newTimer;
+        this.isTurnFinish(newTimer);
+    }
+
+    private isTurnFinish(newTimer: number): void {
+        if (newTimer === 0 && this.playerOneTurn) {
+            this.turnFinish.next(true);
+            this.turnFinish.next(false);
+        }
     }
 
     private viewUpdateEvent(info: PlayInfo) {
@@ -139,9 +152,9 @@ export class GameClientService {
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
         } else if (this.playerOne.score > this.secondPlayer.score) {
-            this.winningMessage = 'Bravo Vous avez gagné la partie de Scrabble';
+            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
         } else {
-            this.winningMessage = "L'adversaire a gagné la partie";
+            this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
         }
     }
     private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {

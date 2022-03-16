@@ -140,8 +140,9 @@ describe.only('Word solver service', () => {
         });
 
         it('should return correct number if there is no anchors or occupied tiles on the way and isHorizontal is true', () => {
+            const expected = 8;
             wordSolverService['isHorizontal'] = true;
-            expect(wordSolverService['getLimitNumber']({ x: 8, y: 1 }, anchorsList)).to.equal(8);
+            expect(wordSolverService['getLimitNumber']({ x: 8, y: 1 }, anchorsList)).to.equal(expected);
         });
 
         it('should return correct number if there is no anchors or occupied tiles on the way and isHorizontal is false', () => {

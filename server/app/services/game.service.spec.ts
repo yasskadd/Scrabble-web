@@ -82,6 +82,7 @@ describe('Game tests', () => {
             };
         });
 
+        // eslint-disable-next-line max-len
         it('play() should return ReturnLetterReturn object and resetSkipCounter and endTurn() if the command word does not exist in dictionary for player1 on play', () => {
             game.gameboard.placeLetter({ x: 10, y: 8 }, 'a');
             const invalidWord = new Word(commandInfo, game.gameboard);
@@ -90,8 +91,8 @@ describe('Game tests', () => {
             letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
 
             expect(game.play(player1, commandInfo)).to.eql({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
-            expect(turn.resetSkipCounter.called).to.be.true;
-            expect(turn.end.called).to.be.true;
+            expect(turn.resetSkipCounter.called).to.eql(true);
+            expect(turn.end.called).to.eql(true);
         });
 
         it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
@@ -99,7 +100,7 @@ describe('Game tests', () => {
             letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
 
             expect(game.play(player2, commandInfo)).to.equal('InvalidMessage');
-            expect(turn.resetSkipCounter.called).to.be.true;
+            expect(turn.resetSkipCounter.called).to.eql(true);
         });
 
         it('play() should return the gameboard if the command is valid of player1 on play', () => {
