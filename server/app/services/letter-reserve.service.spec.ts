@@ -118,4 +118,9 @@ describe('LetterReserveService', () => {
         // eslint-disable-next-line dot-notation
         expect(letterReserveService['shuffleArray'](array)).to.not.eql(array);
     });
+
+    it('should return the total of letter in the letter reserve', () => {
+        const expectedTotal = 102;
+        expect(letterReserveService.totalQuantity()).to.equal(expectedTotal);
+    });
 });

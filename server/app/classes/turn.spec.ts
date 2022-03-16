@@ -5,7 +5,7 @@ import { Turn } from './turn';
 
 const SECOND = 1000;
 
-describe.only('turn', () => {
+describe('turn', () => {
     let turn: Turn;
     let clock: SinonFakeTimers;
     let time: number;

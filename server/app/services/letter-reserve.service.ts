@@ -108,6 +108,15 @@ export class LetterReserveService {
         return this.lettersReserve.length === 0;
     }
 
+    totalQuantity(): number {
+        const total = this.lettersReserve.map((letter) => {
+            return letter.quantity;
+        });
+        return total.reduce((acc, quantity) => {
+            return acc + quantity;
+        });
+    }
+
     private shuffleArray(array: Letter[]) {
         for (let i = 0; i < array.length - 1; i++) {
             const j = Math.floor(Math.random() * (i + 1));
