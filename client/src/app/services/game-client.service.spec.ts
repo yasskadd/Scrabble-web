@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 type Player = { name: string; score: number; rack: Letter[]; room: string };
-type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
 
 const PLAYER_ONE: Player = {
     name: 'Maurice',
@@ -39,14 +39,11 @@ const PLAYER_TWO: Player = {
 const PLAYER_INFO: PlayInfo = {
     gameboard: [
         {
-            x: 3,
-            y: 2,
+            coordinate: { x: 3, y: 2 },
             isOccupied: true,
-            letter: { value: 'b', quantity: 2, points: 1 },
-            letterMultiplier: 2,
-            wordMultiplier: 1,
-            resetLetterMultiplier: () => {},
-            resetWordMultiplier: () => {},
+            _letter: 'b',
+            points: 1,
+            multiplier: { type: 'LETTRE', number: 2 },
         },
     ],
     activePlayer: 'Paul',
@@ -54,14 +51,11 @@ const PLAYER_INFO: PlayInfo = {
 const GAME_INFO: GameInfo = {
     gameboard: [
         {
-            x: 3,
-            y: 2,
+            coordinate: { x: 3, y: 2 },
             isOccupied: true,
-            letter: { value: 'e', quantity: 2, points: 1 },
-            letterMultiplier: 2,
-            wordMultiplier: 1,
-            resetLetterMultiplier: () => {},
-            resetWordMultiplier: () => {},
+            _letter: 'e',
+            points: 1,
+            multiplier: { type: 'LETTRE', number: 2 },
         },
     ],
     players: [
