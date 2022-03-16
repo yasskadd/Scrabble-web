@@ -61,7 +61,7 @@ export class LetterPlacementService {
     }
 
     private isWithinBoardLimits(coord: Coordinate): boolean {
-        return coord.x >= 1 && coord.x <= 15 && coord.y >= 1 && coord.y <= 15;
+        return coord.x >= 1 && coord.x <= BOARD_LENGTH && coord.y >= 1 && coord.y <= BOARD_LENGTH;
     }
 
     private createTempRack(player: Player): Letter[] {
@@ -130,34 +130,22 @@ export class LetterPlacementService {
     }
 
     private isWordIsAttachedToBoardLetter(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
-        let up: Coordinate;
-        let down: Coordinate;
-        let left: Coordinate;
-        let right: Coordinate;
         let lettersWithAdjacencyCount = 0;
 
         letterCoords.forEach((coord) => {
-            this.setUpLeftDownRight(coord, up, left, down, right);
-            if (this.upDownLeftOrRightAreOccupied(gameboard, up, down, left, right)) lettersWithAdjacencyCount++;
+            if (this.upDownLeftOrRightAreOccupied(gameboard, coord)) lettersWithAdjacencyCount++;
         });
 
         if (lettersWithAdjacencyCount === 0) return false;
         else return true;
     }
 
-    private setUpLeftDownRight(coord: Coordinate, up: Coordinate, left: Coordinate, down: Coordinate, right: Coordinate) {
-        up = { x: coord.x, y: coord.y - 1 };
-        down = { x: coord.x, y: coord.y + 1 };
-        left = { x: coord.x - 1, y: coord.y };
-        right = { x: coord.x + 1, y: coord.y };
-    }
-
-    private upDownLeftOrRightAreOccupied(gameboard: Gameboard, up: Coordinate, down: Coordinate, left: Coordinate, right: Coordinate): boolean {
+    private upDownLeftOrRightAreOccupied(gameboard: Gameboard, coord: Coordinate): boolean {
         return (
-            (gameboard.getLetterTile(up).isOccupied && this.isWithinBoardLimits(up)) ||
-            (gameboard.getLetterTile(down).isOccupied && this.isWithinBoardLimits(down)) ||
-            (gameboard.getLetterTile(left).isOccupied && this.isWithinBoardLimits(left)) ||
-            (gameboard.getLetterTile(right).isOccupied && this.isWithinBoardLimits(right))
+            (gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied && this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 })) ||
+            (gameboard.getLetterTile({ x: coord.x, y: coord.y + 1 }).isOccupied && this.isWithinBoardLimits({ x: coord.x, y: coord.y + 1 })) ||
+            (gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied && this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y })) ||
+            (gameboard.getLetterTile({ x: coord.x + 1, y: coord.y }).isOccupied && this.isWithinBoardLimits({ x: coord.x + 1, y: coord.y }))
         );
     }
 

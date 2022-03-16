@@ -62,8 +62,6 @@ describe('Letter Placement Service', () => {
     });
 
     context('wordIsPlacedCorrectly() tests', () => {
-        let word: Word;
-
         beforeEach(() => {
             word = new Word(
                 {
