@@ -64,7 +64,7 @@ export class PlayerRackComponent implements OnInit {
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            this.cancel();
+            this.lettersToManipulate = [];
             this.selectManipulation(event);
         });
     }
@@ -91,7 +91,7 @@ export class PlayerRackComponent implements OnInit {
         }
 
         for (const [i, letter] of this.rack.entries()) {
-            if (letter.value === event.key.toLowerCase()) {
+            if (letter.value === event.key.toLowerCase() && !this.lettersToExchange.includes(i)) {
                 this.duplicates.push(i);
             }
         }
@@ -101,7 +101,7 @@ export class PlayerRackComponent implements OnInit {
             this.previousSelection = this.currentSelection;
             this.lettersToManipulate.push(this.currentSelection);
         } else {
-            this.cancel();
+            this.lettersToExchange = [];
         }
     }
 
@@ -120,6 +120,10 @@ export class PlayerRackComponent implements OnInit {
         event.preventDefault();
         this.lettersToManipulate = [];
         const notFound = constants.INVALID_INDEX;
+
+        // if (this.lettersToManipulate.includes(letter)) {
+        //     this.lettersToManipulate = [];
+        // }
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
@@ -139,9 +143,11 @@ export class PlayerRackComponent implements OnInit {
 
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        this.cancel();
-        this.currentSelection = letter;
-        this.lettersToManipulate.push(letter);
+        if (!this.lettersToExchange.includes(letter)) {
+            this.lettersToManipulate = [];
+            this.currentSelection = letter;
+            this.lettersToManipulate.push(letter);
+        }
     }
 
     exchange() {
@@ -164,17 +170,18 @@ export class PlayerRackComponent implements OnInit {
 
     moveLeft() {
         const rackIndices = 6;
+        let temp;
         if (this.currentSelection === 0) {
-            this.temp = this.gameClient.playerOne.rack[0];
+            temp = this.gameClient.playerOne.rack[0];
             for (let i = 1; i < this.gameClient.playerOne.rack.length; i++) {
                 this.gameClient.playerOne.rack[i - 1] = this.gameClient.playerOne.rack[i];
             }
-            this.gameClient.playerOne.rack[rackIndices] = this.temp;
+            this.gameClient.playerOne.rack[rackIndices] = temp;
             this.currentSelection = rackIndices;
         } else {
-            this.temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
+            temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
             this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
-            this.gameClient.playerOne.rack[this.currentSelection] = this.temp;
+            this.gameClient.playerOne.rack[this.currentSelection] = temp;
 
             this.currentSelection -= 1;
         }
@@ -183,17 +190,18 @@ export class PlayerRackComponent implements OnInit {
 
     moveRight() {
         const rackIndices = 6;
+        let temp;
         if (this.currentSelection === rackIndices) {
-            this.temp = this.gameClient.playerOne.rack[rackIndices];
+            temp = this.gameClient.playerOne.rack[rackIndices];
             for (let i = this.gameClient.playerOne.rack.length - 1; i > 0; i--) {
                 this.gameClient.playerOne.rack[i] = this.gameClient.playerOne.rack[i - 1];
             }
-            this.gameClient.playerOne.rack[0] = this.temp;
+            this.gameClient.playerOne.rack[0] = temp;
             this.currentSelection = 0;
         } else {
-            this.temp = this.gameClient.playerOne.rack[this.currentSelection + 1];
+            temp = this.gameClient.playerOne.rack[this.currentSelection + 1];
             this.gameClient.playerOne.rack[this.currentSelection + 1] = this.gameClient.playerOne.rack[this.currentSelection];
-            this.gameClient.playerOne.rack[this.currentSelection] = this.temp;
+            this.gameClient.playerOne.rack[this.currentSelection] = temp;
             this.currentSelection += 1;
         }
         this.lettersToManipulate.push(this.currentSelection);
