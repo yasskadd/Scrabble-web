@@ -20,8 +20,10 @@ describe('Dictionary Validation Service', () => {
     let invalidWord1: Word;
     let invalidWord2: Word;
 
-    beforeEach(() => {
+    before(() => {
         dictionaryValidationService = new DictionaryValidationService();
+    });
+    beforeEach(() => {
         gameboard = new Gameboard();
 
         validWord1 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 1 }, letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'] }, gameboard);
