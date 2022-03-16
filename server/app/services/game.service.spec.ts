@@ -14,7 +14,7 @@ describe('Game tests', () => {
     let player1: Player;
     let player2: Player;
     let turn: SinonStubbedInstance<Turn> & Turn;
-    let letterReserveService: SinonStubbedInstance<LetterReserveService>;
+    let letterReserveService: SinonStubbedInstance<LetterReserveService> & LetterReserveService;
     let letterPlacementService: SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
     let game: Game;
 
@@ -24,7 +24,7 @@ describe('Game tests', () => {
         player2 = new Player('player2');
         player2.name = 'OriginalName2';
         turn = createStubInstance(Turn) as SinonStubbedInstance<Turn> & Turn;
-        letterReserveService = createStubInstance(LetterReserveService);
+        letterReserveService = createStubInstance(LetterReserveService) as SinonStubbedInstance<LetterReserveService> & LetterReserveService;
         letterPlacementService = createStubInstance(LetterPlacementService) as SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
         game = new Game(player1, player2, turn, letterReserveService, letterPlacementService);
     });
@@ -132,12 +132,26 @@ describe('Game tests', () => {
             expect(play).to.deep.equal(expected);
         });
 
-        it('play() should call generateLetter of letterReserveService if placeLetter of letterPlacementService return true', () => {
+        // eslint-disable-next-line max-len
+        it('play() should call generateLetter of letterReserveService and gives everything in the reserve if there is more letter placed than the number of letter in the reserve', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
+            letterReserveService.totalQuantity.returns(1);
+            letterReserveService.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
+            letterReserveService.generateLetters.returns([letterA]);
             game.play(player1, commandInfo);
-            expect(letterReserveService.generateLetters.called).to.equal(true);
+            expect(letterReserveService.generateLetters.calledWith(1)).to.equal(true);
+        });
+
+        it('play() should call generateLetter of letterReserveService with the quantity of letter that equals the quantity of letter placed', () => {
+            turn.validating.returns(true);
+            letterPlacementService.globalCommandVerification.returns([[], null]);
+            letterPlacementService.placeLetter.returns([true, game.gameboard]);
+            letterReserveService.totalQuantity.returns(commandInfo.lettersPlaced.length);
+            letterReserveService.generateLetters.returns([letterA, letterA]);
+            game.play(player1, commandInfo);
+            expect(letterReserveService.generateLetters.calledWith(commandInfo.lettersPlaced.length)).to.equal(true);
         });
 
         it('play() should call end if the rack of the player1 and the letter reserve is empty on play', () => {
@@ -166,6 +180,7 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
+            letterReserveService.generateLetters.returns([letterA, letterA]);
             letterReserveService.isEmpty.returns(false);
             game.play(player1, commandInfo);
             expect(turn.end.called).to.equal(true);
@@ -176,7 +191,7 @@ describe('Game tests', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([[], null]);
             letterPlacementService.placeLetter.returns([true, game.gameboard]);
-            player2.rack = [];
+            letterReserveService.generateLetters.returns([letterA, letterA]);
             game.play(player2, commandInfo);
             expect(turn.end.called).to.equal(true);
             expect(turn.resetSkipCounter.called).to.equal(true);
