@@ -3,6 +3,7 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
+import { ReplaySubject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { ClientSocketService } from './client-socket.service';
@@ -57,6 +58,7 @@ describe('ChatboxHandlerService', () => {
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
     let commandHandlerSpy: jasmine.SpyObj<CommandHandlerService>;
+    const TEST_TURNFINISH = new ReplaySubject<boolean>(1);
     beforeEach(() => {
         gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['removeRoom', 'rejectOpponent', 'beginScrabbleGame'], {
             roomInformation: ROOM_INFORMATION,
@@ -64,6 +66,7 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy = jasmine.createSpyObj('GameClientService', [], {
             playerOne: PLAYER1_INFORMATION,
             secondPlayer: SECOND_PLAYER_INFORMATION,
+            turnFinish: TEST_TURNFINISH,
         });
         commandHandlerSpy = jasmine.createSpyObj('CommandHandlerService', ['sendCommand']);
         socketEmulator = new SocketTestEmulator();
@@ -175,6 +178,22 @@ describe('ChatboxHandlerService', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](INVALID_COMMAND_PARAMS_2)).toBeFalsy();
+    });
+
+    it('should call addMessage and sendMessage when turnFinish has the value true', () => {
+        const spy = spyOn(service, 'addMessage' as never);
+        const spy2 = spyOn(service, 'sendMessage' as never);
+        gameClientServiceSpy.turnFinish.next(true);
+        expect(spy).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
+    });
+
+    it('should not call addMessage and sendMessage when turnFinish has the value false', () => {
+        const spy = spyOn(service, 'addMessage' as never);
+        const spy2 = spyOn(service, 'sendMessage' as never);
+        gameClientServiceSpy.turnFinish.next(false);
+        expect(spy).not.toHaveBeenCalled();
+        expect(spy2).not.toHaveBeenCalled();
     });
 
     it('isCommand() should recognize a command structure', () => {

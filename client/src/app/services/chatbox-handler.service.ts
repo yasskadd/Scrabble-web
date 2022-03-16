@@ -36,6 +36,16 @@ export class ChatboxHandlerService {
     ) {
         this.messages = [];
         this.configureBaseSocketFeatures();
+        this.listenToObserver();
+    }
+
+    listenToObserver() {
+        this.gameClient.turnFinish.subscribe((value) => {
+            if (value) {
+                this.addMessage(this.configureUserMessage('!passer'));
+                this.sendMessage('!passer');
+            }
+        });
     }
 
     submitMessage(userInput: string): void {
