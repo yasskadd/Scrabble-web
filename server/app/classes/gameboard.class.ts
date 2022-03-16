@@ -18,7 +18,7 @@ export class Gameboard {
     createLetterTiles() {
         for (let i = 1; i <= ROW_NUMBERS; i++) {
             for (let j = 1; j <= COLUMN_NUMBERS; j++) {
-                this.gameboardTiles.push(new LetterTile({ x: i, y: j }));
+                this.gameboardTiles.push(new LetterTile({ x: j, y: i }));
             }
         }
     }
@@ -44,7 +44,7 @@ export class Gameboard {
     }
 
     getLetterTile(position: Coordinate): LetterTile {
-        if (this.isOutOfBounds(position) || position === null) return {} as LetterTile;
+        if (position === null || this.isOutOfBounds(position)) return {} as LetterTile;
 
         return this.gameboardTiles.filter(
             (gameboardTile) => gameboardTile.coordinate.x === position.x && gameboardTile.coordinate.y === position.y,
