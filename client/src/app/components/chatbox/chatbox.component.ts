@@ -13,7 +13,7 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     @ViewChild('container') private scrollBox: ElementRef;
 
     input = new FormControl(ChatboxComponent.inputInitialState);
-    constructor(public chatboxHandler: ChatboxHandlerService) {}
+    constructor(private chatboxHandler: ChatboxHandlerService) {}
 
     @HostListener('click')
     clickInside() {
