@@ -166,10 +166,6 @@ describe.only('BotBeginner', () => {
             mockSocketManager.restore();
         });
 
-        afterEach(() => {
-            mockSocketManager.restore();
-        });
-
         it('should call game.exchange() with correct letters to exchange and this parameter', () => {
             botBeginner['playedTurned'] = false;
             const expectation = mockSocketManager.expects('emitRoom').exactly(1);
@@ -183,7 +179,14 @@ describe.only('BotBeginner', () => {
 
         it('should not call game.exchange() if this.game is undefined', () => {
             botBeginner.game = undefined as never;
-            expect(gameStub.exchange.called).to.equal(false);
+            botBeginner.exchangeLetter();
+            expect(gameStub.exchange.called).to.be.equal(false);
+        });
+
+        it('should not call game.exchange() if playedTurn is set to true', () => {
+            botBeginner['playedTurned'] = true;
+            botBeginner.exchangeLetter();
+            expect(gameStub.exchange.called).to.be.equal(false);
         });
     });
 
@@ -375,6 +378,15 @@ describe.only('BotBeginner', () => {
         let mockWordSolver: Sinon.SinonMock;
         let mockBot: Sinon.SinonMock;
         let clock: Sinon.SinonFakeTimers;
+        let commandInfoStub: CommandInfo;
+        before(() => {
+            commandInfoStub = {
+                firstCoordinate: new LetterTile(1, 1, {} as Letter),
+                direction: 'h',
+                lettersPlaced: ['t', 'e', 's', 't'],
+            };
+        });
+
         beforeEach(() => {
             Sinon.restore();
             stubCommandInfoToList = Sinon.stub(botBeginner, 'addCommandInfoToList' as keyof BeginnerBot);
@@ -401,11 +413,6 @@ describe.only('BotBeginner', () => {
         });
 
         it('should call play() if countUp is between 3 and 20 seconds', () => {
-            const commandInfoStub: CommandInfo = {
-                firstCoordinate: new LetterTile(1, 1, {} as Letter),
-                direction: 'h',
-                lettersPlaced: ['t', 'e', 's', 't'],
-            };
             mockBot.expects('play').exactly(1).withExactArgs(commandInfoStub);
             mockWordSolver.expects('findAllOptions').exactly(1);
             mockWordSolver.expects('commandInfoScore').exactly(1);
@@ -417,16 +424,23 @@ describe.only('BotBeginner', () => {
         });
 
         it('should call play() after a delay if countUp is less than 3 seconds', () => {
-            const commandInfoStub: CommandInfo = {
-                firstCoordinate: new LetterTile(1, 1, {} as Letter),
-                direction: 'h',
-                lettersPlaced: ['t', 'e', 's', 't'],
-            };
             mockBot.expects('play').exactly(1).withExactArgs(commandInfoStub);
             mockWordSolver.expects('findAllOptions').exactly(1);
             mockWordSolver.expects('commandInfoScore').exactly(1);
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 1;
+            botBeginner['placeLetter']();
+            clock.tick(3500);
+            mockWordSolver.verify();
+            mockBot.verify();
+        });
+
+        it('should not call play() if countUp is greater than 20 seconds', () => {
+            mockBot.expects('play').never();
+            mockWordSolver.expects('findAllOptions').exactly(1);
+            mockWordSolver.expects('commandInfoScore').exactly(1);
+            stubCommandInfoToList.returns([commandInfoStub]);
+            botBeginner['countUp'] = 25;
             botBeginner['placeLetter']();
             clock.tick(3500);
             mockWordSolver.verify();
