@@ -118,8 +118,34 @@ export class GameClientService {
     }
 
     private updatePlayerInformationEvent(player: PlayerInformation) {
+        const updatedRack = this.updateRack(player.rack);
         this.playerOne = player;
+        this.playerOne.rack = updatedRack;
         this.updateNewGameboard(player.gameboard);
+    }
+
+    private updateRack(newRack: Letter[]): Letter[] {
+        const dictionary = new Map();
+        newRack.forEach((letter) => {
+            const dictionaryLetter = dictionary.get(letter.value);
+            if (dictionaryLetter === undefined) dictionary.set(letter.value, { counter: 1, letter });
+            else dictionaryLetter.counter++;
+        });
+        const resultingRack = [] as Letter[];
+        this.playerOne.rack.forEach((letter) => {
+            const dictionaryLetter = dictionary.get(letter.value);
+            if (dictionaryLetter !== undefined && dictionaryLetter.counter > 0) {
+                resultingRack.push(letter);
+                dictionaryLetter.counter--;
+            }
+        });
+        dictionary.forEach((dictionaryLetter) => {
+            while (dictionaryLetter.counter > 0) {
+                resultingRack.push(dictionaryLetter.letter);
+                dictionaryLetter.counter--;
+            }
+        });
+        return resultingRack;
     }
 
     private updateNewGameboard(newGameboard: LetterTileInterface[]) {
@@ -142,8 +168,12 @@ export class GameClientService {
 
     private skipEvent(gameInfo: GameInfo) {
         this.gameboard = gameInfo.gameboard;
-        this.playerOne = this.playerOne.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
-        this.secondPlayer = this.secondPlayer.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
+        const playerOneIndex = this.playerOne.name === gameInfo.players[0].name ? 0 : 1;
+        const secondPlayerIndex = Math.abs(playerOneIndex - 1);
+        const updatedRack = this.updateRack(gameInfo.players[playerOneIndex].rack);
+        this.playerOne = gameInfo.players[playerOneIndex];
+        this.playerOne.rack = updatedRack;
+        this.secondPlayer = gameInfo.players[secondPlayerIndex];
         this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
         this.updateGameboard();
     }

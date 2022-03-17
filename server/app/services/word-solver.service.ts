@@ -84,7 +84,6 @@ export class WordSolverService {
 
     // Tested
     private createCommandInfo(word: string, lastPosition: Coordinate) {
-        // console.log(`${this.index++} Word found : ${word}`);
         let wordIndex = word.length - 1;
         let wordCopy = word.slice();
         const placedLetters: string[] = [];
