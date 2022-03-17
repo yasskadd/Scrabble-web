@@ -94,49 +94,61 @@ describe.only('BotBeginner', () => {
     });
 
     context('choosePlayMove() tests', () => {
-        let spySkipTurn: Sinon.SinonSpy<[], void>;
-        let spyExchangerLetters: Sinon.SinonSpy<[], void>;
-        let stubPlaceLetter: Sinon.SinonStub<[], void>;
+        let mockBot: Sinon.SinonMock;
         let stubGetRandom: Sinon.SinonStub<unknown[], unknown>;
+        let clock: Sinon.SinonFakeTimers;
         beforeEach(() => {
-            spySkipTurn = Sinon.spy(botBeginner, 'skipTurn');
-            spyExchangerLetters = Sinon.spy(botBeginner, 'exchangeLetter');
             stubGetRandom = Sinon.stub(botBeginner, 'getRandomNumber' as never);
-            stubPlaceLetter = Sinon.stub(botBeginner, 'placeLetter');
+            mockBot = Sinon.mock(botBeginner);
+            clock = Sinon.useFakeTimers();
+        });
+
+        afterEach(() => {
+            mockBot.restore();
+            clock.restore();
         });
 
         it('should call skipTurn() if random number is equal to 1', () => {
-            const clock = Sinon.useFakeTimers();
+            mockBot.expects('skipTurn').exactly(1);
             stubGetRandom.returns(1);
             botBeginner.choosePlayMove();
             clock.tick(3500);
-            expect(spySkipTurn.calledOnce).to.equal(true);
+            mockBot.verify();
         });
 
         it('should not call skipTurn() and placeLetter() if random number is not equal to 1', () => {
+            mockBot.expects('skipTurn').never();
+            mockBot.expects('placeLetter').never();
+            mockBot.expects('exchangeLetter').exactly(1);
             stubGetRandom.returns(2);
             botBeginner.choosePlayMove();
-            expect(spySkipTurn.called && stubPlaceLetter.called).to.equal(false);
+            clock.tick(3500);
+            mockBot.verify();
         });
 
         it('should call exchangeLetter() if random number is equal to 2', () => {
+            mockBot.expects('exchangeLetter').exactly(1);
             stubGetRandom.returns(2);
             botBeginner.choosePlayMove();
-            setTimeout(() => {
-                expect(spyExchangerLetters.calledOnce).to.equal(true);
-            }, 3500);
+            clock.tick(3500);
+            mockBot.verify();
         });
 
-        it('should not call exchangeLetters() and placeLetter() if random number is not equal to 2', () => {
+        it('should not call exchangeLetters() and placeLetter() if random number is equal to 1', () => {
+            mockBot.expects('exchangeLetter').never();
+            mockBot.expects('placeLetter').never();
+            mockBot.expects('skipTurn').exactly(1);
             stubGetRandom.returns(1);
             botBeginner.choosePlayMove();
-            expect(spyExchangerLetters.called && stubPlaceLetter.called).to.equal(false);
+            clock.tick(3500);
+            mockBot.verify();
         });
 
         it('should call placeLetter() if random number is between 3 and 10', () => {
+            mockBot.expects('placeLetter').exactly(1);
             stubGetRandom.returns(3);
             botBeginner.choosePlayMove();
-            expect(stubPlaceLetter.calledOnce).to.equal(true);
+            mockBot.verify();
         });
     });
 
@@ -262,6 +274,7 @@ describe.only('BotBeginner', () => {
         });
 
         afterEach(() => {
+            Sinon.restore();
             botBeginner['game'].turn.countdown.unsubscribe();
             botBeginner['game'].turn.endTurn.unsubscribe();
             mockSkip.restore();
@@ -359,31 +372,32 @@ describe.only('BotBeginner', () => {
 
     context('placeLetter() tests', () => {
         let stubCommandInfoToList: Sinon.SinonStub<unknown[], unknown>;
-        let spySkipTurn: Sinon.SinonSpy<[], void>;
         let mockWordSolver: Sinon.SinonMock;
         let mockBot: Sinon.SinonMock;
+        let clock: Sinon.SinonFakeTimers;
         beforeEach(() => {
             Sinon.restore();
             stubCommandInfoToList = Sinon.stub(botBeginner, 'addCommandInfoToList' as keyof BeginnerBot);
-            spySkipTurn = Sinon.spy(botBeginner, 'skipTurn');
             mockWordSolver = Sinon.mock(wordSolverStub);
             mockBot = Sinon.mock(botBeginner);
+            clock = Sinon.useFakeTimers();
         });
 
         afterEach(() => {
             mockWordSolver.restore();
             mockBot.restore();
+            clock.restore();
         });
 
         it('should call skipTurn() after 3 seconds if commandInfoList is empty', () => {
             mockWordSolver.expects('findAllOptions').exactly(1);
             mockWordSolver.expects('commandInfoScore').exactly(1);
+            mockBot.expects('skipTurn').exactly(1);
             stubCommandInfoToList.returns([]);
             botBeginner['placeLetter']();
+            clock.tick(3500);
+            mockBot.verify();
             mockWordSolver.verify();
-            setTimeout(() => {
-                expect(spySkipTurn.calledOnce).to.equal(true);
-            }, 3500);
         });
 
         it('should call play() if countUp is between 3 and 20 seconds', () => {
@@ -414,10 +428,9 @@ describe.only('BotBeginner', () => {
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 1;
             botBeginner['placeLetter']();
+            clock.tick(3500);
             mockWordSolver.verify();
-            setTimeout(() => {
-                mockBot.verify();
-            }, 1.5);
+            mockBot.verify();
         });
     });
 });
