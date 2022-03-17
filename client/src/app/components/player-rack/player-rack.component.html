@@ -4,8 +4,10 @@
     <div id="player-letters">
         <div
             *ngFor="let letter of rack; index as i"
-            [className]="this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'"
-            [className]="this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter'"
+            [ngClass]="[
+                this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter',
+                !this.lettersToExchange.includes(i) && this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'
+            ]"
             (click)="onLeftClick($event, i)"
             (contextmenu)="onRightClick($event, i)"
         >
