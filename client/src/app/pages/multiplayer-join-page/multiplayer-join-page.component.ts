@@ -12,9 +12,9 @@ export class MultiplayerJoinPageComponent implements OnInit {
     playerName: string;
     gameMode: string;
     constructor(
-        public gameConfiguration: GameConfigurationService,
-        public router: Router,
-        public snackBar: MatSnackBar,
+        private gameConfiguration: GameConfigurationService,
+        private router: Router,
+        private snackBar: MatSnackBar,
         private activatedRoute: ActivatedRoute,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;

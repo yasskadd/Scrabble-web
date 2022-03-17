@@ -13,7 +13,7 @@ const TIMEOUT = 3000;
 export class HighScoresComponent implements OnInit {
     highScoreClassic: HighScores[] | undefined;
     highScoreLOG29990: HighScores[] | undefined;
-    constructor(private readonly httpHandler: HttpHandlerService, public snackBar: MatSnackBar) {}
+    constructor(private readonly httpHandler: HttpHandlerService, private snackBar: MatSnackBar) {}
 
     ngOnInit(): void {
         this.getHighScores();

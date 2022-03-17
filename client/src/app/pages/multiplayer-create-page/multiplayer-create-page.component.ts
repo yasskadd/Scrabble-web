@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
@@ -44,10 +43,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
     ];
     constructor(
         public gameConfiguration: GameConfigurationService,
-        public router: Router,
+        private router: Router,
         private activatedRoute: ActivatedRoute,
         private fb: FormBuilder,
-        public snackBar: MatSnackBar,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
     }
