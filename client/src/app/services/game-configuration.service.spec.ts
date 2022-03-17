@@ -150,6 +150,7 @@ describe('GameConfigurationService', () => {
     });
 
     it('removeRoom() should not call rejectOpponent when there is not an other player in the waiting room ', () => {
+        service.roomInformation.playerName[1] = '';
         const spyOnRejectOpponent = spyOn(service, 'rejectOpponent');
         service.removeRoom();
         expect(spyOnRejectOpponent).not.toHaveBeenCalled();

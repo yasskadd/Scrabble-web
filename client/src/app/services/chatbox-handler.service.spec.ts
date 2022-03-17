@@ -141,6 +141,26 @@ describe('ChatboxHandlerService', () => {
         expect(service['validCommandParameters'](VALID_COMMAND_PARAMS)).toBeTruthy();
     });
 
+    it('validCommand() should return false if the client wants to exchange and there is less than 7 letter in the reserve', () => {
+        gameClientServiceSpy.letterReserveLength = 6;
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND_PARAMS = '!echanger abv';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validCommand'](VALID_COMMAND_PARAMS)).toBeFalsy();
+    });
+
+    it('validCommand() should return true if the client wants to exchange and there is more  than 7 letter in the reserve', () => {
+        gameClientServiceSpy.letterReserveLength = 7;
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND_PARAMS = '!echanger abv';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validCommand'](VALID_COMMAND_PARAMS)).toBeTruthy();
+    });
+
     it("validCommandParameters() should validate the command parameters of the 'passer' command", () => {
         const VALID_COMMAND_PARAMS = '!passer';
 
@@ -187,6 +207,16 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.turnFinish.next(true);
         expect(spy).toHaveBeenCalled();
         expect(spy2).toHaveBeenCalled();
+    });
+
+    it('exchangePossible() should return false if the client wants to exchange and there is less than 7 letter in the reserve', () => {
+        gameClientServiceSpy.letterReserveLength = 6;
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND_PARAMS = '!echanger abv';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['exchangePossible'](VALID_COMMAND_PARAMS)).toBeFalsy();
     });
 
     it('should not call addMessage and sendMessage when turnFinish has the value false', () => {
