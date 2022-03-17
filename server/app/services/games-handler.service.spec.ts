@@ -871,6 +871,8 @@ describe('GamesHandler Service', () => {
                 turn: { endTurn: new Observable(), countdown: new Observable() },
                 gameboard: { gameboardCoords: [] },
             };
+            gameInfo.socketId[0] = '32498243';
+            gameInfo.socketId[1] = '3249adf8243';
             createNewGameStub.returns(gameStub);
             sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
             sinon.stub(gamesHandler, 'userConnected' as never);
