@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 import { of } from 'rxjs';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
@@ -106,16 +106,16 @@ describe('LetterPlacementService', () => {
 
     it("computeNextCoordinate should return the same coordinate if the Tile isn't occupied", () => {
         const COORDINATE = { x: 1, y: 1 };
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
         // eslint-disable-next-line dot-notation
         expect(service['computeNextCoordinate'](COORDINATE)).toEqual(COORDINATE);
     });
 
     it('computeNextCoordinate should increment until the next not occupied coordinate', () => {
         const COORDINATE = { x: 1, y: 1 };
-        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTile);
-        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTile);
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTileInterface);
+        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTileInterface);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
         // eslint-disable-next-line dot-notation
         service['isHorizontal'] = true;
         // eslint-disable-next-line dot-notation
@@ -124,7 +124,7 @@ describe('LetterPlacementService', () => {
 
     it("computeNextCoordinate should stop incrementing if it's outOfBound ", () => {
         const COORDINATE = { x: 15, y: 15 };
-        gameClientServiceSpy.gameboard[224] = { isOccupied: true } as LetterTile;
+        gameClientServiceSpy.gameboard[224] = { isOccupied: true } as LetterTileInterface;
         // eslint-disable-next-line dot-notation
         service['isHorizontal'] = true;
         COORDINATE.x++;
@@ -136,9 +136,9 @@ describe('LetterPlacementService', () => {
         const START_COORDINATE = { x: 1, y: 1 };
         const EXPECTED_CALLS = 2;
 
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
 
         // eslint-disable-next-line dot-notation
         service['placedLetters'] = [{} as Letter, {} as Letter];
@@ -153,7 +153,7 @@ describe('LetterPlacementService', () => {
     it("updateLettersView should draw the arrow if it's not outOfBound", () => {
         const START_COORDINATE = { x: 1, y: 1 };
 
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
 
         // eslint-disable-next-line dot-notation
         service['startTile'] = START_COORDINATE;
@@ -166,7 +166,7 @@ describe('LetterPlacementService', () => {
     it("updateLettersView shouldn't draw the arrow if it's outOfBound", () => {
         const START_COORDINATE = { x: 15, y: 15 };
 
-        gameClientServiceSpy.gameboard[224] = { isOccupied: true } as LetterTile;
+        gameClientServiceSpy.gameboard[224] = { isOccupied: true } as LetterTileInterface;
 
         // eslint-disable-next-line dot-notation
         service['startTile'] = START_COORDINATE;
@@ -293,8 +293,8 @@ describe('LetterPlacementService', () => {
     it('placeLetterStartPosition should update the view', () => {
         gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
 
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
 
         const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
         const resetGameBoardViewSpy = spyOn(service, 'resetGameBoardView' as never);
@@ -311,8 +311,8 @@ describe('LetterPlacementService', () => {
     it('placeLetterStartPosition should change the direction if clicked on the same position and update the view', () => {
         gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
 
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
 
         // eslint-disable-next-line dot-notation
         service['isHorizontal'] = true;
@@ -350,7 +350,7 @@ describe('LetterPlacementService', () => {
     it("placeLetterStartPosition shouldn't do anything if it's the tile is occupied", () => {
         gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
         const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
-        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: true } as LetterTileInterface);
 
         service.placeLetterStartPosition({ x: 0, y: 0 });
         expect(updateLettersViewSpy).not.toHaveBeenCalled();
@@ -359,7 +359,7 @@ describe('LetterPlacementService', () => {
     it("placeLetterStartPosition shouldn't do anything if there's placed letters", () => {
         gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
         const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
-        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTile);
+        gameClientServiceSpy.gameboard.push({ isOccupied: false } as LetterTileInterface);
 
         // eslint-disable-next-line dot-notation
         service['placedLetters'].push({} as Letter);

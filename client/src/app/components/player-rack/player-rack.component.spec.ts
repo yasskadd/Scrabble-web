@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ElementRef } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { PlayerRackComponent } from '@app/components/player-rack/player-rack.component';
@@ -108,6 +109,26 @@ describe('PlayerRackComponent', () => {
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
     }));
+
+    it('clicking outside the rack should call clickOutside', () => {
+        const indexLetter = 0;
+        const spy = spyOn(component, 'clickOutside');
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        window.dispatchEvent(new MouseEvent('click'));
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('scrolling in rack should reposition rack', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockScroll = new WheelEvent('scroll');
+        component.onScrollEvent(mockScroll);
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+        expect(component.buttonPressed).toEqual('ArrowRight');
+    });
 
     it('clicking outside the rack should call clickOutside', () => {
         const indexLetter = 0;
@@ -242,7 +263,6 @@ describe('PlayerRackComponent', () => {
         const mockKey = new KeyboardEvent('keydown');
         component.buttonPressed = 'ArrowLeft';
         component.selectManipulation(mockKey);
-        expect(component.arrow).toBeTruthy();
         expect(spy).toHaveBeenCalled();
     });
 
@@ -251,7 +271,6 @@ describe('PlayerRackComponent', () => {
         const mockKey = new KeyboardEvent('keydown');
         component.buttonPressed = 'ArrowRight';
         component.selectManipulation(mockKey);
-        expect(component.arrow).toBeTruthy();
         expect(spy).toHaveBeenCalled();
     });
 
@@ -260,7 +279,6 @@ describe('PlayerRackComponent', () => {
         const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
         component.selectManipulation(mockKey);
-        expect(component.arrow).toBeFalsy();
         expect(spy).not.toHaveBeenCalled();
     });
 
@@ -268,8 +286,17 @@ describe('PlayerRackComponent', () => {
         const invalidIndex = -1;
         const mockKey = new KeyboardEvent('keydown', { key: 'o' });
         component.buttonPressed = 'o';
-        component.selectManipulation(mockKey);
         expect(component.previousSelection).toEqual(invalidIndex);
+        component.selectManipulation(mockKey);
+        expect(component.previousSelection).not.toEqual(invalidIndex);
+    });
+
+    it('lettersToManipulate should be empty if key pressed is not present on player rack', () => {
+        const empty = 0;
+        const mockKey = new KeyboardEvent('keydown', { key: 'q' });
+        component.buttonPressed = 'q';
+        component.selectManipulation(mockKey);
+        expect(component.lettersToManipulate.length).toEqual(empty);
     });
 
     it('selectManipulation should manipulate second iteration of a letter when the key has been pressed twice', () => {
@@ -290,13 +317,6 @@ describe('PlayerRackComponent', () => {
         component.selectManipulation(mockKey);
         expect(component.duplicates.length).toEqual(2);
         expect(component.previousSelection).not.toEqual(invalidIndex);
-    });
-
-    it('selectManipulation should have a duplicates array of length 2', () => {
-        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
-        component.buttonPressed = 'a';
-        component.selectManipulation(mockKey);
-        expect(component.duplicates.length).toEqual(2);
     });
 
     it('moveRight should move letter to the beginning of the rack when the letter selected is at the end', () => {

@@ -3,6 +3,7 @@ import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
+import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { LetterTile } from '@common/classes/letter-tile.class';
@@ -10,7 +11,7 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
-import { LetterPlacementService } from './letter-placement.service';
+import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
@@ -137,30 +138,34 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const firstCoordinateColumns = commandInfo.firstCoordinate.x;
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
-        const letterPlaced = commandInfo.lettersPlaced.join('');
+        const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as RealPlayer;
-        const play = player.placeLetter(commandInfo) as [boolean, Gameboard] | string;
+        const play = player.placeLetter(commandInfo) as PlaceLettersReturn | string;
 
-        if (typeof play[0] === 'string') {
+        if (typeof play === 'string') {
             socket.emit(SocketEvents.ImpossibleCommandError, play);
         } else if (typeof play !== 'string') {
-            const playerInfo: PlayInfo = {
-                gameboard: play[1].gameboardCoords,
+            const playInfo: PlayInfo = {
+                gameboard: play.gameboard.gameboardTiles,
                 activePlayer: player.game.turn.activePlayer,
             };
-            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playerInfo);
+            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playInfo);
             this.updatePlayerInfo(socket, player.room, player.game);
 
-            if (!play[0]) {
-                socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
+            if (!play.hasPassed) {
+                play.invalidWords.forEach((invalidWord: Word) =>
+                    socket.emit(
+                        SocketEvents.ImpossibleCommandError,
+                        'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionnaire français',
+                    ),
+                );
             } else {
+                const direction = commandInfo.isHorizontal ? 'h' : 'v';
                 socket.broadcast
                     .to(player.room)
                     .emit(
                         SocketEvents.GameMessage,
-                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${
-                            commandInfo.direction
-                        } ${letterPlaced}`,
+                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${direction} ${letterPlaced}`,
                     );
             }
         }
@@ -200,7 +205,7 @@ export class GamesHandler {
             this.sendTimer(gameInfo.roomId, timer);
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.ViewUpdate, {
-            gameboard: newGameHolder.game.gameboard.gameboardCoords,
+            gameboard: newGameHolder.game.gameboard.gameboardTiles,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
@@ -247,7 +252,7 @@ export class GamesHandler {
     private changeTurn(roomId: string) {
         const game = this.games.get(roomId);
         const gameInfo = {
-            gameboard: game?.game?.gameboard.gameboardCoords,
+            gameboard: game?.game?.gameboard.gameboardTiles,
             players: game?.players.map((x) => x.getInformation()),
             activePlayer: game?.game?.turn.activePlayer,
         };

@@ -25,14 +25,14 @@ describe('turn', () => {
         clock.restore();
     });
 
-    it('start() should start the timer and not end it when there is still time left on the clock', () => {
+    it('start() should start the timer and not skip it when there is still time left on the clock', () => {
         turn.start();
         const skipTurnSpy = spy(turn, 'skipTurn');
         clock.tick(SECOND);
         expect(skipTurnSpy.called).to.equal(false);
     });
 
-    it('start() should start the timer and  end it when the time up', () => {
+    it('start() should start the timer and skip it when the time up', () => {
         turn.start();
         const skipTurnSpy = spy(turn, 'skipTurn');
         clock.tick(time * SECOND);

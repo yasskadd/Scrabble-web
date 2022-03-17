@@ -3,10 +3,8 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Coordinate } from '@common/interfaces/coordinate';
-import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
-import { BoxMultiplierService } from './box-multiplier.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordSolverService } from './word-solver.service';
 
@@ -14,16 +12,10 @@ describe('Word solver service', () => {
     let wordSolverService: WordSolverService;
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
-    let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
-    const NUMBER_7 = 7;
-    const NUMBER_8 = 8;
-    const NUMBER_10 = 10;
-    const NUMBER_12 = 12;
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();
         dictionaryValidationService.createTrieDictionary();
-        boxMultiplierService = Sinon.createStubInstance(BoxMultiplierService);
-        gameboard = new Gameboard(boxMultiplierService);
+        gameboard = new Gameboard();
         wordSolverService = new WordSolverService();
         wordSolverService['gameboard'] = gameboard;
     });
@@ -31,21 +23,21 @@ describe('Word solver service', () => {
     // TODO: Temporary test, need modifications
     it('should find all options', () => {
         const rack: string[] = ['*'];
-        gameboard.placeLetter(new LetterTile(1, NUMBER_12, { value: 'z' } as Letter));
-        gameboard.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
-        gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_10, { value: 'a' } as Letter));
-        gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_8, { value: 'j' } as Letter));
-        gameboard.placeLetter(new LetterTile(NUMBER_8, NUMBER_8, { value: 'e' } as Letter));
+        gameboard.placeLetter({ x: 1, y: 12 }, 'z');
+        gameboard.placeLetter({ x: 2, y: 1 }, 'l');
+        gameboard.placeLetter({ x: 7, y: 10 }, 'a');
+        gameboard.placeLetter({ x: 7, y: 8 }, 'j');
+        gameboard.placeLetter({ x: 8, y: 8 }, 'e');
         wordSolverService.findAllOptions(rack);
         expect(wordSolverService.commandInfoScore(wordSolverService['commandInfoList']).size).to.be.greaterThan(1);
     });
 
     it(' setGameboard should set the gameboard attribute of the service', () => {
-        const gameboardStub = new Gameboard(boxMultiplierService);
-        gameboardStub.placeLetter(new LetterTile(1, NUMBER_12, { value: 'z' } as Letter));
-        gameboardStub.placeLetter(new LetterTile(2, 1, { value: 'x' } as Letter));
-        gameboardStub.placeLetter(new LetterTile(2, 1, { value: 'l' } as Letter));
-        gameboardStub.placeLetter(new LetterTile(NUMBER_7, NUMBER_10, { value: 'a' } as Letter));
+        const gameboardStub = new Gameboard();
+        gameboardStub.placeLetter({ x: 1, y: 12 }, 'z');
+        gameboardStub.placeLetter({ x: 2, y: 1 }, 'x');
+        gameboardStub.placeLetter({ x: 2, y: 1 }, 'l');
+        gameboardStub.placeLetter({ x: 7, y: 10 }, 'a');
         wordSolverService.setGameboard(gameboardStub);
         expect(wordSolverService['gameboard']).to.equal(gameboardStub);
     });
@@ -55,19 +47,19 @@ describe('Word solver service', () => {
         let downRightCoordinate: Coordinate;
         let centerCoordinate: Coordinate;
         beforeEach(() => {
-            upLeftCoordinate = { x: 1, y: 1 } as Coordinate;
-            downRightCoordinate = { x: 15, y: 15 } as Coordinate;
-            centerCoordinate = { x: 8, y: 8 } as Coordinate;
+            upLeftCoordinate = { x: 1, y: 1 };
+            downRightCoordinate = { x: 15, y: 15 };
+            centerCoordinate = { x: 8, y: 8 };
         });
 
         it('incrementCoord should return a new Coordinate with x incremented if isHorizontal is true', () => {
             const newCoordinate = wordSolverService['incrementCoord'](centerCoordinate, true);
-            expect(newCoordinate).to.eql({ x: 9, y: 8 } as Coordinate);
+            expect(newCoordinate).to.eql({ x: 9, y: 8 });
         });
 
         it('incrementCoord should return a new Coordinate with y incremented if isHorizontal is false', () => {
             const newCoordinate = wordSolverService['incrementCoord'](centerCoordinate, false);
-            expect(newCoordinate).to.eql({ x: 8, y: 9 } as Coordinate);
+            expect(newCoordinate).to.eql({ x: 8, y: 9 });
         });
 
         it('incrementCoord should return null if the coordinate passed as an argument is on the edge of the board vertically or horizontally', () => {
@@ -78,12 +70,12 @@ describe('Word solver service', () => {
 
         it('decrementCoord should return a newCoordinate with x decremented if isHorizontal is true', () => {
             const newCoordinate = wordSolverService['decrementCoord'](centerCoordinate, true);
-            expect(newCoordinate).to.eql({ x: 7, y: 8 } as Coordinate);
+            expect(newCoordinate).to.eql({ x: 7, y: 8 });
         });
 
         it('decrementCoord should return a newCoordinate with y decremented if isHorizontal is false', () => {
             const newCoordinate = wordSolverService['decrementCoord'](centerCoordinate, false);
-            expect(newCoordinate).to.eql({ x: 8, y: 7 } as Coordinate);
+            expect(newCoordinate).to.eql({ x: 8, y: 7 });
         });
 
         it('decrementCoord should return null if the coordinate passed as an argument is on the edge of the board vertically or horizontally', () => {
@@ -94,40 +86,39 @@ describe('Word solver service', () => {
     });
 
     context('buildPartialWord() Tests', () => {
-        const NUMBER_6 = 6;
         beforeEach(() => {
-            gameboard.placeLetter(new LetterTile(NUMBER_8, NUMBER_8, { value: 's' } as Letter));
+            gameboard.placeLetter({ x: 8, y: 8 }, 's');
         });
 
         it('should return empty string if coordinate passed as an argument is not occupied and isHorizontal is true or false', () => {
             wordSolverService['isHorizontal'] = true;
-            const result1 = wordSolverService['buildPartialWord']({ x: 7, y: 7 } as Coordinate);
+            const result1 = wordSolverService['buildPartialWord']({ x: 7, y: 7 });
             wordSolverService['isVertical'] = false;
-            const result2 = wordSolverService['buildPartialWord']({ x: 7, y: 7 } as Coordinate);
+            const result2 = wordSolverService['buildPartialWord']({ x: 7, y: 7 });
             expect(result1 && result2).to.eql('');
         });
 
         it('should return single string if coordinate passed as an argument is occupied and there is no adjacent letter', () => {
             wordSolverService['isHorizontal'] = true;
-            const result1 = wordSolverService['buildPartialWord']({ x: 8, y: 8 } as Coordinate);
+            const result1 = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
             wordSolverService['isHorizontal'] = false;
-            const result2 = wordSolverService['buildPartialWord']({ x: 8, y: 8 } as Coordinate);
+            const result2 = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
             expect(result1 && result2).to.eql('s');
         });
 
         it('should return correct string if there is adjacent letters horizontally', () => {
-            gameboard.placeLetter(new LetterTile(NUMBER_7, NUMBER_8, { value: 'e' } as Letter));
-            gameboard.placeLetter(new LetterTile(NUMBER_6, NUMBER_8, { value: 'l' } as Letter));
+            gameboard.placeLetter({ x: 7, y: 8 }, 'e');
+            gameboard.placeLetter({ x: 6, y: 8 }, 'l');
             wordSolverService['isHorizontal'] = true;
-            const result = wordSolverService['buildPartialWord']({ x: 8, y: 8 } as Coordinate);
+            const result = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
             expect(result).to.eql('les');
         });
 
         it('should return correct string if there is adjacent letters vertically', () => {
-            gameboard.placeLetter(new LetterTile(NUMBER_8, NUMBER_7, { value: 'e' } as Letter));
-            gameboard.placeLetter(new LetterTile(NUMBER_8, NUMBER_6, { value: 'l' } as Letter));
+            gameboard.placeLetter({ x: 8, y: 7 }, 'e');
+            gameboard.placeLetter({ x: 8, y: 6 }, 'l');
             wordSolverService['isHorizontal'] = false;
-            const result = wordSolverService['buildPartialWord']({ x: 8, y: 8 } as Coordinate);
+            const result = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
             expect(result).to.eql('les');
         });
     });
@@ -136,86 +127,85 @@ describe('Word solver service', () => {
         let anchorsList: LetterTile[];
         const NUMBER_5 = 5;
         beforeEach(() => {
-            gameboard.placeLetter(new LetterTile(NUMBER_5, NUMBER_5, {} as Letter));
+            gameboard.placeLetter({ x: 5, y: 5 }, '');
             anchorsList = gameboard.findAnchors();
         });
 
         it('should return 0 if coordinate passed as an argument is occupied', () => {
-            expect(wordSolverService['getLimitNumber']({ x: 5, y: 5 } as Coordinate, anchorsList)).to.equal(0);
+            expect(wordSolverService['getLimitNumber']({ x: 5, y: 5 }, anchorsList)).to.equal(0);
         });
 
         it('should return 0 if coordinate passed as an argument is an anchor', () => {
-            expect(wordSolverService['getLimitNumber']({ x: 5, y: 6 } as Coordinate, anchorsList)).to.equal(0);
+            expect(wordSolverService['getLimitNumber']({ x: 5, y: 6 }, anchorsList)).to.equal(0);
         });
 
         it('should return correct number if there is no anchors or occupied tiles on the way and isHorizontal is true', () => {
+            const expected = 8;
             wordSolverService['isHorizontal'] = true;
-            expect(wordSolverService['getLimitNumber']({ x: 8, y: 1 } as Coordinate, anchorsList)).to.equal(NUMBER_8);
+            expect(wordSolverService['getLimitNumber']({ x: 8, y: 1 }, anchorsList)).to.equal(expected);
         });
 
         it('should return correct number if there is no anchors or occupied tiles on the way and isHorizontal is false', () => {
             wordSolverService['isHorizontal'] = false;
-            expect(wordSolverService['getLimitNumber']({ x: 8, y: 3 } as Coordinate, anchorsList)).to.equal(3);
+            expect(wordSolverService['getLimitNumber']({ x: 8, y: 3 }, anchorsList)).to.equal(3);
         });
 
         it('should return correct number if there is an anchor on the way and isHorizontal is true', () => {
             wordSolverService['isHorizontal'] = true;
-            expect(wordSolverService['getLimitNumber']({ x: 8, y: 4 } as Coordinate, anchorsList)).to.equal(3);
+            expect(wordSolverService['getLimitNumber']({ x: 8, y: 4 }, anchorsList)).to.equal(3);
         });
 
         it('should return correct number if there is an anchor on the way and isHorizontal is false', () => {
             wordSolverService['isHorizontal'] = false;
-            expect(wordSolverService['getLimitNumber']({ x: 5, y: 11 } as Coordinate, anchorsList)).to.equal(NUMBER_5);
+            expect(wordSolverService['getLimitNumber']({ x: 5, y: 11 }, anchorsList)).to.equal(NUMBER_5);
         });
     });
 
     context('crossCheck() Tests', () => {
         let result: Map<Coordinate, string[]>;
-        const NUMBER_4 = 4;
-        const NUMBER_5 = 5;
         beforeEach(() => {
-            gameboard.placeLetter(new LetterTile(1, 1, { value: 'a' } as Letter));
-            gameboard.placeLetter(new LetterTile(3, 1, { value: 'i' } as Letter));
-            gameboard.placeLetter(new LetterTile(NUMBER_4, 1, { value: 'o' } as Letter));
-            gameboard.placeLetter(new LetterTile(NUMBER_5, 1, { value: 'n' } as Letter));
+            gameboard.placeLetter({ x: 1, y: 1 }, 'a');
+            gameboard.placeLetter({ x: 3, y: 1 }, 'i');
+            gameboard.placeLetter({ x: 4, y: 1 }, 'o');
+            gameboard.placeLetter({ x: 5, y: 1 }, 'n');
         });
 
         it('result map should return correct list including letter v at (2, 1) position if isHorizontal is false', () => {
             wordSolverService['isHorizontal'] = false;
             result = wordSolverService['crossCheck']();
-            expect(result.get(gameboard.getCoord({ x: 2, y: 1 } as Coordinate))).to.contain('v');
-            expect(result.get(gameboard.getCoord({ x: 2, y: 1 } as Coordinate))).to.not.contain('a');
+            expect(result.get(gameboard.getLetterTile({ x: 2, y: 1 }).coordinate)).to.contain('v');
+            expect(result.get(gameboard.getLetterTile({ x: 2, y: 1 }).coordinate)).to.not.contain('a');
         });
 
         it('result should return a list containing all alphabet letters at (2, 1) position if isHorizontal is true', () => {
             wordSolverService['isHorizontal'] = true;
             result = wordSolverService['crossCheck']();
-            expect(result.get(gameboard.getCoord({ x: 2, y: 1 } as Coordinate))).to.eql('abcdefghijklmnopqrstuvwxyz'.split(''));
+            expect(result.get(gameboard.getLetterTile({ x: 2, y: 1 }).coordinate)).to.eql('abcdefghijklmnopqrstuvwxyz'.split(''));
         });
 
         it('result should return undefined at an occupied tile', () => {
-            expect(result.get(gameboard.getCoord(new LetterTile(NUMBER_5, 1, { value: 'n' } as Letter)))).to.equal(undefined);
+            expect(result.get(gameboard.getLetterTile({ x: 5, y: 1 }).coordinate)).to.equal(undefined);
         });
     });
 
     context('verifyConditions() tests', () => {
         it('should return true if the coordinate is out of bounds horizontally', () => {
-            const outOfBoundsCoord: Coordinate = { x: 17, y: 1 } as Coordinate;
+            const outOfBoundsCoord: Coordinate = { x: 17, y: 1 };
             expect(wordSolverService['verifyConditions'](outOfBoundsCoord)).to.equal(true);
         });
 
         it('should return true if the coordinate is out of bounds horizontally', () => {
-            const outOfBoundsCoord: Coordinate = { x: 1, y: 17 } as Coordinate;
+            const outOfBoundsCoord: Coordinate = { x: 1, y: 17 };
             expect(wordSolverService['verifyConditions'](outOfBoundsCoord)).to.equal(true);
         });
 
         it('should return false if coordinate is placed on the gameboard', () => {
-            gameboard.placeLetter(new LetterTile(1, 1, {} as Letter));
-            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 } as Coordinate)).to.equal(false);
+            gameboard.placeLetter({ x: 1, y: 1 }, '');
+            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 })).to.equal(false);
         });
 
         it('should return true if coordinate is not placed on the gameboard', () => {
-            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 } as Coordinate)).to.equal(true);
+            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 })).to.equal(true);
         });
     });
 
@@ -230,22 +220,22 @@ describe('Word solver service', () => {
             spyCreateCommand = Sinon.spy(wordSolverService, 'createCommandInfo' as keyof WordSolverService);
         });
         it('createCommandInfo should be called if we could form a word with the rack letters', () => {
-            const nextPosition: Coordinate = { x: 2, y: 2 } as Coordinate;
+            const nextPosition: Coordinate = { x: 2, y: 2 };
             wordSolverService['extendRight']('', wordSolverService['trie'].root, rack, nextPosition, false);
             expect(spyCreateCommand.called).to.equal(true);
         });
 
         it('createCommandInfo should be called if we could form a word with rack and placed letters on the board', () => {
-            const nextPosition: Coordinate = { x: 2, y: 2 } as Coordinate;
-            gameboard.placeLetter(new LetterTile(3, 2, { value: 'a' } as Letter));
+            const nextPosition: Coordinate = { x: 2, y: 2 };
+            gameboard.placeLetter({ x: 3, y: 2 }, 'a');
             wordSolverService['extendRight']('', wordSolverService['trie'].root, rack, nextPosition, false);
             expect(spyCreateCommand.called).to.equal(true);
         });
 
         it('createCommandInfo should be called if we could form a word with blank letter and letters on the board', () => {
             rack = ['*'];
-            const nextPosition: Coordinate = { x: 2, y: 2 } as Coordinate;
-            gameboard.placeLetter(new LetterTile(2, 2, { value: 'l' } as Letter));
+            const nextPosition: Coordinate = { x: 2, y: 2 };
+            gameboard.placeLetter({ x: 2, y: 2 }, 'l');
             wordSolverService['extendRight']('', wordSolverService['trie'].root, rack, nextPosition, false);
             expect(spyCreateCommand.called).to.equal(true);
         });
@@ -254,7 +244,7 @@ describe('Word solver service', () => {
     context('findLeftPart() tests', () => {
         it('should call findLeftPart() and extendRight() more than once if a word could be found', () => {
             const rack = ['l', 'e', 's'];
-            const anchor: Coordinate = { x: 1, y: 1 } as Coordinate;
+            const anchor: Coordinate = { x: 1, y: 1 };
             const limit = 100;
             const spyLeftPart = Sinon.spy(wordSolverService, 'findLeftPart' as keyof WordSolverService);
             const spyExtendRight = Sinon.spy(wordSolverService, 'extendRight' as keyof WordSolverService);
@@ -264,14 +254,14 @@ describe('Word solver service', () => {
     });
 
     it('createCommandInfo() should create correct commandInfo if there is placed letters on the board', () => {
-        gameboard.placeLetter(new LetterTile(2, 1, { value: 'e' } as Letter));
+        gameboard.placeLetter({ x: 2, y: 1 }, 'e');
         wordSolverService['isHorizontal'] = true;
         const expectedCommandInfo: CommandInfo = {
-            firstCoordinate: gameboard.getCoord({ x: 1, y: 1 } as Coordinate),
-            direction: 'h',
-            lettersPlaced: ['t', 's', 't'],
+            firstCoordinate: { x: 1, y: 1 },
+            isHorizontal: true,
+            letters: ['t', 's', 't'],
         };
-        wordSolverService['createCommandInfo']('test', { x: 4, y: 1 } as Coordinate);
+        wordSolverService['createCommandInfo']('test', { x: 4, y: 1 });
         expect(wordSolverService['commandInfoList'][0]).to.deep.equal(expectedCommandInfo);
     });
 
@@ -280,7 +270,7 @@ describe('Word solver service', () => {
     //     let rack: string[];
     //     beforeEach(() => {
     //         rack = ['s'];
-    //         anchors = [{ x: 1, y: 1 } as Coordinate, { x: 5, y: 5 } as Coordinate];
+    //         anchors = [{ x: 1, y: 1 }, { x: 5, y: 5 }];
     //         gameboard.placeLetter(new LetterTile(5, 5, { value: 'e' } as Letter));
     //         gameboard.placeLetter(new LetterTile(4, 5, { value: 'l' } as Letter));
     //     });

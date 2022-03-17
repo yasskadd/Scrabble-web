@@ -8,7 +8,7 @@ import { GameClientService } from '@app/services/game-client.service';
     styleUrls: ['./abandon-game-dialog-box.component.scss'],
 })
 export class AbandonGameDialogBoxComponent {
-    constructor(private gameclient: GameClientService, public router: Router, public snackBar: MatSnackBar) {}
+    constructor(private gameclient: GameClientService, private router: Router, private snackBar: MatSnackBar) {}
 
     abandonGame() {
         this.gameclient.abandonGame();

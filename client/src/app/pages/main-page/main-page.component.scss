@@ -1,22 +1,31 @@
-.container {
-    min-height: 100vh;
-    height: auto;
+.page-container {
+    height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    background-color: rgb(174, 192, 174);
 }
 
-.navigation {
-    width: 100%;
-    display: flex;
-}
-.navigation > * {
-    display: flex;
-    justify-content: center;
+.container {
+    height: auto;
 }
 
 .justified {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
+}
+
+.header {
+    margin: 40px;
+    padding: 2%;
+    width: 600px;
+    color: #23501f;
+}
+
+.header-item {
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 .button {
@@ -25,42 +34,35 @@
     width: 50%;
 }
 
-.team-name {
-    margin-top: 0.25em;
-    margin-bottom: 0.25em;
-    color: green;
+.mat-card {
+    padding: 20px;
+    min-width: 400px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    background-color: #effbf0;
 }
 
-.header-item {
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 5%;
+.mat-raised-button {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
 
-.footer-item {
-    text-align: center;
-}
-
-.footer-item p :nth-child(even) {
-    color: orange;
-}
-.footer-item p :nth-child(odd) {
-    color: blue;
-}
-
-.container-buttons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    min-width: min-content;
-    flex-shrink: 0;
-}
-
-.button-icon {
-    margin-left: 5%;
+.mat-raised-button:hover {
+    transform: scale(1.03);
 }
 
 .score {
     margin-top: 15%;
+}
+
+.footer {
+    text-align: center;
+    height: 20%;
+    color: #23501f;
+    justify-content: flex-end;
+}
+
+.team-name {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 20px;
 }

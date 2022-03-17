@@ -1,4 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
+import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
 import { Letter } from '@common/interfaces/letter';
@@ -6,7 +7,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { RealPlayer } from './real-player.class';
 
-describe('Player', () => {
+describe('RealPlayer', () => {
     let player: RealPlayer;
     beforeEach(() => {
         player = new RealPlayer('player');
@@ -22,16 +23,14 @@ describe('Player', () => {
     it('placeLetter() should call game.play() and return the result', () => {
         const gameStub = sinon.createStubInstance(Game);
         player.game = gameStub as unknown as Game;
-        gameStub.play.returns([true, {} as Gameboard]);
-        const command = {} as CommandInfo;
-        const result = player.placeLetter(command);
-        expect(result).to.deep.equal([true, {} as Gameboard]);
+        gameStub.play.returns({ hasPassed: true, gameboard: {} as Gameboard, invalidWords: [] as Word[] });
+        expect(player.placeLetter({} as CommandInfo)).to.eql({ hasPassed: true, gameboard: {} as Gameboard, invalidWords: [] as Word[] });
         expect(gameStub.play.called).to.equal(true);
     });
 
     it("placeLetter() shouln't do anything if game is undefined", () => {
         const gameStub = sinon.createStubInstance(Game);
-        gameStub.play.returns([true, {} as Gameboard]);
+        gameStub.play.returns({ hasPassed: true, gameboard: {} as Gameboard, invalidWords: {} as Word[] });
         const command = {} as CommandInfo;
         player.placeLetter(command);
         expect(gameStub.play.called).to.be.equal(false);

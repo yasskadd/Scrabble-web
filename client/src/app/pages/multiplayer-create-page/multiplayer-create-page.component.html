@@ -4,7 +4,14 @@
         <mat-card-title>Nom</mat-card-title>
         <mat-form-field appearance="fill">
             <mat-label>Entrez votre Nom</mat-label>
-            <input matInput type="text" [(ngModel)]="playerName" placeholder="Ex. Robert" />
+            <input matInput maxlength="20" type="text" [(ngModel)]="playerName" placeholder="Ex. Robert" />
+            <mat-hint
+                [ngClass]="{
+                    max: playerName?.length === 20
+                }"
+                align="end"
+                >{{ playerName?.length || 0 }}/20</mat-hint
+            >
         </mat-form-field>
 
         <form [formGroup]="form">
@@ -33,6 +40,11 @@
                 <mat-select disabled required> </mat-select>
                 <mat-option *ngFor="let difficulty of this.difficultyList" [value]="difficulty" disabled>Débutant</mat-option>
             </mat-form-field>
+        </form>
+
+        <form *ngIf="isSoloMode()" class="soloMode">
+            <mat-card-title>Nom Adversaire</mat-card-title>
+            <mat-label> {{ this.botName }} </mat-label>
         </form>
 
         <div class="containerButton">

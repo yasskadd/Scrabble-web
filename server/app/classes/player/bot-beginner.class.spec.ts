@@ -6,8 +6,8 @@ import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { WordSolverService } from '@app/services/word-solver.service';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
+import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { ReplaySubject } from 'rxjs';
@@ -221,9 +221,9 @@ describe('BotBeginner', () => {
         it('should emitRoom() with correct arguments', () => {
             botBeginner.game.letterReserve = new LetterReserveService();
             const commandInfoStub: CommandInfo = {
-                firstCoordinate: new LetterTile(1, 1, {} as Letter),
-                direction: 'h',
-                lettersPlaced: ['t', 'e', 's', 't'],
+                firstCoordinate: { x: 1, y: 1 } as Coordinate,
+                isHorizontal: true,
+                letters: ['t', 'e', 's', 't'],
             };
             const expectedCommand = '!placer a1h test';
             const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
@@ -358,9 +358,9 @@ describe('BotBeginner', () => {
 
         it('should call emitPlaceCommand() if commandInfo is not undefined and playedTurn is set to false', () => {
             const commandInfoStub: CommandInfo = {
-                firstCoordinate: new LetterTile(1, 1, {} as Letter),
-                direction: 'h',
-                lettersPlaced: ['t', 'e', 's', 't'],
+                firstCoordinate: { x: 1, y: 1 } as Coordinate,
+                isHorizontal: true,
+                letters: ['t', 'e', 's', 't'],
             };
             botBeginner['playedTurned'] = false;
             mockGame.expects('play').exactly(1).withExactArgs(botBeginner, commandInfoStub);
@@ -381,9 +381,9 @@ describe('BotBeginner', () => {
         let commandInfoStub: CommandInfo;
         before(() => {
             commandInfoStub = {
-                firstCoordinate: new LetterTile(1, 1, {} as Letter),
-                direction: 'h',
-                lettersPlaced: ['t', 'e', 's', 't'],
+                firstCoordinate: { x: 1, y: 1 } as Coordinate,
+                isHorizontal: true,
+                letters: ['t', 'e', 's', 't'],
             };
         });
 

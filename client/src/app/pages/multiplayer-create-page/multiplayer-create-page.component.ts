@@ -15,6 +15,7 @@ const enum TimeOptions {
     FourMinuteAndThirty = 270,
     FiveMinute = 300,
 }
+const BOT_NAME_LIST = ['robert', 'jean', 'albert'];
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -22,6 +23,7 @@ const enum TimeOptions {
     styleUrls: ['./multiplayer-create-page.component.scss'],
 })
 export class MultiplayerCreatePageComponent implements OnInit {
+    botName: string;
     playerName: string;
     form: FormGroup;
     navigator: Navigator;
@@ -41,7 +43,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     ];
     constructor(
         public gameConfiguration: GameConfigurationService,
-        public router: Router,
+        private router: Router,
         private activatedRoute: ActivatedRoute,
         private fb: FormBuilder,
     ) {
@@ -55,7 +57,15 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.form = this.fb.group({
             timer: [defaultTimer, Validators.required],
         });
+        this.giveNameToBot();
     }
+
+    giveNameToBot(): void {
+        if (this.isSoloMode()) {
+            this.createBotName();
+        }
+    }
+
     createGame() {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
@@ -65,8 +75,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
             isMultiplayer: this.isSoloMode() ? false : true,
         });
         if (this.isSoloMode()) {
+            this.validateName();
             setTimeout(() => {
-                this.gameConfiguration.beginScrabbleGame(true);
+                this.gameConfiguration.beginScrabbleGame(this.botName);
             }, 0);
         }
         this.resetInput();
@@ -91,7 +102,18 @@ export class MultiplayerCreatePageComponent implements OnInit {
         if (this.router.url === '/solo/classique') return true;
         return false;
     }
-    private resetInput() {
+
+    createBotName(): void {
+        this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
+    }
+
+    private resetInput(): void {
         this.playerName = '';
+    }
+
+    private validateName(): void {
+        while (this.playerName.toLowerCase() === this.botName) {
+            this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
+        }
     }
 }

@@ -1,52 +1,38 @@
-import { Coordinate } from '../interfaces/coordinate';
-import { Letter } from '../interfaces/letter';
+import { Coordinate } from '@common/interfaces/coordinate';
+import { Multiplier } from '@common/interfaces/multiplier';
+import * as letterTypes from '@common/letter-reserve';
 
-export class LetterTile implements Coordinate {
-    x: number;
-    y: number;
+export class LetterTile {
+    coordinate: Coordinate;
     isOccupied: boolean;
-    letter: Letter;
-    letterMultiplier: number;
-    wordMultiplier: number;
+    private _letter: string;
+    points: number;
+    multiplier: Multiplier;
 
-    constructor(posX: number, posY: number, letter: Letter) {
-        this.x = posX;
-        this.y = posY;
+    constructor(position: Coordinate) {
+        this.coordinate = { ...position };
         this.isOccupied = false;
-        this.letter = letter;
-        this.letterMultiplier = 1;
-        this.wordMultiplier = 1;
+        this.multiplier = { type: '', number: 1 };
+        this.letter = '';
     }
 
-    static findDirection(coordList: LetterTile[]) {
-        const DIRECTIONS = {
-            horizontal: 'Horizontal',
-            vertical: 'Vertical',
-            none: 'None',
-        };
-        let direction: string = DIRECTIONS.none;
-        const allEqual = (arr: number[]) => arr.every((v) => v === arr[0]);
-        const tempHorizontalCoords: number[] = [];
-        const tempVerticalCoord: number[] = [];
-        coordList.forEach((coord) => {
-            tempHorizontalCoords.push(coord.x);
-            tempVerticalCoord.push(coord.y);
-        });
-        if (tempHorizontalCoords.length > 1 && allEqual(tempHorizontalCoords)) {
-            direction = DIRECTIONS.vertical;
-            return direction;
-        } else if (tempVerticalCoord.length > 1 && allEqual(tempVerticalCoord)) {
-            direction = DIRECTIONS.horizontal;
-            return direction;
+    get letter(): string {
+        return this._letter;
+    }
+
+    set letter(newLetter: string) {
+        this._letter = newLetter.toLowerCase();
+        this.setPoints();
+    }
+
+    private setPoints() {
+        if (this._letter === '') {
+            this.points = 0;
         } else {
-            return direction;
+            const letterType = letterTypes.LETTERS.filter((letter) => {
+                return letter.value === this._letter;
+            })[0];
+            this.points = letterType.points;
         }
-    }
-
-    resetLetterMultiplier() {
-        this.letterMultiplier = 1;
-    }
-    resetWordMultiplier() {
-        this.wordMultiplier = 1;
     }
 }

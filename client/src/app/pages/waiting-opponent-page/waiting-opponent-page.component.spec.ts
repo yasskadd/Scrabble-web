@@ -2,28 +2,19 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
-import { of, ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { WaitingOpponentPageComponent } from './waiting-opponent-page.component';
 
 @Component({
     template: '',
 })
 export class StubComponent {}
-
-export class MatDialogMock {
-    open() {
-        return {
-            afterClosed: () => of({ action: true }),
-        };
-    }
-}
 
 interface RoomInformation {
     playerName: string[];
@@ -42,6 +33,7 @@ const TEST_ERROR_REASON = new ReplaySubject<string>(1);
 const TEST_ISGAMESTARTED = new ReplaySubject<string>(1);
 const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const MULTIPLAYER_CREATE_ROOM_ROUTE = 'multijoueur/creer/classique';
+const SOLO_ROUTE = 'solo/classique';
 const MULTIPLAYER_JOIN_ROOM_ROUTE = 'multijoueur/rejoindre/classique';
 const MULTIPLAYER_GAME_PAGE = 'game';
 describe('WaitingOpponentPageComponent', () => {
@@ -77,6 +69,7 @@ describe('WaitingOpponentPageComponent', () => {
                     { path: MULTIPLAYER_JOIN_ROOM_ROUTE, component: StubComponent },
                     { path: MULTIPLAYER_GAME_PAGE, component: StubComponent },
                     { path: MULTIPLAYER_WAITING_ROOM_ROUTE, component: StubComponent },
+                    { path: SOLO_ROUTE, component: StubComponent },
                 ]),
             ],
 
@@ -94,7 +87,6 @@ describe('WaitingOpponentPageComponent', () => {
                         },
                     },
                 },
-                { provide: MatDialog, useClass: MatDialogMock },
             ],
         }).compileComponents();
     });
@@ -262,17 +254,6 @@ describe('WaitingOpponentPageComponent', () => {
         expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalled();
     });
 
-    it('should open a dialog box if the soloMode method is called', () => {
-        const dialogSpy = spyOn(component.dialog, 'open');
-        component.soloMode();
-        expect(dialogSpy).toHaveBeenCalled();
-    });
-
-    it('should call gameConfiguration.setGameUnavailable if the soloMode method is called', () => {
-        component.soloMode();
-        expect(gameConfigurationServiceSpy.setGameUnavailable).toHaveBeenCalled();
-    });
-
     it('should call joinGamePage when the isGameStarted value is true', () => {
         const spy = spyOn(component, 'joinGamePage');
         gameConfigurationServiceSpy.isGameStarted.next(true);
@@ -292,6 +273,20 @@ describe('WaitingOpponentPageComponent', () => {
         gameConfigurationServiceSpy.errorReason.next('');
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('soloMode() should navigate to solo/classique ', fakeAsync(() => {
+        const spyRouter = spyOn(router, 'navigate');
+        const expectedURL = '/' + SOLO_ROUTE;
+        component.soloMode();
+        tick();
+        fixture.detectChanges();
+        expect(spyRouter).toHaveBeenCalledWith([expectedURL]);
+    }));
+
+    it('should call gameConfiguration.removeRoom if the soloMode method is called', () => {
+        component.soloMode();
+        expect(gameConfigurationServiceSpy.removeRoom).toHaveBeenCalled();
     });
 
     it('should call exitRoom when there is a errorReason', () => {

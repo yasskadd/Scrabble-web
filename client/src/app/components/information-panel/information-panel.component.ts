@@ -16,11 +16,11 @@ export class InformationPanelComponent {
     private readonly dialogWidth: string = '40%';
 
     constructor(
-        public gridService: GridService,
+        private gridService: GridService,
         public gameClientService: GameClientService,
         private letterService: LetterPlacementService,
-        public dialog: MatDialog,
-        public router: Router,
+        private dialog: MatDialog,
+        private router: Router,
     ) {}
 
     formatLabel(value: number): string {

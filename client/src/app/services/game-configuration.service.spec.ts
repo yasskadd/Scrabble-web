@@ -149,6 +149,13 @@ describe('GameConfigurationService', () => {
         expect(spyOnRejectOpponent).toHaveBeenCalled();
     });
 
+    it('removeRoom() should not call rejectOpponent when there is not an other player in the waiting room ', () => {
+        service.roomInformation.playerName[1] = '';
+        const spyOnRejectOpponent = spyOn(service, 'rejectOpponent');
+        service.removeRoom();
+        expect(spyOnRejectOpponent).not.toHaveBeenCalled();
+    });
+
     it('setErrorSubject() should  initialize the value of the error Reason ', () => {
         const spy = spyOn(service.errorReason, 'next');
         const roomNotAvailableError = "La salle n'est plus disponible";
@@ -156,6 +163,35 @@ describe('GameConfigurationService', () => {
         expect(spy).toHaveBeenCalledWith(roomNotAvailableError);
         service.setErrorSubject(roomNotAvailableError);
         expect(service.errorReason).toEqual(new ReplaySubject<string>(1));
+    });
+
+    it('beginScrabbleGame() should assign a name to the opponent when the method is called with the name of the bot ', () => {
+        const roomInformationUpdated: RoomInformation = {
+            playerName: ['Vincent'],
+            roomId: '1',
+            isCreator: true,
+            statusGame: "En Attente d'un Adversaire ...",
+            timer: 60,
+        };
+        service.roomInformation = roomInformationUpdated;
+        // eslint-disable-next-line dot-notation
+        service.beginScrabbleGame('robert');
+        expect(service.roomInformation.playerName[1]).toEqual('robert');
+    });
+
+    it('beginScrabbleGame() should  not assign a name to the opponent when the method is not called with the name of the bot ', () => {
+        const roomInformationUpdated: RoomInformation = {
+            playerName: ['Vincent'],
+            roomId: '1',
+            isCreator: true,
+            statusGame: "En Attente d'un Adversaire ...",
+            timer: 60,
+        };
+        service.roomInformation = roomInformationUpdated;
+        // eslint-disable-next-line dot-notation
+
+        service.beginScrabbleGame();
+        expect(service.roomInformation.playerName[1]).not.toEqual('robert');
     });
 
     it('setRoomJoinableSubject() should  initialize the value of the roomJoinable variable ', () => {
@@ -232,23 +268,6 @@ describe('GameConfigurationService', () => {
         service['foundAnOpponentEvent'](opponentName);
         expect(service.roomInformation.playerName[1]).toEqual(opponentName);
         expect(service.roomInformation.statusGame).toEqual(statusGame);
-    });
-
-    it('createBotName should assign a name to the opponent that is not the same as the first player', () => {
-        const playerName = 'jean';
-        service.roomInformation.playerName[0] = playerName;
-        // eslint-disable-next-line dot-notation
-        service['createBotName']();
-        expect(service.roomInformation.playerName[1]).not.toEqual(playerName);
-    });
-
-    it('createBotName should assign a name to the opponent', () => {
-        const playerName = 'Luc';
-        service.roomInformation.playerName[0] = playerName;
-        service.roomInformation.playerName[1] = '';
-        // eslint-disable-next-line dot-notation
-        service['createBotName']();
-        expect(service.roomInformation.playerName[1]).not.toEqual('');
     });
 
     it('should handle gameAboutToStart event to inform the player of the room that the game is about to start ', () => {
@@ -350,36 +369,6 @@ describe('GameConfigurationService', () => {
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         socketEmulator.peerSideEmit(SocketEvents.GameAboutToStart, socketIDUserRoom);
 
-        expect(spyOnSocket).not.toHaveBeenCalled();
-    });
-
-    it('createScrabbleGame() should call createBotName when it is called with the boolean opponentBot true ', () => {
-        const roomInformationUpdated: RoomInformation = {
-            playerName: ['Vincent'],
-            roomId: '1',
-            isCreator: true,
-            statusGame: "En Attente d'un Adversaire ...",
-            timer: 60,
-        };
-        service.roomInformation = roomInformationUpdated;
-        // eslint-disable-next-line dot-notation
-        const spyOnSocket = spyOn(service, 'createBotName' as never);
-        service.beginScrabbleGame(true);
-        expect(spyOnSocket).toHaveBeenCalled();
-    });
-
-    it('createScrabbleGame() should  not call createBotName when it is  not called with the boolean opponentBot true ', () => {
-        const roomInformationUpdated: RoomInformation = {
-            playerName: ['Vincent'],
-            roomId: '1',
-            isCreator: true,
-            statusGame: "En Attente d'un Adversaire ...",
-            timer: 60,
-        };
-        service.roomInformation = roomInformationUpdated;
-        // eslint-disable-next-line dot-notation
-        const spyOnSocket = spyOn(service, 'createBotName' as never);
-        service.beginScrabbleGame();
         expect(spyOnSocket).not.toHaveBeenCalled();
     });
 

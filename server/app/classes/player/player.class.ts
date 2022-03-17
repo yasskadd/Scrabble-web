@@ -25,7 +25,7 @@ export class Player {
             score: this.score,
             rack: this.rack,
             room: this.room,
-            gameboard: this.game.gameboard.gameboardCoords,
+            gameboard: this.game.gameboard.gameboardTiles,
         };
     }
 
