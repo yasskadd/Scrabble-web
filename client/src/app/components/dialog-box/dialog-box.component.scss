@@ -1,17 +1,31 @@
 .container {
     display: flex;
     flex-direction: column;
-    margin-bottom: 10px;
+}
+
+.mat-dialog-title {
+    text-align: center;
 }
 
 .button {
     margin-bottom: 10px;
 }
 
-.action-container {
-    margin-bottom: 10px;
-}
-
 #solo {
     margin-bottom: 40px;
+}
+
+.button {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.return {
+    box-shadow: 0px 0px 0px 0px;
+    margin-left: 0px;
+}
+
+.button:hover {
+    transform: scale(1.03);
 }
