@@ -86,6 +86,8 @@ export class PlayerRackComponent implements OnInit {
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
     }
+
+    // Do we really need event param? because we stock it already in the buttonPressed, so we can just reuse it
     selectManipulation(event: KeyboardEvent) {
         this.duplicates = [];
 
@@ -141,9 +143,14 @@ export class PlayerRackComponent implements OnInit {
     }
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
+        // If exchange is more important than manipulate, we keep this condition and get rid of line 146.
+        // We well do the same thing for keyboard event
+        // if (!this.lettersToExchange.includes(letter)) {
         this.cancel();
+        // this.lettersToManipulate = [];
         this.currentSelection = letter;
         this.lettersToManipulate.push(letter);
+        // }
     }
 
     exchange() {
