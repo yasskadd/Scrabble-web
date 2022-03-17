@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Turn } from '@app/classes/turn';
@@ -105,11 +106,11 @@ describe.only('BotBeginner', () => {
         });
 
         it('should call skipTurn() if random number is equal to 1', () => {
+            const clock = Sinon.useFakeTimers();
             stubGetRandom.returns(1);
             botBeginner.choosePlayMove();
-            setTimeout(() => {
-                expect(spySkipTurn.calledOnce).to.equal(true);
-            }, 3500);
+            clock.tick(3500);
+            expect(spySkipTurn.calledOnce).to.equal(true);
         });
 
         it('should not call skipTurn() and placeLetter() if random number is not equal to 1', () => {
@@ -311,5 +312,112 @@ describe.only('BotBeginner', () => {
         botBeginner.setGame(gameStub);
         botBeginner['processWordSolver']();
         expect(wordSolverStub.commandInfoScore.calledOnce && wordSolverStub.setGameboard.calledOnce).to.equal(true);
+    });
+
+    context('play tests', () => {
+        let mockGame: Sinon.SinonMock;
+        let mockSocketManager: Sinon.SinonMock;
+        beforeEach(() => {
+            Sinon.restore();
+            mockGame = Sinon.mock(botBeginner['game']);
+            mockSocketManager = Sinon.mock(botBeginner['socketManager']);
+            botBeginner.game.letterReserve = new LetterReserveService();
+        });
+
+        afterEach(() => {
+            mockGame.restore();
+            mockSocketManager.restore();
+        });
+
+        it('should call skipTurn() if commandInfo is undefined', () => {
+            mockGame.expects('skip').exactly(1).calledWithExactly(botBeginner.name);
+            mockSocketManager.expects('emitRoom').exactly(1).calledWithExactly(botBeginner.roomId, SocketEvents.GameMessage, '!passer');
+            const commandInfoStub = undefined as never;
+            const spySkipTurn = Sinon.spy(botBeginner, 'skipTurn');
+            botBeginner['play'](commandInfoStub);
+            mockGame.verify();
+            mockSocketManager.verify();
+            expect(spySkipTurn.calledOnce).to.be.equal(true);
+        });
+
+        it('should call emitPlaceCommand() if commandInfo is not undefined and playedTurn is set to false', () => {
+            const commandInfoStub: CommandInfo = {
+                firstCoordinate: new LetterTile(1, 1, {} as Letter),
+                direction: 'h',
+                lettersPlaced: ['t', 'e', 's', 't'],
+            };
+            botBeginner['playedTurned'] = false;
+            mockGame.expects('play').exactly(1).withExactArgs(botBeginner, commandInfoStub);
+            mockSocketManager.expects('emitRoom').exactly(2);
+            const spyEmitCommand = Sinon.spy(botBeginner, 'emitPlaceCommand' as keyof BeginnerBot);
+            botBeginner['play'](commandInfoStub);
+            mockGame.verify();
+            mockSocketManager.verify();
+            expect(spyEmitCommand.calledOnceWithExactly(commandInfoStub)).to.be.equal(true);
+        });
+    });
+
+    context('placeLetter() tests', () => {
+        let stubCommandInfoToList: Sinon.SinonStub<unknown[], unknown>;
+        let spySkipTurn: Sinon.SinonSpy<[], void>;
+        let mockWordSolver: Sinon.SinonMock;
+        let mockBot: Sinon.SinonMock;
+        beforeEach(() => {
+            Sinon.restore();
+            stubCommandInfoToList = Sinon.stub(botBeginner, 'addCommandInfoToList' as keyof BeginnerBot);
+            spySkipTurn = Sinon.spy(botBeginner, 'skipTurn');
+            mockWordSolver = Sinon.mock(wordSolverStub);
+            mockBot = Sinon.mock(botBeginner);
+        });
+
+        afterEach(() => {
+            mockWordSolver.restore();
+            mockBot.restore();
+        });
+
+        it('should call skipTurn() after 3 seconds if commandInfoList is empty', () => {
+            mockWordSolver.expects('findAllOptions').exactly(1);
+            mockWordSolver.expects('commandInfoScore').exactly(1);
+            stubCommandInfoToList.returns([]);
+            botBeginner['placeLetter']();
+            mockWordSolver.verify();
+            setTimeout(() => {
+                expect(spySkipTurn.calledOnce).to.equal(true);
+            }, 3500);
+        });
+
+        it('should call play() if countUp is between 3 and 20 seconds', () => {
+            const commandInfoStub: CommandInfo = {
+                firstCoordinate: new LetterTile(1, 1, {} as Letter),
+                direction: 'h',
+                lettersPlaced: ['t', 'e', 's', 't'],
+            };
+            mockBot.expects('play').exactly(1).withExactArgs(commandInfoStub);
+            mockWordSolver.expects('findAllOptions').exactly(1);
+            mockWordSolver.expects('commandInfoScore').exactly(1);
+            stubCommandInfoToList.returns([commandInfoStub]);
+            botBeginner['countUp'] = 5;
+            botBeginner['placeLetter']();
+            mockBot.verify();
+            mockWordSolver.verify();
+        });
+
+        it('should call play() after a delay if countUp is less than 3 seconds', () => {
+            const commandInfoStub: CommandInfo = {
+                firstCoordinate: new LetterTile(1, 1, {} as Letter),
+                direction: 'h',
+                lettersPlaced: ['t', 'e', 's', 't'],
+            };
+            mockBot.expects('play').exactly(1).withExactArgs(commandInfoStub);
+            mockWordSolver.expects('findAllOptions').exactly(1);
+            mockWordSolver.expects('commandInfoScore').exactly(1);
+            stubCommandInfoToList.returns([commandInfoStub]);
+            botBeginner['countUp'] = 1;
+            botBeginner['placeLetter']();
+            mockWordSolver.verify();
+            setTimeout(() => {
+                mockBot.verify();
+            }, 1.5);
+        });
     });
 });

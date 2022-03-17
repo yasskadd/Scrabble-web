@@ -115,8 +115,6 @@ export class BeginnerBot extends Player {
             return;
         }
         this.emitPlaceCommand(commandInfo);
-        this.game.play(this, commandInfo);
-        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
         this.playedTurned = true;
     }
 
