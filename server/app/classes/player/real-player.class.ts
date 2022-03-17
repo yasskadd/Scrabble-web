@@ -1,6 +1,6 @@
-import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
+import { PlaceLettersReturn } from '@app/services/letter-placement.service';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
 import { Player } from './player.class';
@@ -16,7 +16,7 @@ export class RealPlayer extends Player {
         this.isPlayerOne = isPlayerOne;
     }
 
-    placeLetter(commandInfo: CommandInfo): [boolean, Gameboard] | string {
+    placeLetter(commandInfo: CommandInfo): PlaceLettersReturn | string {
         if (this.game === undefined) return 'error';
         return this.game.play(this, commandInfo);
     }
@@ -36,7 +36,7 @@ export class RealPlayer extends Player {
             score: this.score,
             rack: this.rack,
             room: this.room,
-            gameboard: this.game.gameboard.gameboardCoords,
+            gameboard: this.game.gameboard.gameboardTiles,
         };
     }
 }

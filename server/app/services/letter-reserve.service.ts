@@ -1,5 +1,5 @@
-import * as letterTypes from '@app/letter-reserve';
 import { Letter } from '@common/interfaces/letter';
+import * as letterTypes from '@common/letter-reserve';
 import { Service } from 'typedi';
 
 const NUMBER_OF_LETTERS_ON_RACK = 7;
@@ -101,5 +101,14 @@ export class LetterReserveService {
 
     isEmpty(): boolean {
         return this.lettersReserve.length === 0;
+    }
+
+    totalQuantity(): number {
+        const total = this.lettersReserve.map((letter) => {
+            return letter.quantity;
+        });
+        return total.reduce((acc, quantity) => {
+            return acc + quantity;
+        });
     }
 }

@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 import { ReplaySubject, Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
-type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
+type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
+type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
 type Player = { name: string; score: number; rack: Letter[] };
-type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
 const TIMEOUT = 15;
 
 @Injectable({
@@ -16,7 +16,7 @@ const TIMEOUT = 15;
 })
 export class GameClientService {
     timer: number;
-    gameboard: LetterTile[];
+    gameboard: LetterTileInterface[];
     playerOne: Player;
     secondPlayer: Player;
     playerOneTurn: boolean;
@@ -33,6 +33,7 @@ export class GameClientService {
         this.gameboardUpdated = new Subject();
         this.turnFinish = new ReplaySubject<boolean>(1);
         this.configureBaseSocketFeatures();
+        this.gameboard = [];
     }
 
     configureBaseSocketFeatures() {
@@ -71,7 +72,6 @@ export class GameClientService {
             this.timerClientUpdateEvent(newTimer);
         });
     }
-
     updateGameboard() {
         this.gameboardUpdated.next(true);
     }
@@ -148,7 +148,7 @@ export class GameClientService {
         return resultingRack;
     }
 
-    private updateNewGameboard(newGameboard: LetterTile[]) {
+    private updateNewGameboard(newGameboard: LetterTileInterface[]) {
         this.gameboard = newGameboard;
         this.updateGameboard();
     }

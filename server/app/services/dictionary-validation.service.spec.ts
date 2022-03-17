@@ -1,115 +1,119 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable no-restricted-imports */
+import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { LetterTile } from '@common/classes/letter-tile.class';
-import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as fs from 'fs';
 import * as Sinon from 'sinon';
-import { Container } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionnary.json', 'utf8'));
+const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
 describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
+    let gameboard: Gameboard;
+
     let validWord1: Word;
     let validWord2: Word;
     let invalidWord1: Word;
     let invalidWord2: Word;
 
+    before(() => {
+        dictionaryValidationService = new DictionaryValidationService();
+    });
     beforeEach(() => {
-        dictionaryValidationService = Container.get(DictionaryValidationService);
-        const letterA = { points: 5, value: 'a' } as Letter;
-        validWord1 = new Word(true, [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterA)]);
-        validWord1.stringFormat = 'bonjour';
-        validWord2 = new Word(true, [new LetterTile(2, 2, letterA), new LetterTile(2, 3, letterA)]);
-        validWord2.stringFormat = 'chevalier';
-        invalidWord1 = {} as Word;
-        invalidWord1.stringFormat = 'dijasdijasd';
-        invalidWord2 = {} as Word;
-        invalidWord2.stringFormat = 'hhhhh';
+        gameboard = new Gameboard();
+
+        validWord1 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 1 }, letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'] }, gameboard);
+        validWord2 = new Word(
+            { isHorizontal: true, firstCoordinate: { x: 1, y: 3 }, letters: ['c', 'h', 'e', 'v', 'a', 'l', 'i', 'e', 'r'] },
+            gameboard,
+        );
+
+        invalidWord1 = new Word(
+            { isHorizontal: true, firstCoordinate: { x: 1, y: 5 }, letters: ['d', 'i', 'j', 'a', 's', 'd', 'i', 'j', 'a', 's', 'd'] },
+            gameboard,
+        );
+        invalidWord2 = new Word({ isHorizontal: true, firstCoordinate: { x: 1, y: 7 }, letters: ['h', 'h', 'h', 'h', 'h'] }, gameboard);
     });
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {
         expect(dictionaryValidationService.dictionary).to.not.eql(null);
-        const jsonWordsLength: number = jsonDictionary.words.length;
-        expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonWordsLength);
+        expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonDictionary.words.length);
     });
 
-    it('checkWordInDictionary() should set word isValid attribute to true if they exist', () => {
-        validWord1.isValid = false;
-        validWord2.isValid = false;
-        const validWords: Word[] = [validWord1, validWord2];
+    it('checkWordInDictionary() should set word isValid attribute to false if they dont exist', () => {
+        const validWords: Word[] = [invalidWord1, invalidWord2];
+        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](validWords);
-        expect(validWord1.isValid && validWord2.isValid).to.equal(true);
+        expect(invalidWord1.isValid && invalidWord2.isValid).to.eql(false);
     });
 
-    it('checkWordInDictionary() should set word isValid attribute to false if they do not exist', () => {
-        invalidWord1.isValid = true;
-        invalidWord2.isValid = true;
-        const invalidWords: Word[] = [invalidWord1, invalidWord2];
-        dictionaryValidationService['checkWordInDictionary'](invalidWords);
-        expect(invalidWord1.isValid && invalidWord2).to.equal(false);
-    });
-
-    it('should return an array if isolateInvalidWords() is called', () => {
-        const wordList: Word[] = new Array();
-        expect(dictionaryValidationService['isolateInvalidWords'](wordList)).to.be.an('array');
-    });
-
-    it('isolateInvalidWords() should filter list of words and return list of invalid words', () => {
+    it('isolateInvalidWords() should return true if words are not in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
+        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        const invalidWords: Word[] = dictionaryValidationService['isolateInvalidWords'](wordList);
-        expect(invalidWords).to.have.lengthOf(2);
-        expect(invalidWords).to.include.members([invalidWord1, invalidWord2]);
+        // eslint-disable-next-line dot-notation
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.eql(true);
     });
 
-    it('isolateInvalidWords should return empty list of words if words exist', () => {
-        const wordList: Word[] = [validWord1, validWord2];
+    it('isolateInvalidWords() should return array of length 2 if 2 words are not in dictionary', () => {
+        const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
+        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        const invalidWords: Word[] = dictionaryValidationService['isolateInvalidWords'](wordList);
-        expect(invalidWords).to.have.lengthOf(0);
-        expect(invalidWords).to.eql([]);
+        // eslint-disable-next-line dot-notation
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(2);
     });
 
-    it('should call isolateInvalidWords and checkWordInDictionary when validateWord is called', () => {
-        const spyIsolate = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
-        const spyCheckWord = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
+    it('isolateInvalidWords should return false if words are in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2];
-        dictionaryValidationService.validateWords(wordList);
-        expect(spyIsolate.calledOnce && spyCheckWord.calledOnce).to.equal(true);
+        // eslint-disable-next-line dot-notation
+        dictionaryValidationService['checkWordInDictionary'](wordList);
+        // eslint-disable-next-line dot-notation
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.eql(false);
     });
 
-    it('should call calculatePoints() when validateWord is called for each word in the list if there is no invalid words', () => {
-        const spyCalculate1 = Sinon.spy(validWord1, 'calculatePoints');
-        const spyCalculate2 = Sinon.spy(validWord2, 'calculatePoints');
-        const validWordList = [validWord1, validWord2];
-        dictionaryValidationService.validateWords(validWordList);
-        expect(spyCalculate1.calledOnce && spyCalculate2.calledOnce).to.equal(true);
+    it('isolateInvalidWords should return array of 0 if words are in dictionary', () => {
+        const wordList: Word[] = [validWord1, validWord2];
+        // eslint-disable-next-line dot-notation
+        dictionaryValidationService['checkWordInDictionary'](wordList);
+        // eslint-disable-next-line dot-notation
+        expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(0);
+    });
+
+    it('should call calculateTurnPoints() and checkWordInDictionary() when validateWord() is called', () => {
+        const spycalculateTurnPoints = Sinon.spy(dictionaryValidationService, 'calculateTurnPoints' as keyof DictionaryValidationService);
+        const spyCcheckWordInDictionary = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
+        dictionaryValidationService.validateWord(validWord1, gameboard);
+        expect(spycalculateTurnPoints.called && spyCcheckWordInDictionary.called).to.eql(true);
+    });
+
+    it('should call isolateInvalidWords() when calculateTurnPoints() is called', () => {
+        const spyisolateInvalidWords = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
+        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
+        expect(spyisolateInvalidWords.called).to.eql(true);
+    });
+
+    it('should call calculateWordPoints() when calculateTurnPoints() is called for each word in the list if there is no invalid words', () => {
+        const spyCalculate1 = Sinon.spy(validWord1, 'calculateWordPoints');
+        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
+        expect(spyCalculate1.called).to.eql(true);
     });
 
     it('should not call calculatePoints() when validateWord() is called if there is at least one invalid word', () => {
-        const spyCalculate1 = Sinon.spy(validWord1, 'calculatePoints');
-        const wordList = [validWord1, validWord2, invalidWord2];
-        dictionaryValidationService.validateWords(wordList);
-        expect(spyCalculate1.called).to.equal(false);
-    });
-
-    it('should return correct points number when validateWord() is called and wordList is valid', () => {
-        const stubCalculate1 = Sinon.stub(validWord1, 'calculatePoints');
-        const stubCalculate2 = Sinon.stub(validWord2, 'calculatePoints');
-        stubCalculate1.returns(10);
-        stubCalculate2.returns(20);
-        const wordList = [validWord1, validWord2];
-        expect(dictionaryValidationService.validateWords(wordList)).to.equal(30);
+        const spyCalculate1 = Sinon.spy(invalidWord2, 'calculateWordPoints');
+        dictionaryValidationService.validateWord(invalidWord2, gameboard);
+        expect(spyCalculate1.called).to.eql(false);
     });
 
     it('should return 0 points when validateWord() is called and wordList is invalid', () => {
-        const wordList = [validWord1, validWord2, invalidWord1];
-        expect(dictionaryValidationService.validateWords(wordList)).to.equal(0);
+        expect(dictionaryValidationService.validateWord(invalidWord1, gameboard).points).to.equal(0);
+    });
+
+    it('should return array with invalidWord when validateWord() is called and wordList is invalid', () => {
+        expect(dictionaryValidationService.validateWord(invalidWord1, gameboard).invalidWords[0]).to.eql(invalidWord1);
     });
 
     context('Trie Dictionary tests', () => {

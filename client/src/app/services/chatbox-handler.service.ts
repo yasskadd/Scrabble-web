@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/interfaces/chatbox-message';
+import { CommandInfo } from '@common/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
-import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
 import { ClientSocketService } from './client-socket.service';
 import { CommandHandlerService } from './command-handler.service';
@@ -16,11 +16,7 @@ const VALID_COMMAND_REGEX_STRING =
 const VALID_COMMAND_REGEX = new RegExp(VALID_COMMAND_REGEX_STRING);
 const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);
-interface CommandInfo {
-    firstCoordinate: Coordinate;
-    direction: string;
-    lettersPlaced: string[];
-}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -52,9 +48,9 @@ export class ChatboxHandlerService {
     submitMessage(userInput: string): void {
         if (userInput !== '') {
             this.addMessage(this.configureUserMessage(userInput));
-            if (this.isCommand(userInput)) {
-                if (this.validCommand(userInput)) {
-                    const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (this.isCommand(commandValid)) {
+                if (this.validCommand(commandValid)) {
                     this.commandHandler.sendCommand(commandValid);
                 }
             } else {
@@ -109,8 +105,8 @@ export class ChatboxHandlerService {
                 this.messages.push({
                     type: 'system-message',
                     data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${
-                        clue.direction
-                    } ${clue.lettersPlaced.join('')}`,
+                        clue.isHorizontal ? 'h' : 'v'
+                    } ${clue.letters.join('')}`,
                 });
             });
 

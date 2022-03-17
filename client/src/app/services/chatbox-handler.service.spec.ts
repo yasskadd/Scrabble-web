@@ -381,27 +381,27 @@ describe('ChatboxHandlerService', () => {
     it('configureClueCommand should push  3 message with the possible word placements given by the command Indice if 3 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
-            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: ['a', 'l', 'r'] },
-            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: ['b', 'i', 'l', 'l', 'e'] },
-            { firstCoordinate: { x: 8, y: 8 }, direction: false, lettersPlaced: ['c', 'a', 'n', 'n', 'e'] },
+            { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
+            { firstCoordinate: { x: 3, y: 2 }, isHorizontal: false, letters: ['b', 'i', 'l', 'l', 'e'] },
+            { firstCoordinate: { x: 8, y: 8 }, isHorizontal: false, letters: ['c', 'a', 'n', 'n', 'e'] },
         ];
         const message1 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
-                wordPlacements[0].direction
-            } ${wordPlacements[0].lettersPlaced.join('')}`,
+                wordPlacements[0].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[0].letters.join('')}`,
         };
         const message2 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
-                wordPlacements[1].direction
-            } ${wordPlacements[1].lettersPlaced.join('')}`,
+                wordPlacements[1].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[1].letters.join('')}`,
         };
         const message3 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[2].firstCoordinate.y)}${wordPlacements[2].firstCoordinate.x}${
-                wordPlacements[2].direction
-            } ${wordPlacements[2].lettersPlaced.join('')}`,
+                wordPlacements[2].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[2].letters.join('')}`,
         };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
@@ -414,20 +414,20 @@ describe('ChatboxHandlerService', () => {
     it('configureClueCommand should push 2 message with the possible word placements given by the command Indice if 2 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
-            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: ['a', 'l', 'r'] },
-            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: ['b', 'i', 'l', 'l', 'e'] },
+            { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
+            { firstCoordinate: { x: 3, y: 2 }, isHorizontal: false, letters: ['b', 'i', 'l', 'l', 'e'] },
         ];
         const message1 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
-                wordPlacements[0].direction
-            } ${wordPlacements[0].lettersPlaced.join('')}`,
+                wordPlacements[0].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[0].letters.join('')}`,
         };
         const message2 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
-                wordPlacements[1].direction
-            } ${wordPlacements[1].lettersPlaced.join('')}`,
+                wordPlacements[1].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[1].letters.join('')}`,
         };
         const message3 = { type: 'system-message', data: 'Aucune autre possibilité possible' };
         // Reason : testing a private method
