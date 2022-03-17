@@ -64,7 +64,8 @@ export class PlayerRackComponent implements OnInit {
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            this.lettersToManipulate = [];
+            // this.lettersToManipulate = [];
+            this.cancel();
             this.selectManipulation(event);
         });
     }
@@ -77,6 +78,9 @@ export class PlayerRackComponent implements OnInit {
     }
     get rack(): Letter[] {
         return this.gameClient.playerOne.rack;
+    }
+    get noPlacedLetters(): boolean {
+        return this.letterPlacementService.noLettersPlaced();
     }
 
     skipTurn() {
@@ -116,14 +120,16 @@ export class PlayerRackComponent implements OnInit {
         }
     }
 
+    playPlacedLetters() {
+        this.letterPlacementService.submitPlacement();
+    }
+
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        this.lettersToManipulate = [];
         const notFound = constants.INVALID_INDEX;
-
-        // if (this.lettersToManipulate.includes(letter)) {
-        //     this.lettersToManipulate = [];
-        // }
+        if (this.lettersToManipulate.includes(letter)) {
+            this.lettersToManipulate = [];
+        }
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
@@ -133,21 +139,11 @@ export class PlayerRackComponent implements OnInit {
             }
         }
     }
-
-    playPlacedLetters() {
-        this.letterPlacementService.submitPlacement();
-    }
-    get noPlacedLetters(): boolean {
-        return this.letterPlacementService.noLettersPlaced();
-    }
-
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        if (!this.lettersToExchange.includes(letter)) {
-            this.lettersToManipulate = [];
-            this.currentSelection = letter;
-            this.lettersToManipulate.push(letter);
-        }
+        this.cancel();
+        this.currentSelection = letter;
+        this.lettersToManipulate.push(letter);
     }
 
     exchange() {
@@ -182,7 +178,7 @@ export class PlayerRackComponent implements OnInit {
             temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
             this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
             this.gameClient.playerOne.rack[this.currentSelection] = temp;
-
+            this.lettersToExchange[this.lettersToExchange.indexOf(this.currentSelection - 1)] = this.currentSelection;
             this.currentSelection -= 1;
         }
         this.lettersToManipulate.push(this.currentSelection);
