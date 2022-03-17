@@ -8,6 +8,7 @@ import { CommandHandlerService } from './command-handler.service';
 import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
+const EXCHANGE_ALLOWED_MINIMUM = 7;
 const CHAR_ASCII = 96;
 const TIMEOUT = 15;
 const VALID_COMMAND_REGEX_STRING =
@@ -138,7 +139,11 @@ export class ChatboxHandlerService {
         if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) {
             if (this.validSyntax(userCommand)) {
                 if (this.validCommandParameters(userCommand)) {
-                    return true;
+                    if (this.exchangePossible(userCommand)) {
+                        return true;
+                    } else {
+                        this.addMessage(this.configureImpossibleToExchangeMessage());
+                    }
                 } else {
                     this.addMessage(this.configureInvalidError());
                 }
@@ -163,6 +168,19 @@ export class ChatboxHandlerService {
 
     private validCommandParameters(userInput: string): boolean {
         return VALID_COMMAND_REGEX.test(userInput);
+    }
+
+    private exchangePossible(userInput: string): boolean {
+        const validReserveCommand = '^!(é|e)changer';
+        const validReserveCommandRegex = new RegExp(validReserveCommand);
+        if (this.gameClient.letterReserveLength < EXCHANGE_ALLOWED_MINIMUM && validReserveCommandRegex.test(userInput)) {
+            return false;
+        }
+        return true;
+    }
+
+    private configureImpossibleToExchangeMessage(): ChatboxMessage {
+        return { type: 'system-message', data: "[Erreur] Impossible d'échanger à cause qu'il reste moins de 7 lettres dans la réserve" };
     }
 
     private configureUserMessage(userInput: string): ChatboxMessage {
