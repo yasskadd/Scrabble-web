@@ -19,6 +19,7 @@ const PROB_7 = 7;
 const TIME_SKIP = 20;
 const SECOND_3 = 3000;
 const SECOND_1 = 1000;
+const letterReserveMinQuantity = 7;
 
 export interface BotInformation {
     timer: number;
@@ -76,7 +77,7 @@ export class BeginnerBot extends Player {
     }
 
     exchangeLetter(): void {
-        if (this.game === undefined || this.playedTurned) return;
+        if (this.game === undefined || this.playedTurned || this.game.letterReserve.totalQuantity() < letterReserveMinQuantity) return;
         const rack: string[] = [...this.rackToString()];
         let numberOfLetters = this.getRandomNumber(rack.length);
         const lettersToExchange: string[] = new Array();
