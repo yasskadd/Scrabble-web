@@ -36,7 +36,7 @@ describe('Player', () => {
             score: player.score,
             rack: player.rack,
             room: player.room,
-            gameboard: player.game.gameboard.gameboardCoords,
+            gameboard: player.game.gameboard.gameboardTiles,
         };
         const result = player.getInformation();
         expect(result).to.be.deep.equal(info);
@@ -44,6 +44,6 @@ describe('Player', () => {
 
     it('getInformation() should send an empty object if game is undefined', () => {
         const result = player.getInformation();
-        expect(result).to.be.equal({});
+        expect(result).to.be.deep.equal({});
     });
 });

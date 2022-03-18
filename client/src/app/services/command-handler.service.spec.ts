@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
+import { CommandInfo } from '@common/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
 import { CommandHandlerService } from './command-handler.service';
+
 describe('CommandHandlerService', () => {
     let service: CommandHandlerService;
 
@@ -74,10 +76,10 @@ describe('CommandHandlerService', () => {
         // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocket'], 'send');
         const commandTest = '!placer e3v bonjour';
-        const commandInformation = {
+        const commandInformation: CommandInfo = {
             firstCoordinate: { x: 3, y: 5 },
-            direction: 'v',
-            lettersPlaced: ['b', 'o', 'n', 'j', 'o', 'u', 'r'],
+            isHorizontal: false,
+            letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'],
         };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation

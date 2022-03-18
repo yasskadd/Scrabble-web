@@ -22,13 +22,11 @@ export class PlayAreaComponent implements AfterViewInit {
     @ViewChild('gridCanvas', { static: false }) private gridCanvas!: ElementRef<HTMLCanvasElement>;
 
     keyboardParentSubject: Subject<KeyboardEvent>;
-    clickParentSubject: Subject<MouseEvent>;
     mousePosition: Vec2;
     buttonPressed;
 
     constructor(private readonly gridService: GridService, private letterService: LetterPlacementService) {
         this.keyboardParentSubject = new Subject();
-        this.clickParentSubject = new Subject();
         this.mousePosition = { x: 0, y: 0 };
         this.buttonPressed = '';
     }
@@ -45,14 +43,12 @@ export class PlayAreaComponent implements AfterViewInit {
                 this.letterService.submitPlacement();
                 break;
             }
-            case 'Shift': {
-                break;
-            }
             case 'Escape': {
                 this.letterService.undoEverything();
                 break;
             }
             default: {
+                if (this.buttonPressed.length > 1) break;
                 this.letterService.handlePlacement(this.buttonPressed);
                 break;
             }

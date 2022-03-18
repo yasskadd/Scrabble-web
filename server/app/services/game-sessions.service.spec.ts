@@ -56,7 +56,6 @@ describe('GameSession Service', () => {
     beforeEach((done) => {
         service = sinon.createStubInstance(SocketManager);
         gameSessions = new GameSessions(service as unknown as SocketManager);
-
         httpServer = createServer();
         sio = new ioServer(httpServer);
         httpServer.listen(() => {
@@ -397,6 +396,7 @@ describe('GameSession Service', () => {
     });
 
     it('disconnect should call the removeRoom method', (done: Mocha.Done) => {
+        const clock = sinon.useFakeTimers();
         const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
@@ -413,13 +413,14 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-        setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, timeout6seconds);
+        clock.tick(timeout6seconds);
+        assert(spy.called);
+        clock.restore();
+        done();
     });
 
     it('disconnect should call the removeRoom method after 6 seconds ', (done: Mocha.Done) => {
+        const clock = sinon.useFakeTimers();
         const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
@@ -436,10 +437,10 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-        setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, timeout6seconds);
+        clock.tick(timeout6seconds);
+        assert(spy.called);
+        clock.restore();
+        done();
     });
 
     it('roomJoin should emit an error if the person in the room have the same name that the player that want to join', (done: Mocha.Done) => {

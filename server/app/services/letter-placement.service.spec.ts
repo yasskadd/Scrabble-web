@@ -1,80 +1,189 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
-import { CommandInfo } from '@app/interfaces/command-info';
-import { LetterTile } from '@common/classes/letter-tile.class';
-import { Letter } from '@common/interfaces/letter';
+import { Word } from '@app/classes/word.class';
+import { CommandInfo } from '@common/command-info';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
-import { BoxMultiplierService } from './box-multiplier.service';
-import { GameboardCoordinateValidationService } from './coordinate-validation.service';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
-import { WordFinderService } from './word-finder.service';
 
 describe('Letter Placement Service', () => {
     let player: Player;
     let commandInfo: CommandInfo;
-    let letterA: Letter;
-    let letterB: Letter;
-    let letterC: Letter;
     let gameboard: Gameboard;
     let placementService: LetterPlacementService;
-    let validateCoordService: Sinon.SinonStubbedInstance<GameboardCoordinateValidationService>;
-    let wordFinderService: Sinon.SinonStubbedInstance<WordFinderService>;
     let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService>;
-    let boxMultiplierService: Sinon.SinonStubbedInstance<BoxMultiplierService>;
+    let word: Word;
 
     beforeEach(() => {
-        letterA = { value: 'a', points: 1 } as Letter;
-        letterB = { value: 'b', points: 2 } as Letter;
-        letterC = { value: 'c', points: 3 } as Letter;
-
-        player = { rack: [letterA, letterB], score: 0, name: 'test', room: 'testRoom' } as Player;
+        player = new Player('test');
+        player.rack = [
+            { value: 'a', quantity: 1, points: 1 },
+            { value: 'b', quantity: 1, points: 1 },
+        ];
+        player.score = 0;
+        player.room = 'testRoom';
         commandInfo = {
-            firstCoordinate: { x: 1, y: 1 } as LetterTile,
-            direction: 'h',
-            lettersPlaced: ['a', 'l', 'l'],
-        } as CommandInfo;
+            firstCoordinate: { x: 1, y: 1 },
+            isHorizontal: true,
+            letters: ['a', 'l', 'l'],
+        };
 
-        wordFinderService = Sinon.createStubInstance(WordFinderService);
-        validateCoordService = Sinon.createStubInstance(GameboardCoordinateValidationService);
-        boxMultiplierService = Sinon.createStubInstance(BoxMultiplierService);
+        gameboard = new Gameboard();
         dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService);
-        gameboard = new Gameboard(boxMultiplierService);
-        placementService = new LetterPlacementService(
-            validateCoordService as unknown as GameboardCoordinateValidationService,
-            wordFinderService as unknown as WordFinderService,
-            dictionaryValidation as unknown as DictionaryValidationService,
-        );
+        placementService = new LetterPlacementService(dictionaryValidation as unknown as DictionaryValidationService);
     });
 
-    afterEach(() => {
-        validateCoordService.validateGameboardCoordinate.restore();
+    context('validateCommandCoordinate() tests', () => {
+        it('validateCommandCoordinate() should return true if coord is valid and position is not Occupied', () => {
+            expect(placementService['validateCommandCoordinate']({ x: 1, y: 1 }, gameboard)).to.equal(true);
+        });
+
+        it('validateCommandCoordinate() should return false if coord is outOfBounds and position is not Occupied', () => {
+            expect(placementService['validateCommandCoordinate']({ x: 0, y: 1 }, gameboard)).to.equal(false);
+        });
+
+        it('validateCommandCoordinate() should return false if coord is outOfBounds and position is not Occupied', () => {
+            expect(placementService['validateCommandCoordinate']({ x: 1, y: 0 }, gameboard)).to.equal(false);
+        });
+
+        it('validateCommandCoordinate() should return false if coord is outOfBounds and position is not Occupied', () => {
+            expect(placementService['validateCommandCoordinate']({ x: 0, y: 0 }, gameboard)).to.equal(false);
+        });
+
+        it('validateCommandCoordinate() should return false if coord already isOccupied on board', () => {
+            gameboard.placeLetter({ x: 0, y: 0 }, 'a');
+            expect(placementService['validateCommandCoordinate']({ x: 0, y: 0 }, gameboard)).to.equal(false);
+        });
     });
 
-    it('getLettersCoord() should call validateGameboardCoordinate()', () => {
-        placementService['getLettersCoord'](commandInfo, gameboard);
-        expect(validateCoordService.validateGameboardCoordinate.calledOnce).to.equal(true);
+    context('wordIsPlacedCorrectly() tests', () => {
+        beforeEach(() => {
+            word = new Word(
+                {
+                    firstCoordinate: { x: 1, y: 1 },
+                    isHorizontal: true,
+                    letters: ['a', 'b'],
+                },
+                gameboard,
+            );
+        });
+
+        it('wordIsPlacedCorrectly() should call verifyFirstTurn() if isFirstTurn() returns true', () => {
+            const lettersInRackStub = Sinon.stub(placementService, 'isFirstTurn' as never);
+            lettersInRackStub.returns(true);
+            const verifyFirstTurnStub = Sinon.stub(placementService, 'verifyFirstTurn' as never);
+
+            placementService['wordIsPlacedCorrectly'](word.newLetterCoords, gameboard);
+            expect(verifyFirstTurnStub.calledOnce).to.equal(true);
+        });
+
+        it('wordIsPlacedCorrectly() should call isWordIsAttachedToBoardLetter() if isFirstTurn() returns false', () => {
+            const lettersInRackStub = Sinon.stub(placementService, 'isFirstTurn' as never);
+            lettersInRackStub.returns(false);
+            const isWordIsAttachedToBoardLetterStub = Sinon.stub(placementService, 'isWordIsAttachedToBoardLetter' as never);
+
+            placementService['wordIsPlacedCorrectly'](word.newLetterCoords, gameboard);
+            expect(isWordIsAttachedToBoardLetterStub.calledOnce).to.equal(true);
+        });
+
+        it('isFirstTurn() should return true if gameboard is empty', () => {
+            expect(placementService['isFirstTurn'](gameboard)).to.equal(true);
+        });
+
+        it('isFirstTurn() should return false if gameboard is not empty', () => {
+            gameboard.placeLetter({ x: 1, y: 1 }, 'a');
+            expect(placementService['isFirstTurn'](gameboard)).to.equal(false);
+        });
     });
 
-    it('getLettersCoord() should return correct game Coordinates', () => {
-        const expectedCoords = [new LetterTile(4, 4, letterA), new LetterTile(5, 4, letterB)];
-        validateCoordService.validateGameboardCoordinate.withArgs(commandInfo, gameboard).returns(expectedCoords);
-        const letterCoords = placementService['getLettersCoord'](commandInfo, gameboard);
-        expect(letterCoords).to.equal(expectedCoords);
+    context('isWordIsAttachedToBoardLetter() tests ', () => {
+        it('isWordIsAttachedToBoardLetter() should return false if gameboard is empty', () => {
+            const upDownLeftOrRightAreOccupiedStub = Sinon.stub(placementService, 'upDownLeftOrRightAreOccupied' as never);
+            upDownLeftOrRightAreOccupiedStub.returns(false);
+            expect(
+                placementService['isWordIsAttachedToBoardLetter'](
+                    [
+                        { x: 1, y: 1 },
+                        { x: 2, y: 1 },
+                    ],
+                    gameboard,
+                ),
+            ).to.equal(false);
+        });
+
+        it('isWordIsAttachedToBoardLetter() should return true if gameboard contains letter next to word', () => {
+            const upDownLeftOrRightAreOccupied = Sinon.stub(placementService, 'upDownLeftOrRightAreOccupied' as never);
+            upDownLeftOrRightAreOccupied.returns(true);
+            gameboard.placeLetter({ x: 1, y: 2 }, 'a');
+            expect(
+                placementService['isWordIsAttachedToBoardLetter'](
+                    [
+                        { x: 1, y: 1 },
+                        { x: 2, y: 1 },
+                    ],
+                    gameboard,
+                ),
+            ).to.equal(true);
+        });
     });
 
-    it('isPlacementValid should return false if letterCoords list is empty', () => {
-        const letterCoords: LetterTile[] = [];
-        expect(placementService['isPlacementValid'](letterCoords)).to.equal(false);
-    });
+    context('areLettersInRack() tests', () => {
+        it('areLettersInRack() should return true if letter is in rack', () => {
+            expect(placementService['areLettersInRack'](['b'], player)).to.equal(true);
+        });
 
-    it('isPlacementValid should return true if letterCoords list is not empty', () => {
-        const letterCoords: LetterTile[] = [new LetterTile(1, 1, letterA)];
-        expect(placementService['isPlacementValid'](letterCoords)).to.equal(true);
+        it('areLettersInRack() should return false if letter is not in rack', () => {
+            expect(placementService['areLettersInRack'](['c'], player)).to.equal(false);
+        });
+
+        it('return a list of 1 letter if only 1 letter is in command and it is present in rack', () => {
+            expect(placementService['findLettersPresentInRack'](['a'], player.rack).length).to.eql(1);
+        });
+
+        it('return empty list if letters are not in the rack', () => {
+            expect(placementService['findLettersPresentInRack'](['c'], player.rack)).to.eql([]);
+        });
+
+        it('return empty list if not every letters match the rack', () => {
+            expect(placementService['findLettersPresentInRack'](['c'], player.rack)).to.eql([]);
+        });
+
+        // TODO
+        // it('should set isBlank attribute to true and points to 0 if letter i uppercase', () => {
+        //     placementService['associateLettersWithRack']('C', player);
+        //     expect(letters[0].letter.isBlankLetter).to.equal(true);
+        //     expect(letters[0].letter.points).to.equal(0);
+        // });
+
+        it('should return false if lettersCoords do not match the player rack', () => {
+            expect(placementService['areLettersInRack'](['c', 'a'], player)).to.equal(false);
+        });
+
+        it('should return false if there is only one letter not matching the player rack', () => {
+            expect(placementService['areLettersInRack'](['a', 'c'], player)).to.equal(false);
+        });
+
+        it('should return false if player rack is empty', () => {
+            player.rack = [];
+            expect(placementService['areLettersInRack'](['a'], player)).to.equal(false);
+        });
+
+        it('should return false if there is 2 times the same letter in letterCoords but only once in player rack', () => {
+            expect(placementService['areLettersInRack'](['a', 'a'], player)).to.equal(false);
+        });
+
+        it('should return true if all lettersCoords match exactly the player rack', () => {
+            expect(placementService['areLettersInRack'](['a', 'b'], player)).to.equal(true);
+        });
+
+        it('should return true if all the letterCoords are in the player rack but dont match exactly', () => {
+            expect(placementService['areLettersInRack'](['a'], player)).to.equal(true);
+        });
     });
 
     it('should return deep copy of playerRack', () => {
@@ -84,203 +193,243 @@ describe('Letter Placement Service', () => {
         expect(copyRack).to.deep.equal(player.rack);
     });
 
-    context('associateLettersWithRack tests', () => {
-        it('return a list of letters', () => {
-            const letters: LetterTile[] = [new LetterTile(1, 1, letterA)];
-            expect(placementService['associateLettersWithRack'](letters, player).length).to.eql(letters.length);
+    context('verifyFirstTurn() tests', () => {
+        it('should return true if gameboard has no placed letters and letterCoords include middle coordinate', () => {
+            word = new Word(
+                {
+                    firstCoordinate: { x: 8, y: 8 },
+                    isHorizontal: true,
+                    letters: ['a', 'b'],
+                },
+                gameboard,
+            );
+            const allUnoccupied = gameboard.gameboardTiles.every((tile) => tile.isOccupied === false);
+            expect(allUnoccupied).to.equal(true);
+            expect(placementService['verifyFirstTurn'](word.wordCoords)).to.equal(true);
         });
 
-        it('return empty list if letters are not in the rack', () => {
-            const letters: LetterTile[] = [new LetterTile(1, 1, letterC)];
-            expect(placementService['associateLettersWithRack'](letters, player)).to.eql([]);
-        });
-
-        it('return empty list if not every letters match the rack', () => {
-            const letters: LetterTile[] = [new LetterTile(1, 1, letterC)];
-            expect(placementService['associateLettersWithRack'](letters, player)).to.eql([]);
-        });
-
-        it('should set isBlank attribute to true and points to 0 if letter i uppercase', () => {
-            const letters: LetterTile[] = [new LetterTile(0, 0, { value: 'C', points: 1 } as Letter)];
-            placementService['associateLettersWithRack'](letters, player);
-            expect(letters[0].letter.isBlankLetter).to.equal(true);
-            expect(letters[0].letter.points).to.equal(0);
-        });
-    });
-
-    context('createLetterPoints tests', () => {
-        let placedLettersCoords: LetterTile[];
-        let lettersPlaced: Letter[];
-
-        beforeEach(() => {
-            placedLettersCoords = [
-                new LetterTile(1, 1, { value: 'a' } as Letter),
-                new LetterTile(1, 2, { value: 'b' } as Letter),
-                new LetterTile(1, 3, { value: 'b' } as Letter),
-            ];
-            lettersPlaced = [letterA, letterB];
-        });
-
-        it('should return a list of LetterTile with correct points', () => {
-            const newPlacedLettersCoords = placementService['createLetterPoints'](placedLettersCoords, lettersPlaced as Letter[]);
-            const expectedLetters: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB), new LetterTile(1, 3, letterB)];
-            expect(newPlacedLettersCoords).to.eql(expectedLetters);
-        });
-
-        it('should return an empty list if no placed letter coord match the letter placed', () => {
-            placedLettersCoords = [new LetterTile(1, 1, { value: 'c' } as Letter)];
-            expect(placementService['createLetterPoints'](placedLettersCoords, lettersPlaced)).to.eql([]);
-        });
-    });
-
-    context('areLettersInRack() tests', () => {
-        it('should return false if lettersCoords do not match the player rack', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(2, 2, letterC), new LetterTile(1, 1, letterA)];
-            expect(placementService['areLettersInRack'](letterCoords, player)).to.equal(false);
-        });
-
-        it('should return false if there is only one letter not matching the player rack', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(2, 2, letterA), new LetterTile(1, 1, letterB), new LetterTile(1, 1, letterC)];
-            expect(placementService['areLettersInRack'](letterCoords, player)).to.equal(false);
-        });
-
-        it('should return false if player rack is empty', () => {
-            player.rack = [];
-            const letterCoords: LetterTile[] = [new LetterTile(1, 1, letterA)];
-            expect(placementService['areLettersInRack'](letterCoords, player)).to.equal(false);
-        });
-
-        it('should return false if there is 2 times the same letter in letterCoords but only once in player rack', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(2, 2, letterA)];
-            expect(placementService['areLettersInRack'](letterCoords, player)).to.equal(false);
-        });
-
-        it('should return true if all lettersCoords match exactly the player rack', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(2, 2, letterA), new LetterTile(1, 1, letterB)];
-            expect(placementService['areLettersInRack'](letterCoords, player)).to.equal(true);
-        });
-
-        it('should return true if all the letterCoords are in the player rack but dont match exactly', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(2, 2, letterA)];
-            expect(placementService['areLettersInRack'](letterCoords, player)).to.equal(true);
-        });
-    });
-
-    context('verifyFirstTurn tests', () => {
-        it('should return false if gameboard has no placed letters and letterCoords do not include middle coordinate', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(1, 1, letterA), new LetterTile(1, 2, letterB)];
-            const allEqual = gameboard.gameboardCoords.every((tile) => tile.isOccupied === false);
-            expect(allEqual).to.equal(true);
-            expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(false);
+        it('should return true if gameboard has no placed letters and letterCoords do not include middle coordinate', () => {
+            word = new Word(
+                {
+                    firstCoordinate: { x: 1, y: 1 },
+                    isHorizontal: true,
+                    letters: ['a', 'b'],
+                },
+                gameboard,
+            );
+            const allUnoccupied = gameboard.gameboardTiles.every((tile) => tile.isOccupied === false);
+            expect(allUnoccupied).to.equal(true);
+            expect(placementService['verifyFirstTurn'](word.wordCoords)).to.equal(false);
         });
 
         it('should return true if gameboard has no placed letters and letterCoords includes middle coordinate', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(8, 8, letterA), new LetterTile(8, 9, letterB)];
-            const allEqual = gameboard.gameboardCoords.every((tile) => tile.isOccupied === false);
+            const allEqual = gameboard.gameboardTiles.every((tile) => tile.isOccupied === false);
             expect(allEqual).to.equal(true);
-            expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(true);
+            expect(
+                placementService['verifyFirstTurn']([
+                    { x: 8, y: 8 },
+                    { x: 8, y: 9 },
+                ]),
+            ).to.equal(true);
         });
 
         it('should return true if there is placed letters on the gameboard', () => {
-            const letterCoords: LetterTile[] = [new LetterTile(8, 8, letterA), new LetterTile(8, 9, letterB)];
-            gameboard.placeLetter(new LetterTile(1, 1, {} as Letter));
-            expect(placementService['verifyFirstTurn'](letterCoords, gameboard)).to.equal(true);
+            gameboard.placeLetter({ x: 1, y: 1 }, 'a');
+            expect(
+                placementService['verifyFirstTurn']([
+                    { x: 8, y: 8 },
+                    { x: 8, y: 9 },
+                ]),
+            ).to.equal(true);
         });
     });
 
     context('globalCommandVerification() tests', () => {
-        let getLettersStub: Sinon.SinonStub<unknown[], unknown>;
-        let isPlacementStub: Sinon.SinonStub<unknown[], unknown>;
+        let validateCommandCoordinateStub: Sinon.SinonStub<unknown[], unknown>;
         let lettersInRackStub: Sinon.SinonStub<unknown[], unknown>;
-        let invalidFirstPlacementStub: Sinon.SinonStub<unknown[], unknown>;
-        let letterCoords: LetterTile[];
+        let wordIsPlacedCorrectlyStub: Sinon.SinonStub<unknown[], unknown>;
         beforeEach(() => {
-            getLettersStub = Sinon.stub(placementService, 'getLettersCoord' as never);
-            isPlacementStub = Sinon.stub(placementService, 'isPlacementValid' as never);
+            validateCommandCoordinateStub = Sinon.stub(placementService, 'validateCommandCoordinate' as never);
             lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as never);
-            invalidFirstPlacementStub = Sinon.stub(placementService, 'verifyFirstTurn' as never);
-            letterCoords = [new LetterTile(0, 0, letterA), new LetterTile(0, 1, letterB)];
-            getLettersStub.returns(letterCoords);
+            wordIsPlacedCorrectlyStub = Sinon.stub(placementService, 'wordIsPlacedCorrectly' as never);
         });
 
         afterEach(() => {
-            getLettersStub.restore();
-            isPlacementStub.restore();
+            validateCommandCoordinateStub.restore();
             lettersInRackStub.restore();
-            invalidFirstPlacementStub.restore();
+            wordIsPlacedCorrectlyStub.restore();
         });
 
-        it('should return array with letterCoords and invalidPlacement string if isPlacement() returns false', () => {
-            isPlacementStub.withArgs(commandInfo, gameboard).returns(false);
-            const expectedReturn = [letterCoords, 'Placement invalide'];
+        it('should return array with empty Word object and commandCoordinateOutOfBounds string if validateCommandCoordinate() returns false', () => {
+            validateCommandCoordinateStub.withArgs(commandInfo, gameboard).returns(false);
+            const expectedReturn = [{}, 'Placement invalide pour la premiere coordonnée'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
-        it('should return array with letterCoords and lettersNotInRack string if areLettersInRack() returns false', () => {
-            isPlacementStub.returns(true);
+        it('should return array with empty Word object and lettersNotInRack string if areLettersInRack() returns false', () => {
+            validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(false);
-            const expectedReturn = [letterCoords, 'Lettres absents du chevalet'];
+            const expectedReturn = [{}, 'Les lettres ne sont pas dans le chavalet'];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
-        it('should return letterCoords and invalidFirstPlacement string if verifyFirstTurn() returns false', () => {
-            isPlacementStub.returns(true);
+        it('should return array with empty Word object and invalidFirstWordPlacement string if wordIsPlacedCorrectly() returns false', () => {
+            validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(true);
-            invalidFirstPlacementStub.returns(false);
-            const expectedReturn = [letterCoords, 'Placement du premier tour pas valide'];
+            wordIsPlacedCorrectlyStub.returns(false);
+            const expectedReturn = [{}, "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)"];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
 
-        it('should return letterCoords and null if verification is valid', () => {
-            isPlacementStub.returns(true);
+        it('should return array with empty Word object and invalidWordBuild if newly word created is out of bounce', () => {
+            validateCommandCoordinateStub.returns(true);
             lettersInRackStub.returns(true);
-            invalidFirstPlacementStub.returns(true);
-            const expectedReturn = [letterCoords, null];
+            const commandInfoOutOfBounce = {
+                firstCoordinate: { x: 15, y: 1 },
+                isHorizontal: true,
+                letters: ['a', 'l', 'l'],
+            };
+            const expectedReturn = [{}, "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau"];
+            expect(placementService.globalCommandVerification(commandInfoOutOfBounce, gameboard, player)).to.eql(expectedReturn);
+        });
+
+        it('should return array with empty Word object and invalidWordBuild if newly word created has only one letter', () => {
+            validateCommandCoordinateStub.returns(true);
+            lettersInRackStub.returns(true);
+            const commandInfoOneLetter = {
+                firstCoordinate: { x: 1, y: 1 },
+                isHorizontal: true,
+                letters: ['a'],
+            };
+            const expectedReturn = [{}, "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau"];
+            expect(placementService.globalCommandVerification(commandInfoOneLetter, gameboard, player)).to.eql(expectedReturn);
+        });
+
+        it('should return array with Word object and null if verification is valid', () => {
+            validateCommandCoordinateStub.returns(true);
+            lettersInRackStub.returns(true);
+            wordIsPlacedCorrectlyStub.returns(true);
+            const expectedWord = {
+                isValid: true,
+                isHorizontal: true,
+                stringFormat: 'all',
+                points: 0,
+                newLetterCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+                wordCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+            };
+            const expectedReturn = [expectedWord, null];
             expect(placementService.globalCommandVerification(commandInfo, gameboard, player)).to.eql(expectedReturn);
         });
     });
 
-    context('placeLetter tests', () => {
-        let letterCoords: LetterTile[];
+    context('placeLetters tests', () => {
         const bonusPoint = 50;
         const points = 10;
         beforeEach(() => {
-            letterCoords = [
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-                new LetterTile(1, 1, letterA),
-            ];
+            word = {
+                isValid: true,
+                isHorizontal: true,
+                stringFormat: 'all',
+                points: 0,
+                newLetterCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+                wordCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                ],
+            } as Word;
         });
 
-        it('should call validateWords() once', () => {
-            placementService.placeLetter(letterCoords, player, gameboard);
-            expect(dictionaryValidation.validateWords.calledOnce).to.equal(true);
+        it('should call validateWord() once', () => {
+            dictionaryValidation.validateWord.returns({
+                points: 0,
+                invalidWords: [] as Word[],
+            });
+            placementService.placeLetters(word, commandInfo, player, gameboard);
+            expect(dictionaryValidation.validateWord.calledOnce).to.equal(true);
         });
 
-        it('should return false and the gameboard if validateWords returns 0', () => {
-            dictionaryValidation.validateWords.returns(0);
-            expect(placementService.placeLetter(letterCoords, player, gameboard)).to.eql([false, gameboard]);
+        it('should return false and the gameboard if validateWord returns 0', () => {
+            const validateWordReturn = {
+                points: 0,
+                invalidWords: [
+                    {
+                        isValid: false,
+                        isHorizontal: true,
+                        stringFormat: 'a',
+                        points: 0,
+                        newLetterCoords: [{ x: 1, y: 1 }],
+                        wordCoords: [{ x: 1, y: 1 }],
+                    } as Word,
+                ] as Word[],
+            };
+            dictionaryValidation.validateWord.returns(validateWordReturn);
+
+            const expected = { hasPassed: false, gameboard, invalidWords: validateWordReturn.invalidWords };
+            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
         });
 
-        it('should change player score if validateWords() dont return 0', () => {
-            letterCoords = [new LetterTile(1, 1, letterA)];
-            dictionaryValidation.validateWords.returns(points);
-            placementService.placeLetter(letterCoords, player, gameboard);
-            expect(player.score).to.equal(points);
+        it('should change player score if validateWord() doesnt return 0', () => {
+            const validateWordReturn = {
+                points: 10,
+                invalidWords: [] as Word[],
+            };
+            dictionaryValidation.validateWord.returns(validateWordReturn);
+            placementService.placeLetters(word, commandInfo, player, gameboard);
+            expect(player.score).to.equal(validateWordReturn.points);
         });
 
-        it('should return true and gameboard if validateWords() dont return 0', () => {
-            dictionaryValidation.validateWords.returns(points);
-            expect(placementService.placeLetter(letterCoords, player, gameboard)).to.eql([true, gameboard]);
+        it('should return true and gameboard if validateWord() doesnt return 0', () => {
+            dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
+            const expected = { hasPassed: true, gameboard, invalidWords: [] };
+            expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
         });
 
         it('should give a bonus of 50 points', () => {
-            dictionaryValidation.validateWords.returns(points);
-            placementService.placeLetter(letterCoords, player, gameboard);
+            const sevenLetterWord = {
+                isValid: true,
+                isHorizontal: true,
+                stringFormat: 'a',
+                points: 10,
+                newLetterCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                    { x: 5, y: 1 },
+                    { x: 6, y: 1 },
+                    { x: 7, y: 1 },
+                ],
+                wordCoords: [
+                    { x: 1, y: 1 },
+                    { x: 2, y: 1 },
+                    { x: 3, y: 1 },
+                    { x: 4, y: 1 },
+                    { x: 5, y: 1 },
+                    { x: 6, y: 1 },
+                    { x: 7, y: 1 },
+                ],
+            } as Word;
+
+            const newCommandInfo = {
+                firstCoordinate: { x: 1, y: 1 },
+                isHorizontal: true,
+                letters: ['a', 'l', 'l', 'a', 'l', 'l', 'l', 'l'],
+            };
+            dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
+            placementService.placeLetters(sevenLetterWord, newCommandInfo, player, gameboard);
             expect(player.score).to.equal(points + bonusPoint);
         });
     });
