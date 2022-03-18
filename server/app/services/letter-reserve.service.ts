@@ -103,7 +103,7 @@ export class LetterReserveService {
     }
 
     isEmpty(): boolean {
-        return this.lettersReserve.length === 0;
+        return this.totalQuantity() === 0;
     }
 
     totalQuantity(): number {

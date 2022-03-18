@@ -55,9 +55,9 @@ export class Game {
             }
             placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
 
-            if (placeLettersReturn.hasPassed === true) {
+            if (placeLettersReturn.hasPassed) {
                 if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
-                    player.rack = this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, player.rack);
+                    player.rack = this.letterReserve.generateLetters(this.letterReserve.totalQuantity(), player.rack);
                 } else if (!this.letterReserve.isEmpty()) {
                     player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
                 }

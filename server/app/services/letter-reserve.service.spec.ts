@@ -103,7 +103,7 @@ describe('LetterReserveService', () => {
     });
 
     it('should return true if the reserve is empty', () => {
-        letterReserveService.lettersReserve = [];
+        letterReserveService.lettersReserve = [{ value: 'b', quantity: 0, points: 3 }];
         const isEmpty = letterReserveService.isEmpty();
         expect(isEmpty).to.eql(true);
     });
