@@ -129,7 +129,7 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('scrolling in rack should reposition rack', () => {
+    it('scrolling upwards in rack should reposition rack', () => {
         const spy = spyOn(component, 'repositionRack');
         const mockScroll = new WheelEvent('scroll');
         component.onScrollEvent(mockScroll);
@@ -137,6 +137,16 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
         expect(component.buttonPressed).toEqual('ArrowRight');
     });
+
+    // it('scrolling upwards in rack should reposition rack', () => {
+    //     const spy = spyOn(component, 'repositionRack');
+    //     const mockScroll = new WheelEvent('scroll');
+    //     component.onScrollEvent(mockScroll);
+    //     component.onScrollEvent(mockScroll);
+    //     fixture.detectChanges();
+    //     expect(spy).toHaveBeenCalled();
+    //     expect(mockScroll.deltaY).toBeLessThan(0);
+    // });  // trying to cover line 50
 
     it('clicking outside the rack should call clickOutside', () => {
         const indexLetter = 0;
@@ -172,6 +182,15 @@ describe('PlayerRackComponent', () => {
         expect(component.lettersToExchange.length).toEqual(1);
         expect(component.lettersToExchange[0]).toEqual(0);
     });
+
+    it('onRightClick should remove a letter from lettersToExchange on right click', () => {
+        const indexLetter = 0;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        component.onRightClick(mockClick, indexLetter);
+        expect(component.lettersToExchange.length).toEqual(0);
+        expect(component.lettersToExchange.indexOf(indexLetter)).toEqual(constants.INVALID_INDEX);
+    }); // not sure why this test does not cover 136-140
 
     // it('onRightClick should select a letter and update the array in the html element', () => {
     //     const indexLetter = 0;
