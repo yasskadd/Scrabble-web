@@ -62,4 +62,12 @@ describe('Player', () => {
         player.deductPoints();
         expect(player.score).to.equal(expectedScore);
     });
+
+    it('addPoints() should add the sum of points of the letters in the rack passed as param', () => {
+        player.score = 0;
+        const rack = [{ points: 1 } as Letter, { points: 2 } as Letter];
+        const expectedScore = 3;
+        player.addPoints(rack);
+        expect(player.score).to.equal(expectedScore);
+    });
 });
