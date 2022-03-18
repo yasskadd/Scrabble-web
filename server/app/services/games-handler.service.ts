@@ -201,7 +201,14 @@ export class GamesHandler {
                 newGameHolder.players.forEach((player) => {
                     player.deductPoints();
                 });
+            } else if (newGameHolder.players[0].rackIsEmpty()) {
+                newGameHolder.players[0].addPoints(newGameHolder.players[1].rack);
+                newGameHolder.players[1].deductPoints();
+            } else if (newGameHolder.players[1].rackIsEmpty()) {
+                newGameHolder.players[1].addPoints(newGameHolder.players[0].rack);
+                newGameHolder.players[0].deductPoints();
             }
+
             this.changeTurn(gameInfo.roomId);
             if (newGameHolder.game?.turn.activePlayer === undefined) {
                 this.userConnected(gameInfo.socketId);

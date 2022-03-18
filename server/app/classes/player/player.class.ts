@@ -53,4 +53,12 @@ export class Player {
             this.score = 0;
         }
     }
+
+    addPoints(rack: Letter[]) {
+        let pointsToAdd = 0;
+        for (const letter of rack) {
+            pointsToAdd += letter.points;
+        }
+        this.score += pointsToAdd;
+    }
 }
