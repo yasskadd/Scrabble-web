@@ -218,7 +218,7 @@ describe('BotBeginner', () => {
     });
 
     context('emitPlacementCommand() tests', () => {
-        it.only('should emitRoom() with correct arguments', () => {
+        it('should emitRoom() with correct arguments', () => {
             botBeginner.game.letterReserve = new LetterReserveService();
             const commandInfoStub: CommandInfo = {
                 firstCoordinate: { x: 1, y: 1 } as Coordinate,

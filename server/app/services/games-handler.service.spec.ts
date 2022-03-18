@@ -30,7 +30,7 @@ interface GameHolder {
 }
 
 const ROOM = '0';
-describe.only('GamesHandler Service', () => {
+describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
