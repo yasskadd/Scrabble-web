@@ -11,7 +11,6 @@ import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { SocketManager } from './socket-manager.service';
-import Sinon = require('sinon');
 
 type Parameters = { id: string; name: string };
 type SioSignature = SocketManager['sio'];
@@ -46,7 +45,7 @@ const GAME_PARAMETERS: GameParameters = {
     mode: 'classique',
     isMultiplayer: true,
 };
-describe('GameSession Service', () => {
+describe.only('GameSession Service', () => {
     let gameSessions: GameSessions;
     let service: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
@@ -54,11 +53,9 @@ describe('GameSession Service', () => {
     let serverSocket: ServerSocket;
     let port: number;
     let sio: SioSignature;
-    let clock: Sinon.SinonFakeTimers;
     beforeEach((done) => {
         service = sinon.createStubInstance(SocketManager);
         gameSessions = new GameSessions(service as unknown as SocketManager);
-        clock = sinon.useFakeTimers();
         httpServer = createServer();
         sio = new ioServer(httpServer);
         httpServer.listen(() => {
@@ -75,7 +72,6 @@ describe('GameSession Service', () => {
         clientSocket.close();
         sio.close();
         sinon.restore();
-        clock.restore();
     });
 
     it('removeRoom should remove a room from the gameRoom map ', (done: Mocha.Done) => {
@@ -400,6 +396,7 @@ describe('GameSession Service', () => {
     });
 
     it('disconnect should call the removeRoom method', (done: Mocha.Done) => {
+        const clock = sinon.useFakeTimers();
         const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
@@ -418,10 +415,12 @@ describe('GameSession Service', () => {
         gameSessions['disconnect'](sio, serverSocket);
         clock.tick(timeout6seconds);
         assert(spy.called);
+        clock.restore();
         done();
     });
 
     it('disconnect should call the removeRoom method after 6 seconds ', (done: Mocha.Done) => {
+        const clock = sinon.useFakeTimers();
         const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
@@ -440,6 +439,7 @@ describe('GameSession Service', () => {
         gameSessions['disconnect'](sio, serverSocket);
         clock.tick(timeout6seconds);
         assert(spy.called);
+        clock.restore();
         done();
     });
 
