@@ -14,7 +14,7 @@ import { ReplaySubject } from 'rxjs';
 import * as Sinon from 'sinon';
 import { BeginnerBot, BotInformation } from './bot-beginner.class';
 
-describe('BotBeginner', () => {
+describe.only('BotBeginner', () => {
     let botBeginner: BeginnerBot;
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
@@ -155,15 +155,19 @@ describe('BotBeginner', () => {
     context('exchangeLetters() tests', () => {
         let stubGetRandom: Sinon.SinonStub<unknown[], unknown>;
         let mockSocketManager: Sinon.SinonMock;
+        let stubTotalQuantity: Sinon.SinonStub<[], number>;
         beforeEach(() => {
             stubGetRandom = Sinon.stub(botBeginner, 'getRandomNumber' as keyof BeginnerBot);
             botBeginner.rack = [{ value: 'a' } as Letter, { value: 'b' } as Letter, { value: 'c' } as Letter];
             mockSocketManager = Sinon.mock(botBeginner['socketManager']);
             botBeginner.setGame(gameStub);
+            botBeginner['game'].letterReserve = new LetterReserveService();
+            stubTotalQuantity = Sinon.stub(botBeginner['game'].letterReserve, 'totalQuantity').returns(20);
         });
 
         afterEach(() => {
             mockSocketManager.restore();
+            Sinon.restore();
         });
 
         it('should call game.exchange() with correct letters to exchange and this parameter', () => {
@@ -186,6 +190,21 @@ describe('BotBeginner', () => {
         it('should not call game.exchange() if playedTurn is set to true', () => {
             botBeginner['playedTurned'] = true;
             botBeginner.exchangeLetter();
+            expect(gameStub.exchange.called).to.be.equal(false);
+        });
+
+        it('should not call game.exchange() if there is less than 7 letters in letterReserve and should skipTurn() after 20 seconds', () => {
+            const mockSkipTurn = Sinon.mock(botBeginner).expects('skipTurn').exactly(1);
+            const clock = Sinon.useFakeTimers();
+            botBeginner['playedTurned'] = false;
+            stubTotalQuantity.returns(5);
+            botBeginner.game.turn.activePlayer = botBeginner.name;
+            botBeginner.start();
+            botBeginner.exchangeLetter();
+            botBeginner.game.turn.countdown.next(40);
+            clock.restore();
+            mockSkipTurn.verify();
+            botBeginner.game.turn.countdown.unsubscribe();
             expect(gameStub.exchange.called).to.be.equal(false);
         });
     });
