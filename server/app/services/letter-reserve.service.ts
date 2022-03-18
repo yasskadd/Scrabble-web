@@ -83,7 +83,7 @@ export class LetterReserveService {
     }
 
     exchangeLetter(toExchange: string[], rack: Letter[]): Letter[] {
-        if (this.lettersReserve.length >= NUMBER_OF_LETTERS_ON_RACK) {
+        if (this.totalQuantity() >= NUMBER_OF_LETTERS_ON_RACK) {
             const removedLetter = this.removeLettersFromRack(toExchange, rack);
             rack = removedLetter[0];
             const newRack = this.generateLetters(removedLetter[1].length, rack);
