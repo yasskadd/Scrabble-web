@@ -61,8 +61,14 @@ export class PlayerRackComponent implements OnInit {
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            this.cancel();
-            this.selectManipulation();
+
+            if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
+                this.lettersToManipulate = [];
+                this.repositionRack();
+            } else {
+                this.cancel();
+                this.selectManipulation();
+            }
         });
     }
 
@@ -89,11 +95,6 @@ export class PlayerRackComponent implements OnInit {
     }
     selectManipulation() {
         this.duplicates = [];
-
-        if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
-            this.repositionRack();
-            return;
-        }
 
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === this.buttonPressed.toLowerCase() && !this.lettersToExchange.includes(i)) {
@@ -128,7 +129,9 @@ export class PlayerRackComponent implements OnInit {
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
         const notFound = constants.INVALID_INDEX;
-        this.lettersToManipulate = [];
+        if (this.lettersToManipulate.includes(letter)) {
+            this.lettersToManipulate = [];
+        }
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
