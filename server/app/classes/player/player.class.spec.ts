@@ -44,6 +44,6 @@ describe('Player', () => {
 
     it('getInformation() should send an empty object if game is undefined', () => {
         const result = player.getInformation();
-        expect(result).to.be.equal({});
+        expect(result).to.be.deep.equal({});
     });
 });

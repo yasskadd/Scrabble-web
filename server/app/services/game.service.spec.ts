@@ -135,7 +135,7 @@ describe('Game tests', () => {
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             game.play(player1, commandInfo);
-            expect(letterReserveService.generateLetters.calledWith(1)).to.equal(true);
+            expect(letterReserveService.generateLetters.called).to.equal(true);
         });
 
         it('play() should call generateLetter of letterReserveService with the quantity of letter that equals the quantity of letter placed', () => {
