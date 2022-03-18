@@ -1,7 +1,9 @@
 import { Gameboard } from '@app/classes/gameboard.class';
+import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
+import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { LetterTile } from '@common/classes/letter-tile.class';
@@ -9,7 +11,7 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
-import { LetterPlacementService } from './letter-placement.service';
+import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
@@ -19,7 +21,7 @@ const CHAR_ASCII = 96;
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
-    players: RealPlayer[];
+    players: Player[];
     roomId: string;
     isGameFinish: boolean;
     timer: number;
@@ -106,7 +108,6 @@ export class GamesHandler {
         const gameHolder = this.games.get(room) as GameHolder;
         socket.emit(SocketEvents.AllReserveLetters, gameHolder.game?.letterReserve.lettersReserve);
     }
-
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
 
@@ -137,30 +138,34 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const firstCoordinateColumns = commandInfo.firstCoordinate.x;
         const firstCoordinateRows = commandInfo.firstCoordinate.y;
-        const letterPlaced = commandInfo.lettersPlaced.join('');
+        const letterPlaced = commandInfo.letters.join('');
         const player = this.players.get(socket.id) as RealPlayer;
-        const play = player.placeLetter(commandInfo) as [boolean, Gameboard] | string;
+        const play = player.placeLetter(commandInfo) as PlaceLettersReturn | string;
 
-        if (typeof play[0] === 'string') {
+        if (typeof play === 'string') {
             socket.emit(SocketEvents.ImpossibleCommandError, play);
         } else if (typeof play !== 'string') {
-            const playerInfo: PlayInfo = {
-                gameboard: play[1].gameboardCoords,
+            const playInfo: PlayInfo = {
+                gameboard: play.gameboard.gameboardTiles,
                 activePlayer: player.game.turn.activePlayer,
             };
-            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playerInfo);
+            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playInfo);
             this.updatePlayerInfo(socket, player.room, player.game);
 
-            if (!play[0]) {
-                socket.emit(SocketEvents.ImpossibleCommandError, 'Les lettres que vous essayer de mettre ne forme pas des mots valides');
+            if (!play.hasPassed) {
+                play.invalidWords.forEach((invalidWord: Word) =>
+                    socket.emit(
+                        SocketEvents.ImpossibleCommandError,
+                        'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionnaire français',
+                    ),
+                );
             } else {
+                const direction = commandInfo.isHorizontal ? 'h' : 'v';
                 socket.broadcast
                     .to(player.room)
                     .emit(
                         SocketEvents.GameMessage,
-                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${
-                            commandInfo.direction
-                        } ${letterPlaced}`,
+                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${direction} ${letterPlaced}`,
                     );
             }
         }
@@ -180,9 +185,12 @@ export class GamesHandler {
         newGameHolder.players.push(playerTwo);
         newGameHolder.game = this.createNewGame(newGameHolder);
 
-        playerOne.setGame(newGameHolder.game, true);
-        playerTwo.setGame(newGameHolder.game, false);
+        (playerOne as RealPlayer).setGame(newGameHolder.game, true);
 
+        if (gameInfo.socketId.length === 1) {
+            (playerTwo as BeginnerBot).setGame(newGameHolder.game);
+            (playerTwo as BeginnerBot).start();
+        } else (playerTwo as RealPlayer).setGame(newGameHolder.game, false);
         this.games.set(newGameHolder.roomId, newGameHolder);
         if (socket.id === gameInfo.socketId[0]) {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
@@ -197,18 +205,22 @@ export class GamesHandler {
             this.sendTimer(gameInfo.roomId, timer);
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.ViewUpdate, {
-            gameboard: newGameHolder.game.gameboard.gameboardCoords,
+            gameboard: newGameHolder.game.gameboard.gameboardTiles,
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
     }
 
-    private setAndGetPlayer(gameInfo: GameScrabbleInformation): RealPlayer {
+    private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {
         const player = this.players.has(gameInfo.socketId[0]) ? 1 : 0;
-        const newPlayer = new RealPlayer(gameInfo.playerName[player]);
-
-        newPlayer.room = gameInfo.roomId;
-        this.players.set(gameInfo.socketId[player], newPlayer);
+        let newPlayer;
+        if (player === 1 && gameInfo.socketId[player] === undefined) {
+            newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+        } else {
+            newPlayer = new RealPlayer(gameInfo.playerName[player]);
+            newPlayer.room = gameInfo.roomId;
+            this.players.set(gameInfo.socketId[player], newPlayer);
+        }
         return newPlayer;
     }
 
@@ -240,7 +252,7 @@ export class GamesHandler {
     private changeTurn(roomId: string) {
         const game = this.games.get(roomId);
         const gameInfo = {
-            gameboard: game?.game?.gameboard.gameboardCoords,
+            gameboard: game?.game?.gameboard.gameboardTiles,
             players: game?.players.map((x) => x.getInformation()),
             activePlayer: game?.game?.turn.activePlayer,
         };

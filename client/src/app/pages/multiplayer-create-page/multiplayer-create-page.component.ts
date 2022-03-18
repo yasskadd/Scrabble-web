@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
@@ -16,8 +15,7 @@ const enum TimeOptions {
     FourMinuteAndThirty = 270,
     FiveMinute = 300,
 }
-
-const botNameList = ['robert', 'jean', 'albert'];
+const BOT_NAME_LIST = ['robert', 'jean', 'albert'];
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -45,10 +43,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
     ];
     constructor(
         public gameConfiguration: GameConfigurationService,
-        public router: Router,
+        private router: Router,
         private activatedRoute: ActivatedRoute,
         private fb: FormBuilder,
-        public snackBar: MatSnackBar,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
     }
@@ -78,7 +75,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
             isMultiplayer: this.isSoloMode() ? false : true,
         });
         if (this.isSoloMode()) {
-            if (!this.validateName()) return;
+            this.validateName();
             setTimeout(() => {
                 this.gameConfiguration.beginScrabbleGame(this.botName);
             }, 0);
@@ -107,23 +104,16 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     createBotName(): void {
-        this.botName = botNameList[Math.floor(Math.random() * botNameList.length)];
-    }
-
-    openSnackBar(reason: string): void {
-        this.snackBar.open(reason, 'fermer', {
-            verticalPosition: 'top',
-        });
+        this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
     }
 
     private resetInput(): void {
         this.playerName = '';
     }
 
-    private validateName(): boolean {
-        if (this.botName !== this.playerName) return true;
-        this.resetInput();
-        this.openSnackBar('Vous avez le même nom que le Joueur Virtuelle');
-        return false;
+    private validateName(): void {
+        while (this.playerName.toLowerCase() === this.botName) {
+            this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
+        }
     }
 }

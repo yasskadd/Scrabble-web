@@ -113,7 +113,7 @@ describe('PlayAreaComponent', () => {
         expect(letterPlacementServiceSpy.undoEverything).toHaveBeenCalled();
     });
 
-    it("Shift keypress shouldn't do anything", () => {
+    it("Shift keypress and the like shouldn't do anything", () => {
         const enterKeypressEvent = new KeyboardEvent('keydown', { key: 'Shift' });
         fixture.debugElement.triggerEventHandler('keydown', enterKeypressEvent);
         expect(letterPlacementServiceSpy.undoEverything).not.toHaveBeenCalled();

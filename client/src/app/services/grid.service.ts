@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as constants from '@app/constants';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
+import { LetterTileInterface } from '@common/letter-tile-interface';
 
 @Injectable({
     providedIn: 'root',
@@ -29,7 +29,7 @@ export class GridService {
         this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
-    drawGrid(gameboard: LetterTile[]) {
+    drawGrid(gameboard: LetterTileInterface[]) {
         this.gridContext.clearRect(0, 0, constants.GRID_CANVAS_WIDTH, constants.GRID_CANVAS_HEIGHT);
         this.drawRowNumbers();
         this.drawColumnLetters();
@@ -39,9 +39,10 @@ export class GridService {
         gameboard.forEach((letterTile) => {
             if (letterTile.isOccupied) {
                 this.gridContext.fillStyle = '#52B7BE';
-                this.fillTile({ x: letterTile.x, y: letterTile.y });
-                this.drawLetter({ x: letterTile.x, y: letterTile.y }, letterTile.letter.value.toUpperCase());
-                this.drawLetterPoints({ x: letterTile.x, y: letterTile.y }, String(letterTile.letter.points));
+                this.fillTile({ x: letterTile.coordinate.x, y: letterTile.coordinate.y });
+                // eslint-disable-next-line no-underscore-dangle
+                this.drawLetter({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, letterTile._letter.toUpperCase());
+                this.drawLetterPoints({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, String(letterTile.points));
             }
         });
     }
@@ -218,6 +219,7 @@ export class GridService {
     drawText(position: Coordinate, content: string) {
         this.gridContext.fillStyle = 'black';
         this.gridContext.textAlign = 'center';
+        content.toUpperCase();
         this.gridContext.fillText(
             content,
             GridService.squareWidth * position.x + GridService.halfSquareWidth,

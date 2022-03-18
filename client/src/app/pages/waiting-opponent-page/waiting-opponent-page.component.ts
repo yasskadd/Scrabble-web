@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
@@ -14,10 +13,9 @@ export class WaitingOpponentPageComponent implements OnInit {
 
     constructor(
         public gameConfiguration: GameConfigurationService,
-        public router: Router,
-        public snackBar: MatSnackBar,
+        private router: Router,
+        private snackBar: MatSnackBar,
         private activatedRoute: ActivatedRoute,
-        public dialog: MatDialog,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
     }

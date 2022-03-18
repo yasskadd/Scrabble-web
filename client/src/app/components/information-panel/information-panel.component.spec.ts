@@ -92,7 +92,8 @@ describe('InformationPanelComponent', () => {
     });
 
     it('should open a dialog box if the abandonGame method is called', () => {
-        const dialogSpy = spyOn(component.dialog, 'open');
+        // eslint-disable-next-line dot-notation
+        const dialogSpy = spyOn(component['dialog'], 'open');
         component.abandonGame();
         expect(dialogSpy).toHaveBeenCalled();
     });

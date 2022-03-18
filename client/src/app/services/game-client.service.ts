@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
-import { Subject } from 'rxjs';
+import { LetterTileInterface } from '@common/letter-tile-interface';
+import { ReplaySubject, Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
-type PlayInfo = { gameboard: LetterTile[]; activePlayer: string };
-type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
+type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
+type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
 type Player = { name: string; score: number; rack: Letter[] };
-type GameInfo = { gameboard: LetterTile[]; players: Player[]; activePlayer: string };
+type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
+const TIMEOUT = 15;
 
 @Injectable({
     providedIn: 'root',
 })
 export class GameClientService {
     timer: number;
-    gameboard: LetterTile[];
+    gameboard: LetterTileInterface[];
     playerOne: Player;
     secondPlayer: Player;
     playerOneTurn: boolean;
@@ -23,13 +24,16 @@ export class GameClientService {
     isGameFinish: boolean;
     winningMessage: string;
     gameboardUpdated: Subject<boolean>;
+    turnFinish: ReplaySubject<boolean>;
 
     constructor(private clientSocketService: ClientSocketService) {
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
         this.gameboardUpdated = new Subject();
+        this.turnFinish = new ReplaySubject<boolean>(1);
         this.configureBaseSocketFeatures();
+        this.gameboard = [];
     }
 
     configureBaseSocketFeatures() {
@@ -59,14 +63,15 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
-            this.skipEvent(gameInfo);
+            setTimeout(() => {
+                this.skipEvent(gameInfo);
+            }, TIMEOUT);
         });
 
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
             this.timerClientUpdateEvent(newTimer);
         });
     }
-
     updateGameboard() {
         this.gameboardUpdated.next(true);
     }
@@ -97,6 +102,14 @@ export class GameClientService {
 
     private timerClientUpdateEvent(newTimer: number) {
         this.timer = newTimer;
+        this.isTurnFinish(newTimer);
+    }
+
+    private isTurnFinish(newTimer: number): void {
+        if (newTimer === 0 && this.playerOneTurn) {
+            this.turnFinish.next(true);
+            this.turnFinish.next(false);
+        }
     }
 
     private viewUpdateEvent(info: PlayInfo) {
@@ -105,11 +118,37 @@ export class GameClientService {
     }
 
     private updatePlayerInformationEvent(player: PlayerInformation) {
+        const updatedRack = this.updateRack(player.rack);
         this.playerOne = player;
+        this.playerOne.rack = updatedRack;
         this.updateNewGameboard(player.gameboard);
     }
 
-    private updateNewGameboard(newGameboard: LetterTile[]) {
+    private updateRack(newRack: Letter[]): Letter[] {
+        const dictionary = new Map();
+        newRack.forEach((letter) => {
+            const dictionaryLetter = dictionary.get(letter.value);
+            if (dictionaryLetter === undefined) dictionary.set(letter.value, { counter: 1, letter });
+            else dictionaryLetter.counter++;
+        });
+        const resultingRack = [] as Letter[];
+        this.playerOne.rack.forEach((letter) => {
+            const dictionaryLetter = dictionary.get(letter.value);
+            if (dictionaryLetter !== undefined && dictionaryLetter.counter > 0) {
+                resultingRack.push(letter);
+                dictionaryLetter.counter--;
+            }
+        });
+        dictionary.forEach((dictionaryLetter) => {
+            while (dictionaryLetter.counter > 0) {
+                resultingRack.push(dictionaryLetter.letter);
+                dictionaryLetter.counter--;
+            }
+        });
+        return resultingRack;
+    }
+
+    private updateNewGameboard(newGameboard: LetterTileInterface[]) {
         this.gameboard = newGameboard;
         this.updateGameboard();
     }
@@ -129,8 +168,12 @@ export class GameClientService {
 
     private skipEvent(gameInfo: GameInfo) {
         this.gameboard = gameInfo.gameboard;
-        this.playerOne = this.playerOne.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
-        this.secondPlayer = this.secondPlayer.name === gameInfo.players[0].name ? gameInfo.players[0] : gameInfo.players[1];
+        const playerOneIndex = this.playerOne.name === gameInfo.players[0].name ? 0 : 1;
+        const secondPlayerIndex = Math.abs(playerOneIndex - 1);
+        const updatedRack = this.updateRack(gameInfo.players[playerOneIndex].rack);
+        this.playerOne = gameInfo.players[playerOneIndex];
+        this.playerOne.rack = updatedRack;
+        this.secondPlayer = gameInfo.players[secondPlayerIndex];
         this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
         this.updateGameboard();
     }
@@ -139,9 +182,9 @@ export class GameClientService {
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
         } else if (this.playerOne.score > this.secondPlayer.score) {
-            this.winningMessage = 'Bravo Vous avez gagné la partie de Scrabble';
+            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
         } else {
-            this.winningMessage = "L'adversaire a gagné la partie";
+            this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
         }
     }
     private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {

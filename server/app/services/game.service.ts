@@ -1,13 +1,12 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
-import { CommandInfo } from '@app/interfaces/command-info';
-import { BoxMultiplierService } from '@app/services/box-multiplier.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { Word } from '@app/classes/word.class';
+import { LetterPlacementService, PlaceLettersReturn } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
-import { LetterTile } from '@common/classes/letter-tile.class';
+import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/interfaces/letter';
-import { Container, Inject } from 'typedi';
+import { Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
@@ -22,8 +21,7 @@ export class Game {
         @Inject() private letterPlacement: LetterPlacementService,
     ) {
         this.start(player1, player2);
-        const boxMultiplierService = Container.get(BoxMultiplierService);
-        this.gameboard = new Gameboard(boxMultiplierService);
+        this.gameboard = new Gameboard();
     }
 
     start(player1: Player, player2: Player): void {
@@ -43,22 +41,26 @@ export class Game {
         return true;
     }
 
-    play(player: Player, commandInfo: CommandInfo): [boolean, Gameboard] | string {
-        let gameboard: [boolean, Gameboard] = [false, this.gameboard];
-        const numberOfLetterPlaced = commandInfo.lettersPlaced.length;
+    play(player: Player, commandInfo: CommandInfo): PlaceLettersReturn | string {
+        let placeLettersReturn: PlaceLettersReturn = { hasPassed: false, gameboard: this.gameboard, invalidWords: [] as Word[] };
+        const numberOfLetterPlaced = commandInfo.letters.length;
+
         if (this.turn.validating(player.name)) {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
-            const letterCoords = validationInfo[0];
-            const isValid = validationInfo[1];
-            if (isValid !== null) {
+            const newWord = validationInfo[0];
+            const errorType = validationInfo[1] as string;
+            if (errorType !== null) {
                 this.turn.resetSkipCounter();
-                this.turn.end();
-                return isValid as string;
+                return errorType as string;
             }
-            gameboard = this.letterPlacement.placeLetter(letterCoords as LetterTile[], player, this.gameboard);
+            placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
 
-            if (gameboard[0] === true) {
-                this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
+            if (placeLettersReturn.hasPassed) {
+                if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
+                    player.rack = this.letterReserve.generateLetters(this.letterReserve.totalQuantity(), player.rack);
+                } else if (!this.letterReserve.isEmpty()) {
+                    player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
+                }
             }
 
             if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
@@ -67,10 +69,8 @@ export class Game {
                 this.turn.resetSkipCounter();
                 this.turn.end();
             }
-            return gameboard;
         }
-
-        return gameboard;
+        return placeLettersReturn;
     }
 
     exchange(letters: string[], player: Player): Letter[] {

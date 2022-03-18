@@ -149,6 +149,13 @@ describe('GameConfigurationService', () => {
         expect(spyOnRejectOpponent).toHaveBeenCalled();
     });
 
+    it('removeRoom() should not call rejectOpponent when there is not an other player in the waiting room ', () => {
+        service.roomInformation.playerName[1] = '';
+        const spyOnRejectOpponent = spyOn(service, 'rejectOpponent');
+        service.removeRoom();
+        expect(spyOnRejectOpponent).not.toHaveBeenCalled();
+    });
+
     it('setErrorSubject() should  initialize the value of the error Reason ', () => {
         const spy = spyOn(service.errorReason, 'next');
         const roomNotAvailableError = "La salle n'est plus disponible";

@@ -3,6 +3,7 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
+import { ReplaySubject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { ClientSocketService } from './client-socket.service';
@@ -17,6 +18,7 @@ interface RoomInformation {
     isCreator: boolean;
     statusGame: string;
 }
+const TIMEOUT = 15;
 const ROOM_INFORMATION: RoomInformation = {
     playerName: ['Vincent', 'RICHARD'],
     roomId: '1',
@@ -57,6 +59,7 @@ describe('ChatboxHandlerService', () => {
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
     let commandHandlerSpy: jasmine.SpyObj<CommandHandlerService>;
+    const TEST_TURNFINISH = new ReplaySubject<boolean>(1);
     beforeEach(() => {
         gameConfigurationServiceSpy = jasmine.createSpyObj('GameConfigurationService', ['removeRoom', 'rejectOpponent', 'beginScrabbleGame'], {
             roomInformation: ROOM_INFORMATION,
@@ -64,6 +67,7 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy = jasmine.createSpyObj('GameClientService', [], {
             playerOne: PLAYER1_INFORMATION,
             secondPlayer: SECOND_PLAYER_INFORMATION,
+            turnFinish: TEST_TURNFINISH,
         });
         commandHandlerSpy = jasmine.createSpyObj('CommandHandlerService', ['sendCommand']);
         socketEmulator = new SocketTestEmulator();
@@ -137,6 +141,26 @@ describe('ChatboxHandlerService', () => {
         expect(service['validCommandParameters'](VALID_COMMAND_PARAMS)).toBeTruthy();
     });
 
+    it('validCommand() should return false if the client wants to exchange and there is less than 7 letter in the reserve', () => {
+        gameClientServiceSpy.letterReserveLength = 6;
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND_PARAMS = '!echanger abv';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validCommand'](VALID_COMMAND_PARAMS)).toBeFalsy();
+    });
+
+    it('validCommand() should return true if the client wants to exchange and there is more  than 7 letter in the reserve', () => {
+        gameClientServiceSpy.letterReserveLength = 7;
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND_PARAMS = '!echanger abv';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validCommand'](VALID_COMMAND_PARAMS)).toBeTruthy();
+    });
+
     it("validCommandParameters() should validate the command parameters of the 'passer' command", () => {
         const VALID_COMMAND_PARAMS = '!passer';
 
@@ -175,6 +199,32 @@ describe('ChatboxHandlerService', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](INVALID_COMMAND_PARAMS_2)).toBeFalsy();
+    });
+
+    it('should call addMessage and sendMessage when turnFinish has the value true', () => {
+        const spy = spyOn(service, 'addMessage' as never);
+        const spy2 = spyOn(service, 'sendMessage' as never);
+        gameClientServiceSpy.turnFinish.next(true);
+        expect(spy).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
+    });
+
+    it('exchangePossible() should return false if the client wants to exchange and there is less than 7 letter in the reserve', () => {
+        gameClientServiceSpy.letterReserveLength = 6;
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND_PARAMS = '!echanger abv';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['exchangePossible'](VALID_COMMAND_PARAMS)).toBeFalsy();
+    });
+
+    it('should not call addMessage and sendMessage when turnFinish has the value false', () => {
+        const spy = spyOn(service, 'addMessage' as never);
+        const spy2 = spyOn(service, 'sendMessage' as never);
+        gameClientServiceSpy.turnFinish.next(false);
+        expect(spy).not.toHaveBeenCalled();
+        expect(spy2).not.toHaveBeenCalled();
     });
 
     it('isCommand() should recognize a command structure', () => {
@@ -361,27 +411,27 @@ describe('ChatboxHandlerService', () => {
     it('configureClueCommand should push  3 message with the possible word placements given by the command Indice if 3 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
-            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: ['a', 'l', 'r'] },
-            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: ['b', 'i', 'l', 'l', 'e'] },
-            { firstCoordinate: { x: 8, y: 8 }, direction: false, lettersPlaced: ['c', 'a', 'n', 'n', 'e'] },
+            { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
+            { firstCoordinate: { x: 3, y: 2 }, isHorizontal: false, letters: ['b', 'i', 'l', 'l', 'e'] },
+            { firstCoordinate: { x: 8, y: 8 }, isHorizontal: false, letters: ['c', 'a', 'n', 'n', 'e'] },
         ];
         const message1 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
-                wordPlacements[0].direction
-            } ${wordPlacements[0].lettersPlaced.join('')}`,
+                wordPlacements[0].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[0].letters.join('')}`,
         };
         const message2 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
-                wordPlacements[1].direction
-            } ${wordPlacements[1].lettersPlaced.join('')}`,
+                wordPlacements[1].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[1].letters.join('')}`,
         };
         const message3 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[2].firstCoordinate.y)}${wordPlacements[2].firstCoordinate.x}${
-                wordPlacements[2].direction
-            } ${wordPlacements[2].lettersPlaced.join('')}`,
+                wordPlacements[2].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[2].letters.join('')}`,
         };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
@@ -394,20 +444,20 @@ describe('ChatboxHandlerService', () => {
     it('configureClueCommand should push 2 message with the possible word placements given by the command Indice if 2 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
-            { firstCoordinate: { x: 1, y: 2 }, direction: true, lettersPlaced: ['a', 'l', 'r'] },
-            { firstCoordinate: { x: 3, y: 2 }, direction: false, lettersPlaced: ['b', 'i', 'l', 'l', 'e'] },
+            { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
+            { firstCoordinate: { x: 3, y: 2 }, isHorizontal: false, letters: ['b', 'i', 'l', 'l', 'e'] },
         ];
         const message1 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[0].firstCoordinate.y)}${wordPlacements[0].firstCoordinate.x}${
-                wordPlacements[0].direction
-            } ${wordPlacements[0].lettersPlaced.join('')}`,
+                wordPlacements[0].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[0].letters.join('')}`,
         };
         const message2 = {
             type: 'system-message',
             data: `!placer ${String.fromCharCode(CHAR_ASCII + wordPlacements[1].firstCoordinate.y)}${wordPlacements[1].firstCoordinate.x}${
-                wordPlacements[1].direction
-            } ${wordPlacements[1].lettersPlaced.join('')}`,
+                wordPlacements[1].isHorizontal ? 'h' : 'v'
+            } ${wordPlacements[1].letters.join('')}`,
         };
         const message3 = { type: 'system-message', data: 'Aucune autre possibilité possible' };
         // Reason : testing a private method
@@ -432,7 +482,7 @@ describe('ChatboxHandlerService', () => {
         const message3 = { type: 'system-message', data: `${gameClientServiceSpy.secondPlayer.name} : wkt` };
 
         service.endGameMessage();
-        tick();
+        tick(TIMEOUT);
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);
