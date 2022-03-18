@@ -44,6 +44,7 @@ export class Game {
     play(player: Player, commandInfo: CommandInfo): PlaceLettersReturn | string {
         let placeLettersReturn: PlaceLettersReturn = { hasPassed: false, gameboard: this.gameboard, invalidWords: [] as Word[] };
         const numberOfLetterPlaced = commandInfo.letters.length;
+
         if (this.turn.validating(player.name)) {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
             const newWord = validationInfo[0];
