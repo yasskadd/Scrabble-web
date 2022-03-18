@@ -69,6 +69,13 @@ describe('PlayerRackComponent', () => {
                         points: 1,
                         isBlankLetter: false,
                     },
+
+                    {
+                        value: 'o',
+                        quantity: 2,
+                        points: 1,
+                        isBlankLetter: false,
+                    },
                 ],
             },
         });

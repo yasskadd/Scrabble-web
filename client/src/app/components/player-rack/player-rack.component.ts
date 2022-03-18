@@ -166,7 +166,6 @@ export class PlayerRackComponent implements OnInit {
     }
 
     moveLeft() {
-        // const rackIndices = this.gameClient.playerOne.rack.length;
         let temp;
         if (this.currentSelection === 0) {
             temp = this.gameClient.playerOne.rack[0];
