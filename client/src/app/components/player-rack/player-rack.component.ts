@@ -64,9 +64,8 @@ export class PlayerRackComponent implements OnInit {
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            // this.lettersToManipulate = [];
             this.cancel();
-            this.selectManipulation(event);
+            this.selectManipulation();
         });
     }
 
@@ -86,9 +85,7 @@ export class PlayerRackComponent implements OnInit {
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
     }
-
-    // Do we really need event param? because we stock it already in the buttonPressed, so we can just reuse it
-    selectManipulation(event: KeyboardEvent) {
+    selectManipulation() {
         this.duplicates = [];
 
         if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
@@ -97,7 +94,7 @@ export class PlayerRackComponent implements OnInit {
         }
 
         for (const [i, letter] of this.rack.entries()) {
-            if (letter.value === event.key.toLowerCase() && !this.lettersToExchange.includes(i)) {
+            if (letter.value === this.buttonPressed.toLowerCase() && !this.lettersToExchange.includes(i)) {
                 this.duplicates.push(i);
             }
         }
@@ -129,9 +126,7 @@ export class PlayerRackComponent implements OnInit {
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
         const notFound = constants.INVALID_INDEX;
-        if (this.lettersToManipulate.includes(letter)) {
-            this.lettersToManipulate = [];
-        }
+        this.lettersToManipulate = [];
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
@@ -143,14 +138,11 @@ export class PlayerRackComponent implements OnInit {
     }
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        // If exchange is more important than manipulate, we keep this condition and get rid of line 146.
-        // We well do the same thing for keyboard event
-        // if (!this.lettersToExchange.includes(letter)) {
-        this.cancel();
-        // this.lettersToManipulate = [];
-        this.currentSelection = letter;
-        this.lettersToManipulate.push(letter);
-        // }
+        if (!this.lettersToExchange.includes(letter)) {
+            this.cancel();
+            this.currentSelection = letter;
+            this.lettersToManipulate.push(letter);
+        }
     }
 
     exchange() {
