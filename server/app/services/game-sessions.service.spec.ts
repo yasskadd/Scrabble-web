@@ -45,7 +45,7 @@ const GAME_PARAMETERS: GameParameters = {
     mode: 'classique',
     isMultiplayer: true,
 };
-describe.only('GameSession Service', () => {
+describe('GameSession Service', () => {
     let gameSessions: GameSessions;
     let service: sinon.SinonStubbedInstance<SocketManager>;
     let httpServer: Server;
