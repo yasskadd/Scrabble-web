@@ -14,7 +14,7 @@ import { ReplaySubject } from 'rxjs';
 import * as Sinon from 'sinon';
 import { BeginnerBot, BotInformation } from './bot-beginner.class';
 
-describe.only('BotBeginner', () => {
+describe('BotBeginner', () => {
     let botBeginner: BeginnerBot;
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
@@ -236,7 +236,7 @@ describe.only('BotBeginner', () => {
         });
     });
 
-    context('emitPlacementCommand() tests', () => {
+    context('emitPlacementCommand() tests and placement is horizontal', () => {
         it('should emitRoom() with correct arguments', () => {
             botBeginner.game.letterReserve = new LetterReserveService();
             const commandInfoStub: CommandInfo = {
@@ -245,6 +245,28 @@ describe.only('BotBeginner', () => {
                 letters: ['t', 'e', 's', 't'],
             };
             const expectedCommand = '!placer a1h test';
+            const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
+            const expectation = mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
+            mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner.room, SocketEvents.LetterReserveUpdated, botBeginner['game'].letterReserve.lettersReserve);
+            botBeginner['emitPlaceCommand'](commandInfoStub);
+            expectation.verify();
+            mockSocketManager.restore();
+        });
+
+        it('should emitRoom() with correct arguments and placement is vertical', () => {
+            botBeginner.game.letterReserve = new LetterReserveService();
+            const commandInfoStub: CommandInfo = {
+                firstCoordinate: { x: 1, y: 1 } as Coordinate,
+                isHorizontal: false,
+                letters: ['t', 'e', 's', 't'],
+            };
+            const expectedCommand = '!placer a1v test';
             const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
             const expectation = mockSocketManager
                 .expects('emitRoom')
