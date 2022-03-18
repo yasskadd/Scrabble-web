@@ -16,6 +16,7 @@ import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 
+const MAX_SKIP = 6;
 const SECOND = 1000;
 const CHAR_ASCII = 96;
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
@@ -196,6 +197,11 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
+            if (newGameHolder.game?.turn.skipCounter === MAX_SKIP) {
+                newGameHolder.players.forEach((player) => {
+                    player.deductPoints();
+                });
+            }
             this.changeTurn(gameInfo.roomId);
             if (newGameHolder.game?.turn.activePlayer === undefined) {
                 this.userConnected(gameInfo.socketId);
