@@ -18,7 +18,7 @@ export class PlayerRackComponent implements OnInit {
 
     @ViewChild('info', { static: false }) info: ElementRef;
 
-    width: number;
+    width: number; // are these necessary ?
     height: number;
     buttonPressed: string;
     currentSelection: number;
@@ -26,8 +26,6 @@ export class PlayerRackComponent implements OnInit {
     lettersToExchange: number[];
     lettersToManipulate: number[];
     duplicates: number[];
-    absentFromRack: boolean;
-    temp: Letter = { value: 'a', quantity: 2, points: 1, isBlankLetter: false };
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
@@ -44,7 +42,6 @@ export class PlayerRackComponent implements OnInit {
         this.lettersToExchange = [];
         this.lettersToManipulate = [];
         this.duplicates = [];
-        this.absentFromRack = true;
     }
 
     @HostListener('mousewheel', ['$event'])
@@ -78,6 +75,11 @@ export class PlayerRackComponent implements OnInit {
     get rack(): Letter[] {
         return this.gameClient.playerOne.rack;
     }
+
+    get rackIndices(): number {
+        return this.gameClient.playerOne.rack.length - 1;
+    }
+
     get noPlacedLetters(): boolean {
         return this.letterPlacementService.noLettersPlaced();
     }
@@ -164,31 +166,29 @@ export class PlayerRackComponent implements OnInit {
     }
 
     moveLeft() {
-        const rackIndices = 6;
+        // const rackIndices = this.gameClient.playerOne.rack.length;
         let temp;
         if (this.currentSelection === 0) {
             temp = this.gameClient.playerOne.rack[0];
-            for (let i = 1; i < this.gameClient.playerOne.rack.length; i++) {
+            for (let i = 1; i < this.rackIndices; i++) {
                 this.gameClient.playerOne.rack[i - 1] = this.gameClient.playerOne.rack[i];
             }
-            this.gameClient.playerOne.rack[rackIndices] = temp;
-            this.currentSelection = rackIndices;
+            this.gameClient.playerOne.rack[this.rackIndices] = temp;
+            this.currentSelection = this.rackIndices;
         } else {
             temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
             this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
             this.gameClient.playerOne.rack[this.currentSelection] = temp;
-            this.lettersToExchange[this.lettersToExchange.indexOf(this.currentSelection - 1)] = this.currentSelection;
             this.currentSelection -= 1;
         }
         this.lettersToManipulate.push(this.currentSelection);
     }
 
     moveRight() {
-        const rackIndices = 6;
         let temp;
-        if (this.currentSelection === rackIndices) {
-            temp = this.gameClient.playerOne.rack[rackIndices];
-            for (let i = this.gameClient.playerOne.rack.length - 1; i > 0; i--) {
+        if (this.currentSelection === this.rackIndices) {
+            temp = this.gameClient.playerOne.rack[this.rackIndices];
+            for (let i = this.rackIndices; i > 0; i--) {
                 this.gameClient.playerOne.rack[i] = this.gameClient.playerOne.rack[i - 1];
             }
             this.gameClient.playerOne.rack[0] = temp;
