@@ -46,4 +46,20 @@ describe('Player', () => {
         const result = player.getInformation();
         expect(result).to.be.deep.equal({});
     });
+
+    it('deductPoints() should subtract the sum of points of the letters in the player rack', () => {
+        player.score = 10;
+        player.rack = [{ points: 1 } as Letter, { points: 2 } as Letter];
+        const expectedScore = 7;
+        player.deductPoints();
+        expect(player.score).to.equal(expectedScore);
+    });
+
+    it('deductPoints() should set the score to 0 if the deduction return a negative score', () => {
+        player.score = 0;
+        player.rack = [{ points: 1 } as Letter, { points: 2 } as Letter];
+        const expectedScore = 0;
+        player.deductPoints();
+        expect(player.score).to.equal(expectedScore);
+    });
 });
