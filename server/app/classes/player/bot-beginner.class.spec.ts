@@ -227,8 +227,14 @@ describe('BotBeginner', () => {
             };
             const expectedCommand = '!placer a1h test';
             const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            const expectation = mockSocketManager.expects('emitRoom').exactly(2);
-            expectation.calledWithExactly(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
+            const expectation = mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
+            mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner.room, SocketEvents.LetterReserveUpdated, botBeginner['game'].letterReserve.lettersReserve);
             botBeginner['emitPlaceCommand'](commandInfoStub);
             expectation.verify();
             mockSocketManager.restore();
