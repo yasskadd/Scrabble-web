@@ -143,7 +143,7 @@ export class BeginnerBot extends Player {
 
     private emitPlaceCommand(randomCommandInfo: CommandInfo) {
         const coordString = `${String.fromCharCode(CHAR_ASCII + randomCommandInfo.firstCoordinate.y)}${randomCommandInfo.firstCoordinate.x}`;
-        const placeCommand = `!placer ${coordString}${randomCommandInfo.isHorizontal} ${randomCommandInfo.letters.join('')}`;
+        const placeCommand = `!placer ${coordString}${randomCommandInfo.isHorizontal ? 'h' : 'v'} ${randomCommandInfo.letters.join('')}`;
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, placeCommand);
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.LetterReserveUpdated, this.game.letterReserve.lettersReserve);
         this.game.play(this, randomCommandInfo);

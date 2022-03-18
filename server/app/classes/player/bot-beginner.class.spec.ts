@@ -218,7 +218,7 @@ describe('BotBeginner', () => {
     });
 
     context('emitPlacementCommand() tests', () => {
-        it('should emitRoom() with correct arguments', () => {
+        it.only('should emitRoom() with correct arguments', () => {
             botBeginner.game.letterReserve = new LetterReserveService();
             const commandInfoStub: CommandInfo = {
                 firstCoordinate: { x: 1, y: 1 } as Coordinate,
@@ -227,8 +227,14 @@ describe('BotBeginner', () => {
             };
             const expectedCommand = '!placer a1h test';
             const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            const expectation = mockSocketManager.expects('emitRoom').exactly(2);
-            expectation.calledWithExactly(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
+            const expectation = mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
+            mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner.room, SocketEvents.LetterReserveUpdated, botBeginner['game'].letterReserve.lettersReserve);
             botBeginner['emitPlaceCommand'](commandInfoStub);
             expectation.verify();
             mockSocketManager.restore();
