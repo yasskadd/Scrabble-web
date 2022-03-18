@@ -26,6 +26,7 @@ export class PlayerRackComponent implements OnInit {
     lettersToExchange: number[];
     lettersToManipulate: number[];
     duplicates: number[];
+    letterValues: Letter[];
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
@@ -42,11 +43,13 @@ export class PlayerRackComponent implements OnInit {
         this.lettersToExchange = [];
         this.lettersToManipulate = [];
         this.duplicates = [];
+        this.letterValues = [];
     }
 
     @HostListener('mousewheel', ['$event'])
     onScrollEvent(event: WheelEvent) {
-        this.cancel();
+        // this.cancel();
+        this.lettersToManipulate = [];
         this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
         this.repositionRack();
     }
@@ -168,8 +171,24 @@ export class PlayerRackComponent implements OnInit {
         this.lettersToManipulate = [];
     }
 
+    storeExchangeValues() {
+        this.letterValues = [];
+        this.lettersToExchange.forEach((val) => {
+            this.letterValues.push(this.gameClient.playerOne.rack[val]);
+        });
+    }
+
+    resetExchangeValues() {
+        this.lettersToExchange = [];
+        this.letterValues.forEach((value) => {
+            this.lettersToExchange.push(this.rack.indexOf(value));
+        });
+    }
+
     moveLeft() {
-        let temp;
+        let temp: Letter;
+        this.storeExchangeValues();
+        console.log(this.letterValues);
         if (this.currentSelection === 0) {
             temp = this.gameClient.playerOne.rack[0];
             for (let i = 1; i < this.rackIndices; i++) {
@@ -184,10 +203,12 @@ export class PlayerRackComponent implements OnInit {
             this.currentSelection -= 1;
         }
         this.lettersToManipulate.push(this.currentSelection);
+        this.resetExchangeValues();
     }
 
     moveRight() {
         let temp;
+        this.storeExchangeValues();
         if (this.currentSelection === this.rackIndices) {
             temp = this.gameClient.playerOne.rack[this.rackIndices];
             for (let i = this.rackIndices; i > 0; i--) {
@@ -201,6 +222,7 @@ export class PlayerRackComponent implements OnInit {
             this.gameClient.playerOne.rack[this.currentSelection] = temp;
             this.currentSelection += 1;
         }
+        this.resetExchangeValues();
         this.lettersToManipulate.push(this.currentSelection);
     }
 }

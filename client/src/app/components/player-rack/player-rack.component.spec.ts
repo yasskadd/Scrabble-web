@@ -292,24 +292,9 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('selectManipulation should call repositionRack if the key pressed is a left arrow', () => {
-        const spy = spyOn(component, 'repositionRack');
-        component.buttonPressed = 'ArrowLeft';
-        component.selectManipulation();
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('selectManipulation should call repositionRack if the key pressed is a right arrow', () => {
-        const spy = spyOn(component, 'repositionRack');
-        component.buttonPressed = 'ArrowRight';
-        component.selectManipulation();
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('selectManipulation should not call repositionRack if the key pressed is not a left or right arrow', () => {
         const spy = spyOn(component, 'repositionRack');
         component.buttonPressed = 'a';
-        component.selectManipulation();
         expect(spy).not.toHaveBeenCalled();
     });
 
@@ -360,6 +345,37 @@ describe('PlayerRackComponent', () => {
         component.moveRight();
         expect(component.currentSelection).toEqual(expected);
     });
+    it('moveRight should move letter one index to the right when player rack has less than 7 letters', () => {
+        const expected = 0;
+
+        gameClientServiceSpy.playerOne.rack = [
+            {
+                value: 'c',
+                quantity: 2,
+                points: 1,
+                isBlankLetter: false,
+            },
+
+            {
+                value: 'e',
+                quantity: 2,
+                points: 1,
+                isBlankLetter: false,
+            },
+
+            {
+                value: 'e',
+                quantity: 2,
+                points: 1,
+                isBlankLetter: false,
+            },
+        ];
+
+        component.buttonPressed = 'ArrowRight';
+        component.currentSelection = 2;
+        component.moveRight();
+        expect(component.currentSelection).toEqual(expected);
+    });
 
     it('moveLeft should move letter to the end of the rack when the letter selected is at the beginning', () => {
         const expected = 6;
@@ -373,6 +389,38 @@ describe('PlayerRackComponent', () => {
         const expected = 4;
         component.buttonPressed = 'ArrowLeft';
         component.currentSelection = 5;
+        component.moveLeft();
+        expect(component.currentSelection).toEqual(expected);
+    });
+
+    it('moveLeft should move letter one index to the left when player rack has less than 7 letters', () => {
+        const expected = 1;
+
+        gameClientServiceSpy.playerOne.rack = [
+            {
+                value: 'd',
+                quantity: 2,
+                points: 1,
+                isBlankLetter: false,
+            },
+
+            {
+                value: 'k',
+                quantity: 2,
+                points: 1,
+                isBlankLetter: false,
+            },
+
+            {
+                value: 'r',
+                quantity: 2,
+                points: 1,
+                isBlankLetter: false,
+            },
+        ];
+
+        component.buttonPressed = 'ArrowLeft';
+        component.currentSelection = 2;
         component.moveLeft();
         expect(component.currentSelection).toEqual(expected);
     });
