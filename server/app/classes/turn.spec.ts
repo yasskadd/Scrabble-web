@@ -27,16 +27,16 @@ describe('turn', () => {
 
     it('start() should start the timer and not skip it when there is still time left on the clock', () => {
         turn.start();
-        const endSpy = spy(turn, 'skipTurn');
+        const skipTurnSpy = spy(turn, 'skipTurn');
         clock.tick(SECOND);
-        expect(endSpy.called).to.equal(false);
+        expect(skipTurnSpy.called).to.equal(false);
     });
 
     it('start() should start the timer and skip it when the time up', () => {
         turn.start();
-        const endSpy = spy(turn, 'skipTurn');
+        const skipTurnSpy = spy(turn, 'skipTurn');
         clock.tick(time * SECOND);
-        expect(endSpy.called).to.equal(true);
+        expect(skipTurnSpy.called).to.equal(true);
     });
 
     it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other', () => {

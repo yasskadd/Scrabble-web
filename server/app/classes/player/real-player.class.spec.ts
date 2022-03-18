@@ -62,22 +62,4 @@ describe('RealPlayer', () => {
         player.skipTurn();
         expect(gameStub.skip.called).to.be.equal(false);
     });
-    it("getInformation() should return the player's information", () => {
-        const gameStub = sinon.createStubInstance(Game);
-        gameStub.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
-        player.game = gameStub as unknown as Game;
-        const info = {
-            name: player.name,
-            score: player.score,
-            rack: player.rack,
-            room: player.room,
-            gameboard: player.game.gameboard.gameboardTiles,
-        };
-        const result = player.getInformation();
-        expect(result).to.be.deep.equal(info);
-    });
-    it("getInformation() shouln't do anything if game is undefined", () => {
-        const result = player.getInformation();
-        expect(result).to.be.equal(undefined);
-    });
 });

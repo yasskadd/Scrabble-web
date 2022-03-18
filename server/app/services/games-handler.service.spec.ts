@@ -545,6 +545,7 @@ describe('GamesHandler Service', () => {
             expect(socketManagerStub.emitRoom.called).to.not.be.equal(true);
         });
         it('disconnect() should emit to the room that the opponent left/ game ended after 5 seconds of waiting for a reconnect', (done) => {
+            const clock = sinon.useFakeTimers();
             const player = new Player('Jean');
             player.room = ROOM;
             const gameHolderTest = sinon.createStubInstance(Game);
@@ -562,13 +563,13 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['disconnect'](serverSocket);
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            setTimeout(() => {
-                expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.be.equal(true);
-                expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.UserDisconnect)).to.be.equal(true);
-                done();
-            }, timeOut5Seconds);
+            clock.tick(timeOut5Seconds);
+            expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.be.equal(true);
+            expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.UserDisconnect)).to.be.equal(true);
+            done();
         });
         it("disconnect() shouldn't emit to the room that the opponent left/ game ended after 5 seconds of waiting for a reconnect", (done) => {
+            const clock = sinon.useFakeTimers();
             const timeOut5Seconds = 5500;
             let testBoolean1 = false;
             let testBoolean2 = false;
@@ -582,11 +583,10 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['disconnect'](serverSocket);
             // eslint-disable-next-line @typescript-eslint/no-empty-function
-            setTimeout(() => {
-                expect(testBoolean1).to.be.equal(false);
-                expect(testBoolean2).to.be.equal(false);
-                done();
-            }, timeOut5Seconds);
+            clock.tick(timeOut5Seconds);
+            expect(testBoolean1).to.be.equal(false);
+            expect(testBoolean2).to.be.equal(false);
+            done();
         });
 
         it('disconnect() should emit to the room that the opponent left when the game is already finish', (done) => {
@@ -871,6 +871,8 @@ describe('GamesHandler Service', () => {
                 turn: { endTurn: new Observable(), countdown: new Observable() },
                 gameboard: { gameboardCoords: [] },
             };
+            gameInfo.socketId[0] = '32498243';
+            gameInfo.socketId[1] = '3249adf8243';
             createNewGameStub.returns(gameStub);
             sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
             sinon.stub(gamesHandler, 'userConnected' as never);

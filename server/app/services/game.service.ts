@@ -44,6 +44,7 @@ export class Game {
     play(player: Player, commandInfo: CommandInfo): PlaceLettersReturn | string {
         let placeLettersReturn: PlaceLettersReturn = { hasPassed: false, gameboard: this.gameboard, invalidWords: [] as Word[] };
         const numberOfLetterPlaced = commandInfo.letters.length;
+
         if (this.turn.validating(player.name)) {
             const validationInfo = this.letterPlacement.globalCommandVerification(commandInfo, this.gameboard, player);
             const newWord = validationInfo[0];
@@ -55,7 +56,11 @@ export class Game {
             placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
 
             if (placeLettersReturn.hasPassed === true) {
-                this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
+                if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
+                    player.rack = this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, player.rack);
+                } else if (!this.letterReserve.isEmpty()) {
+                    player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
+                }
             }
 
             if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {

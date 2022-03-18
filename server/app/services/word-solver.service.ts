@@ -61,7 +61,7 @@ export class WordSolverService {
             const word = new Word(commandInfo, this.gameboard);
             this.placeLettersOnBoard(word, commandInfo);
             const placementScore: ValidateWordReturn = dictionaryService.validateWord(word, this.gameboard);
-            commandInfoMap.set(commandInfo, placementScore[0]);
+            commandInfoMap.set(commandInfo, placementScore.points);
             this.removeLetterFromBoard(word);
         });
         return commandInfoMap;

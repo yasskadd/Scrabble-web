@@ -1,4 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
+import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
@@ -20,7 +21,7 @@ const CHAR_ASCII = 96;
 type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
-    players: RealPlayer[];
+    players: Player[];
     roomId: string;
     isGameFinish: boolean;
     timer: number;
@@ -107,7 +108,6 @@ export class GamesHandler {
         const gameHolder = this.games.get(room) as GameHolder;
         socket.emit(SocketEvents.AllReserveLetters, gameHolder.game?.letterReserve.lettersReserve);
     }
-
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
 
@@ -185,9 +185,12 @@ export class GamesHandler {
         newGameHolder.players.push(playerTwo);
         newGameHolder.game = this.createNewGame(newGameHolder);
 
-        playerOne.setGame(newGameHolder.game, true);
-        playerTwo.setGame(newGameHolder.game, false);
+        (playerOne as RealPlayer).setGame(newGameHolder.game, true);
 
+        if (gameInfo.socketId.length === 1) {
+            (playerTwo as BeginnerBot).setGame(newGameHolder.game);
+            (playerTwo as BeginnerBot).start();
+        } else (playerTwo as RealPlayer).setGame(newGameHolder.game, false);
         this.games.set(newGameHolder.roomId, newGameHolder);
         if (socket.id === gameInfo.socketId[0]) {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
@@ -208,12 +211,16 @@ export class GamesHandler {
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
     }
 
-    private setAndGetPlayer(gameInfo: GameScrabbleInformation): RealPlayer {
+    private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {
         const player = this.players.has(gameInfo.socketId[0]) ? 1 : 0;
-        const newPlayer = new RealPlayer(gameInfo.playerName[player]);
-
-        newPlayer.room = gameInfo.roomId;
-        this.players.set(gameInfo.socketId[player], newPlayer);
+        let newPlayer;
+        if (player === 1 && gameInfo.socketId[player] === undefined) {
+            newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+        } else {
+            newPlayer = new RealPlayer(gameInfo.playerName[player]);
+            newPlayer.room = gameInfo.roomId;
+            this.players.set(gameInfo.socketId[player], newPlayer);
+        }
         return newPlayer;
     }
 
