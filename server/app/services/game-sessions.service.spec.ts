@@ -11,6 +11,7 @@ import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { SocketManager } from './socket-manager.service';
+import Sinon = require('sinon');
 
 type Parameters = { id: string; name: string };
 type SioSignature = SocketManager['sio'];
@@ -53,10 +54,11 @@ describe('GameSession Service', () => {
     let serverSocket: ServerSocket;
     let port: number;
     let sio: SioSignature;
+    let clock: Sinon.SinonFakeTimers;
     beforeEach((done) => {
         service = sinon.createStubInstance(SocketManager);
         gameSessions = new GameSessions(service as unknown as SocketManager);
-
+        clock = sinon.useFakeTimers();
         httpServer = createServer();
         sio = new ioServer(httpServer);
         httpServer.listen(() => {
@@ -73,6 +75,7 @@ describe('GameSession Service', () => {
         clientSocket.close();
         sio.close();
         sinon.restore();
+        clock.restore();
     });
 
     it('removeRoom should remove a room from the gameRoom map ', (done: Mocha.Done) => {
@@ -413,10 +416,9 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-        setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, timeout6seconds);
+        clock.tick(timeout6seconds);
+        assert(spy.called);
+        done();
     });
 
     it('disconnect should call the removeRoom method after 6 seconds ', (done: Mocha.Done) => {
@@ -436,10 +438,9 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-        setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, timeout6seconds);
+        clock.tick(timeout6seconds);
+        assert(spy.called);
+        done();
     });
 
     it('roomJoin should emit an error if the person in the room have the same name that the player that want to join', (done: Mocha.Done) => {
