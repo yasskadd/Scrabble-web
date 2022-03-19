@@ -88,14 +88,12 @@ describe('turn', () => {
     it('skipTurn() should increment skipCounter by 1', () => {
         turn.skipTurn();
 
-        // eslint-disable-next-line dot-notation
-        expect(turn['skipCounter']).to.equal(1);
+        expect(turn.skipCounter).to.equal(1);
     });
 
     it('skipTurn() should call end with true as argument when the skipCounter is at 6', () => {
         const endSpy = spy(turn, 'end');
-        // eslint-disable-next-line dot-notation
-        turn['skipCounter'] = 5;
+        turn.skipCounter = 5;
         turn.skipTurn();
 
         expect(endSpy.calledWith(true)).to.equal(true);
@@ -103,27 +101,23 @@ describe('turn', () => {
 
     it('skipTurn() should call end without true as argument when the skipCounter is not at 6', () => {
         const endSpy = spy(turn, 'end');
-        // eslint-disable-next-line dot-notation
-        turn['skipCounter'] = 4;
+        turn.skipCounter = 4;
         turn.skipTurn();
 
         expect(endSpy.calledWith(true)).to.equal(false);
     });
 
     it('resetSkipCounter() should assign skipCounter to 0', () => {
-        // eslint-disable-next-line dot-notation
-        turn['skipCounter'] = 4;
+        turn.skipCounter = 4;
         turn.resetSkipCounter();
 
-        // eslint-disable-next-line dot-notation
-        expect(turn['skipCounter']).to.equal(0);
+        expect(turn.skipCounter).to.equal(0);
     });
 
     it('incrementSkipCounter() should increment skipCounter by 1', () => {
         // eslint-disable-next-line dot-notation
         turn['incrementSkipCounter']();
 
-        // eslint-disable-next-line dot-notation
-        expect(turn['skipCounter']).to.equal(1);
+        expect(turn.skipCounter).to.equal(1);
     });
 });
