@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
@@ -15,6 +16,7 @@ import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 
+const MAX_SKIP = 6;
 const SECOND = 1000;
 const CHAR_ASCII = 96;
 interface GameHolder {
@@ -190,6 +192,7 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
+            this.endGameScore(newGameHolder);
             this.changeTurn(gameInfo.roomId);
             if (newGameHolder.game?.turn.activePlayer === undefined) {
                 this.userConnected(gameInfo.socketId);
@@ -203,6 +206,20 @@ export class GamesHandler {
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
+    }
+
+    private endGameScore(gameHolder: GameHolder) {
+        if (gameHolder.game?.turn.skipCounter === MAX_SKIP) {
+            gameHolder.players.forEach((player) => {
+                player.deductPoints();
+            });
+        } else if (gameHolder.players[0].rackIsEmpty()) {
+            gameHolder.players[0].addPoints(gameHolder.players[1].rack);
+            gameHolder.players[1].deductPoints();
+        } else if (gameHolder.players[1].rackIsEmpty()) {
+            gameHolder.players[1].addPoints(gameHolder.players[0].rack);
+            gameHolder.players[0].deductPoints();
+        }
     }
 
     private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {

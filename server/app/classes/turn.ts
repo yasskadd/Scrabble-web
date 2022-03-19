@@ -9,7 +9,7 @@ export class Turn {
     inactivePlayer: string | undefined;
     endTurn: ReplaySubject<string | undefined>;
     countdown: ReplaySubject<number | undefined>;
-    private skipCounter: number;
+    skipCounter: number;
     private time: number;
     private timeOut: unknown;
 

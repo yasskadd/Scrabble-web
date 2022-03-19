@@ -41,4 +41,24 @@ export class Player {
         });
         return stringArray;
     }
+
+    deductPoints() {
+        let pointsToDeduct = 0;
+        for (const letter of this.rack) {
+            pointsToDeduct += letter.points;
+        }
+        this.score -= pointsToDeduct;
+
+        if (this.score < 0) {
+            this.score = 0;
+        }
+    }
+
+    addPoints(rack: Letter[]) {
+        let pointsToAdd = 0;
+        for (const letter of rack) {
+            pointsToAdd += letter.points;
+        }
+        this.score += pointsToAdd;
+    }
 }
