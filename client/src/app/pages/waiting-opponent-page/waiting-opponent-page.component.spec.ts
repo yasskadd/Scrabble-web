@@ -50,7 +50,7 @@ describe('WaitingOpponentPageComponent', () => {
     beforeEach(async () => {
         gameConfigurationServiceSpy = jasmine.createSpyObj(
             'GameConfigurationService',
-            ['removeRoom', 'rejectOpponent', 'beginScrabbleGame', 'exitWaitingRoom', 'setGameUnavailable'],
+            ['removeRoom', 'rejectOpponent', 'beginScrabbleGame', 'exitWaitingRoom'],
             {
                 roomInformation: ROOM_INFORMATION,
                 errorReason: TEST_ERROR_REASON,

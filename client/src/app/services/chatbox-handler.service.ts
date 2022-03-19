@@ -37,26 +37,10 @@ export class ChatboxHandlerService {
         this.listenToObserver();
     }
 
-    listenToObserver() {
-        this.gameClient.turnFinish.subscribe((value) => {
-            if (value) {
-                this.addMessage(this.configureUserMessage('!passer'));
-                this.sendMessage('!passer');
-            }
-        });
-    }
-
     submitMessage(userInput: string): void {
         if (userInput !== '') {
             this.addMessage(this.configureUserMessage(userInput));
-            const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            if (this.isCommand(commandValid)) {
-                if (this.validCommand(commandValid)) {
-                    this.commandHandler.sendCommand(commandValid);
-                }
-            } else {
-                this.sendMessage(userInput);
-            }
+            this.isMessageACommand(userInput);
         }
     }
 
@@ -70,7 +54,7 @@ export class ChatboxHandlerService {
         }, TIMEOUT);
     }
 
-    resetMessage() {
+    resetMessage(): void {
         this.messages = [];
     }
 
@@ -100,23 +84,39 @@ export class ChatboxHandlerService {
         });
     }
 
-    private configureClueCommand(clueCommand: CommandInfo[]) {
-        if (clueCommand.length !== 0) {
-            clueCommand.forEach((clue) => {
-                this.messages.push({
-                    type: 'system-message',
-                    data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${
-                        clue.isHorizontal ? 'h' : 'v'
-                    } ${clue.letters.join('')}`,
-                });
-            });
-
-            if (clueCommand.length < 3) {
-                this.messages.push({ type: 'system-message', data: 'Aucune autre possibilité possible' });
+    private listenToObserver(): void {
+        this.gameClient.turnFinish.subscribe((value) => {
+            if (value) {
+                this.addMessage(this.configureUserMessage('!passer'));
+                this.sendMessage('!passer');
             }
+        });
+    }
+
+    private isMessageACommand(userInput: string): void {
+        const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        if (this.isCommand(commandValid)) {
+            if (this.validCommand(commandValid)) this.commandHandler.sendCommand(commandValid);
         } else {
-            this.messages.push({ type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" });
+            this.sendMessage(userInput);
         }
+    }
+
+    private configureClueCommand(clueCommand: CommandInfo[]): void {
+        if (clueCommand.length !== 0) this.addClueCommand(clueCommand);
+        else this.messages.push({ type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" });
+    }
+
+    private addClueCommand(clueCommand: CommandInfo[]): void {
+        clueCommand.forEach((clue) => {
+            this.messages.push({
+                type: 'system-message',
+                data: `!placer ${String.fromCharCode(CHAR_ASCII + clue.firstCoordinate.y)}${clue.firstCoordinate.x}${
+                    clue.isHorizontal ? 'h' : 'v'
+                } ${clue.letters.join('')}`,
+            });
+        });
+        if (clueCommand.length < 3) this.messages.push({ type: 'system-message', data: 'Aucune autre possibilité possible' });
     }
 
     private sendMessage(message: string): void {
@@ -127,7 +127,7 @@ export class ChatboxHandlerService {
         this.messages.push(message);
     }
 
-    private addDisconnect() {
+    private addDisconnect(): void {
         this.messages.push({ type: 'system-message', data: `${this.gameConfiguration.roomInformation.playerName[1]} a quitté le jeu` });
     }
 
@@ -136,23 +136,27 @@ export class ChatboxHandlerService {
     }
 
     private validCommand(userCommand: string): boolean {
-        if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) {
-            if (this.validSyntax(userCommand)) {
-                if (this.validCommandParameters(userCommand)) {
-                    if (this.exchangePossible(userCommand)) {
-                        return true;
-                    } else {
-                        this.addMessage(this.configureImpossibleToExchangeMessage());
-                    }
-                } else {
-                    this.addMessage(this.configureInvalidError());
-                }
-            } else {
-                this.addMessage(this.configureSyntaxError());
-            }
-        } else {
-            this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
-        }
+        if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) return this.validCommandSyntax(userCommand);
+        this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
+        return false;
+    }
+
+    private validCommandSyntax(userCommand: string): boolean {
+        if (this.validSyntax(userCommand)) return this.validCommandParameters(userCommand);
+        this.addMessage(this.configureSyntaxError());
+        return false;
+    }
+
+    private validCommandParameters(userCommand: string): boolean {
+        if (this.validParameters(userCommand)) return this.isCommandExchangePossible(userCommand);
+
+        this.addMessage(this.configureInvalidError());
+        return false;
+    }
+
+    private isCommandExchangePossible(userCommand: string): boolean {
+        if (this.exchangePossible(userCommand)) return true;
+        this.addMessage(this.configureImpossibleToExchangeMessage());
         return false;
     }
 
@@ -166,16 +170,14 @@ export class ChatboxHandlerService {
         return this.validSyntaxRegex.test(userInput);
     }
 
-    private validCommandParameters(userInput: string): boolean {
+    private validParameters(userInput: string): boolean {
         return VALID_COMMAND_REGEX.test(userInput);
     }
 
     private exchangePossible(userInput: string): boolean {
         const validReserveCommand = '^!(é|e)changer';
         const validReserveCommandRegex = new RegExp(validReserveCommand);
-        if (this.gameClient.letterReserveLength < EXCHANGE_ALLOWED_MINIMUM && validReserveCommandRegex.test(userInput)) {
-            return false;
-        }
+        if (this.gameClient.letterReserveLength < EXCHANGE_ALLOWED_MINIMUM && validReserveCommandRegex.test(userInput)) return false;
         return true;
     }
 
