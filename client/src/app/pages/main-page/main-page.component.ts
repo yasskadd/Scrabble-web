@@ -10,8 +10,8 @@ import { HighScoresComponent } from '@app/components/high-scores/high-scores.com
 })
 export class MainPageComponent {
     readonly title: string = "Bienvenue au jeu Scrabble de l'équipe 107";
-    private readonly dialogWidth: string = '500px';
-    private readonly dialogWidthHighScore: string = '500px';
+    private readonly dialogWidth: string = '400px';
+    private readonly dialogWidthHighScore: string = '400px';
     constructor(private dialog: MatDialog, private highScore: MatDialog) {}
 
     openDialog(gameModeValue: string): void {

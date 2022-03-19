@@ -16,7 +16,7 @@ export class Word {
         this.isHorizontal = commandInfo.isHorizontal;
         this.points = 0;
 
-        if (commandInfo.isHorizontal === undefined) this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
+        if (commandInfo.isHorizontal === undefined || commandInfo.letters.length === 1) this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
 
         const firstCoord = this.findFirstCoord(commandInfo.firstCoordinate, gameboard);
         this.setWordAttributes(firstCoord, commandInfo.letters, gameboard);
