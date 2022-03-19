@@ -2,7 +2,6 @@ import { ScoreStorageService } from '@app/services/database/score-storage.servic
 import { Request, Response, Router } from 'express';
 import { Service } from 'typedi';
 
-// const BAD_REQUEST = 400;
 @Service()
 export class HighScoreController {
     router: Router;
