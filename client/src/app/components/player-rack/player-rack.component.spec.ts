@@ -122,6 +122,21 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('selecting a letter for exchange that is selected for manipulation should change to be exchanged', () => {
+        const expectedManipulate: number[] = [];
+        const expectedExchange: number[] = [0, 2, 1];
+        const indexLetter = 1;
+        component.lettersToManipulate = [1];
+        component.lettersToExchange = [0, 2];
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        window.dispatchEvent(new MouseEvent('click'));
+        fixture.detectChanges();
+        expect(component.lettersToManipulate).toEqual(expectedManipulate);
+        expect(component.lettersToExchange).toEqual(expectedExchange);
+    });
+
     it('scrolling upwards in rack should reposition rack', () => {
         const spy = spyOn(component, 'repositionRack');
         const mockScroll = new WheelEvent('scroll');
