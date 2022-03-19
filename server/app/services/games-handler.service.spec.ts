@@ -36,6 +36,7 @@ const ROOM = '0';
 describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
+    let letterPlacementStub: sinon.SinonStubbedInstance<LetterPlacementService>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
     let wordSolverStub: sinon.SinonStubbedInstance<WordSolverService>;
     let httpServer: Server;
@@ -49,6 +50,9 @@ describe('GamesHandler Service', () => {
         socketManagerStub = sinon.createStubInstance(SocketManager);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         socketManagerStub.emitRoom.callsFake(() => {});
+
+        letterPlacementStub = sinon.createStubInstance(LetterPlacementService);
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
 
         scoreStorageStub = sinon.createStubInstance(ScoreStorageService);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -68,6 +72,7 @@ describe('GamesHandler Service', () => {
             socketManagerStub as unknown as SocketManager,
             scoreStorageStub as unknown as ScoreStorageService,
             wordSolverStub as unknown as WordSolverService,
+            letterPlacementStub as unknown as LetterPlacementService,
         );
 
         httpServer = createServer();
@@ -923,6 +928,7 @@ describe('GamesHandler Service', () => {
                 socketManagerStub as unknown as SocketManager,
                 scoreStorageStub as unknown as ScoreStorageService,
                 wordSolverStub as unknown as WordSolverService,
+                letterPlacementStub as unknown as LetterPlacementService,
             );
             createNewGameStub = sinon.stub(gamesHandler, 'createNewGame' as never);
             const gameStub = {

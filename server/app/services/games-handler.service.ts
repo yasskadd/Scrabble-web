@@ -39,7 +39,12 @@ export class GamesHandler {
     private players: Map<string, Player>;
     private games: Map<string, GameHolder>;
 
-    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService, private wordSolver: WordSolverService) {
+    constructor(
+        private socketManager: SocketManager,
+        private readonly scoreStorage: ScoreStorageService,
+        private wordSolver: WordSolverService,
+        private letterPlacement: LetterPlacementService,
+    ) {
         this.players = new Map();
         this.games = new Map();
     }
@@ -120,16 +125,14 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const lettersToExchange = letters.length;
         const player = this.players.get(socket.id) as RealPlayer;
-        const oldPlayerRack = player.rack;
         const game = player.game;
-        player.exchangeLetter(letters);
-
-        if (player.rack.length === 0) return;
-        if (JSON.stringify(oldPlayerRack) === JSON.stringify(player.rack)) {
+        if (!this.letterPlacement.areLettersInRack(letters, player)) {
             socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne possédez pas toutes les lettres à échanger');
-        } else {
-            socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
+            return;
         }
+        player.exchangeLetter(letters);
+        if (player.rack.length === 0) return;
+        socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         this.updatePlayerInfo(socket, player.room, game);
         this.socketManager.emitRoom(player.room, SocketEvents.Play, player.getInformation(), game.turn.activePlayer);
     }
