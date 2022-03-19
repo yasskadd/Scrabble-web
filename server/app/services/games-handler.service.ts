@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
@@ -197,17 +198,6 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
-            // if (newGameHolder.game?.turn.skipCounter === MAX_SKIP) {
-            //     newGameHolder.players.forEach((player) => {
-            //         player.deductPoints();
-            //     });
-            // } else if (newGameHolder.players[0].rackIsEmpty()) {
-            //     newGameHolder.players[0].addPoints(newGameHolder.players[1].rack);
-            //     newGameHolder.players[1].deductPoints();
-            // } else if (newGameHolder.players[1].rackIsEmpty()) {
-            //     newGameHolder.players[1].addPoints(newGameHolder.players[0].rack);
-            //     newGameHolder.players[0].deductPoints();
-            // }
             this.endGameScore(newGameHolder);
             this.changeTurn(gameInfo.roomId);
             if (newGameHolder.game?.turn.activePlayer === undefined) {
