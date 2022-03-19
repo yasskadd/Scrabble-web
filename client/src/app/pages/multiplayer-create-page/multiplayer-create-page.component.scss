@@ -1,21 +1,27 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+body {
     margin: auto;
     height: 100%;
     background-color: #e5f0f5;
 }
 
+.justified {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .wrapper {
     width: 50%;
+    min-width: 500px;
     background-color: rgb(174, 192, 174);
     color: #23501f;
+    padding: 30px;
 }
 
 .main-title {
     text-align: left;
+    padding-bottom: 20px;
 }
 
 ::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
