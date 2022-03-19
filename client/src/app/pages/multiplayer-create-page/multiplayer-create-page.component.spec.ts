@@ -310,15 +310,6 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
     }));
 
-    it('secondToMinute() should convert second to minute display', () => {
-        const TIMER1 = 180;
-        const TIMER2 = 210;
-        const expectedValue1 = '3:00 minutes';
-        const expectedValue2 = '3:30 minutes';
-        expect(component.secondToMinute(TIMER1)).toEqual(expectedValue1);
-        expect(component.secondToMinute(TIMER2)).toEqual(expectedValue2);
-    });
-
     it('ResetInput() should clear the playerName', () => {
         const VALID_NAME = 'Serge';
         component.playerName = VALID_NAME;
