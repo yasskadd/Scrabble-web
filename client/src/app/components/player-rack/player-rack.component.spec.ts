@@ -131,8 +131,6 @@ describe('PlayerRackComponent', () => {
         const mockClick = new MouseEvent('oncontextmenu');
         component.onRightClick(mockClick, indexLetter);
         fixture.detectChanges();
-        window.dispatchEvent(new MouseEvent('click'));
-        fixture.detectChanges();
         expect(component.lettersToManipulate).toEqual(expectedManipulate);
         expect(component.lettersToExchange).toEqual(expectedExchange);
     });
