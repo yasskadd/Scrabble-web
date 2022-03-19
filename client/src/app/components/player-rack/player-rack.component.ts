@@ -44,15 +44,14 @@ export class PlayerRackComponent implements OnInit {
 
     @HostListener('mousewheel', ['$event'])
     onScrollEvent(event: WheelEvent) {
-        // this.cancel();
-        this.lettersToManipulate = [];
+        this.cancel();
         this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
         this.repositionRack();
     }
 
     @HostListener('window: click', ['$event'])
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
-        if (!this.eRef.nativeElement.contains(event.target)) {
+        if (!this.eRef.nativeElement.contains(event.target as Node)) {
             this.cancel();
         }
     }
@@ -60,14 +59,9 @@ export class PlayerRackComponent implements OnInit {
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-
-            if (this.buttonPressed === 'ArrowLeft' || this.buttonPressed === 'ArrowRight') {
-                this.lettersToManipulate = [];
-                this.repositionRack();
-            } else {
-                this.cancel();
-                this.selectManipulation();
-            }
+            this.cancel();
+            this.repositionRack();
+            this.selectManipulation();
         });
     }
 
@@ -167,24 +161,8 @@ export class PlayerRackComponent implements OnInit {
         this.lettersToManipulate = [];
     }
 
-    storeExchangeValues() {
-        this.letterValues = [];
-        this.lettersToExchange.forEach((val) => {
-            this.letterValues.push(this.gameClient.playerOne.rack[val]);
-        });
-    }
-
-    resetExchangeValues() {
-        this.lettersToExchange = [];
-        this.letterValues.forEach((value) => {
-            this.lettersToExchange.push(this.rack.indexOf(value));
-        });
-    }
-
     moveLeft() {
         let temp: Letter;
-        this.storeExchangeValues();
-        console.log(this.letterValues);
         if (this.currentSelection === 0) {
             temp = this.gameClient.playerOne.rack[0];
             for (let i = 1; i < this.rackIndices; i++) {
@@ -199,12 +177,10 @@ export class PlayerRackComponent implements OnInit {
             this.currentSelection -= 1;
         }
         this.lettersToManipulate.push(this.currentSelection);
-        this.resetExchangeValues();
     }
 
     moveRight() {
         let temp;
-        this.storeExchangeValues();
         if (this.currentSelection === this.rackIndices) {
             temp = this.gameClient.playerOne.rack[this.rackIndices];
             for (let i = this.rackIndices; i > 0; i--) {
@@ -218,7 +194,6 @@ export class PlayerRackComponent implements OnInit {
             this.gameClient.playerOne.rack[this.currentSelection] = temp;
             this.currentSelection += 1;
         }
-        this.resetExchangeValues();
         this.lettersToManipulate.push(this.currentSelection);
     }
 }
