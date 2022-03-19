@@ -1,7 +1,7 @@
 .page-container {
     height: 100%;
     display: flex;
-    background-color: #e5f0f5;
+    background-color: #e5f0f5a9;
 }
 
 .justified {
@@ -12,9 +12,8 @@
 }
 
 .header {
-    padding: 1%;
     color: #23501f;
-    height: 80px;
+    height: 100px;
     width: 100%;
     background-color: rgb(174, 192, 174);
 }
@@ -22,7 +21,7 @@
 .header-item {
     justify-content: center;
     text-align: center;
-    margin-bottom: 15px;
+    margin: 7px;
 }
 
 .mat-card {
@@ -45,17 +44,18 @@
     padding: 5px;
     font-size: 23px;
 }
+
 .score {
     margin-top: 30px;
 }
 
 .footer {
-    height: 80px;
-    width: 96%;
-    padding: 2%;
+    height: 100px;
+    width: 100%;
     text-align: center;
     color: #23501f;
     background-color: rgb(174, 192, 174);
+    justify-content: flex-end;
 }
 
 .team-name {

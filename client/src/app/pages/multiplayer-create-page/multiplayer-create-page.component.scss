@@ -13,8 +13,13 @@
     background-color: rgb(174, 192, 174);
     color: #23501f;
 }
+
 .main-title {
     text-align: left;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: rgb(255 255 255 / 36%);
 }
 
 .containerButton {
@@ -22,6 +27,7 @@
     justify-content: space-between;
     padding: 1%;
 }
+
 .mat-card-title {
     font-size: 23px;
 }
