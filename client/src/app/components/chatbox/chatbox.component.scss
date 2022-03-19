@@ -16,6 +16,11 @@
     color: blueviolet;
 }
 
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    background-color: #fff;
+    border-radius: 5px;
+}
+
 .system-message {
     color: red;
 }
