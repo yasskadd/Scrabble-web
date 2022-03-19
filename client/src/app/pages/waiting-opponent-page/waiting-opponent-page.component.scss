@@ -1,34 +1,60 @@
-.container {
+body {
+    margin: auto;
+    height: 100%;
+    background-color: #e5f0f5;
+}
+
+.justified {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper {
     width: 50%;
-    margin: auto;
+    min-width: 500px;
+    background-color: rgb(174, 192, 174);
+    color: #23501f;
+    padding: 30px;
+}
+
+#title-and-solo-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#solo-mode-button {
+    text-align: end;
+}
+
+.waiting-opponent-container {
+    display: flex;
+    padding: 80px;
+}
+
+.waiting-opponent-container > * {
+    flex: 1;
     text-align: center;
 }
 
-.waitingOpponentContainer {
-    border: 2px solid grey;
-    margin: 5%;
-    padding: 80px;
-}
-#soloModeButtonContainer {
-    text-align: end;
-    padding: 2%;
-}
-.soloModeButton {
-    border-radius: 10px;
-}
 .textWaitingOpponent {
     font-size: 200%;
 }
-#containerPlayerDecision {
+
+.container-buttons {
     display: flex;
     justify-content: space-between;
-    padding: 0 30px;
+    margin-top: 20px;
 }
-.containerButton {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+
+#player-decision {
+    display: flex;
     justify-content: space-between;
-    padding: 0 2%;
+}
+
+#player-decision > button {
+    margin-left: 10px;
 }
