@@ -22,7 +22,7 @@
     background-color: rgb(255 255 255 / 36%);
 }
 
-.containerButton {
+.container-button {
     display: flex;
     justify-content: space-between;
     padding: 1%;
@@ -32,16 +32,20 @@
     font-size: 23px;
 }
 
-.startButton {
+.start-button {
     border-radius: 10px;
     width: 200px;
-    font-size: 20px;
+    font-size: 23px;
     padding: 2px;
     color: honeydew;
     background-color: green;
 }
 
-.returnButton {
+.start-button:hover {
+    transform: scale(0.95);
+}
+
+.return-button {
     transform: scale(1.5);
 }
 

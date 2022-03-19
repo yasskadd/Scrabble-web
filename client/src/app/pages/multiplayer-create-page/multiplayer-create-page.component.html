@@ -47,11 +47,11 @@
                 <mat-label> {{ this.botName }} </mat-label>
             </form>
 
-            <div class="containerButton">
-                <button class="returnButton" mat-icon-button routerLink="/home">
+            <div class="container-button">
+                <button class="return-button" mat-icon-button routerLink="/home">
                     <mat-icon>navigate_before</mat-icon>
                 </button>
-                <button class="startButton" (click)="createGame()" mat-raised-button [disabled]="!playerName">Commencer</button>
+                <button class="start-button" (click)="createGame()" mat-raised-button [disabled]="!playerName">Commencer</button>
             </div>
         </div>
     </mat-card>
