@@ -1,7 +1,7 @@
 .page-container {
     height: 100%;
     display: flex;
-    background-color: rgb(174, 192, 174);
+    background-color: #e5f0f5;
 }
 
 .justified {
@@ -14,7 +14,9 @@
 .header {
     padding: 1%;
     color: #23501f;
-    height: 50px;
+    height: 80px;
+    width: 100%;
+    background-color: rgb(174, 192, 174);
 }
 
 .header-item {
@@ -25,35 +27,35 @@
 
 .mat-card {
     padding: 30px;
-    width: 300px;
+    width: 400px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-    background-color: #e5f5e6;
+    background-color: rgb(174, 192, 174);
 }
 .mat-card-content {
     width: 100%;
 }
 .mat-raised-button:hover {
-    transform: scale(1.03);
+    transform: scale(0.95);
 }
 
 .button {
     margin: 7px;
     text-align: center;
-    width: 90%;
-    font-size: 18px;
-    transform: scale(1.2);
+    width: 95%;
+    padding: 5px;
+    font-size: 23px;
 }
 .score {
     margin-top: 30px;
 }
 
 .footer {
-    height: 50px;
-    width: 98%;
-    padding: 1%;
+    height: 80px;
+    width: 96%;
+    padding: 2%;
     text-align: center;
-    color: rgb(120, 134, 120);
-    background-color: #e5f5e6;
+    color: #23501f;
+    background-color: rgb(174, 192, 174);
 }
 
 .team-name {
