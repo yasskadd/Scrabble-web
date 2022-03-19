@@ -197,18 +197,18 @@ export class GamesHandler {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
-            if (newGameHolder.game?.turn.skipCounter === MAX_SKIP) {
-                newGameHolder.players.forEach((player) => {
-                    player.deductPoints();
-                });
-            } else if (newGameHolder.players[0].rackIsEmpty()) {
-                newGameHolder.players[0].addPoints(newGameHolder.players[1].rack);
-                newGameHolder.players[1].deductPoints();
-            } else if (newGameHolder.players[1].rackIsEmpty()) {
-                newGameHolder.players[1].addPoints(newGameHolder.players[0].rack);
-                newGameHolder.players[0].deductPoints();
-            }
-
+            // if (newGameHolder.game?.turn.skipCounter === MAX_SKIP) {
+            //     newGameHolder.players.forEach((player) => {
+            //         player.deductPoints();
+            //     });
+            // } else if (newGameHolder.players[0].rackIsEmpty()) {
+            //     newGameHolder.players[0].addPoints(newGameHolder.players[1].rack);
+            //     newGameHolder.players[1].deductPoints();
+            // } else if (newGameHolder.players[1].rackIsEmpty()) {
+            //     newGameHolder.players[1].addPoints(newGameHolder.players[0].rack);
+            //     newGameHolder.players[0].deductPoints();
+            // }
+            this.endGameScore(newGameHolder);
             this.changeTurn(gameInfo.roomId);
             if (newGameHolder.game?.turn.activePlayer === undefined) {
                 this.userConnected(gameInfo.socketId);
@@ -222,6 +222,20 @@ export class GamesHandler {
             activePlayer: newGameHolder.game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
+    }
+
+    private endGameScore(gameHolder: GameHolder) {
+        if (gameHolder.game?.turn.skipCounter === MAX_SKIP) {
+            gameHolder.players.forEach((player) => {
+                player.deductPoints();
+            });
+        } else if (gameHolder.players[0].rackIsEmpty()) {
+            gameHolder.players[0].addPoints(gameHolder.players[1].rack);
+            gameHolder.players[1].deductPoints();
+        } else if (gameHolder.players[1].rackIsEmpty()) {
+            gameHolder.players[1].addPoints(gameHolder.players[0].rack);
+            gameHolder.players[0].deductPoints();
+        }
     }
 
     private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {
