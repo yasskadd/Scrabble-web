@@ -18,8 +18,6 @@ export class PlayerRackComponent implements OnInit {
 
     @ViewChild('info', { static: false }) info: ElementRef;
 
-    width: number; // are these necessary ?
-    height: number;
     buttonPressed: string;
     currentSelection: number;
     previousSelection: number;
@@ -35,8 +33,6 @@ export class PlayerRackComponent implements OnInit {
         private gridService: GridService,
         private eRef: ElementRef,
     ) {
-        this.width = constants.RACK_WIDTH;
-        this.height = constants.RACK_HEIGHT;
         this.buttonPressed = '';
         this.currentSelection = 0;
         this.previousSelection = constants.INVALID_INDEX;
