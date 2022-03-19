@@ -32,49 +32,42 @@ describe('PlayerRackComponent', () => {
                         value: 'a',
                         quantity: 2,
                         points: 1,
-                        isBlankLetter: false,
                     },
 
                     {
                         value: 'd',
                         quantity: 2,
                         points: 1,
-                        isBlankLetter: false,
                     },
 
                     {
                         value: 'a',
                         quantity: 2,
                         points: 1,
-                        isBlankLetter: false,
                     },
 
                     {
                         value: 'm',
                         quantity: 2,
                         points: 1,
-                        isBlankLetter: false,
                     },
 
                     {
                         value: 's',
                         quantity: 2,
                         points: 1,
-                        isBlankLetter: false,
                     },
 
                     {
                         value: 'o',
                         quantity: 2,
                         points: 1,
-                        isBlankLetter: false,
                     },
 
                     {
                         value: 'o',
                         quantity: 2,
                         points: 1,
-                        isBlankLetter: false,
                     },
                 ],
             },
@@ -192,14 +185,14 @@ describe('PlayerRackComponent', () => {
         expect(component.lettersToExchange.indexOf(indexLetter)).toEqual(constants.INVALID_INDEX);
     }); // not sure why this test does not cover 136-140
 
-    // it('onRightClick should select a letter and update the array in the html element', () => {
-    //     const indexLetter = 0;
-    //     const mockClick = new MouseEvent('oncontextmenu');
-    //     component.onRightClick(mockClick, indexLetter);
-    //     fixture.detectChanges();
-    //     const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
-    //     expect(lettersDiv[indexLetter].className).toEqual('rack-letter-exchange-selected');
-    // });
+    it('onRightClick should select a letter and update the array in the html element', () => {
+        const indexLetter = 0;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
+        expect(lettersDiv[indexLetter].classList).toContain('rack-letter-exchange-selected');
+    });
 
     it('onLeftClick should call cancel', () => {
         const indexLetter = 0;
@@ -353,21 +346,18 @@ describe('PlayerRackComponent', () => {
                 value: 'c',
                 quantity: 2,
                 points: 1,
-                isBlankLetter: false,
             },
 
             {
                 value: 'e',
                 quantity: 2,
                 points: 1,
-                isBlankLetter: false,
             },
 
             {
                 value: 'e',
                 quantity: 2,
                 points: 1,
-                isBlankLetter: false,
             },
         ];
 
@@ -401,21 +391,18 @@ describe('PlayerRackComponent', () => {
                 value: 'd',
                 quantity: 2,
                 points: 1,
-                isBlankLetter: false,
             },
 
             {
                 value: 'k',
                 quantity: 2,
                 points: 1,
-                isBlankLetter: false,
             },
 
             {
                 value: 'r',
                 quantity: 2,
                 points: 1,
-                isBlankLetter: false,
             },
         ];
 
