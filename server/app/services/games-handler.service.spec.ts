@@ -74,8 +74,9 @@ describe('GamesHandler Service', () => {
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         game.letterReserve = new LetterReserveService();
-        game.gameboard = sinon.createStubInstance(Gameboard);
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
+        game.gameboard = sinon.createStubInstance(Gameboard);
+
         (player1 as RealPlayer).setGame(game, true);
         (player2 as RealPlayer).setGame(game, false);
         gamesHandler = new GamesHandler(
@@ -912,6 +913,8 @@ describe('GamesHandler Service', () => {
         });
 
         it('CreateGame() should emit game information to the room', () => {
+            gameInfo.socketId[1] = '3249adf8243';
+            player1.room = ROOM;
             serverSocket.join(ROOM);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
