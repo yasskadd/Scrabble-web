@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
+import { TimerService } from '@app/services/timer.service';
 
 const enum TimeOptions {
     ThirtySecond = 30,
@@ -43,6 +44,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     ];
     constructor(
         public gameConfiguration: GameConfigurationService,
+        public timer: TimerService,
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private fb: FormBuilder,
@@ -88,16 +90,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         if (this.isSoloMode()) this.router.navigate(['/game']);
         else this.router.navigate([`/multijoueur/salleAttente/${this.gameMode}`]);
     }
-    secondToMinute(time: number): string {
-        const minute = Math.floor(time / TimeOptions.OneMinute);
-        const second = time - minute * TimeOptions.OneMinute;
 
-        if (second === 0) {
-            return minute.toString() + ':00 minutes';
-        } else {
-            return minute.toString() + ':30 minutes';
-        }
-    }
     isSoloMode() {
         if (this.router.url === '/solo/classique') return true;
         return false;

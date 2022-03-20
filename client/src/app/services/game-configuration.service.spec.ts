@@ -236,24 +236,6 @@ describe('GameConfigurationService', () => {
         expect(service.roomInformation.roomId).toEqual(roomId);
     });
 
-    it('setGameUnavailable should send a event to the server with the room Id to make the room Unavailable', () => {
-        const roomId = '1';
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        service.roomInformation.roomId = roomId;
-        service.setGameUnavailable();
-        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameUnavailable, roomId);
-    });
-
-    it('setGameAvailable should send a event to the server with the room Id to make the room Available', () => {
-        const roomId = '1';
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        service.roomInformation.roomId = roomId;
-        service.setGameAvailable();
-        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameAvailable, roomId);
-    });
-
     it('should handle foundOpponent event with the username of the opponent that wants to join his game', () => {
         const opponentName = 'Marcel';
         const spyONFoundAnOpponentEvent = spyOn(service, 'foundAnOpponentEvent' as never);

@@ -2,7 +2,6 @@ import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoom } from '@app/interfaces/game-room';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Server, Socket } from 'socket.io';
-// import { Socket } from 'socket.io';
 import { Service } from 'typedi';
 import { SocketManager } from './socket-manager.service';
 
@@ -50,14 +49,6 @@ export class GameSessions {
             this.rejectOpponent(socket, roomId);
         });
 
-        this.socketManager.io(SocketEvents.SetGameUnavailable, (sio, _, roomId: string) => {
-            this.setRoomUnavailable(sio, roomId);
-        });
-
-        this.socketManager.io(SocketEvents.SetGameAvailable, (sio, _, roomId: string) => {
-            this.setRoomAvailable(sio, roomId);
-        });
-
         this.socketManager.on(SocketEvents.JoinRoom, (socket, roomID: string) => {
             this.joinRoom(socket, roomID);
         });
@@ -74,30 +65,20 @@ export class GameSessions {
         });
     }
 
-    private setRoomUnavailable(this: this, sio: Server, roomId: string) {
-        this.makeRoomUnavailable(roomId);
-        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
-    }
-
-    private setRoomAvailable(this: this, sio: Server, roomId: string) {
-        this.makeRoomAvailable(roomId);
-        sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
-    }
-
-    private joinRoom(this: this, socket: Socket, roomID: string) {
+    private joinRoom(this: this, socket: Socket, roomID: string): void {
         socket.join(roomID);
     }
 
-    private rejectOpponent(this: this, socket: Socket, roomId: string) {
+    private rejectOpponent(this: this, socket: Socket, roomId: string): void {
         socket.broadcast.to(roomId).emit(SocketEvents.RejectByOtherPlayer, PLAYERS_REJECT_FROM_ROOM_ERROR);
     }
 
-    private roomLobby(this: this, sio: Server, socket: Socket) {
+    private roomLobby(this: this, sio: Server, socket: Socket): void {
         socket.join(PLAYERS_JOINING_ROOM);
         sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }
 
-    private disconnect(this: this, sio: Server, socket: Socket) {
+    private disconnect(this: this, sio: Server, socket: Socket): void {
         let tempTime = 5;
         setInterval(() => {
             tempTime = tempTime - 1;
@@ -109,7 +90,7 @@ export class GameSessions {
             }
         }, SECOND);
     }
-    private playerJoinGameAvailable(this: this, sio: Server, socket: Socket, parameters: Parameters) {
+    private playerJoinGameAvailable(this: this, sio: Server, socket: Socket, parameters: Parameters): void {
         const roomId = parameters.id;
         const username = parameters.name;
 
@@ -128,7 +109,7 @@ export class GameSessions {
         sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }
 
-    private exitWaitingRoom(this: this, socket: Socket, parameters: Parameters) {
+    private exitWaitingRoom(this: this, socket: Socket, parameters: Parameters): void {
         const roomId = parameters.id;
         const playerName = parameters.name;
         socket.broadcast.to(roomId).emit(SocketEvents.OpponentLeave);
@@ -137,7 +118,7 @@ export class GameSessions {
         this.removeUserFromRoom(playerName, socket.id, roomId);
     }
 
-    private rejectByOtherPlayer(this: this, sio: Server, socket: Socket, parameters: Parameters) {
+    private rejectByOtherPlayer(this: this, sio: Server, socket: Socket, parameters: Parameters): void {
         const roomId = parameters.id;
         const playerName = parameters.name;
         socket.leave(roomId);
@@ -146,12 +127,12 @@ export class GameSessions {
         sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }
 
-    private startScrabbleGame(this: this, sio: Server, socket: Socket, roomId: string) {
+    private startScrabbleGame(this: this, sio: Server, socket: Socket, roomId: string): void {
         const room = this.gameRooms.get(roomId);
         if (room !== undefined) sio.to(roomId).emit(SocketEvents.GameAboutToStart, room.socketID);
     }
 
-    private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameParameters) {
+    private createGame(this: this, sio: Server, socket: Socket, gameInfo: GameParameters): void {
         const roomId = this.setupNewRoom(gameInfo, socket.id);
         socket.join(roomId);
         socket.emit(SocketEvents.GameCreatedConfirmation, roomId);
@@ -241,7 +222,7 @@ export class GameSessions {
         this.makeRoomAvailable(roomID);
     }
 
-    private removeRoom(this: this, sio: Server, roomID: string) {
+    private removeRoom(this: this, sio: Server, roomID: string): void {
         this.gameRooms.delete(roomID);
         sio.to(PLAYERS_JOINING_ROOM).emit(SocketEvents.UpdateRoomJoinable, this.getAvailableRooms());
     }

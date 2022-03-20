@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
+import { TimerService } from '@app/services/timer.service';
 
 @Component({
     selector: 'app-multiplayer-join-page',
@@ -12,6 +13,7 @@ export class MultiplayerJoinPageComponent implements OnInit {
     playerName: string;
     gameMode: string;
     constructor(
+        public timer: TimerService,
         private gameConfiguration: GameConfigurationService,
         private router: Router,
         private snackBar: MatSnackBar,

@@ -6,6 +6,7 @@ import { AbandonGameDialogBoxComponent } from '@app/components/abandon-game-dial
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { TimerService } from '@app/services/timer.service';
 
 @Component({
     selector: 'app-information-panel',
@@ -17,8 +18,9 @@ export class InformationPanelComponent {
     private readonly dialogWidth: string = '40%';
 
     constructor(
-        private gridService: GridService,
         public gameClientService: GameClientService,
+        public timer: TimerService,
+        private gridService: GridService,
         private letterService: LetterPlacementService,
         private dialog: MatDialog,
         private router: Router,
@@ -44,17 +46,5 @@ export class InformationPanelComponent {
     leaveGame(): void {
         this.router.navigate(['/home']);
         this.gameClientService.quitGame();
-    }
-
-    timerToMinute(time: number): number {
-        const second = 60;
-        return Math.floor(time / second);
-    }
-
-    timerToSecond(timer: number): number {
-        const minute = 60;
-        const second = 60;
-        const hour = minute * second;
-        return timer - Math.floor(timer / hour) * hour - Math.floor((timer - Math.floor(timer / hour) * hour) / second) * minute;
     }
 }

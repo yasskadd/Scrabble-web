@@ -20,7 +20,7 @@
                 <mat-label>Temps</mat-label>
                 <mat-select id="timer-select" formControlName="timer">
                     <mat-option id="timer-options" *ngFor="let time of this.timerList" [value]="time">
-                        {{ this.secondToMinute(time) }}
+                        {{ this.timer.secondToMinute(time) }}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

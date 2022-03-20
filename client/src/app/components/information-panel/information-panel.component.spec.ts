@@ -220,16 +220,4 @@ describe('InformationPanelComponent', () => {
         expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
         expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
     });
-
-    it('timerToMinute() should return number of minute in the timer', () => {
-        const twoMinute = 120;
-        const expectedValue = 2;
-        expect(component.timerToMinute(twoMinute)).toEqual(expectedValue);
-    });
-
-    it('timerToSecond() should return number of second in the timer', () => {
-        const fiftyNineSecond = 179;
-        const expectedValue = 59;
-        expect(component.timerToSecond(fiftyNineSecond)).toEqual(expectedValue);
-    });
 });
