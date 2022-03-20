@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
@@ -97,7 +96,7 @@ export class GamesHandler {
             wordToChoose.push(commandInfoList[random]);
             commandInfoList.splice(random, 1);
         }
-        return commandInfoList;
+        return wordToChoose;
     }
 
     private reserveCommand(this: this, socket: Socket) {
