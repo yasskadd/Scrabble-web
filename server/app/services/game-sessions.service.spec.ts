@@ -56,7 +56,6 @@ describe('GameSession Service', () => {
     beforeEach((done) => {
         service = sinon.createStubInstance(SocketManager);
         gameSessions = new GameSessions(service as unknown as SocketManager);
-
         httpServer = createServer();
         sio = new ioServer(httpServer);
         httpServer.listen(() => {
@@ -373,22 +372,6 @@ describe('GameSession Service', () => {
         done();
     });
 
-    it('setRoomAvailable should call makeRoomAvailable with the room id of the player', (done: Mocha.Done) => {
-        const spy = sinon.spy(gameSessions, 'makeRoomAvailable' as never);
-        // eslint-disable-next-line dot-notation
-        gameSessions['setRoomAvailable'](sio, ROOM_ID);
-        expect(spy.calledOnceWith(ROOM_ID)).to.equal(true);
-        done();
-    });
-
-    it('setRoomUnavailable should call makeRoomUnavailable with the room id of the player', (done: Mocha.Done) => {
-        const spy = sinon.spy(gameSessions, 'makeRoomUnavailable' as never);
-        // eslint-disable-next-line dot-notation
-        gameSessions['setRoomUnavailable'](sio, ROOM_ID);
-        expect(spy.calledOnceWith(ROOM_ID)).to.equal(true);
-        done();
-    });
-
     it('getRoomId should return null if there is no room Available ', (done: Mocha.Done) => {
         // eslint-disable-next-line dot-notation
         const value = gameSessions['getRoomId'](serverSocket.id);
@@ -397,6 +380,7 @@ describe('GameSession Service', () => {
     });
 
     it('disconnect should call the removeRoom method', (done: Mocha.Done) => {
+        const clock = sinon.useFakeTimers();
         const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
@@ -413,13 +397,14 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-        setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, timeout6seconds);
+        clock.tick(timeout6seconds);
+        assert(spy.called);
+        clock.restore();
+        done();
     });
 
     it('disconnect should call the removeRoom method after 6 seconds ', (done: Mocha.Done) => {
+        const clock = sinon.useFakeTimers();
         const timeout6seconds = 6000;
         const gameRoomAvailable: GameRoom = {
             socketID: [serverSocket.id],
@@ -436,10 +421,10 @@ describe('GameSession Service', () => {
 
         // eslint-disable-next-line dot-notation
         gameSessions['disconnect'](sio, serverSocket);
-        setTimeout(() => {
-            assert(spy.called);
-            done();
-        }, timeout6seconds);
+        clock.tick(timeout6seconds);
+        assert(spy.called);
+        clock.restore();
+        done();
     });
 
     it('roomJoin should emit an error if the person in the room have the same name that the player that want to join', (done: Mocha.Done) => {
@@ -523,8 +508,6 @@ describe('GameSession Service', () => {
         const rejectByOtherPlayerSpy = sinon.stub(gameSessions, 'rejectByOtherPlayer' as never);
         const startScrabbleGameSpy = sinon.stub(gameSessions, 'startScrabbleGame' as never);
         const disconnectSpy = sinon.stub(gameSessions, 'disconnect' as never);
-        const gameUnavailableSpy = sinon.stub(gameSessions, 'setRoomUnavailable' as never);
-        const gameAvailableSpy = sinon.stub(gameSessions, 'setRoomAvailable' as never);
 
         gameSessions.initSocketEvents();
         service.io.getCall(0).args[1](sio, serverSocket);
@@ -534,8 +517,6 @@ describe('GameSession Service', () => {
         service.io.getCall(4).args[1](sio, serverSocket);
         service.io.getCall(5).args[1](sio, serverSocket);
         service.io.getCall(6).args[1](sio, serverSocket);
-        service.io.getCall(7).args[1](sio, serverSocket);
-        service.io.getCall(8).args[1](sio, serverSocket);
 
         service.on.getCall(0).args[1](serverSocket);
         service.on.getCall(1).args[1](serverSocket);
@@ -551,8 +532,6 @@ describe('GameSession Service', () => {
         expect(rejectByOtherPlayerSpy.called).to.be.eql(true);
         expect(startScrabbleGameSpy.called).to.be.eql(true);
         expect(disconnectSpy.called).to.be.eql(true);
-        expect(gameUnavailableSpy.called).to.be.eql(true);
-        expect(gameAvailableSpy.called).to.be.eql(true);
 
         expect(service.io.called).to.equal(true);
         expect(service.on.called).to.equal(true);
@@ -591,6 +570,7 @@ describe('GameSession Service', () => {
         expect(key).to.equal(ROOM_ID);
         done();
     });
+
     it('getRoomId should return null if the socket ID is not in a room', (done: Mocha.Done) => {
         const fakeSocket = 'adsfds345';
         const gameRoomTest2: GameRoom = {

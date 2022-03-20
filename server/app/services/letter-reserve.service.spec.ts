@@ -1,6 +1,7 @@
 import * as letterTypes from '@app/letter-reserve';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
+import { spy, stub } from 'sinon';
 import { LetterReserveService } from './letter-reserve.service';
 
 describe('LetterReserveService', () => {
@@ -44,8 +45,13 @@ describe('LetterReserveService', () => {
     it('should return random letter', () => {
         const expectedLength = sampleRack.length + 1;
         letterReserveService.distributeLetter(sampleRack);
-
         expect(sampleRack.length).to.equal(expectedLength);
+    });
+
+    it('distributeLetter should call shuffleArray()', () => {
+        const shuffleArraySpy = spy(letterReserveService, 'shuffleArray' as never);
+        letterReserveService.distributeLetter(sampleRack);
+        expect(shuffleArraySpy.called).to.equal(true);
     });
 
     it('should remove one letter from the rack', () => {
@@ -79,7 +85,8 @@ describe('LetterReserveService', () => {
     it('should not exchange letter when the reserve has less than 7 letters', () => {
         const nLetters = 6;
         const oldRack = sampleRack;
-        letterReserveService.lettersReserve = letterReserveService.lettersReserve.slice(0, nLetters);
+        const totalQuantityStub = stub(letterReserveService, 'totalQuantity' as never);
+        totalQuantityStub.returns(nLetters);
         const newRack = letterReserveService.exchangeLetter(
             sampleRack.map((letter) => {
                 return letter.value;
@@ -97,7 +104,7 @@ describe('LetterReserveService', () => {
     });
 
     it('should return true if the reserve is empty', () => {
-        letterReserveService.lettersReserve = [];
+        letterReserveService.lettersReserve = [{ value: 'b', quantity: 0, points: 3 }];
         const isEmpty = letterReserveService.isEmpty();
         expect(isEmpty).to.eql(true);
     });
@@ -105,6 +112,12 @@ describe('LetterReserveService', () => {
     it('should return false if the reserve is not empty', () => {
         const isEmpty = letterReserveService.isEmpty();
         expect(isEmpty).to.eql(false);
+    });
+
+    it('shuffleArray should shuffle the letters array passed as argument', () => {
+        const array = [{ value: 'a' } as Letter, { value: 'b' } as Letter, { value: 'c' } as Letter];
+        // eslint-disable-next-line dot-notation
+        expect(letterReserveService['shuffleArray'](array)).to.not.eql(array);
     });
 
     it('should return the total of letter in the letter reserve', () => {

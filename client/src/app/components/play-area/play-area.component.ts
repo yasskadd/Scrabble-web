@@ -48,7 +48,7 @@ export class PlayAreaComponent implements AfterViewInit {
                 break;
             }
             default: {
-                if (this.buttonPressed.length > 1) return;
+                if (this.buttonPressed.length > 1) break;
                 this.letterService.handlePlacement(this.buttonPressed);
                 break;
             }

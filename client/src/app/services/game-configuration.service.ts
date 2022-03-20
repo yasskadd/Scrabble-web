@@ -70,30 +70,22 @@ export class GameConfigurationService {
         });
     }
 
-    setIsGameStartedSubject() {
+    setIsGameStartedSubject(): void {
         this.isGameStarted.next(true);
         this.isGameStarted = new ReplaySubject<boolean>(1);
     }
 
-    setRoomJoinableSubject() {
+    setRoomJoinableSubject(): void {
         this.isRoomJoinable.next(true);
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
     }
 
-    setErrorSubject(reason: string) {
+    setErrorSubject(reason: string): void {
         this.errorReason.next(reason);
         this.errorReason = new ReplaySubject<string>(1);
     }
 
-    setGameUnavailable() {
-        this.clientSocket.send(SocketEvents.SetGameUnavailable, this.roomInformation.roomId);
-    }
-
-    setGameAvailable() {
-        this.clientSocket.send(SocketEvents.SetGameAvailable, this.roomInformation.roomId);
-    }
-
-    removeRoom() {
+    removeRoom(): void {
         if (this.roomInformation.playerName[1]) {
             this.rejectOpponent();
         }
@@ -102,18 +94,18 @@ export class GameConfigurationService {
         this.roomInformation.playerName.pop();
     }
 
-    exitWaitingRoom() {
+    exitWaitingRoom(): void {
         this.clientSocket.send(SocketEvents.ExitWaitingRoom, { id: this.roomInformation.roomId, name: this.roomInformation.playerName[0] });
         this.resetRoomInformation();
     }
 
-    rejectOpponent() {
+    rejectOpponent(): void {
         this.clientSocket.send(SocketEvents.RejectOpponent, this.roomInformation.roomId);
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
         this.roomInformation.playerName.pop();
     }
 
-    gameInitialization(parameters: GameParameters) {
+    gameInitialization(parameters: GameParameters): void {
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
@@ -121,23 +113,21 @@ export class GameConfigurationService {
         this.roomInformation.isCreator = true;
     }
 
-    joinGame(roomId: string, username: string) {
+    joinGame(roomId: string, username: string): void {
         this.clientSocket.send(SocketEvents.PlayerJoinGameAvailable, { id: roomId, name: username });
         this.roomInformation.playerName[0] = username;
         this.roomInformation.roomId = roomId;
     }
-    joinPage() {
+    joinPage(): void {
         this.clientSocket.send(SocketEvents.RoomLobby);
     }
 
-    beginScrabbleGame(opponentBot?: string) {
-        if (opponentBot !== undefined) {
-            this.roomInformation.playerName[1] = opponentBot;
-        }
+    beginScrabbleGame(opponentBot?: string): void {
+        if (opponentBot !== undefined) this.roomInformation.playerName[1] = opponentBot;
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
 
-    resetRoomInformation() {
+    resetRoomInformation(): void {
         this.roomInformation.roomId = '';
         this.roomInformation.playerName = [];
         this.roomInformation.statusGame = '';
@@ -145,7 +135,7 @@ export class GameConfigurationService {
         this.availableRooms = [];
     }
 
-    joinRandomRoom(playerName: string) {
+    joinRandomRoom(playerName: string): void {
         const random = Math.floor(Math.random() * this.availableRooms.length);
         const roomToJoinId = this.availableRooms[random].id;
         this.roomInformation.playerName[0] = playerName;
@@ -153,21 +143,21 @@ export class GameConfigurationService {
         this.clientSocket.send(SocketEvents.PlayerJoinGameAvailable, { id: roomToJoinId, name: playerName });
     }
 
-    private gameCreatedConfirmationEvent(roomId: string) {
+    private gameCreatedConfirmationEvent(roomId: string): void {
         this.roomInformation.roomId = roomId;
     }
 
-    private opponentLeaveEvent() {
+    private opponentLeaveEvent(): void {
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
         this.roomInformation.playerName.pop();
     }
 
-    private foundAnOpponentEvent(opponentName: string) {
+    private foundAnOpponentEvent(opponentName: string): void {
         this.roomInformation.playerName[1] = opponentName;
         this.roomInformation.statusGame = FOUND_OPPONENT_MESSAGE;
     }
 
-    private gameAboutToStartEvent(socketIDUserRoom: string[]) {
+    private gameAboutToStartEvent(socketIDUserRoom: string[]): void {
         if (this.roomInformation.isCreator) {
             this.clientSocket.send('createScrabbleGame', {
                 playerName: this.roomInformation.playerName,
@@ -179,20 +169,20 @@ export class GameConfigurationService {
         this.setIsGameStartedSubject();
     }
 
-    private rejectByOtherPlayerEvent(reason: string) {
+    private rejectByOtherPlayerEvent(reason: string): void {
         this.clientSocket.send(SocketEvents.RejectByOtherPlayer, { id: this.roomInformation.roomId, name: this.roomInformation.playerName[0] });
         this.resetRoomInformation();
         this.setErrorSubject(reason);
     }
 
-    private joinValidGameEvent(playerName: string) {
+    private joinValidGameEvent(playerName: string): void {
         this.roomInformation.isCreator = false;
         this.roomInformation.statusGame = WAITING_OPPONENT_CONFIRMATION;
         this.roomInformation.playerName[1] = playerName;
         this.setRoomJoinableSubject();
     }
 
-    private updateAvailableRooms(availableRooms: GameRoomClient[]) {
+    private updateAvailableRooms(availableRooms: GameRoomClient[]): void {
         this.availableRooms = availableRooms;
     }
 }

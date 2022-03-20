@@ -1,26 +1,27 @@
+/* eslint-disable max-lines */
 import { Gameboard } from '@app/classes/gameboard.class';
+import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
-import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
+import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 
+const MAX_SKIP = 6;
 const SECOND = 1000;
 const CHAR_ASCII = 96;
-type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
-    players: RealPlayer[];
+    players: Player[];
     roomId: string;
     isGameFinish: boolean;
     timer: number;
@@ -38,7 +39,12 @@ export class GamesHandler {
     private players: Map<string, Player>;
     private games: Map<string, GameHolder>;
 
-    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService, private wordSolver: WordSolverService) {
+    constructor(
+        private socketManager: SocketManager,
+        private readonly scoreStorage: ScoreStorageService,
+        private wordSolver: WordSolverService,
+        private letterPlacement: LetterPlacementService,
+    ) {
         this.players = new Map();
         this.games = new Map();
     }
@@ -107,7 +113,6 @@ export class GamesHandler {
         const gameHolder = this.games.get(room) as GameHolder;
         socket.emit(SocketEvents.AllReserveLetters, gameHolder.game?.letterReserve.lettersReserve);
     }
-
     private skip(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
 
@@ -120,36 +125,36 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const lettersToExchange = letters.length;
         const player = this.players.get(socket.id) as RealPlayer;
-        const oldPlayerRack = player.rack;
         const game = player.game;
-        player.exchangeLetter(letters);
-
-        if (player.rack.length === 0) return;
-        if (JSON.stringify(oldPlayerRack) === JSON.stringify(player.rack)) {
-            socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne posséder pas toutes les lettres a échanger');
-        } else {
-            socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
+        if (!this.letterPlacement.areLettersInRack(letters, player)) {
+            socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne possédez pas toutes les lettres à échanger');
+            return;
         }
+        player.exchangeLetter(letters);
+        if (player.rack.length === 0) return;
+        socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         this.updatePlayerInfo(socket, player.room, game);
         this.socketManager.emitRoom(player.room, SocketEvents.Play, player.getInformation(), game.turn.activePlayer);
     }
 
     private playGame(this: this, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
-        const firstCoordinateColumns = commandInfo.firstCoordinate.x;
-        const firstCoordinateRows = commandInfo.firstCoordinate.y;
-        const letterPlaced = commandInfo.letters.join('');
-        const player = this.players.get(socket.id) as RealPlayer;
-        const play = player.placeLetter(commandInfo) as PlaceLettersReturn | string;
+        let direction: string;
+        if (commandInfo.isHorizontal === undefined) direction = '';
+        else direction = commandInfo.isHorizontal ? 'h' : 'v';
 
-        if (typeof play === 'string') {
-            socket.emit(SocketEvents.ImpossibleCommandError, play);
-        } else if (typeof play !== 'string') {
-            const playInfo: PlayInfo = {
+        const commandWrite = `!placer ${String.fromCharCode(CHAR_ASCII + commandInfo.firstCoordinate.y)}${
+            commandInfo.firstCoordinate.x
+        }${direction} ${commandInfo.letters.join('')}`;
+        const player = this.players.get(socket.id) as RealPlayer;
+        const play = player.placeLetter(commandInfo);
+
+        if (typeof play === 'string') socket.emit(SocketEvents.ImpossibleCommandError, play);
+        else if (typeof play !== 'string') {
+            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, {
                 gameboard: play.gameboard.gameboardTiles,
                 activePlayer: player.game.turn.activePlayer,
-            };
-            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playInfo);
+            });
             this.updatePlayerInfo(socket, player.room, player.game);
 
             if (!play.hasPassed) {
@@ -160,13 +165,7 @@ export class GamesHandler {
                     ),
                 );
             } else {
-                const direction = commandInfo.isHorizontal ? 'h' : 'v';
-                socket.broadcast
-                    .to(player.room)
-                    .emit(
-                        SocketEvents.GameMessage,
-                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${direction} ${letterPlaced}`,
-                    );
+                socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, commandWrite);
             }
         }
     }
@@ -185,14 +184,18 @@ export class GamesHandler {
         newGameHolder.players.push(playerTwo);
         newGameHolder.game = this.createNewGame(newGameHolder);
 
-        playerOne.setGame(newGameHolder.game, true);
-        playerTwo.setGame(newGameHolder.game, false);
+        (playerOne as RealPlayer).setGame(newGameHolder.game, true);
 
+        if (gameInfo.socketId.length === 1) {
+            (playerTwo as BeginnerBot).setGame(newGameHolder.game);
+            (playerTwo as BeginnerBot).start();
+        } else (playerTwo as RealPlayer).setGame(newGameHolder.game, false);
         this.games.set(newGameHolder.roomId, newGameHolder);
         if (socket.id === gameInfo.socketId[0]) {
             this.updatePlayerInfo(socket, newGameHolder.roomId, newGameHolder.game);
         }
         newGameHolder.game.turn.endTurn.subscribe(() => {
+            this.endGameScore(newGameHolder);
             this.changeTurn(gameInfo.roomId);
             if (newGameHolder.game?.turn.activePlayer === undefined) {
                 this.userConnected(gameInfo.socketId);
@@ -208,12 +211,30 @@ export class GamesHandler {
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, newGameHolder.game.letterReserve.lettersReserve);
     }
 
-    private setAndGetPlayer(gameInfo: GameScrabbleInformation): RealPlayer {
-        const player = this.players.has(gameInfo.socketId[0]) ? 1 : 0;
-        const newPlayer = new RealPlayer(gameInfo.playerName[player]);
+    private endGameScore(gameHolder: GameHolder) {
+        if (gameHolder.game?.turn.skipCounter === MAX_SKIP) {
+            gameHolder.players.forEach((player) => {
+                player.deductPoints();
+            });
+        } else if (gameHolder.players[0].rackIsEmpty()) {
+            gameHolder.players[0].addPoints(gameHolder.players[1].rack);
+            gameHolder.players[1].deductPoints();
+        } else if (gameHolder.players[1].rackIsEmpty()) {
+            gameHolder.players[1].addPoints(gameHolder.players[0].rack);
+            gameHolder.players[0].deductPoints();
+        }
+    }
 
-        newPlayer.room = gameInfo.roomId;
-        this.players.set(gameInfo.socketId[player], newPlayer);
+    private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {
+        const player = this.players.has(gameInfo.socketId[0]) ? 1 : 0;
+        let newPlayer;
+        if (player === 1 && gameInfo.socketId[player] === undefined) {
+            newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+        } else {
+            newPlayer = new RealPlayer(gameInfo.playerName[player]);
+            newPlayer.room = gameInfo.roomId;
+            this.players.set(gameInfo.socketId[player], newPlayer);
+        }
         return newPlayer;
     }
 
@@ -299,14 +320,13 @@ export class GamesHandler {
         const room = player.room;
         const roomInfomation = this.games.get(room);
         if (roomInfomation?.players !== undefined && !roomInfomation.isGameFinish) {
-            const newGameHolder: GameHolder = {
+            this.games.set(room, {
                 game: roomInfomation.game,
                 players: roomInfomation.players,
                 roomId: roomInfomation.roomId,
                 isGameFinish: true,
                 timer: roomInfomation.timer,
-            };
-            this.games.set(room, newGameHolder);
+            });
             this.socketManager.emitRoom(room, SocketEvents.GameEnd);
         }
     }

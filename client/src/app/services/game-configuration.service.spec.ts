@@ -150,6 +150,7 @@ describe('GameConfigurationService', () => {
     });
 
     it('removeRoom() should not call rejectOpponent when there is not an other player in the waiting room ', () => {
+        service.roomInformation.playerName[1] = '';
         const spyOnRejectOpponent = spyOn(service, 'rejectOpponent');
         service.removeRoom();
         expect(spyOnRejectOpponent).not.toHaveBeenCalled();
@@ -233,24 +234,6 @@ describe('GameConfigurationService', () => {
         const roomId = '3';
         socketEmulator.peerSideEmit(SocketEvents.GameCreatedConfirmation, roomId);
         expect(service.roomInformation.roomId).toEqual(roomId);
-    });
-
-    it('setGameUnavailable should send a event to the server with the room Id to make the room Unavailable', () => {
-        const roomId = '1';
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        service.roomInformation.roomId = roomId;
-        service.setGameUnavailable();
-        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameUnavailable, roomId);
-    });
-
-    it('setGameAvailable should send a event to the server with the room Id to make the room Available', () => {
-        const roomId = '1';
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(service['clientSocket'], 'send');
-        service.roomInformation.roomId = roomId;
-        service.setGameAvailable();
-        expect(spy).toHaveBeenCalledWith(SocketEvents.SetGameAvailable, roomId);
     });
 
     it('should handle foundOpponent event with the username of the opponent that wants to join his game', () => {

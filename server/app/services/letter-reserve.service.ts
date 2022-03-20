@@ -38,15 +38,20 @@ export class LetterReserveService {
     }
 
     distributeLetter(rack: Letter[]): void {
-        const nLetters = this.lettersReserve.length;
-        let random = Math.floor(Math.random() * nLetters);
-        let letter = this.lettersReserve[random];
-        while (this.lettersReserve[random].quantity === 0) {
-            random = Math.floor(Math.random() * nLetters);
-            letter = this.lettersReserve[random];
+        const tempReserve: Letter[] = [];
+        for (const letter of this.lettersReserve) {
+            for (let i = 0; i < letter.quantity; i++) {
+                tempReserve.push(letter);
+            }
         }
-        this.removeLetter(letter);
-        rack.push(letter);
+
+        this.shuffleArray(tempReserve);
+        const nLetters = tempReserve.length;
+        const random = Math.floor(Math.random() * nLetters);
+        const randomLetter = tempReserve[random];
+
+        this.removeLetter(randomLetter);
+        rack.push(randomLetter);
     }
 
     removeLettersFromRack(toBeRemoved: string[], rack: Letter[]): [Letter[], Letter[]] {
@@ -78,12 +83,10 @@ export class LetterReserveService {
     }
 
     exchangeLetter(toExchange: string[], rack: Letter[]): Letter[] {
-        if (this.lettersReserve.length >= NUMBER_OF_LETTERS_ON_RACK) {
+        if (this.totalQuantity() >= NUMBER_OF_LETTERS_ON_RACK) {
             const removedLetter = this.removeLettersFromRack(toExchange, rack);
             rack = removedLetter[0];
-
             const newRack = this.generateLetters(removedLetter[1].length, rack);
-
             this.lettersReserve = this.insertLetter(removedLetter[1]);
             return newRack;
         } else {
@@ -100,7 +103,7 @@ export class LetterReserveService {
     }
 
     isEmpty(): boolean {
-        return this.lettersReserve.length === 0;
+        return this.totalQuantity() === 0;
     }
 
     totalQuantity(): number {
@@ -110,5 +113,14 @@ export class LetterReserveService {
         return total.reduce((acc, quantity) => {
             return acc + quantity;
         });
+    }
+
+    private shuffleArray(array: Letter[]) {
+        for (let i = 0; i < array.length - 1; i++) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
     }
 }

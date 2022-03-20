@@ -55,6 +55,12 @@ export class LetterPlacementService {
         return { hasPassed: true, gameboard: currentGameboard, invalidWords: [] as Word[] };
     }
 
+    areLettersInRack(commandLetters: string[], player: Player): boolean {
+        const tempRack: Letter[] = this.createTempRack(player);
+        const lettersPresentInRack = this.findLettersPresentInRack(commandLetters, tempRack);
+        return lettersPresentInRack.length === commandLetters.length;
+    }
+
     private validateCommandCoordinate(commandCoord: Coordinate, gameboard: Gameboard): boolean {
         if (!gameboard.getLetterTile(commandCoord).isOccupied) return this.isWithinBoardLimits(commandCoord);
         else return false;
@@ -70,12 +76,6 @@ export class LetterPlacementService {
             tempPlayerRack.push(letter);
         }
         return tempPlayerRack;
-    }
-
-    private areLettersInRack(commandLetters: string[], player: Player): boolean {
-        const tempRack: Letter[] = this.createTempRack(player);
-        const lettersPresentInRack = this.findLettersPresentInRack(commandLetters, tempRack);
-        return lettersPresentInRack.length === commandLetters.length;
     }
 
     private findLettersPresentInRack(commandLetters: string[], tempRack: Letter[]): string[] {

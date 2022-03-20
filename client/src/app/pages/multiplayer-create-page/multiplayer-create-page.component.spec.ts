@@ -23,7 +23,6 @@ import { MultiplayerCreatePageComponent } from './multiplayer-create-page.compon
 })
 export class StubComponent {}
 
-const TEST_ERROR = 'Vous avez le même nom que le Joueur Virtuelle';
 const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const SOLO_MODE = 'solo/classique';
 const CREATE_MULTIPLAYER_GAME = 'multijoueur/creer/classique';
@@ -37,7 +36,6 @@ describe('MultiplayerCreatePageComponent', () => {
     let router: Router;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
 
-    let matSnackBar: MatSnackBar;
     const mockMatSnackBar = {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         open: () => {},
@@ -93,7 +91,6 @@ describe('MultiplayerCreatePageComponent', () => {
         fixture = TestBed.createComponent(MultiplayerCreatePageComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        matSnackBar = TestBed.inject(MatSnackBar);
         location = TestBed.inject(Location);
     });
 
@@ -214,19 +211,6 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
         expect(timerOptions.length).toEqual(component.timerList.length);
     }));
-
-    it('openSnackBar should call the MatSnackBar open method', () => {
-        const matSnackBarSpy = spyOn(matSnackBar, 'open').and.stub();
-        component.openSnackBar(TEST_ERROR);
-        expect(matSnackBarSpy.calls.count()).toBe(1);
-        const args = matSnackBarSpy.calls.argsFor(0);
-        expect(args[0]).toBe(TEST_ERROR);
-        expect(args[1]).toBe('fermer');
-        expect(args[2]).toEqual({
-            verticalPosition: 'top',
-        });
-    });
-
     it('should set timer to timer option when one is select', fakeAsync(() => {
         const timerSelect = fixture.debugElement.nativeElement.querySelector('#timer-select');
         timerSelect.click();
@@ -275,28 +259,6 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('validateName() should return true if the player and the bot do not have the same name', () => {
-        const VALID_NAME = 'robert';
-        component.playerName = VALID_NAME;
-        component.botName = 'Marc';
-        // Testing private method
-        // eslint-disable-next-line dot-notation
-        expect(component['validateName']()).toBeTruthy();
-    });
-
-    it('validateName() should return false if the player and the bot have the same name', () => {
-        const spy = spyOn(component, 'openSnackBar');
-        const spy2 = spyOn(component, 'resetInput' as never);
-        const VALID_NAME = 'robert';
-        component.playerName = VALID_NAME;
-        component.botName = VALID_NAME;
-        // Testing private method
-        // eslint-disable-next-line dot-notation
-        expect(component['validateName']()).toBeFalsy();
-        expect(spy).toHaveBeenCalled();
-        expect(spy2).toHaveBeenCalled();
-    });
-
     it('createGame should call resetInput', fakeAsync(() => {
         // Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -318,18 +280,23 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
     }));
 
-    it('createGame should not call gameConfiguration.beginScrabbleGame when the bot and the player have the samen name', fakeAsync(() => {
+    it('validateName should change the name of the bot if he has the same name as the player', () => {
+        const name = 'robert';
+        component.playerName = name;
+        component.botName = name;
+        // eslint-disable-next-line dot-notation
+        component['validateName']();
+        expect(component.botName).not.toEqual(name);
+    });
+
+    it('validateName should not change the name of the bot if he has not the same name as the player', () => {
+        const name = 'robert';
         component.playerName = 'Vincent';
-        router.navigateByUrl(SOLO_MODE);
-        tick();
-        fixture.detectChanges();
-        component.botName = 'Vincent';
-        component.createGame();
-        setTimeout(() => {
-            expect(gameConfigurationServiceSpy.beginScrabbleGame).not.toHaveBeenCalled();
-        }, 0);
-        flush();
-    }));
+        component.botName = name;
+        // eslint-disable-next-line dot-notation
+        component['validateName']();
+        expect(component.botName).toEqual(name);
+    });
 
     it('createGame should not call gameConfiguration.beginScrabbleGame when we create a multiplayer game', fakeAsync(() => {
         component.playerName = 'Vincent';
@@ -342,15 +309,6 @@ describe('MultiplayerCreatePageComponent', () => {
         }, 0);
         flush();
     }));
-
-    it('secondToMinute() should convert second to minute display', () => {
-        const TIMER1 = 180;
-        const TIMER2 = 210;
-        const expectedValue1 = '3:00 minutes';
-        const expectedValue2 = '3:30 minutes';
-        expect(component.secondToMinute(TIMER1)).toEqual(expectedValue1);
-        expect(component.secondToMinute(TIMER2)).toEqual(expectedValue2);
-    });
 
     it('ResetInput() should clear the playerName', () => {
         const VALID_NAME = 'Serge';
