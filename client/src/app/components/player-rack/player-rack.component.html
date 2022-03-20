@@ -4,13 +4,12 @@
     <div id="player-letters">
         <div
             *ngFor="let letter of rack; index as i"
-            [ngClass]="[
-                this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter',
-                !this.lettersToExchange.includes(i) && this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'
-            ]"
+            [className]="this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter'"
+            [className]="this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'"
             (click)="onLeftClick($event, i)"
             (contextmenu)="onRightClick($event, i)"
         >
+            <div [style.background]="letter.value === buttonPressed ? 'green' : '#red'"></div>
             <div class="letter-value" [style.font-size]="letterSize + 'px'">
                 {{ letter.value.toUpperCase() }}
             </div>

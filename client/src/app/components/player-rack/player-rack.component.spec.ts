@@ -22,8 +22,6 @@ describe('PlayerRackComponent', () => {
 
     beforeEach(async () => {
         chatBoxHandlerSpy = jasmine.createSpyObj('ChatboxHandlerService', ['submitMessage']);
-        gridServiceServiceSpy = jasmine.createSpyObj('GridService', [], { letterSize: LETTER_SIZE });
-        letterPlacementServiceSpy = jasmine.createSpyObj('LetterPlacementService', ['submitPlacement', 'noLettersPlaced']);
         gameClientServiceSpy = jasmine.createSpyObj('GameClientService', ['updateGameboard'], {
             playerOneTurn: true,
             playerOne: {
@@ -32,47 +30,48 @@ describe('PlayerRackComponent', () => {
                         value: 'a',
                         quantity: 2,
                         points: 1,
+                        isBlankLetter: false,
                     },
 
                     {
                         value: 'd',
                         quantity: 2,
                         points: 1,
+                        isBlankLetter: false,
                     },
 
                     {
                         value: 'a',
                         quantity: 2,
                         points: 1,
+                        isBlankLetter: false,
                     },
 
                     {
                         value: 'm',
                         quantity: 2,
                         points: 1,
+                        isBlankLetter: false,
                     },
 
                     {
                         value: 's',
                         quantity: 2,
                         points: 1,
+                        isBlankLetter: false,
                     },
 
                     {
                         value: 'o',
                         quantity: 2,
                         points: 1,
-                    },
-
-                    {
-                        value: 'o',
-                        quantity: 2,
-                        points: 1,
+                        isBlankLetter: false,
                     },
                 ],
             },
         });
-
+        gridServiceServiceSpy = jasmine.createSpyObj('GridService', [], { letterSize: LETTER_SIZE });
+        letterPlacementServiceSpy = jasmine.createSpyObj('LetterPlacementService', ['submitPlacement', 'noLettersPlaced']);
         await TestBed.configureTestingModule({
             declarations: [PlayerRackComponent],
             providers: [
@@ -122,39 +121,13 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('selecting a letter for exchange that is selected for manipulation should change to be exchanged', () => {
-        const expectedManipulate: number[] = [];
-        const expectedExchange: number[] = [0, 2, 1];
-        const indexLetter = 1;
-        component.lettersToManipulate = [1];
-        component.lettersToExchange = [0, 2];
-        const mockClick = new MouseEvent('oncontextmenu');
-        component.onRightClick(mockClick, indexLetter);
-        fixture.detectChanges();
-        expect(component.lettersToManipulate).toEqual(expectedManipulate);
-        expect(component.lettersToExchange).toEqual(expectedExchange);
-    });
-
-    it('scrolling upwards in rack should reposition rack', () => {
+    it('scrolling in rack should reposition rack', () => {
         const spy = spyOn(component, 'repositionRack');
         const mockScroll = new WheelEvent('scroll');
         component.onScrollEvent(mockScroll);
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
         expect(component.buttonPressed).toEqual('ArrowRight');
-    });
-
-    it('scrolling upwards in rack should call repositionRack and change buttonPressed value to ArrowLeft', () => {
-        const spy = spyOn(component, 'repositionRack');
-        const upwardScroll = -15;
-        const leftKey = 'ArrowLeft';
-        const mockScroll = new WheelEvent('scroll', { deltaY: upwardScroll, deltaMode: 0 });
-        component.onScrollEvent(mockScroll);
-        component.onScrollEvent(mockScroll);
-        fixture.detectChanges();
-        expect(spy).toHaveBeenCalled();
-        expect(component.buttonPressed).toEqual(leftKey);
-        expect(mockScroll.deltaY).toBeLessThan(0);
     });
 
     it('clicking outside the rack should call clickOutside', () => {
@@ -188,25 +161,10 @@ describe('PlayerRackComponent', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');
         component.onRightClick(mockClick, indexLetter);
-        expect(component.lettersToExchange.length).toEqual(1);
-        expect(component.lettersToExchange[0]).toEqual(0);
-    });
-
-    it('onRightClick should remove a letter from lettersToExchange on right click', () => {
-        const indexLetter = 0;
-        const mockClick = new MouseEvent('oncontextmenu');
-        component.onRightClick(mockClick, indexLetter);
-        component.onRightClick(mockClick, indexLetter);
-        expect(component.lettersToExchange.length).toEqual(0);
-    });
-
-    it('onRightClick should select a letter and update the array in the html element', () => {
-        const indexLetter = 0;
-        const mockClick = new MouseEvent('oncontextmenu');
-        component.onRightClick(mockClick, indexLetter);
         fixture.detectChanges();
         const lettersDiv = fixture.debugElement.nativeElement.querySelector('#player-letters').children;
-        expect(lettersDiv[indexLetter].classList).toContain('rack-letter-exchange-selected');
+        expect(component.lettersToExchange.length).toEqual(1);
+        expect(lettersDiv[indexLetter].className).toEqual('rack-letter-exchange-selected');
     });
 
     it('onLeftClick should call cancel', () => {
@@ -216,18 +174,6 @@ describe('PlayerRackComponent', () => {
         component.onLeftClick(mockClick, indexLetter);
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
-        expect(!component.lettersToExchange.includes(indexLetter)).toBeTruthy();
-    });
-
-    it('onLeftClick should not select letter to manipulate if it is already selected for exchange', () => {
-        const indexLetter = 0;
-        const mockClick = new MouseEvent('click');
-        const spy = spyOn(component, 'cancel');
-        component.onRightClick(mockClick, indexLetter);
-        component.onLeftClick(mockClick, indexLetter);
-        fixture.detectChanges();
-        expect(spy).not.toHaveBeenCalled();
-        expect(!component.lettersToExchange.includes(indexLetter)).toBeFalsy();
     });
 
     it('onRightClick should deselect a letter already selected on right click ', () => {
@@ -312,41 +258,63 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('selectManipulation should call repositionRack if the key pressed is a left arrow', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockKey = new KeyboardEvent('keydown');
+        component.buttonPressed = 'ArrowLeft';
+        component.selectManipulation(mockKey);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('selectManipulation should call repositionRack if the key pressed is a right arrow', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const mockKey = new KeyboardEvent('keydown');
+        component.buttonPressed = 'ArrowRight';
+        component.selectManipulation(mockKey);
+        expect(spy).toHaveBeenCalled();
+    });
+
     it('selectManipulation should not call repositionRack if the key pressed is not a left or right arrow', () => {
         const spy = spyOn(component, 'repositionRack');
+        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
+        component.selectManipulation(mockKey);
         expect(spy).not.toHaveBeenCalled();
     });
 
     it('selectManipulation should not have previous selection if the key pressed references one letter', () => {
         const invalidIndex = -1;
+        const mockKey = new KeyboardEvent('keydown', { key: 'o' });
         component.buttonPressed = 'o';
         expect(component.previousSelection).toEqual(invalidIndex);
-        component.selectManipulation();
+        component.selectManipulation(mockKey);
         expect(component.previousSelection).not.toEqual(invalidIndex);
     });
 
     it('lettersToManipulate should be empty if key pressed is not present on player rack', () => {
         const empty = 0;
+        const mockKey = new KeyboardEvent('keydown', { key: 'q' });
         component.buttonPressed = 'q';
-        component.selectManipulation();
+        component.selectManipulation(mockKey);
         expect(component.lettersToManipulate.length).toEqual(empty);
     });
 
     it('selectManipulation should manipulate second iteration of a letter when the key has been pressed twice', () => {
         const invalidIndex = -1;
+        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
-        component.selectManipulation();
-        component.selectManipulation();
+        component.selectManipulation(mockKey);
+        component.selectManipulation(mockKey);
         expect(component.previousSelection).not.toEqual(invalidIndex);
     });
 
     it('selectManipulation should manipulate the leftmost iteration the last one pressed was at the rightmost position in the rack', () => {
         const invalidIndex = -1;
+        const mockKey = new KeyboardEvent('keydown', { key: 'a' });
         component.buttonPressed = 'a';
-        component.selectManipulation();
-        component.selectManipulation();
-        component.selectManipulation();
+        component.selectManipulation(mockKey);
+        component.selectManipulation(mockKey);
+        component.selectManipulation(mockKey);
         expect(component.duplicates.length).toEqual(2);
         expect(component.previousSelection).not.toEqual(invalidIndex);
     });
@@ -365,34 +333,6 @@ describe('PlayerRackComponent', () => {
         component.moveRight();
         expect(component.currentSelection).toEqual(expected);
     });
-    it('moveRight should move letter one index to the right when player rack has less than 7 letters', () => {
-        const expected = 0;
-
-        gameClientServiceSpy.playerOne.rack = [
-            {
-                value: 'c',
-                quantity: 2,
-                points: 1,
-            },
-
-            {
-                value: 'e',
-                quantity: 2,
-                points: 1,
-            },
-
-            {
-                value: 'e',
-                quantity: 2,
-                points: 1,
-            },
-        ];
-
-        component.buttonPressed = 'ArrowRight';
-        component.currentSelection = 2;
-        component.moveRight();
-        expect(component.currentSelection).toEqual(expected);
-    });
 
     it('moveLeft should move letter to the end of the rack when the letter selected is at the beginning', () => {
         const expected = 6;
@@ -406,35 +346,6 @@ describe('PlayerRackComponent', () => {
         const expected = 4;
         component.buttonPressed = 'ArrowLeft';
         component.currentSelection = 5;
-        component.moveLeft();
-        expect(component.currentSelection).toEqual(expected);
-    });
-
-    it('moveLeft should move letter one index to the left when player rack has less than 7 letters', () => {
-        const expected = 1;
-
-        gameClientServiceSpy.playerOne.rack = [
-            {
-                value: 'd',
-                quantity: 2,
-                points: 1,
-            },
-
-            {
-                value: 'k',
-                quantity: 2,
-                points: 1,
-            },
-
-            {
-                value: 'r',
-                quantity: 2,
-                points: 1,
-            },
-        ];
-
-        component.buttonPressed = 'ArrowLeft';
-        component.currentSelection = 2;
         component.moveLeft();
         expect(component.currentSelection).toEqual(expected);
     });
