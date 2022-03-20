@@ -116,11 +116,6 @@ describe('InformationPanelComponent', () => {
         expect(testedValue).toEqual(expectedValue);
     });
 
-    // it('should call the method letterPlacementService.resetGameBoardView if updateFontSize is called', () => {
-    //     component.updateFontSize();
-    //     expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
-    // });
-
     it('should have a div with the timer when it is your turn to play', () => {
         gameClientSpy.playerOneTurn = true;
         fixture.detectChanges();

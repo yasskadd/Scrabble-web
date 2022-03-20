@@ -24,7 +24,6 @@ export class PlayerRackComponent implements OnInit {
     lettersToExchange: number[];
     lettersToManipulate: number[];
     duplicates: number[];
-    letterValues: Letter[];
 
     constructor(
         private chatBoxHandler: ChatboxHandlerService,
@@ -39,7 +38,6 @@ export class PlayerRackComponent implements OnInit {
         this.lettersToExchange = [];
         this.lettersToManipulate = [];
         this.duplicates = [];
-        this.letterValues = [];
     }
 
     @HostListener('mousewheel', ['$event'])
@@ -51,7 +49,7 @@ export class PlayerRackComponent implements OnInit {
 
     @HostListener('window: click', ['$event'])
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
-        if (!this.eRef.nativeElement.contains(event.target as Node)) {
+        if (!this.eRef.nativeElement.contains(event.target)) {
             this.cancel();
         }
     }
