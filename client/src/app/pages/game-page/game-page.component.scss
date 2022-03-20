@@ -19,7 +19,7 @@ body {
 .chatbox {
     flex-grow: 1;
     max-width: 300px;
-    max-height: max-content;
+    max-height: 100%;
     padding: 10px;
     background-color: rgb(174, 192, 174);
 }

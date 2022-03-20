@@ -9,6 +9,11 @@
     word-wrap: break-word;
     overflow-y: auto;
 }
+
+::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+}
+
 .current-user {
     color: rgb(12, 56, 200);
 }
