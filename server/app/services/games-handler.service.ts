@@ -219,6 +219,8 @@ export class GamesHandler {
             newPlayer.room = gameInfo.roomId;
             this.players.set(gameInfo.socketId[player], newPlayer);
         }
+        if (this.gamePlayers.get(newPlayer.room) === undefined) this.gamePlayers.set(newPlayer.room, [] as Player[]);
+        (this.gamePlayers.get(newPlayer.room) as Player[]).push(newPlayer);
         return newPlayer;
     }
 
