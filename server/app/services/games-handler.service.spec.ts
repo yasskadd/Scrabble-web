@@ -77,8 +77,7 @@ describe('GamesHandler Service', () => {
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
 
-        (player1 as RealPlayer).setGame(game, true);
-        (player2 as RealPlayer).setGame(game, false);
+        player1.game = game;
         gamesHandler = new GamesHandler(
             socketManagerStub as unknown as SocketManager,
             scoreStorageStub as unknown as ScoreStorageService,
@@ -833,6 +832,11 @@ describe('GamesHandler Service', () => {
 
     context('CreateGame() Tests', () => {
         let createNewGameStub: sinon.SinonStub<unknown[], unknown>;
+        let setAndGetPlayerStub: sinon.SinonStub<unknown[], unknown>;
+        let updatePlayerInfoStub: sinon.SinonStub<unknown[], unknown>;
+        let botPlayer: sinon.SinonStubbedInstance<BeginnerBot>;
+        let realPlayer: sinon.SinonStubbedInstance<RealPlayer>;
+
         beforeEach(() => {
             gamesHandler = new GamesHandler(
                 socketManagerStub as unknown as SocketManager,
@@ -841,9 +845,21 @@ describe('GamesHandler Service', () => {
                 letterPlacementStub as unknown as LetterPlacementService,
             );
             createNewGameStub = sinon.stub(gamesHandler, 'createNewGame' as never);
-            gameInfo.socketId[0] = serverSocket.id;
+            gameInfo.socketId = [serverSocket.id];
             createNewGameStub.returns(game);
             sinon.stub(gamesHandler, 'userConnected' as never);
+            updatePlayerInfoStub = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+            setAndGetPlayerStub = sinon.stub(gamesHandler, 'setAndGetPlayer' as never);
+            botPlayer = sinon.createStubInstance(BeginnerBot);
+            botPlayer.room = ROOM;
+            botPlayer.game = game;
+            botPlayer.name = 'VINCENT';
+            realPlayer = sinon.createStubInstance(RealPlayer);
+            realPlayer.room = ROOM;
+            realPlayer.game = game;
+            realPlayer.name = 'ROBERT';
+            setAndGetPlayerStub.onCall(0).returns(realPlayer);
+            setAndGetPlayerStub.onCall(1).returns(botPlayer);
         });
 
         afterEach(() => {
@@ -853,31 +869,29 @@ describe('GamesHandler Service', () => {
         });
         it('CreateGame() should call setAndGetPlayer()', (done) => {
             gameInfo.socketId[1] = '3249adf8243';
-            const setAndGetPlayer = sinon.spy(gamesHandler, 'setAndGetPlayer' as never);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
-            expect(setAndGetPlayer.called).to.equal(true);
+            expect(setAndGetPlayerStub.called).to.equal(true);
             done();
         });
 
         it('CreateGame() should call updatePlayerInfo when you are the player creating the game()', (done) => {
             gameInfo.socketId[1] = '3249adf8243';
-            const updatePlayerInfo = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
-            expect(updatePlayerInfo.called).to.equal(true);
+            expect(updatePlayerInfoStub.called).to.equal(true);
             done();
         });
 
-        // it('CreateGame() should call the setGame and the start function of the player when you there you are playing against a bot', (done) => {
-        //     const playerStub = sinon.createStubInstance(BeginnerBot);
-        //     // eslint-disable-next-line @typescript-eslint/no-empty-function
-        //     playerStub.setGame.callsFake(() => {});
-        //     // eslint-disable-next-line dot-notation
-        //     gamesHandler['createGame'](serverSocket, gameInfo);
-        //     expect(playerStub.setGame.called).to.equal(true);
-        //     done();
-        // });
+        it('CreateGame() should call the setGame and the start function of the player when you there you are playing against a bot', (done) => {
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](serverSocket, gameInfo);
+
+            expect(realPlayer.setGame.called).to.equal(true);
+            expect(botPlayer.setGame.called).to.equal(true);
+            expect(botPlayer.start.called).to.equal(true);
+            done();
+        });
 
         it('CreateGame() should call createNewGame()', () => {
             gameInfo.socketId[1] = '3249adf8243';
@@ -887,15 +901,12 @@ describe('GamesHandler Service', () => {
         });
 
         it('CreateGame() should call endGameScore() and changeTurn() when the turn end ', () => {
-            player1.name = 'Vincent';
             gameInfo.socketId[1] = '3249adf8243';
-            const endGameScore = sinon.spy(gamesHandler, 'endGameScore' as never);
-            const changeTurn = sinon.spy(gamesHandler, 'changeTurn' as never);
+            const endGameScore = sinon.stub(gamesHandler, 'endGameScore' as never);
+            const changeTurn = sinon.stub(gamesHandler, 'changeTurn' as never);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
             game.turn.endTurn.next(player1.name);
-            game.turn.endTurn.unsubscribe();
-            game.turn.countdown.unsubscribe();
             expect(endGameScore.called).to.equal(true);
             expect(changeTurn.called).to.equal(true);
         });
@@ -903,12 +914,10 @@ describe('GamesHandler Service', () => {
         it('CreateGame() should call sendTimer() when the countdown change value ', () => {
             player1.name = 'Vincent';
             gameInfo.socketId[1] = '3249adf8243';
-            const sendTimer = sinon.spy(gamesHandler, 'sendTimer' as never);
+            const sendTimer = sinon.stub(gamesHandler, 'sendTimer' as never);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
             game.turn.countdown.next(1);
-            game.turn.endTurn.unsubscribe();
-            game.turn.countdown.unsubscribe();
             expect(sendTimer.called).to.equal(true);
         });
 

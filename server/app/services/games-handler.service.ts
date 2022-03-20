@@ -77,7 +77,6 @@ export class GamesHandler {
     }
 
     private clueCommand(this: this, socket: Socket) {
-        if (!this.players.has(socket.id)) return;
         const letterString: string[] = [];
         const player = this.players.get(socket.id) as Player;
         this.wordSolver.setGameboard(player.game.gameboard as Gameboard);
