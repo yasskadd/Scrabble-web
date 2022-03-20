@@ -121,17 +121,13 @@ export class PlayerRackComponent implements OnInit {
 
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        const notFound = constants.INVALID_INDEX;
         if (this.lettersToManipulate.includes(letter)) {
             this.lettersToManipulate = [];
         }
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
-            const index = this.lettersToExchange.indexOf(letter);
-            if (index > notFound) {
-                this.lettersToExchange.splice(index, 1);
-            }
+            this.lettersToExchange.splice(this.lettersToExchange.indexOf(letter), 1);
         }
     }
     onLeftClick(event: MouseEvent, letter: number) {

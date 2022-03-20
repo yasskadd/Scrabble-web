@@ -144,15 +144,18 @@ describe('PlayerRackComponent', () => {
         expect(component.buttonPressed).toEqual('ArrowRight');
     });
 
-    // it('scrolling upwards in rack should reposition rack', () => {
-    //     const spy = spyOn(component, 'repositionRack');
-    //     const mockScroll = new WheelEvent('scroll');
-    //     component.onScrollEvent(mockScroll);
-    //     component.onScrollEvent(mockScroll);
-    //     fixture.detectChanges();
-    //     expect(spy).toHaveBeenCalled();
-    //     expect(mockScroll.deltaY).toBeLessThan(0);
-    // });  // trying to cover line 50
+    it('scrolling upwards in rack should call repositionRack and change buttonPressed value to ArrowLeft', () => {
+        const spy = spyOn(component, 'repositionRack');
+        const upwardScroll = -15;
+        const leftKey = 'ArrowLeft';
+        const mockScroll = new WheelEvent('scroll', { deltaY: upwardScroll, deltaMode: 0 });
+        component.onScrollEvent(mockScroll);
+        component.onScrollEvent(mockScroll);
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+        expect(component.buttonPressed).toEqual(leftKey);
+        expect(mockScroll.deltaY).toBeLessThan(0);
+    });
 
     it('clicking outside the rack should call clickOutside', () => {
         const indexLetter = 0;
@@ -195,8 +198,7 @@ describe('PlayerRackComponent', () => {
         component.onRightClick(mockClick, indexLetter);
         component.onRightClick(mockClick, indexLetter);
         expect(component.lettersToExchange.length).toEqual(0);
-        expect(component.lettersToExchange.indexOf(indexLetter)).toEqual(constants.INVALID_INDEX);
-    }); // not sure why this test does not cover 136-140
+    });
 
     it('onRightClick should select a letter and update the array in the html element', () => {
         const indexLetter = 0;
@@ -214,6 +216,18 @@ describe('PlayerRackComponent', () => {
         component.onLeftClick(mockClick, indexLetter);
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
+        expect(!component.lettersToExchange.includes(indexLetter)).toBeTruthy();
+    });
+
+    it('onLeftClick should not select letter to manipulate if it is already selected for exchange', () => {
+        const indexLetter = 0;
+        const mockClick = new MouseEvent('click');
+        const spy = spyOn(component, 'cancel');
+        component.onRightClick(mockClick, indexLetter);
+        component.onLeftClick(mockClick, indexLetter);
+        fixture.detectChanges();
+        expect(spy).not.toHaveBeenCalled();
+        expect(!component.lettersToExchange.includes(indexLetter)).toBeFalsy();
     });
 
     it('onRightClick should deselect a letter already selected on right click ', () => {
