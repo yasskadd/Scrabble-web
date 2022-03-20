@@ -168,7 +168,6 @@ export class GamesHandler {
         const game = this.createNewGame(gameInfo);
 
         (playerOne as RealPlayer).setGame(game as Game, true);
-
         if (gameInfo.socketId.length === 1) {
             (playerTwo as BeginnerBot).setGame(game);
             (playerTwo as BeginnerBot).start();

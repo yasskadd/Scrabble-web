@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { Gameboard } from '@app/classes/gameboard.class';
+import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
@@ -12,11 +13,10 @@ import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
-import { Observable } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
-import { Container } from 'typedi';
 import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
@@ -38,10 +38,8 @@ describe('GamesHandler Service', () => {
     let gameInfo: { playerName: string[]; roomId: string; timer: number; socketId: string[] };
     const player1 = sinon.createStubInstance(RealPlayer);
     const player2 = sinon.createStubInstance(RealPlayer);
-    let turn: Turn;
-    let letterReserve: LetterReserveService;
-    let letterPlacement: LetterPlacementService;
-    let game: Game;
+
+    let game: sinon.SinonStubbedInstance<Game> & Game;
 
     beforeEach((done) => {
         player1.room = '1';
@@ -50,13 +48,8 @@ describe('GamesHandler Service', () => {
         player2.rack = [{ value: 'c', quantity: 2, points: 1 }];
         player1.score = 0;
         player2.score = 0;
-        const TIMER = 60;
-        turn = new Turn(TIMER);
-        letterReserve = new LetterReserveService();
-        letterPlacement = Container.get(LetterPlacementService);
-        game = new Game(player1, player2, turn, letterReserve, letterPlacement);
-        (player1 as RealPlayer).setGame(game, true);
-        (player2 as RealPlayer).setGame(game, false);
+
+        //  game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         socketManagerStub = sinon.createStubInstance(SocketManager);
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         socketManagerStub.emitRoom.callsFake(() => {});
@@ -78,6 +71,13 @@ describe('GamesHandler Service', () => {
             return [];
         });
 
+        game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
+        game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
+        game.letterReserve = new LetterReserveService();
+        game.gameboard = sinon.createStubInstance(Gameboard);
+        game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
+        (player1 as RealPlayer).setGame(game, true);
+        (player2 as RealPlayer).setGame(game, false);
         gamesHandler = new GamesHandler(
             socketManagerStub as unknown as SocketManager,
             scoreStorageStub as unknown as ScoreStorageService,
@@ -99,6 +99,8 @@ describe('GamesHandler Service', () => {
     });
 
     afterEach(() => {
+        game.turn.countdown.unsubscribe();
+        game.turn.endTurn.unsubscribe();
         clientSocket.close();
         sio.close();
         sinon.restore();
@@ -337,6 +339,27 @@ describe('GamesHandler Service', () => {
         expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
         // eslint-disable-next-line dot-notation
         expect(gamesHandler['players'].get(SECOND_PLAYER_SOCKET_ID) as Player).to.be.eql(EXPECTED_NEW_PLAYER as Player);
+    });
+
+    it('setAndGetPlayer() should set a bot player and return him for the second player', () => {
+        const FIRST_PLAYER = 'BIGBROTHER';
+        const SECOND_PLAYER = 'LITTLEBROTHER';
+        const FIRST_PLAYER_SOCKET_ID = '0';
+
+        const gameInformation = {
+            playerName: [FIRST_PLAYER, SECOND_PLAYER],
+            roomId: ROOM,
+            timer: 0,
+            socketId: [FIRST_PLAYER_SOCKET_ID],
+        };
+        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, { timer: gameInformation.timer, roomId: gameInformation.roomId });
+        // eslint-disable-next-line dot-notation
+        gamesHandler['setAndGetPlayer'](gameInformation) as Player;
+
+        // eslint-disable-next-line dot-notation
+        const newPlayer = gamesHandler['setAndGetPlayer'](gameInformation) as Player;
+        expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
+        // eslint-disable-next-line dot-notation
     });
 
     it("changeTurn() should send the game's information when called and the active player isn't undefined", () => {
@@ -817,47 +840,83 @@ describe('GamesHandler Service', () => {
                 letterPlacementStub as unknown as LetterPlacementService,
             );
             createNewGameStub = sinon.stub(gamesHandler, 'createNewGame' as never);
-            const gameStub = {
-                letterReserve: { lettersReserve: [] },
-                turn: { endTurn: new Observable(), countdown: new Observable() },
-                gameboard: { gameboardCoords: [] },
-            };
-            gameInfo.socketId[0] = '32498243';
-            gameInfo.socketId[1] = '3249adf8243';
-            createNewGameStub.returns(gameStub);
-            sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+            gameInfo.socketId[0] = serverSocket.id;
+            createNewGameStub.returns(game);
             sinon.stub(gamesHandler, 'userConnected' as never);
-            sinon.stub(gamesHandler, 'sendTimer' as never);
+        });
+
+        afterEach(() => {
+            sinon.restore();
+            game.turn.countdown.unsubscribe();
+            game.turn.endTurn.unsubscribe();
         });
         it('CreateGame() should call setAndGetPlayer()', (done) => {
+            gameInfo.socketId[1] = '3249adf8243';
             const setAndGetPlayer = sinon.spy(gamesHandler, 'setAndGetPlayer' as never);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
             expect(setAndGetPlayer.called).to.equal(true);
             done();
         });
-        it('CreateGame() should call createNewGame()', (done) => {
+
+        it('CreateGame() should call updatePlayerInfo when you are the player creating the game()', (done) => {
+            gameInfo.socketId[1] = '3249adf8243';
+            const updatePlayerInfo = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](serverSocket, gameInfo);
+            expect(updatePlayerInfo.called).to.equal(true);
+            done();
+        });
+
+        // it('CreateGame() should call the setGame and the start function of the player when you there you are playing against a bot', (done) => {
+        //     const playerStub = sinon.createStubInstance(BeginnerBot);
+        //     // eslint-disable-next-line @typescript-eslint/no-empty-function
+        //     playerStub.setGame.callsFake(() => {});
+        //     // eslint-disable-next-line dot-notation
+        //     gamesHandler['createGame'](serverSocket, gameInfo);
+        //     expect(playerStub.setGame.called).to.equal(true);
+        //     done();
+        // });
+
+        it('CreateGame() should call createNewGame()', () => {
+            gameInfo.socketId[1] = '3249adf8243';
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
             expect(createNewGameStub.called).to.equal(true);
-            done();
+        });
+
+        it('CreateGame() should call endGameScore() and changeTurn() when the turn end ', () => {
+            player1.name = 'Vincent';
+            gameInfo.socketId[1] = '3249adf8243';
+            const endGameScore = sinon.spy(gamesHandler, 'endGameScore' as never);
+            const changeTurn = sinon.spy(gamesHandler, 'changeTurn' as never);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](serverSocket, gameInfo);
+            game.turn.endTurn.next(player1.name);
+            game.turn.endTurn.unsubscribe();
+            game.turn.countdown.unsubscribe();
+            expect(endGameScore.called).to.equal(true);
+            expect(changeTurn.called).to.equal(true);
+        });
+
+        it('CreateGame() should call sendTimer() when the countdown change value ', () => {
+            player1.name = 'Vincent';
+            gameInfo.socketId[1] = '3249adf8243';
+            const sendTimer = sinon.spy(gamesHandler, 'sendTimer' as never);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](serverSocket, gameInfo);
+            game.turn.countdown.next(1);
+            game.turn.endTurn.unsubscribe();
+            game.turn.countdown.unsubscribe();
+            expect(sendTimer.called).to.equal(true);
         });
 
         it('CreateGame() should emit game information to the room', () => {
             serverSocket.join(ROOM);
             // eslint-disable-next-line dot-notation
             gamesHandler['createGame'](serverSocket, gameInfo);
-            const gameStub = {
-                letterReserve: { lettersReserve: [] },
-                turn: { endTurn: new Observable(), countdown: new Observable() },
-                gameboard: { gameboardCoords: [] },
-            };
             expect(
-                socketManagerStub.emitRoom.calledWithExactly(
-                    gameInfo.roomId,
-                    SocketEvents.LetterReserveUpdated,
-                    gameStub.letterReserve.lettersReserve,
-                ),
+                socketManagerStub.emitRoom.calledWithExactly(gameInfo.roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve),
             ).to.be.equal(true);
         });
     });
