@@ -1,6 +1,6 @@
 .player {
     border: 1px solid #c3c3c3;
-    border-radius: 5px;
+    border-radius: 4px;
     padding: 10px;
 }
 .player > * {
@@ -19,10 +19,13 @@
     color: cadetblue;
 }
 .active {
-    border: 2px solid rgb(81, 173, 81);
+    border: 2px solid rgb(62, 133, 62);
+    background-color: rgb(225, 248, 227);
+    box-shadow: rgb(62, 133, 62, 0.4) -5px 5px, rgb(62, 133, 62, 0.3) -10px 10px, rgb(62, 133, 62, 0.2) -15px 15px, rgb(62, 133, 62, 0.1) -20px 20px,
+        rgb(62, 133, 62, 0.05) -25px 25px;
 }
 .active .time {
-    color: rgb(62, 133, 62);
+    color: #23501f;
 }
 #versus {
     display: flex;
