@@ -7,12 +7,11 @@ import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
-import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
+import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
@@ -20,7 +19,6 @@ import { WordSolverService } from './word-solver.service';
 const MAX_SKIP = 6;
 const SECOND = 1000;
 const CHAR_ASCII = 96;
-type PlayInfo = { gameboard: LetterTile[]; activePlayer: string | undefined };
 interface GameHolder {
     game: Game | undefined;
     players: Player[];
@@ -41,7 +39,12 @@ export class GamesHandler {
     private players: Map<string, Player>;
     private games: Map<string, GameHolder>;
 
-    constructor(private socketManager: SocketManager, private readonly scoreStorage: ScoreStorageService, private wordSolver: WordSolverService) {
+    constructor(
+        private socketManager: SocketManager,
+        private readonly scoreStorage: ScoreStorageService,
+        private wordSolver: WordSolverService,
+        private letterPlacement: LetterPlacementService,
+    ) {
         this.players = new Map();
         this.games = new Map();
     }
@@ -122,36 +125,36 @@ export class GamesHandler {
         if (!this.players.has(socket.id)) return;
         const lettersToExchange = letters.length;
         const player = this.players.get(socket.id) as RealPlayer;
-        const oldPlayerRack = player.rack;
         const game = player.game;
-        player.exchangeLetter(letters);
-
-        if (player.rack.length === 0) return;
-        if (JSON.stringify(oldPlayerRack) === JSON.stringify(player.rack)) {
-            socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne posséder pas toutes les lettres a échanger');
-        } else {
-            socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
+        if (!this.letterPlacement.areLettersInRack(letters, player)) {
+            socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne possédez pas toutes les lettres à échanger');
+            return;
         }
+        player.exchangeLetter(letters);
+        if (player.rack.length === 0) return;
+        socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         this.updatePlayerInfo(socket, player.room, game);
         this.socketManager.emitRoom(player.room, SocketEvents.Play, player.getInformation(), game.turn.activePlayer);
     }
 
     private playGame(this: this, socket: Socket, commandInfo: CommandInfo) {
         if (!this.players.has(socket.id)) return;
-        const firstCoordinateColumns = commandInfo.firstCoordinate.x;
-        const firstCoordinateRows = commandInfo.firstCoordinate.y;
-        const letterPlaced = commandInfo.letters.join('');
-        const player = this.players.get(socket.id) as RealPlayer;
-        const play = player.placeLetter(commandInfo) as PlaceLettersReturn | string;
+        let direction: string;
+        if (commandInfo.isHorizontal === undefined) direction = '';
+        else direction = commandInfo.isHorizontal ? 'h' : 'v';
 
-        if (typeof play === 'string') {
-            socket.emit(SocketEvents.ImpossibleCommandError, play);
-        } else if (typeof play !== 'string') {
-            const playInfo: PlayInfo = {
+        const commandWrite = `!placer ${String.fromCharCode(CHAR_ASCII + commandInfo.firstCoordinate.y)}${
+            commandInfo.firstCoordinate.x
+        }${direction} ${commandInfo.letters.join('')}`;
+        const player = this.players.get(socket.id) as RealPlayer;
+        const play = player.placeLetter(commandInfo);
+
+        if (typeof play === 'string') socket.emit(SocketEvents.ImpossibleCommandError, play);
+        else if (typeof play !== 'string') {
+            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, {
                 gameboard: play.gameboard.gameboardTiles,
                 activePlayer: player.game.turn.activePlayer,
-            };
-            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, playInfo);
+            });
             this.updatePlayerInfo(socket, player.room, player.game);
 
             if (!play.hasPassed) {
@@ -162,13 +165,7 @@ export class GamesHandler {
                     ),
                 );
             } else {
-                const direction = commandInfo.isHorizontal ? 'h' : 'v';
-                socket.broadcast
-                    .to(player.room)
-                    .emit(
-                        SocketEvents.GameMessage,
-                        `!placer ${String.fromCharCode(CHAR_ASCII + firstCoordinateRows)}${firstCoordinateColumns}${direction} ${letterPlaced}`,
-                    );
+                socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, commandWrite);
             }
         }
     }
@@ -323,14 +320,13 @@ export class GamesHandler {
         const room = player.room;
         const roomInfomation = this.games.get(room);
         if (roomInfomation?.players !== undefined && !roomInfomation.isGameFinish) {
-            const newGameHolder: GameHolder = {
+            this.games.set(room, {
                 game: roomInfomation.game,
                 players: roomInfomation.players,
                 roomId: roomInfomation.roomId,
                 isGameFinish: true,
                 timer: roomInfomation.timer,
-            };
-            this.games.set(room, newGameHolder);
+            });
             this.socketManager.emitRoom(room, SocketEvents.GameEnd);
         }
     }

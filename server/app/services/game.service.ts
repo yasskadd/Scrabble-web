@@ -42,6 +42,7 @@ export class Game {
     }
 
     play(player: Player, commandInfo: CommandInfo): PlaceLettersReturn | string {
+        if (commandInfo.letters.length === 1) commandInfo.isHorizontal = undefined;
         let placeLettersReturn: PlaceLettersReturn = { hasPassed: false, gameboard: this.gameboard, invalidWords: [] as Word[] };
         const numberOfLetterPlaced = commandInfo.letters.length;
 
@@ -51,7 +52,7 @@ export class Game {
             const errorType = validationInfo[1] as string;
             if (errorType !== null) {
                 this.turn.resetSkipCounter();
-                return errorType as string;
+                return errorType;
             }
             placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
 
