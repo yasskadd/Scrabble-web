@@ -5,7 +5,7 @@
             <button
                 *ngIf="this.gameConfiguration.roomInformation.isCreator"
                 (click)="soloMode()"
-                id="solo-mode-button"
+                class="solo-mode-button"
                 mat-raised-button
                 [disabled]="this.gameConfiguration.roomInformation.playerName[1]"
             >
