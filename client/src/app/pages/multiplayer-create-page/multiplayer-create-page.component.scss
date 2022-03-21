@@ -1,26 +1,54 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
+body {
     margin: auto;
+    height: 100%;
+    background-color: rgb(225, 232, 248);
 }
 
-.containerButton {
+.justified {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper {
+    width: 50%;
+    min-width: 500px;
+    background-color: rgb(174, 192, 174);
+    color: #23501f;
+    padding: 30px;
+}
+
+.main-title {
+    text-align: left;
+    padding-bottom: 20px;
+}
+
+.container-button {
     display: flex;
     justify-content: space-between;
     padding: 1%;
 }
 
-.startButton {
+.mat-card-title {
+    font-size: 23px;
+    margin-top: 10px;
+}
+
+.start-button {
     border-radius: 10px;
-    width: 20%;
-    font-size: 25px;
+    width: 200px;
+    font-size: 23px;
     padding: 2px;
     color: honeydew;
     background-color: green;
 }
 
-.returnButton {
+.start-button:hover {
+    transform: scale(0.95);
+}
+
+.return-button {
     transform: scale(1.5);
 }
 
@@ -30,4 +58,11 @@
 
 .max {
     color: red;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: rgb(255 255 255 / 36%);
+}
+::ng-deep .mat-form-field-underline {
+    display: none;
 }

@@ -104,11 +104,11 @@ describe('MultiplayerJoinPageComponent', () => {
             verticalPosition: 'top',
         });
     });
-    it('should call joinRoom() when the joinGameButton is pressed', fakeAsync(() => {
+    it('should call joinRoom() when the join-game button is pressed', fakeAsync(() => {
         component.playerName = 'Vincent';
         fixture.detectChanges();
         const spy = spyOn(component, 'joinRoom');
-        const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
+        const button = fixture.debugElement.nativeElement.querySelector('.join-game');
         button.click();
         tick();
         fixture.detectChanges();
@@ -119,7 +119,7 @@ describe('MultiplayerJoinPageComponent', () => {
         component.playerName = 'Vincent';
         fixture.detectChanges();
         const spy = spyOn(component, 'joinRandomGame');
-        const button = fixture.debugElement.nativeElement.querySelector('.joinRandomGameButton');
+        const button = fixture.debugElement.nativeElement.querySelector('.join-random-game-button');
         button.click();
         tick();
         fixture.detectChanges();
@@ -129,7 +129,7 @@ describe('MultiplayerJoinPageComponent', () => {
     it('should not be able to call joinRandomGame()when the player did not enter his name', fakeAsync(() => {
         fixture.detectChanges();
         const spy = spyOn(component, 'joinRandomGame');
-        const button = fixture.debugElement.nativeElement.querySelector('.joinRandomGameButton');
+        const button = fixture.debugElement.nativeElement.querySelector('.join-random-game-button');
         button.click();
         tick();
         fixture.detectChanges();
@@ -138,7 +138,7 @@ describe('MultiplayerJoinPageComponent', () => {
     it('should not be able to call joinRoom() when the player did not enter his name', fakeAsync(() => {
         fixture.detectChanges();
         const spy = spyOn(component, 'joinRoom');
-        const button = fixture.debugElement.nativeElement.querySelector('.joinGameButton');
+        const button = fixture.debugElement.nativeElement.querySelector('.join-game');
         button.click();
         tick();
         fixture.detectChanges();
@@ -163,37 +163,37 @@ describe('MultiplayerJoinPageComponent', () => {
         expect(gameConfigurationServiceSpy.joinRandomRoom).toHaveBeenCalledWith(playerName);
         expect(component.playerName).toEqual('');
     });
-    it('Should call navigatePage when the room is Joinable', () => {
+    it('should call navigatePage when the room is Joinable', () => {
         const spy = spyOn(component, 'navigatePage');
         gameConfigurationServiceSpy.isRoomJoinable.next(true);
         fixture.detectChanges();
         expect(spy).toHaveBeenCalledWith();
     });
 
-    it('Should  not call navigatePage when the room is not Joinable', () => {
+    it('should  not call navigatePage when the room is not Joinable', () => {
         const spy = spyOn(component, 'navigatePage');
         gameConfigurationServiceSpy.isRoomJoinable.next(false);
         fixture.detectChanges();
         expect(spy).not.toHaveBeenCalledWith();
     });
 
-    it('Should have a table when there is room availables', () => {
+    it('should have a table when there is room availables', () => {
         fixture.detectChanges();
         const table = fixture.debugElement.nativeElement.querySelector('.roomAvailable');
         expect(table).toBeTruthy();
     });
-    it('Should  not have a paragraph saying there is no room available when there is room availables', () => {
+    it('should  not have a paragraph saying there is no room available when there is room availables', () => {
         fixture.detectChanges();
         const text = fixture.debugElement.nativeElement.querySelector('.noRoomAvailable');
         expect(text).toBeFalsy();
     });
 
-    it('Should have a button to join RandomGame if there is room available', () => {
+    it('should have a button to join RandomGame if there is room available', () => {
         fixture.detectChanges();
-        const text = fixture.debugElement.nativeElement.querySelector('.joinRandomGameButton');
+        const text = fixture.debugElement.nativeElement.querySelector('.join-random-game-button');
         expect(text).toBeTruthy();
     });
-    it('Should open a snackBar when there an error while trying to join a multiplayer game', () => {
+    it('should open a snackBar when there an error while trying to join a multiplayer game', () => {
         const spy = spyOn(component, 'openSnackBar');
         gameConfigurationServiceSpy.errorReason.next(TEST_ERROR);
         fixture.detectChanges();
@@ -201,13 +201,13 @@ describe('MultiplayerJoinPageComponent', () => {
         expect(spy).toHaveBeenCalledWith(TEST_ERROR);
     });
 
-    it('Should not open a snackBar when there no error while trying to join a multiplayer game', () => {
+    it('should not open a snackBar when there no error while trying to join a multiplayer game', () => {
         const spy = spyOn(component, 'openSnackBar');
         gameConfigurationServiceSpy.errorReason.next('');
         fixture.detectChanges();
         expect(spy).not.toHaveBeenCalled();
     });
-    it('Should call listenToServerResponse when the page is initialize', () => {
+    it('should call listenToServerResponse when the page is initialize', () => {
         const spy = spyOn(component, 'listenToServerResponse');
         component.ngOnInit();
         fixture.detectChanges();
