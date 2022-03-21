@@ -336,6 +336,21 @@ describe.only('GamesHandler Service', () => {
             expect(addPointsSpy.calledWith(player1.rack)).to.equal(true);
             expect(deductPointsSpy.called).to.equal(true);
         });
+        it('endGameScore() should not do anything if the game has not ended', () => {
+            const addPointsSpy1 = sinon.spy(player2, 'addPoints');
+            const deductPointsSpy1 = sinon.spy(player1, 'deductPoints');
+            const addPointsSpy2 = sinon.spy(player1, 'addPoints');
+            const deductPointsSpy2 = sinon.spy(player2, 'deductPoints');
+            player1.game.turn.skipCounter = 0;
+            // eslint-disable-next-line dot-notation
+            gamesHandler['gamePlayers'].set(player1.room, [player1, player2]);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['endGameScore'](player1.room);
+            expect(addPointsSpy1.calledWith(player1.rack)).to.not.equal(true);
+            expect(deductPointsSpy1.called).to.not.equal(true);
+            expect(addPointsSpy2.calledWith(player2.rack)).to.not.equal(true);
+            expect(deductPointsSpy2.called).to.not.equal(true);
+        });
     });
 
     it('setAndGetPlayer() should set a new player and return him for the first player', () => {

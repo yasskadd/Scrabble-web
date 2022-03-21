@@ -190,7 +190,7 @@ export class GamesHandler {
         game.turn.endTurn.subscribe(() => {
             this.endGameScore(gameInfo.roomId);
             this.changeTurn(gameInfo.roomId);
-            if (game?.turn.activePlayer === undefined) {
+            if (game.turn.activePlayer === undefined) {
                 this.userConnected(gameInfo.socketId);
             }
         });
@@ -202,7 +202,7 @@ export class GamesHandler {
 
     private endGameScore(roomID: string) {
         const players = this.gamePlayers.get(roomID) as Player[];
-        if (players[0].game?.turn.skipCounter === MAX_SKIP) {
+        if (players[0].game.turn.skipCounter === MAX_SKIP) {
             players.forEach((player) => {
                 player.deductPoints();
             });
