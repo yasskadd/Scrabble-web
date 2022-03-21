@@ -24,7 +24,7 @@ import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 const ROOM = '0';
 
-describe('GamesHandler Service', () => {
+describe.only('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
     let letterPlacementStub: sinon.SinonStubbedInstance<LetterPlacementService>;
@@ -155,6 +155,27 @@ describe('GamesHandler Service', () => {
         gamesHandler['reserveCommand'](serverSocket);
     });
 
+    it("reserveCommand() shouldn't do anything if the socketID is invalid ", () => {
+        const TIME_TO_RECEIVE_EVENT = 500;
+        const clock = sinon.useFakeTimers();
+        player1.game.letterReserve = {
+            lettersReserve: [
+                { value: 'c', quantity: 2, points: 1 },
+                { value: 'r', quantity: 2, points: 1 },
+                { value: 'p', quantity: 2, points: 1 },
+            ],
+        } as LetterReserveService;
+        let testBoolean = true;
+        clientSocket.on(SocketEvents.AllReserveLetters, () => {
+            testBoolean = false;
+        });
+        // eslint-disable-next-line dot-notation
+        gamesHandler['reserveCommand'](serverSocket);
+        clock.tick(TIME_TO_RECEIVE_EVENT);
+        clock.restore();
+        expect(testBoolean).to.be.eql(true);
+    });
+
     it('clueCommand() should call wordSolver.setGameboard,  findAllOptions  and configureClueCommand', () => {
         const configureClueCommandSpy = sinon.spy(gamesHandler, 'configureClueCommand' as never);
         // eslint-disable-next-line dot-notation
@@ -202,11 +223,24 @@ describe('GamesHandler Service', () => {
         gameStub.skip.returns(true);
         // eslint-disable-next-line dot-notation
         gamesHandler['players'].set(serverSocket.id, player);
-        // eslint-disable-next-line dot-notation
 
         // eslint-disable-next-line dot-notation
         gamesHandler['skip'](serverSocket);
         expect(player.skipTurn.called).to.equal(true);
+        done();
+    });
+
+    it('skip() should not call player.skipTurn() when the socketID is invalid', (done) => {
+        const player = sinon.createStubInstance(RealPlayer);
+        const gameStub = sinon.createStubInstance(Game);
+
+        gameStub.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+        gameStub.turn = { activePlayer: '' } as Turn;
+        gameStub.skip.returns(true);
+
+        // eslint-disable-next-line dot-notation
+        gamesHandler['skip'](serverSocket);
+        expect(player.skipTurn.called).to.equal(false);
         done();
     });
 

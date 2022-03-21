@@ -86,7 +86,7 @@ export class GamesHandler {
         const wordToChoose: CommandInfo[] = this.configureClueCommand(this.wordSolver.findAllOptions(letterString));
         socket.emit(SocketEvents.ClueCommand, wordToChoose);
     }
-
+    // TODO : TEST
     private configureClueCommand(commandInfoList: CommandInfo[]): CommandInfo[] {
         const wordToChoose: CommandInfo[] = [];
         for (let i = 0; i < 3; i++) {
@@ -101,7 +101,7 @@ export class GamesHandler {
     private reserveCommand(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
         const player = this.players.get(socket.id) as Player;
-        socket.emit(SocketEvents.AllReserveLetters, player.game?.letterReserve.lettersReserve);
+        socket.emit(SocketEvents.AllReserveLetters, player.game.letterReserve.lettersReserve);
     }
 
     private skip(this: this, socket: Socket) {
@@ -175,7 +175,7 @@ export class GamesHandler {
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
     }
-
+    // TODO : TEST
     private initializePlayers(players: Player[], game: Game, socketId: string[]) {
         (players[0] as RealPlayer).setGame(game, true);
         if (socketId.length === 1) {
@@ -185,7 +185,7 @@ export class GamesHandler {
         }
         (players[1] as RealPlayer).setGame(game, false);
     }
-
+    // TODO : TEST
     private gameSubscriptions(gameInfo: GameScrabbleInformation, game: Game) {
         game.turn.endTurn.subscribe(() => {
             this.endGameScore(gameInfo.roomId);
@@ -292,7 +292,7 @@ export class GamesHandler {
         this.players.delete(socket.id);
         this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
     }
-
+    // TODO : TEST
     private waitBeforeDisconnect(socket: Socket, room: string, player: Player) {
         let tempTime = 5;
         setInterval(() => {
