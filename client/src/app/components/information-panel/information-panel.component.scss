@@ -2,6 +2,9 @@
     border: 1px solid #c3c3c3;
     border-radius: 4px;
     padding: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: rgba(225, 248, 227, 0.513);
 }
 .player > * {
     display: flex;
@@ -12,13 +15,13 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
 #panel-title {
     color: cadetblue;
 }
 .active {
+    margin-left: 10px;
+    margin-right: 0;
     border: 2px solid rgb(62, 133, 62);
     background-color: rgb(225, 248, 227);
     box-shadow: rgb(62, 133, 62, 0.4) -5px 5px, rgb(62, 133, 62, 0.3) -10px 10px, rgb(62, 133, 62, 0.2) -15px 15px, rgb(62, 133, 62, 0.1) -20px 20px,

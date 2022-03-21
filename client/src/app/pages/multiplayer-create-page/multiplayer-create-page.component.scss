@@ -24,10 +24,6 @@ body {
     padding-bottom: 20px;
 }
 
-::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
-    background-color: rgb(255 255 255 / 36%);
-}
-
 .container-button {
     display: flex;
     justify-content: space-between;
@@ -36,6 +32,7 @@ body {
 
 .mat-card-title {
     font-size: 23px;
+    margin-top: 10px;
 }
 
 .start-button {
@@ -61,4 +58,11 @@ body {
 
 .max {
     color: red;
+}
+
+::ng-deep .mat-form-field-appearance-fill .mat-form-field-flex {
+    background-color: rgb(255 255 255 / 36%);
+}
+::ng-deep .mat-form-field-underline {
+    display: none;
 }
