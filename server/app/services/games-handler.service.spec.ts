@@ -2,7 +2,6 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
-import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
@@ -17,8 +16,9 @@ import { ReplaySubject } from 'rxjs';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
+import { RealPlayer } from './../classes/player/real-player.class';
 import { Game } from './game.service';
-import { LetterPlacementService } from './letter-placement.service';
+import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
@@ -597,7 +597,33 @@ describe('GamesHandler Service', () => {
             done();
         });
 
-        it('playGame() should send to the other player the command inputed', (done) => {
+        it('playGame() should call sendValidCommand', () => {
+            const sendValidCommandStub = sinon.stub(gamesHandler, 'sendValidCommand' as never);
+            serverSocket.join(ROOM);
+            const RETURNED_BOOLEAN = true;
+            sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+            const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[], isHorizontal: false } as unknown as CommandInfo;
+            const player = sinon.createStubInstance(RealPlayer);
+            player.name = '';
+            player.room = ROOM;
+            const gameStub = sinon.createStubInstance(Game);
+            gameStub.turn = { activePlayer: '' } as unknown as Turn;
+            player.placeLetter.returns({
+                hasPassed: RETURNED_BOOLEAN,
+                gameboard: { gameboardCoords: [] } as unknown as Gameboard,
+                invalidWords: {} as Word[],
+            });
+            player.game = gameStub as unknown as Game;
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, player);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['gamePlayers'].set(ROOM, [player]);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['playGame'](serverSocket, commandInfo);
+            expect(sendValidCommandStub.called).to.equal(true);
+        });
+
+        it('sendValidCommand() should send to the other player the command inputed', (done) => {
             serverSocket.join(ROOM);
             const RETURNED_BOOLEAN = true;
             const EXPECTED_MESSAGE = '!placer `0v ';
@@ -627,9 +653,10 @@ describe('GamesHandler Service', () => {
             // eslint-disable-next-line dot-notation
             gamesHandler['gamePlayers'].set(ROOM, [player]);
             // eslint-disable-next-line dot-notation
-            gamesHandler['playGame'](serverSocket, commandInfo);
+            gamesHandler['sendValidCommand'](player.placeLetter(commandInfo) as PlaceLettersReturn, serverSocket, player.room, EXPECTED_MESSAGE);
         });
     });
+
     it('exchange() should emit to the room the player information and active player', () => {
         sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
         const gameStub = sinon.createStubInstance(Game);
@@ -782,7 +809,7 @@ describe('GamesHandler Service', () => {
         expect(updatePlayerInfo.called).to.be.equal(true);
     });
 
-    it('playGame() should return an impossible command error if boolean is true', (done) => {
+    it('sendValidCommand() should return an impossible command error if boolean is true', (done) => {
         serverSocket.join(ROOM);
         const RETURNED_BOOLEAN = false;
         const EXPECTED_MESSAGE = 'Le mot "' + 'HELLO' + '" ne fait pas partie du dictionnaire français';
@@ -812,7 +839,7 @@ describe('GamesHandler Service', () => {
         // eslint-disable-next-line dot-notation
         gamesHandler['gamePlayers'].set(player.room, [player]);
         // eslint-disable-next-line dot-notation
-        gamesHandler['playGame'](serverSocket, commandInfo);
+        gamesHandler['sendValidCommand'](player.placeLetter(commandInfo) as PlaceLettersReturn, serverSocket, player.room, EXPECTED_MESSAGE);
     });
     it("playGame() shouldn't do anything if the socket.id isn't in players", () => {
         const updatePlayerInfoSpy = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
@@ -875,6 +902,15 @@ describe('GamesHandler Service', () => {
             done();
         });
 
+        it('CreateGame() should call initializePlayers()', (done) => {
+            const initializePlayersStub = sinon.stub(gamesHandler, 'initializePlayers' as never);
+            gameInfo.socketId[1] = '3249adf8243';
+            // eslint-disable-next-line dot-notation
+            gamesHandler['createGame'](serverSocket, gameInfo);
+            expect(initializePlayersStub.called).to.equal(true);
+            done();
+        });
+
         it('CreateGame() should call updatePlayerInfo when you are the player creating the game()', (done) => {
             gameInfo.socketId[1] = '3249adf8243';
             // eslint-disable-next-line dot-notation
@@ -883,9 +919,9 @@ describe('GamesHandler Service', () => {
             done();
         });
 
-        it('CreateGame() should call the setGame and the start function of the player when you there you are playing against a bot', (done) => {
+        it('initializePlayers() should call the setGame and the start function of the player when you are playing against a bot', (done) => {
             // eslint-disable-next-line dot-notation
-            gamesHandler['createGame'](serverSocket, gameInfo);
+            gamesHandler['initializePlayers']([realPlayer, botPlayer], botPlayer.game, [serverSocket.id]);
 
             expect(realPlayer.setGame.called).to.equal(true);
             expect(botPlayer.setGame.called).to.equal(true);
