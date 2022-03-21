@@ -256,10 +256,11 @@ export class GamesHandler {
 
     private changeTurn(roomId: string) {
         const players = this.gamePlayers.get(roomId) as Player[];
+        // Might crash server in an unforseen event
         const gameInfo = {
-            gameboard: players[0].game?.gameboard.gameboardTiles,
+            gameboard: players[0].game.gameboard.gameboardTiles,
             players: players.map((x) => x.getInformation()),
-            activePlayer: players[0].game?.turn.activePlayer,
+            activePlayer: players[0].game.turn.activePlayer,
         };
         this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
@@ -277,7 +278,7 @@ export class GamesHandler {
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         this.players.delete(socket.id);
         socket.leave(room);
-        player.game?.abandon();
+        player.game.abandon();
     }
 
     private disconnect(socket: Socket) {

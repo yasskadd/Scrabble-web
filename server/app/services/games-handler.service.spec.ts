@@ -438,7 +438,10 @@ describe.only('GamesHandler Service', () => {
     });
 
     it('abandonGame() should emit to the room that the opponent left and that the game ended', () => {
-        const player = { room: ROOM } as Player;
+        const gameStub = sinon.createStubInstance(Game);
+        const player = sinon.createStubInstance(Player);
+        player.game = gameStub as unknown as Game;
+        player.room = ROOM;
         // eslint-disable-next-line dot-notation
         gamesHandler['players'].set(serverSocket.id, player);
         // eslint-disable-next-line dot-notation
@@ -601,7 +604,6 @@ describe.only('GamesHandler Service', () => {
             expect(waitBeforeDisconnectStub.called).to.equal(true);
         });
 
-        // eslint-disable-next-line max-len
         it('waitBeforeDisconnect() should emit to the room that the opponent left/ game ended after 5 seconds of waiting for a reconnect', (done) => {
             const clock = sinon.useFakeTimers();
             const player = new Player('Jean');
@@ -643,6 +645,24 @@ describe.only('GamesHandler Service', () => {
             gamesHandler['disconnect'](serverSocket);
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             expect(socketManagerStub.emitRoom.called).to.be.equal(true);
+            done();
+        });
+
+        it('disconnect() should not do anything if the socket is invalid', (done) => {
+            const player = new Player('Jean');
+            player.room = ROOM;
+            const gameHolderTest = sinon.createStubInstance(Game);
+            gameHolderTest.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+            gameHolderTest.turn = { activePlayer: '' } as Turn;
+            gameHolderTest.skip.returns(true);
+            player.game = gameHolderTest as unknown as Game;
+            player.game.isGameFinish = true;
+            // eslint-disable-next-line dot-notation
+            gamesHandler['gamePlayers'].set(ROOM, [player]);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['disconnect'](serverSocket);
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            expect(socketManagerStub.emitRoom.called).to.not.be.equal(true);
             done();
         });
 
