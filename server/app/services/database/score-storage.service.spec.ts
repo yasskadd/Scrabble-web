@@ -70,11 +70,13 @@ describe('scoreStorage Service', () => {
         const scoresLOG2990 = await scoreStorageService.getLOG2990TopScores();
         expect(scoresLOG2990).to.be.deep.equal(TOP_SCORES);
     });
+
     it('getClassicTopScores() should return the classic top scores from the database', async () => {
         databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
         const scoresClassic = await scoreStorageService.getClassicTopScores();
         expect(scoresClassic).to.be.deep.equal(TOP_SCORES);
     });
+
     it('getTopScoresPosition() should return the position of the score', () => {
         const TEST_SCORE = 100;
         const EXPECTED_POSTITION = 3;
@@ -96,6 +98,7 @@ describe('scoreStorage Service', () => {
         const playerNameAlready = scoreStorageService['isNameAlreadyThere'](TOP_SCORES_CLASSIC[1].username, PLAYER_NAME);
         expect(playerNameAlready).to.be.deep.equal(false);
     });
+
     it("populateDb() should populate the database if it's not populated", async () => {
         databaseServiceStub.fetchDocuments.resolves([]);
         databaseServiceStub.addDocument.resolves();
@@ -111,6 +114,7 @@ describe('scoreStorage Service', () => {
             );
         }
     });
+
     it("populateDb() shouldn't populate the database if it's already populated", async () => {
         databaseServiceStub.fetchDocuments.resolves([{}, {}]);
         databaseServiceStub.addDocument.resolves();
@@ -118,7 +122,9 @@ describe('scoreStorage Service', () => {
         await scoreStorageService['populateDb']();
         expect(databaseServiceStub.addDocument.called).to.be.equal(false);
     });
-    it("addTopScores() should replace a top score with the score info if it's legible ", async () => {
+
+    it('addTopScores() should call addNewScore when there is a new highScore register ', async () => {
+        const addNewScoreStub = Sinon.stub(scoreStorageService, 'addNewScore' as never);
         const POSITION = 3;
         const scoreInfo = {
             username: 'Arararagi',
@@ -132,19 +138,15 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
         await scoreStorageService['addTopScores'](scoreInfo);
-        expect(databaseServiceStub.replaceDocument.withArgs({ position: POSITION }, { ...scoreInfo, position: POSITION }).callCount).to.be.equal(1);
+        expect(addNewScoreStub.called).to.equal(true);
     });
 
-    it('addTopScores() should add the name of the player if he has the same score of someone else ', async () => {
+    it("addNewScore() should replace a top score with the score info if it's legible ", async () => {
         const POSITION = 3;
         const scoreInfo = {
-            username: 'Luc',
+            username: 'Arararagi',
             type: 'Classique',
-            score: 30,
-        };
-        const infoPlayer = {
-            type: 'Classique',
-            score: 30,
+            score: 50,
         };
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
@@ -152,16 +154,12 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
-        await scoreStorageService['addTopScores'](scoreInfo);
-        expect(
-            databaseServiceStub.replaceDocument.withArgs(
-                { position: POSITION },
-                { ...infoPlayer, username: TOP_SCORES_CLASSIC[2].username + ' - ' + scoreInfo.username, position: POSITION },
-            ).callCount,
-        ).to.be.equal(0);
+        await scoreStorageService['addNewScore'](TOP_SCORES_CLASSIC, POSITION, scoreInfo);
+
+        expect(databaseServiceStub.replaceDocument.withArgs({ position: POSITION }, { ...scoreInfo, position: POSITION }).callCount).to.be.equal(1);
     });
 
-    it('addTopScores() should not add the name of the player if he did already in the leaderboard at this position ', async () => {
+    it('addPlayerToSameScore() should add the name of the player if he has the same score of someone else ', async () => {
         const POSITION = 3;
         const scoreInfo = {
             username: 'Paul',
@@ -178,7 +176,7 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
-        await scoreStorageService['addTopScores'](scoreInfo);
+        await scoreStorageService['addPlayerToSameScore'](scoreInfo, POSITION, TOP_SCORES_CLASSIC[2]);
         expect(
             databaseServiceStub.replaceDocument.withArgs(
                 { position: POSITION },
@@ -186,7 +184,45 @@ describe('scoreStorage Service', () => {
             ).callCount,
         ).to.be.equal(1);
     });
+    it('addTopScores() should call addPlayerToSameScore when high score is register and someone already has this score ', async () => {
+        const addPlayerToSameScoreStub = Sinon.stub(scoreStorageService, 'addPlayerToSameScore' as never);
+        const POSITION = 3;
+        const scoreInfo = {
+            username: 'Vincent',
+            type: 'Classique',
+            score: 30,
+        };
+        Sinon.stub(scoreStorageService, 'populateDb' as never);
+        const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
+        topScoresPositionStub.returns(POSITION);
+        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        databaseServiceStub.replaceDocument.resolves();
+        // eslint-disable-next-line dot-notation
+        await scoreStorageService['addTopScores'](scoreInfo);
+        expect(addPlayerToSameScoreStub.called).to.equal(true);
+    });
+
+    it('addTopScores() should not add the name of the player if he did already in the leaderboard at this position ', async () => {
+        const addPlayerToSameScoreStub = Sinon.stub(scoreStorageService, 'addPlayerToSameScore' as never);
+        const POSITION = 3;
+        const scoreInfo = {
+            username: 'Luc',
+            type: 'Classique',
+            score: 30,
+        };
+        Sinon.stub(scoreStorageService, 'populateDb' as never);
+        const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
+        topScoresPositionStub.returns(POSITION);
+        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        databaseServiceStub.replaceDocument.resolves();
+        // eslint-disable-next-line dot-notation
+        await scoreStorageService['addTopScores'](scoreInfo);
+        expect(addPlayerToSameScoreStub.called).to.not.equal(true);
+    });
+
     it("addTopScores() shouldn't replace a top score with the score info if it's illegible ", async () => {
+        const addPlayerToSameScoreStub = Sinon.stub(scoreStorageService, 'addPlayerToSameScore' as never);
+        const addNewScoreStub = Sinon.stub(scoreStorageService, 'addNewScore' as never);
         const POSITION = 6;
         const scoreInfo = {
             username: 'HelloWorld',
@@ -200,6 +236,27 @@ describe('scoreStorage Service', () => {
         databaseServiceStub.replaceDocument.resolves();
         // eslint-disable-next-line dot-notation
         await scoreStorageService['addTopScores'](scoreInfo);
-        expect(databaseServiceStub.replaceDocument.callCount).to.be.equal(0);
+        expect(addPlayerToSameScoreStub.called).to.not.equal(true);
+        expect(addNewScoreStub.called).to.not.equal(true);
+    });
+
+    it("addTopScores() shouldn't replace a top score with the position is undefined ", async () => {
+        const addPlayerToSameScoreStub = Sinon.stub(scoreStorageService, 'addPlayerToSameScore' as never);
+        const addNewScoreStub = Sinon.stub(scoreStorageService, 'addNewScore' as never);
+        const POSITION = undefined;
+        const scoreInfo = {
+            username: 'HelloWorld',
+            type: 'LOG2990',
+            score: 300,
+        };
+        Sinon.stub(scoreStorageService, 'populateDb' as never);
+        const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
+        topScoresPositionStub.returns(POSITION);
+        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
+        databaseServiceStub.replaceDocument.resolves();
+        // eslint-disable-next-line dot-notation
+        await scoreStorageService['addTopScores'](scoreInfo);
+        expect(addPlayerToSameScoreStub.called).to.not.equal(true);
+        expect(addNewScoreStub.called).to.not.equal(true);
     });
 });
