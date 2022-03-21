@@ -29,16 +29,32 @@ export class HighScoreController {
         /**
          * @swagger
          * tags:
-         *   - name: Time
-         *     description: Time endpoints
+         *   - name: HighScore
+         *     description: HighScore endpoints
          */
 
         /**
          * @swagger
          *
-         * /highScore:
+         * /highScore/log2990:
          *   get:
-         *     description: Return the highScore
+         *     description: Return the LOG2990 highScore
+         *     tags:
+         *       - Score
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         schema:
+         *           $ref: '#/definitions/Message'
+         */
+
+        /**
+         * @swagger
+         *
+         * /highScore/classique:
+         *   get:
+         *     description: Return the classic highScore
          *     tags:
          *       - Score
          *     produces:
