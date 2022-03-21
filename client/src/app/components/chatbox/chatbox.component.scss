@@ -1,7 +1,6 @@
 .container-wrapper {
-    border-color: black;
-    border-style: solid;
     height: 88%;
+    margin-bottom: 5px;
 }
 .message-container {
     height: 100%;
@@ -9,11 +8,21 @@
     word-wrap: break-word;
     overflow-y: auto;
 }
+
+::ng-deep .mat-form-field-wrapper {
+    padding-bottom: 0;
+}
+
 .current-user {
     color: rgb(12, 56, 200);
 }
 .opponent-user {
     color: blueviolet;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    background-color: #fff;
+    border-radius: 5px;
 }
 
 .system-message {

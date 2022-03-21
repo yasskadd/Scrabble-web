@@ -140,11 +140,7 @@ export class PlayerRackComponent implements OnInit {
     exchange() {
         let letters = '';
         for (const i of this.lettersToExchange) {
-            for (const letter of this.rack) {
-                if (i === this.rack.indexOf(letter)) {
-                    letters += letter.value;
-                }
-            }
+            letters += this.rack[i].value;
         }
         this.cancel();
         this.chatBoxHandler.submitMessage('!échanger ' + letters);
@@ -159,7 +155,7 @@ export class PlayerRackComponent implements OnInit {
         let temp: Letter;
         if (this.currentSelection === 0) {
             temp = this.gameClient.playerOne.rack[0];
-            for (let i = 1; i < this.rackIndices; i++) {
+            for (let i = 1; i <= this.rackIndices; i++) {
                 this.gameClient.playerOne.rack[i - 1] = this.gameClient.playerOne.rack[i];
             }
             this.gameClient.playerOne.rack[this.rackIndices] = temp;

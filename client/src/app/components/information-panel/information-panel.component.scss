@@ -1,30 +1,48 @@
 .player {
     border: 1px solid #c3c3c3;
-    border-radius: 5px;
-    padding: 10px;
+    border-radius: 4px;
+    padding: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: rgba(225, 248, 227, 0.513);
 }
+
 .player > * {
     display: flex;
     justify-content: center;
     padding-top: 10px;
+    color: #23501f;
 }
+
+.player > .time {
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
 .name-score > * {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
+
 #panel-title {
     color: cadetblue;
 }
+
 .active {
-    border: 2px solid rgb(81, 173, 81);
+    margin-left: 10px;
+    margin-right: 0;
+    border: 2px solid rgb(62, 133, 62);
+    background-color: rgb(225, 248, 227);
+    box-shadow: rgb(62, 133, 62, 0.4) -5px 5px, rgb(62, 133, 62, 0.3) -10px 10px, rgb(62, 133, 62, 0.2) -15px 15px, rgb(62, 133, 62, 0.1) -20px 20px,
+        rgb(62, 133, 62, 0.05) -25px 25px;
 }
-.active .time {
-    color: rgb(62, 133, 62);
-}
+
 #versus {
-    display: flex;
-    justify-content: center;
+    text-align: center;
+    font-size: 40px;
+    font-style: oblique;
+    font-weight: bold;
+    color: #23501f;
+    text-shadow: 1px 1px 1px black;
 }

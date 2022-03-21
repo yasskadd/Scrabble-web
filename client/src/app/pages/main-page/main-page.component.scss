@@ -1,68 +1,65 @@
 .page-container {
     height: 100%;
     display: flex;
-    justify-content: space-evenly;
-    background-color: rgb(174, 192, 174);
-}
-
-.container {
-    height: auto;
+    background-color: rgb(225, 232, 248);
 }
 
 .justified {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
 }
 
 .header {
-    margin: 40px;
-    padding: 2%;
-    width: 600px;
     color: #23501f;
+    height: 100px;
+    width: 100%;
+    background-color: rgb(174, 192, 174);
 }
 
 .header-item {
     justify-content: center;
     text-align: center;
-    margin-bottom: 15px;
-}
-
-.button {
-    margin-top: 10px;
-    text-align: center;
-    width: 50%;
+    margin: 7px;
 }
 
 .mat-card {
-    padding: 20px;
-    min-width: 400px;
+    padding: 30px;
+    width: 400px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-    background-color: #effbf0;
+    background-color: rgb(174, 192, 174);
 }
-
-.mat-raised-button {
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+.mat-card-content {
+    width: 100%;
 }
-
 .mat-raised-button:hover {
-    transform: scale(1.03);
+    transform: scale(0.95);
+}
+
+.button {
+    margin: 7px;
+    text-align: center;
+    width: 95%;
+    padding: 5px;
+    font-size: 23px;
 }
 
 .score {
-    margin-top: 15%;
+    margin-top: 30px;
 }
 
 .footer {
+    height: 100px;
+    width: 100%;
     text-align: center;
-    height: 20%;
     color: #23501f;
+    background-color: rgb(174, 192, 174);
     justify-content: flex-end;
 }
 
 .team-name {
-    margin-top: 30px;
-    margin-bottom: 10px;
+    margin: 10px;
     font-weight: 500;
     font-size: 20px;
 }

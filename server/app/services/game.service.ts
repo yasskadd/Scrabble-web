@@ -12,6 +12,7 @@ const MAX_QUANTITY = 7;
 
 export class Game {
     gameboard: Gameboard;
+    isGameFinish: boolean;
 
     constructor(
         player1: Player,
@@ -22,6 +23,7 @@ export class Game {
     ) {
         this.start(player1, player2);
         this.gameboard = new Gameboard();
+        this.isGameFinish = false;
     }
 
     start(player1: Player, player2: Player): void {

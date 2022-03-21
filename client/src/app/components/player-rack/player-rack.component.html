@@ -1,29 +1,34 @@
-<div class="rack-info" #info>
-    <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>
-    <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
-    <div id="player-letters">
-        <div
-            *ngFor="let letter of rack; index as i"
-            [ngClass]="[
-                this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter',
-                !this.lettersToExchange.includes(i) && this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'
-            ]"
-            (click)="onLeftClick($event, i)"
-            (contextmenu)="onRightClick($event, i)"
-        >
-            <div class="letter-value" [style.font-size]="letterSize + 'px'">
-                {{ letter.value.toUpperCase() }}
-            </div>
-            <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
-        </div>
-    </div>
-    <button
-        id="exchange"
-        mat-raised-button
-        [disabled]="!this.gameClient.playerOneTurn || this.lettersToExchange.length === 0 || this.gameClient.letterReserveLength < 7"
-        (click)="exchange()"
+<div class="rack-info justified" id="player-letters" #info>
+    <div
+        *ngFor="let letter of rack; index as i"
+        [ngClass]="[
+            this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter',
+            !this.lettersToExchange.includes(i) && this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'
+        ]"
+        (click)="onLeftClick($event, i)"
+        (contextmenu)="onRightClick($event, i)"
     >
-        échanger
-    </button>
-    <button mat-raised-button (click)="this.playPlacedLetters()" [disabled]="this.letterPlacementService.noLettersPlaced()">Jouer</button>
+        <div class="letter-value" [style.font-size]="letterSize + 'px'">
+            {{ letter.value.toUpperCase() }}
+        </div>
+        <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
+    </div>
+</div>
+<div class="button-container justified">
+    <div class="left-side">
+        <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
+        <button
+            id="exchange"
+            mat-raised-button
+            [disabled]="!this.gameClient.playerOneTurn || this.lettersToExchange.length === 0 || this.gameClient.letterReserveLength < 7"
+            (click)="exchange()"
+        >
+            échanger
+        </button>
+    </div>
+
+    <div class="right-side">
+        <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>
+        <button mat-raised-button (click)="this.playPlacedLetters()" [disabled]="this.letterPlacementService.noLettersPlaced()">Jouer</button>
+    </div>
 </div>
