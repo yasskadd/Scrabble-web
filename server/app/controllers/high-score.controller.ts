@@ -23,7 +23,7 @@ export class HighScoreController {
          *       title:
          *         type: string
          *       body:
-         *         type: string
+         *         type: object
          */
 
         /**
@@ -31,22 +31,6 @@ export class HighScoreController {
          * tags:
          *   - name: HighScore
          *     description: HighScore endpoints
-         */
-
-        /**
-         * @swagger
-         *
-         * /highScore/log2990:
-         *   get:
-         *     description: Return the LOG2990 highScore
-         *     tags:
-         *       - Score
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         schema:
-         *           $ref: '#/definitions/Message'
          */
 
         /**
@@ -67,13 +51,28 @@ export class HighScoreController {
 
         this.router.get('/classique', async (req: Request, res: Response) => {
             // Send the request to the service and send the response
-            const highScore = await this.scoreStorage.getClassicTopScores();
+            const highScore = { title: 'HighScoreClassique', body: await this.scoreStorage.getClassicTopScores() };
             res.json(highScore);
         });
 
+        /**
+         * @swagger
+         *
+         * /highScore/log2990:
+         *   get:
+         *     description: Return the LOG2990 highScore
+         *     tags:
+         *       - Score
+         *     produces:
+         *       - application/json
+         *     responses:
+         *       200:
+         *         schema:
+         *           $ref: '#/definitions/Message'
+         */
         this.router.get('/log2990', async (req: Request, res: Response) => {
             // Send the request to the service and send the response
-            const highScore = await this.scoreStorage.getLOG2990TopScores();
+            const highScore = { title: 'HighScoreLOG2990', body: await this.scoreStorage.getLOG2990TopScores() };
             res.json(highScore);
         });
     }
