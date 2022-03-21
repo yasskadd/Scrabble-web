@@ -1,19 +1,17 @@
-<div class="rack-info justified" #info>
-    <div id="player-letters">
-        <div
-            *ngFor="let letter of rack; index as i"
-            [ngClass]="[
-                this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter',
-                !this.lettersToExchange.includes(i) && this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'
-            ]"
-            (click)="onLeftClick($event, i)"
-            (contextmenu)="onRightClick($event, i)"
-        >
-            <div class="letter-value" [style.font-size]="letterSize + 'px'">
-                {{ letter.value.toUpperCase() }}
-            </div>
-            <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
+<div class="rack-info justified" id="player-letters" #info>
+    <div
+        *ngFor="let letter of rack; index as i"
+        [ngClass]="[
+            this.lettersToExchange.includes(i) ? 'rack-letter-exchange-selected' : 'rack-letter',
+            !this.lettersToExchange.includes(i) && this.lettersToManipulate.includes(i) ? 'rack-letter-manipulate-selected' : 'rack-letter'
+        ]"
+        (click)="onLeftClick($event, i)"
+        (contextmenu)="onRightClick($event, i)"
+    >
+        <div class="letter-value" [style.font-size]="letterSize + 'px'">
+            {{ letter.value.toUpperCase() }}
         </div>
+        <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
     </div>
 </div>
 <div class="button-container justified">
