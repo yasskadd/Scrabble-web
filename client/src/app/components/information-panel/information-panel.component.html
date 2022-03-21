@@ -12,9 +12,11 @@
         {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet
     </div>
     <div class="time" id="playerOneTimer" *ngIf="this.gameClientService.playerOneTurn">
-        {{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{ this.timer.timerToSecond(this.gameClientService.timer) }}
+        <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
+            this.timer.timerToSecond(this.gameClientService.timer)
+        }}
     </div>
-    <div class="time" *ngIf="!this.gameClientService.playerOneTurn">Ce n'est pas votre tour</div>
+    <div class="time" *ngIf="!this.gameClientService.playerOneTurn"><mat-icon>timer</mat-icon>-:-</div>
 </section>
 <div id="versus">VS</div>
 <section class="player" [ngClass]="{ active: !this.gameClientService.playerOneTurn }" id="player-2">
@@ -27,9 +29,11 @@
         {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
     </div>
     <div class="time" id="playerTwoTimer" *ngIf="!this.gameClientService.playerOneTurn">
-        {{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{ this.timer.timerToSecond(this.gameClientService.timer) }}
+        <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
+            this.timer.timerToSecond(this.gameClientService.timer)
+        }}
     </div>
-    <div class="time" *ngIf="this.gameClientService.playerOneTurn">--:--</div>
+    <div class="time" *ngIf="this.gameClientService.playerOneTurn"><mat-icon>timer</mat-icon>-:-</div>
 </section>
 <div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>
 <p><button id="abandonButton" *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button>abandonner</button></p>
