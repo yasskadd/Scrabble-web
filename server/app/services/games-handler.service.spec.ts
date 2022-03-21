@@ -631,12 +631,38 @@ describe.only('GamesHandler Service', () => {
             done();
         });
 
-        it('playGame() should call sendValidCommand', () => {
+        it('playGame() should call sendValidCommand when direction is vertical', () => {
             const sendValidCommandStub = sinon.stub(gamesHandler, 'sendValidCommand' as never);
             serverSocket.join(ROOM);
             const RETURNED_BOOLEAN = true;
             sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
             const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[], isHorizontal: false } as unknown as CommandInfo;
+            const player = sinon.createStubInstance(RealPlayer);
+            player.name = '';
+            player.room = ROOM;
+            const gameStub = sinon.createStubInstance(Game);
+            gameStub.turn = { activePlayer: '' } as unknown as Turn;
+            player.placeLetter.returns({
+                hasPassed: RETURNED_BOOLEAN,
+                gameboard: { gameboardCoords: [] } as unknown as Gameboard,
+                invalidWords: {} as Word[],
+            });
+            player.game = gameStub as unknown as Game;
+            // eslint-disable-next-line dot-notation
+            gamesHandler['players'].set(serverSocket.id, player);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['gamePlayers'].set(ROOM, [player]);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['playGame'](serverSocket, commandInfo);
+            expect(sendValidCommandStub.called).to.equal(true);
+        });
+
+        it('playGame() should call sendValidCommand when direction is horizontal', () => {
+            const sendValidCommandStub = sinon.stub(gamesHandler, 'sendValidCommand' as never);
+            serverSocket.join(ROOM);
+            const RETURNED_BOOLEAN = true;
+            sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
+            const commandInfo = { firstCoordinate: { x: 0, y: 0 }, letters: [] as string[], isHorizontal: true } as unknown as CommandInfo;
             const player = sinon.createStubInstance(RealPlayer);
             player.name = '';
             player.room = ROOM;
