@@ -10,7 +10,7 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
-import { LetterPlacementService } from './letter-placement.service';
+import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
@@ -121,7 +121,6 @@ export class GamesHandler {
             return;
         }
         player.exchangeLetter(letters);
-        if (player.rack.length === 0) return;
         socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         this.updatePlayerInfo(socket, player.room, player.game);
         this.socketManager.emitRoom(player.room, SocketEvents.Play, player.getInformation(), player.game.turn.activePlayer);
@@ -139,56 +138,66 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as RealPlayer;
         const play = player.placeLetter(commandInfo);
 
-        if (typeof play === 'string') socket.emit(SocketEvents.ImpossibleCommandError, play);
-        else if (typeof play !== 'string') {
-            this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, {
-                gameboard: play.gameboard.gameboardTiles,
-                activePlayer: player.game.turn.activePlayer,
-            });
-            this.updatePlayerInfo(socket, player.room, player.game);
-
-            if (!play.hasPassed) {
-                play.invalidWords.forEach((invalidWord: Word) =>
-                    socket.emit(
-                        SocketEvents.ImpossibleCommandError,
-                        'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionnaire français',
-                    ),
-                );
-            } else {
-                socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, commandWrite);
-            }
+        if (typeof play === 'string') {
+            socket.emit(SocketEvents.ImpossibleCommandError, play);
+            return;
         }
+        this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, {
+            gameboard: play.gameboard.gameboardTiles,
+            activePlayer: player.game.turn.activePlayer,
+        });
+        this.updatePlayerInfo(socket, player.room, player.game);
+        this.sendValidCommand(play, socket, player.room, commandWrite);
+    }
+
+    private sendValidCommand(play: PlaceLettersReturn, socket: Socket, room: string, commandWrite: string) {
+        if (play.hasPassed) {
+            socket.broadcast.to(room).emit(SocketEvents.GameMessage, commandWrite);
+            return;
+        }
+        play.invalidWords.forEach((invalidWord: Word) =>
+            socket.emit(SocketEvents.ImpossibleCommandError, 'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionnaire français'),
+        );
     }
 
     private createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
         const playerTwo = this.setAndGetPlayer(gameInfo);
-
         const game = this.createNewGame(gameInfo);
 
-        (playerOne as RealPlayer).setGame(game as Game, true);
-        if (gameInfo.socketId.length === 1) {
-            (playerTwo as BeginnerBot).setGame(game);
-            (playerTwo as BeginnerBot).start();
-        } else (playerTwo as RealPlayer).setGame(game, false);
-        if (socket.id === gameInfo.socketId[0]) {
-            this.updatePlayerInfo(socket, playerOne.room, game);
-        }
-        game.turn.endTurn.subscribe(() => {
-            this.endGameScore(playerOne.room);
-            this.changeTurn(gameInfo.roomId);
-            if (game?.turn.activePlayer === undefined) {
-                this.userConnected(gameInfo.socketId);
-            }
-        });
-        game.turn.countdown.subscribe((timer: number) => {
-            this.sendTimer(gameInfo.roomId, timer);
-        });
+        this.initializePlayers([playerOne, playerTwo], game, gameInfo.socketId);
+        this.updatePlayerInfo(socket, playerOne.room, game);
+        this.gameSubscriptions(gameInfo, game);
+
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.ViewUpdate, {
             gameboard: game.gameboard.gameboardTiles,
             activePlayer: game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
+    }
+
+    private initializePlayers(players: Player[], game: Game, socketId: string[]) {
+        (players[0] as RealPlayer).setGame(game, true);
+        if (socketId.length === 1) {
+            (players[1] as BeginnerBot).setGame(game);
+            (players[1] as BeginnerBot).start();
+            return;
+        }
+        (players[1] as RealPlayer).setGame(game, false);
+    }
+
+    private gameSubscriptions(gameInfo: GameScrabbleInformation, game: Game) {
+        game.turn.endTurn.subscribe(() => {
+            this.endGameScore(gameInfo.roomId);
+            this.changeTurn(gameInfo.roomId);
+            if (game?.turn.activePlayer === undefined) {
+                this.userConnected(gameInfo.socketId);
+            }
+        });
+
+        game.turn.countdown.subscribe((timer: number) => {
+            this.sendTimer(gameInfo.roomId, timer);
+        });
     }
 
     private endGameScore(roomID: string) {
@@ -197,10 +206,14 @@ export class GamesHandler {
             players.forEach((player) => {
                 player.deductPoints();
             });
-        } else if (players[0].rackIsEmpty()) {
+            return;
+        }
+        if (players[0].rackIsEmpty()) {
             players[0].addPoints(players[1].rack);
             players[1].deductPoints();
-        } else if (players[1].rackIsEmpty()) {
+            return;
+        }
+        if (players[1].rackIsEmpty()) {
             players[1].addPoints(players[0].rack);
             players[0].deductPoints();
         }
@@ -208,7 +221,7 @@ export class GamesHandler {
 
     private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {
         const player = this.players.has(gameInfo.socketId[0]) ? 1 : 0;
-        let newPlayer;
+        let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined) {
             newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
         } else {
@@ -264,7 +277,6 @@ export class GamesHandler {
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         this.players.delete(socket.id);
         socket.leave(room);
-        // TODO: put abandon in player
         player.game?.abandon();
     }
 
@@ -273,23 +285,27 @@ export class GamesHandler {
         const player = this.players.get(socket.id) as Player;
         const room = player.room;
         if (this.gamePlayers.get(player.room) !== undefined && !player.game.isGameFinish) {
-            let tempTime = 5;
-            setInterval(() => {
-                tempTime = tempTime - 1;
-                if (tempTime === 0) {
-                    if (!this.players.has(socket.id)) return;
-                    socket.leave(room);
-                    this.players.delete(socket.id);
-                    this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
-                    this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
-                    player.game?.abandon();
-                }
-            }, SECOND);
-        } else {
-            socket.leave(room);
-            this.players.delete(socket.id);
-            this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+            this.waitBeforeDisconnect(socket, room, player);
+            return;
         }
+        socket.leave(room);
+        this.players.delete(socket.id);
+        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+    }
+
+    private waitBeforeDisconnect(socket: Socket, room: string, player: Player) {
+        let tempTime = 5;
+        setInterval(() => {
+            tempTime = tempTime - 1;
+            if (tempTime === 0) {
+                if (!this.players.has(socket.id)) return;
+                socket.leave(room);
+                this.players.delete(socket.id);
+                this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+                this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
+                player.game?.abandon();
+            }
+        }, SECOND);
     }
 
     private endGame(socketId: string) {
@@ -310,10 +326,14 @@ export class GamesHandler {
             this.endGame(socketId[0]);
             await this.sendHighScore(socketId[0]);
             await this.sendHighScore(socketId[1]);
-        } else if (this.players.get(socketId[0])) {
+            return;
+        }
+        if (this.players.get(socketId[0])) {
             this.endGame(socketId[0]);
             await this.sendHighScore(socketId[0]);
-        } else if (this.players.get(socketId[1])) {
+            return;
+        }
+        if (this.players.get(socketId[1])) {
             this.endGame(socketId[1]);
             await this.sendHighScore(socketId[1]);
         }
