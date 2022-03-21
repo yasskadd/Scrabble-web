@@ -24,7 +24,7 @@ import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 const ROOM = '0';
 
-describe.only('GamesHandler Service', () => {
+describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
     let letterPlacementStub: sinon.SinonStubbedInstance<LetterPlacementService>;
@@ -290,6 +290,16 @@ describe.only('GamesHandler Service', () => {
         gamesHandler['userConnected'](socketId);
         expect(endGameStub.called).to.equal(true);
         expect(sendHighScoreStub.called).to.equal(true);
+    });
+
+    it('userConnected() should not call sendHighScore and endGame when the sockets are invalid', () => {
+        const endGameStub = sinon.stub(gamesHandler, 'endGame' as never);
+        const sendHighScoreStub = sinon.stub(gamesHandler, 'sendHighScore' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        // eslint-disable-next-line dot-notation
+        gamesHandler['userConnected'](socketId);
+        expect(endGameStub.called).to.not.equal(true);
+        expect(sendHighScoreStub.called).to.not.equal(true);
     });
 
     it('sendTimer() should call emitRoom() with the correct parameters', () => {
@@ -628,6 +638,27 @@ describe.only('GamesHandler Service', () => {
             done();
         });
 
+        it('waitBeforeDisconnect() should not emit after 5 seconds of waiting for a reconnect if the socketID is invalid', (done) => {
+            const clock = sinon.useFakeTimers();
+            const player = new Player('Jean');
+            player.room = ROOM;
+            const gameHolderTest = sinon.createStubInstance(Game);
+            gameHolderTest.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
+            gameHolderTest.turn = { activePlayer: '' } as Turn;
+            gameHolderTest.skip.returns(true);
+            player.game = gameHolderTest as unknown as Game;
+            const timeOut5Seconds = 5500;
+            // eslint-disable-next-line dot-notation
+            gamesHandler['gamePlayers'].set(ROOM, [player]);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['waitBeforeDisconnect'](serverSocket, ROOM, player);
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            clock.tick(timeOut5Seconds);
+            expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
+            expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.UserDisconnect)).to.not.be.equal(true);
+            done();
+        });
+
         it('disconnect() should emit to the room that the opponent left when the game is already finish', (done) => {
             const player = new Player('Jean');
             player.room = ROOM;
@@ -958,6 +989,7 @@ describe.only('GamesHandler Service', () => {
         let updatePlayerInfoStub: sinon.SinonStub<unknown[], unknown>;
         let botPlayer: sinon.SinonStubbedInstance<BeginnerBot>;
         let realPlayer: sinon.SinonStubbedInstance<RealPlayer>;
+        let userConnectedStub: sinon.SinonStub<unknown[], unknown>;
 
         beforeEach(() => {
             gamesHandler = new GamesHandler(
@@ -969,7 +1001,7 @@ describe.only('GamesHandler Service', () => {
             createNewGameStub = sinon.stub(gamesHandler, 'createNewGame' as never);
             gameInfo.socketId = [serverSocket.id];
             createNewGameStub.returns(game);
-            sinon.stub(gamesHandler, 'userConnected' as never);
+            userConnectedStub = sinon.stub(gamesHandler, 'userConnected' as never);
             updatePlayerInfoStub = sinon.stub(gamesHandler, 'updatePlayerInfo' as never);
             setAndGetPlayerStub = sinon.stub(gamesHandler, 'setAndGetPlayer' as never);
             botPlayer = sinon.createStubInstance(BeginnerBot);
@@ -1048,6 +1080,17 @@ describe.only('GamesHandler Service', () => {
             game.turn.endTurn.next(player1.name);
             expect(endGameScore.called).to.equal(true);
             expect(changeTurn.called).to.equal(true);
+        });
+
+        it('gameSubscriptions() should not call userConnected() if the turn.activePlayer is not undefined ', () => {
+            gameInfo.socketId[1] = '3249adf8243';
+            realPlayer.game.turn.activePlayer = 'KRATOS';
+            sinon.stub(gamesHandler, 'endGameScore' as never);
+            sinon.stub(gamesHandler, 'changeTurn' as never);
+            // eslint-disable-next-line dot-notation
+            gamesHandler['gameSubscriptions'](gameInfo, realPlayer.game);
+            game.turn.endTurn.next(player1.name);
+            expect(userConnectedStub.called).to.not.equal(true);
         });
 
         it('gameSubscriptions() should call sendTimer() when the countdown change value ', () => {
