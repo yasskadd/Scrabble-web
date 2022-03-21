@@ -101,7 +101,7 @@ export class GamesHandler {
     private reserveCommand(this: this, socket: Socket) {
         if (!this.players.has(socket.id)) return;
         const player = this.players.get(socket.id) as Player;
-        socket.emit(SocketEvents.AllReserveLetters, player.game?.letterReserve.lettersReserve);
+        socket.emit(SocketEvents.AllReserveLetters, player.game.letterReserve.lettersReserve);
     }
 
     private skip(this: this, socket: Socket) {
@@ -190,9 +190,7 @@ export class GamesHandler {
         game.turn.endTurn.subscribe(() => {
             this.endGameScore(gameInfo.roomId);
             this.changeTurn(gameInfo.roomId);
-            if (game?.turn.activePlayer === undefined) {
-                this.userConnected(gameInfo.socketId);
-            }
+            if (game.turn.activePlayer === undefined) this.userConnected(gameInfo.socketId);
         });
 
         game.turn.countdown.subscribe((timer: number) => {
@@ -202,7 +200,7 @@ export class GamesHandler {
 
     private endGameScore(roomID: string) {
         const players = this.gamePlayers.get(roomID) as Player[];
-        if (players[0].game?.turn.skipCounter === MAX_SKIP) {
+        if (players[0].game.turn.skipCounter === MAX_SKIP) {
             players.forEach((player) => {
                 player.deductPoints();
             });
@@ -256,10 +254,11 @@ export class GamesHandler {
 
     private changeTurn(roomId: string) {
         const players = this.gamePlayers.get(roomId) as Player[];
+        // Might crash server in an unforseen event
         const gameInfo = {
-            gameboard: players[0].game?.gameboard.gameboardTiles,
+            gameboard: players[0].game.gameboard.gameboardTiles,
             players: players.map((x) => x.getInformation()),
-            activePlayer: players[0].game?.turn.activePlayer,
+            activePlayer: players[0].game.turn.activePlayer,
         };
         this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
@@ -277,7 +276,7 @@ export class GamesHandler {
         this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         this.players.delete(socket.id);
         socket.leave(room);
-        player.game?.abandon();
+        player.game.abandon();
     }
 
     private disconnect(socket: Socket) {
@@ -303,7 +302,7 @@ export class GamesHandler {
                 this.players.delete(socket.id);
                 this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
                 this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
-                player.game?.abandon();
+                player.game.abandon();
             }
         }, SECOND);
     }
