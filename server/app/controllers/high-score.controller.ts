@@ -13,63 +13,12 @@ export class HighScoreController {
     private configureRouter(): void {
         this.router = Router();
 
-        /**
-         * @swagger
-         *
-         * definitions:
-         *   Message:
-         *     type: object
-         *     properties:
-         *       title:
-         *         type: string
-         *       body:
-         *         type: object
-         */
-
-        /**
-         * @swagger
-         * tags:
-         *   - name: HighScore
-         *     description: HighScore endpoints
-         */
-
-        /**
-         * @swagger
-         *
-         * /highScore/classique:
-         *   get:
-         *     description: Return the classic highScore
-         *     tags:
-         *       - Score
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         schema:
-         *           $ref: '#/definitions/Message'
-         */
-
         this.router.get('/classique', async (req: Request, res: Response) => {
             // Send the request to the service and send the response
             const highScore = { title: 'HighScoreClassique', body: await this.scoreStorage.getClassicTopScores() };
             res.json(highScore);
         });
 
-        /**
-         * @swagger
-         *
-         * /highScore/log2990:
-         *   get:
-         *     description: Return the LOG2990 highScore
-         *     tags:
-         *       - Score
-         *     produces:
-         *       - application/json
-         *     responses:
-         *       200:
-         *         schema:
-         *           $ref: '#/definitions/Message'
-         */
         this.router.get('/log2990', async (req: Request, res: Response) => {
             // Send the request to the service and send the response
             const highScore = { title: 'HighScoreLOG2990', body: await this.scoreStorage.getLOG2990TopScores() };
