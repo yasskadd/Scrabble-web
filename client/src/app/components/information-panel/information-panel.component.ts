@@ -43,6 +43,7 @@ export class InformationPanelComponent {
             disableClose: true,
         });
     }
+
     leaveGame(): void {
         this.router.navigate(['/home']);
         this.gameClientService.quitGame();

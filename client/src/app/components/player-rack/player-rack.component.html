@@ -1,6 +1,4 @@
-<div class="rack-info" #info>
-    <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>
-    <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
+<div class="rack-info justified" #info>
     <div id="player-letters">
         <div
             *ngFor="let letter of rack; index as i"
@@ -17,13 +15,22 @@
             <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>
         </div>
     </div>
-    <button
-        id="exchange"
-        mat-raised-button
-        [disabled]="!this.gameClient.playerOneTurn || this.lettersToExchange.length === 0 || this.gameClient.letterReserveLength < 7"
-        (click)="exchange()"
-    >
-        échanger
-    </button>
-    <button mat-raised-button (click)="this.playPlacedLetters()" [disabled]="this.letterPlacementService.noLettersPlaced()">Jouer</button>
+</div>
+<div class="button-container justified">
+    <div class="left-side">
+        <button id="skipTurn" mat-raised-button [disabled]="!this.gameClient.playerOneTurn" (click)="skipTurn()">passer son tour</button>
+        <button
+            id="exchange"
+            mat-raised-button
+            [disabled]="!this.gameClient.playerOneTurn || this.lettersToExchange.length === 0 || this.gameClient.letterReserveLength < 7"
+            (click)="exchange()"
+        >
+            échanger
+        </button>
+    </div>
+
+    <div class="right-side">
+        <button id="cancel" mat-raised-button [disabled]="this.lettersToExchange.length === 0" (click)="cancel()">annuler</button>
+        <button mat-raised-button (click)="this.playPlacedLetters()" [disabled]="this.letterPlacementService.noLettersPlaced()">Jouer</button>
+    </div>
 </div>

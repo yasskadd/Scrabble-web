@@ -149,7 +149,7 @@ describe('MultiplayerCreatePageComponent', () => {
     }));
 
     it('returnButton should redirect to home', fakeAsync(() => {
-        const button = fixture.debugElement.nativeElement.querySelector('.returnButton');
+        const button = fixture.debugElement.nativeElement.querySelector('.return-button');
         button.click();
         tick();
         fixture.detectChanges();
@@ -157,11 +157,11 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(location.path()).toEqual(expectedURL);
     }));
 
-    it('should call createGame() when the startButton is pressed', fakeAsync(() => {
+    it('should call createGame() when the start-button is pressed', fakeAsync(() => {
         component.playerName = 'Vincent';
         fixture.detectChanges();
         const spy = spyOn(component, 'createGame');
-        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        const button = fixture.debugElement.nativeElement.querySelector('.start-button');
         button.click();
         tick();
         fixture.detectChanges();
@@ -177,7 +177,7 @@ describe('MultiplayerCreatePageComponent', () => {
     it('should  not call createGame() if the player did not enter his name before trying to click the button', fakeAsync(() => {
         fixture.detectChanges();
         const spy = spyOn(component, 'createGame');
-        const button = fixture.debugElement.nativeElement.querySelector('.startButton');
+        const button = fixture.debugElement.nativeElement.querySelector('.start-button');
         button.click();
         tick();
         fixture.detectChanges();
@@ -224,7 +224,8 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component.form.get('timer')?.value).toEqual(component.timerList[3]);
     }));
 
-    it('should set display the timer option selected', fakeAsync(() => {
+    //
+    it('should display the timer option selected', fakeAsync(() => {
         const expectedValue = '2:00 minutes';
         const timerSelect = fixture.debugElement.nativeElement.querySelector('#timer-select');
         timerSelect.click();

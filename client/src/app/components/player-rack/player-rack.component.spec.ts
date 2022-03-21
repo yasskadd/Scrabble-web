@@ -184,6 +184,7 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    //
     it('onRightClick should select a letter and insert it into the lettersToExchange on right click', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');
@@ -230,6 +231,7 @@ describe('PlayerRackComponent', () => {
         expect(!component.lettersToExchange.includes(indexLetter)).toBeFalsy();
     });
 
+    //
     it('onRightClick should deselect a letter already selected on right click ', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('oncontextmenu');

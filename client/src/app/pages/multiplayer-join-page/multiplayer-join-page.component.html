@@ -1,6 +1,6 @@
-<mat-card class="container">
-    <mat-card-title>Joindre Une Partie</mat-card-title>
-    <div class="wrapper">
+<body class="justified">
+    <mat-card class="wrapper">
+        <mat-card-title class="main-title">Joindre Une Partie</mat-card-title>
         <mat-card-title>Nom</mat-card-title>
         <mat-form-field appearance="fill">
             <mat-label>Entrez votre Nom</mat-label>
@@ -30,20 +30,20 @@
                         <td>{{ gameRoom.dictionary }}</td>
                         <td>{{ this.timer.secondToMinute(gameRoom.timer) }}</td>
                         <td>{{ gameRoom.mode }}</td>
-                        <button class="joinGameButton" (click)="joinRoom(gameRoom.id)" mat-raised-button [disabled]="!playerName">Rejoindre</button>
+                        <button class="join-game" (click)="joinRoom(gameRoom.id)" mat-raised-button [disabled]="!playerName">Rejoindre</button>
                     </tr>
                 </tbody>
             </table>
             <a class="noRoomAvailable" *ngIf="availableRooms.length === 0">Aucune Partie Disponible à joindre</a>
         </mat-card>
 
-        <div class="containerButton">
-            <button class="returnButton" mat-icon-button routerLink="/home">
+        <div class="container-button">
+            <button class="return-button" mat-icon-button routerLink="/home">
                 <mat-icon>navigate_before</mat-icon>
             </button>
             <button
                 *ngIf="availableRooms.length !== 0"
-                class="joinRandomGameButton"
+                class="join-random-game-button"
                 (click)="joinRandomGame()"
                 mat-raised-button
                 [disabled]="!playerName || availableRooms.length <= 1"
@@ -51,5 +51,5 @@
                 Aléatoire
             </button>
         </div>
-    </div>
-</mat-card>
+    </mat-card>
+</body>
