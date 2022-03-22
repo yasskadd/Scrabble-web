@@ -4,6 +4,7 @@
 import { Game } from '@app/classes/game';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { Turn } from '@app/classes/turn';
+import { BotInformation } from '@app/interfaces/bot-information';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -12,7 +13,7 @@ import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { ReplaySubject } from 'rxjs';
 import * as Sinon from 'sinon';
-import { BeginnerBot, BotInformation } from './bot-beginner.class';
+import { BeginnerBot } from './beginner-bot.class';
 
 describe('BotBeginner', () => {
     let botBeginner: BeginnerBot;

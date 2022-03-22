@@ -2,7 +2,7 @@
 import { Game } from '@app/classes/game';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterReserve } from '@app/classes/letter-reserve';
-import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
+import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
@@ -10,6 +10,7 @@ import { CommandInfo } from '@app/interfaces/command-info';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-handler.service';
+import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
@@ -21,7 +22,6 @@ import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { RealPlayer } from './../classes/player/real-player.class';
 import { LetterPlacementService } from './letter-placement.service';
-import { SocketManager } from './socket/socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 
 const ROOM = '0';

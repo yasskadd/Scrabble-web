@@ -1,27 +1,28 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterTree, LetterTreeNode } from '@app/classes/trie/letter-tree.class';
+import { LetterTreeNode } from '@app/classes/trie/letter-tree-node.class';
+import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
-import { LetterTile } from '@common/classes/letter-tile.class';
+import { ValidateWordReturn } from '@app/validate-word-return';
+import * as constants from '@common/constants/board-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Container, Service } from 'typedi';
-import { DictionaryValidationService, ValidateWordReturn } from './dictionary-validation.service';
+import { DictionaryValidationService } from './dictionary-validation.service';
 
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
-const ROW_NUMBERS = 15;
-const COLUMN_NUMBERS = 15;
-const INDEX_NOT_FOUND = -1;
-const LIMIT = 7;
-// TODO: NEED 100% COVERAGE
+const MAX_LETTERS_LIMIT = 7;
 
-// Temporary function, waiting for refactor.
 @Service()
 export class WordSolverService {
     private trie: LetterTree;
     private gameboard: Gameboard;
-    private crossCheckResults: Map<Coordinate, string[]> = new Map();
+    private legalLetterForBoardTiles: Map<Coordinate, string[]> = new Map();
     private isHorizontal: boolean;
     private commandInfoList: CommandInfo[] = new Array();
+    private rack: string[];
+    private anchors: Coordinate[];
+
+    // TODO : use TS setter for Gameboard
 
     constructor() {
         const dictionary = Container.get(DictionaryValidationService);
@@ -33,27 +34,20 @@ export class WordSolverService {
     }
 
     findAllOptions(rack: string[]): CommandInfo[] {
+        this.rack = rack;
         this.commandInfoList.length = 0;
+
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
-            this.firstTurnOrEmpty(this.gameboard, rack);
-            const anchors = this.gameboard.findAnchors();
-            this.crossCheckResults = this.crossCheck();
-            for (const anchor of anchors) {
-                const leftToAnchor: Coordinate | null = this.decrementCoord(anchor.coordinate, this.isHorizontal);
-                if (leftToAnchor === null) continue;
-                if (this.gameboard.getLetterTile(leftToAnchor).isOccupied) {
-                    const partialWord = this.buildPartialWord(leftToAnchor);
-                    const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
-                    if (partialWordNode !== null) {
-                        this.extendRight(partialWord, partialWordNode, rack, anchor.coordinate, false);
-                    }
-                } else this.findLeftPart('', this.trie.root, anchor.coordinate, rack, this.getLimitNumber(leftToAnchor, anchors));
-            }
+            this.anchors = this.gameboard.findAnchors();
+            this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
+
+            this.firstTurnOrEmpty();
+            this.findPossibleWordForEachAnchor();
         }
         return this.commandInfoList;
     }
-    // Letter
+
     commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
         const dictionaryService: DictionaryValidationService = Container.get(DictionaryValidationService);
         const commandInfoMap: Map<CommandInfo, number> = new Map();
@@ -67,7 +61,22 @@ export class WordSolverService {
         return commandInfoMap;
     }
 
-    placeLettersOnBoard(word: Word, commandInfo: CommandInfo) {
+    private findPossibleWordForEachAnchor() {
+        for (const anchor of this.anchors) {
+            const beforeAnchor: Coordinate | null = this.decrementCoord(anchor, this.isHorizontal);
+            if (beforeAnchor === null) continue;
+            if (this.gameboard.getLetterTile(beforeAnchor).isOccupied) this.checkIfPartialWordExistInTrie(anchor, beforeAnchor);
+            else this.findWordPartBeforeAnchor('', this.trie.root, anchor, this.getLimitNumber(beforeAnchor, this.anchors));
+        }
+    }
+
+    private checkIfPartialWordExistInTrie(currentAnchor: Coordinate, beforeAnchor: Coordinate) {
+        const partialWord = this.buildPartialWord(beforeAnchor);
+        const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
+        if (partialWordNode !== null) this.extendWordAfterAnchor(partialWord, partialWordNode, currentAnchor, false);
+    }
+
+    private placeLettersOnBoard(word: Word, commandInfo: CommandInfo) {
         const commandLettersCopy = commandInfo.letters.slice();
         word.newLetterCoords.forEach((coord) => {
             this.gameboard.placeLetter(coord, commandLettersCopy[0]);
@@ -76,13 +85,12 @@ export class WordSolverService {
         });
     }
 
-    removeLetterFromBoard(word: Word) {
+    private removeLetterFromBoard(word: Word) {
         word.newLetterCoords.forEach((coord) => {
             this.gameboard.removeLetter(coord);
         });
     }
 
-    // Tested
     private createCommandInfo(word: string, lastPosition: Coordinate) {
         let wordIndex = word.length - 1;
         let wordCopy = word.slice();
@@ -93,115 +101,170 @@ export class WordSolverService {
                 firstCoordinate = lastPosition;
                 placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
             }
-            wordCopy = wordCopy.slice(0, INDEX_NOT_FOUND);
+            wordCopy = wordCopy.slice(0, constants.INVALID_INDEX);
             wordIndex--;
             if (wordIndex >= 0) lastPosition = this.decrementCoord(lastPosition, this.isHorizontal) as Coordinate;
         }
-        const commandInfo: CommandInfo = {
+        this.commandInfoList.push({
             firstCoordinate,
             isHorizontal: this.isHorizontal,
             letters: placedLetters,
-        };
-        this.commandInfoList.push(commandInfo);
+        } as CommandInfo);
     }
 
-    private firstTurnOrEmpty(gameboard: Gameboard, rack: string[]) {
-        if (!gameboard.findAnchors().length) {
+    private firstTurnOrEmpty() {
+        if (!this.anchors.length) {
             const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
-            this.findLeftPart('', this.trie.root, anchor, rack, LIMIT);
+            this.findWordPartBeforeAnchor('', this.trie.root, anchor, MAX_LETTERS_LIMIT);
         }
     }
 
-    // Tested
-    private findLeftPart(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, rack: string[], limit: number) {
-        this.extendRight(partialWord, currentNode, rack, anchor, false);
-        if (limit > 0) {
-            for (const nextLetter of currentNode.children.keys()) {
-                const isBlankLetter: boolean = rack.includes('*') ? true : false;
-                if (rack.includes(nextLetter) || isBlankLetter) {
-                    const letterToRemove = rack.includes(nextLetter) ? nextLetter : '*';
-                    const letter = letterToRemove === '*' ? nextLetter.toUpperCase() : nextLetter;
-                    rack.splice(rack.indexOf(letterToRemove), 1);
-                    this.findLeftPart(partialWord + letter, currentNode.children.get(nextLetter) as LetterTreeNode, anchor, rack, limit - 1);
-                    rack.push(letterToRemove);
-                }
-            }
+    private findWordPartBeforeAnchor(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, limit: number) {
+        this.extendWordAfterAnchor(partialWord, currentNode, anchor, false);
+        if (limit <= 0) return;
+        for (const childLetter of currentNode.children.keys()) {
+            if (this.rack.includes(childLetter) || this.rackHasBlankLetter())
+                this.findPreviousChildLetter(childLetter, anchor, partialWord, currentNode, limit);
         }
     }
-    // TESTED
-    // eslint-disable-next-line complexity
-    private extendRight(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
-        if (currentNode.isWord && this.verifyConditions(nextPosition) && anchorFilled)
+
+    private rackHasBlankLetter(): boolean {
+        return this.rack.includes('*') ? true : false;
+    }
+
+    private findPreviousChildLetter(childLetter: string, anchor: Coordinate, partialWord: string, currentNode: LetterTreeNode, limit: number) {
+        const currentLetterFromRack = this.rack.includes(childLetter) ? childLetter : '*';
+        const currentLetterFromRackValue = currentLetterFromRack === '*' ? childLetter.toUpperCase() : childLetter;
+
+        this.removeLetterFormRack(currentLetterFromRack);
+        this.findWordPartBeforeAnchor(
+            partialWord + currentLetterFromRackValue,
+            currentNode.children.get(childLetter) as LetterTreeNode,
+            anchor,
+            limit - 1,
+        );
+        this.restoreRack(currentLetterFromRack);
+    }
+
+    private extendWordAfterAnchor(partialWord: string, currentNode: LetterTreeNode, nextPosition: Coordinate, anchorFilled: boolean) {
+        if (currentNode.isWord && this.isOutOfBoundsOrIsOccupied(nextPosition) && anchorFilled)
             this.createCommandInfo(partialWord, this.decrementCoord(nextPosition, this.isHorizontal) as Coordinate);
-        if (nextPosition === null) return; // means that position is out of bounds
-        if (!this.gameboard.getLetterTile(nextPosition).isOccupied) {
-            for (const nextLetter of currentNode.children.keys()) {
-                const isBlankLetter: boolean = rack.includes('*') ? true : false;
-                const crossCheckVerif = this.crossCheckResults.get(this.gameboard.getLetterTile(nextPosition).coordinate)?.includes(nextLetter);
-                if ((rack.includes(nextLetter) || isBlankLetter) && crossCheckVerif) {
-                    const letterToRemove = rack.includes(nextLetter) ? nextLetter : '*';
-                    const letter = letterToRemove === '*' ? nextLetter.toUpperCase() : nextLetter;
-                    rack.splice(rack.indexOf(letterToRemove), 1); // remove to letter from the rack to avoid reusing it
-                    const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
-                    this.extendRight(
-                        partialWord + letter,
-                        currentNode.children.get(nextLetter.toLocaleLowerCase()) as LetterTreeNode,
-                        rack,
-                        nextPos,
-                        true,
-                    );
-                    rack.push(letterToRemove);
-                }
-            }
-        } else {
-            const existingLetter: string = this.gameboard.getLetterTile(nextPosition).letter;
-            if (currentNode.children.has(existingLetter)) {
-                const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
-                this.extendRight(partialWord + existingLetter, currentNode.children.get(existingLetter) as LetterTreeNode, rack, nextPos, true);
+        if (nextPosition === null) return;
+        if (!this.gameboard.getLetterTile(nextPosition).isOccupied) this.addRackLetterToPartialWord(nextPosition, partialWord, currentNode);
+        else this.addBoardLetterToPartialWord(nextPosition, partialWord, currentNode);
+    }
+
+    private isOutOfBoundsOrIsOccupied(nextPosition: Coordinate): boolean {
+        return (
+            nextPosition.x > constants.TOTAL_TILES_IN_COLUMN ||
+            nextPosition.y > constants.TOTAL_TILES_IN_ROW ||
+            !this.gameboard.getLetterTile(nextPosition).isOccupied
+        );
+    }
+
+    private addRackLetterToPartialWord(nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
+        for (const childLetter of currentNode.children.keys()) {
+            if (this.letterIsInRackAndCanBePlaced(this.rack, childLetter, nextPosition)) {
+                this.findNextChildLetter(childLetter, nextPosition, partialWord, currentNode);
             }
         }
     }
-    // TESTED
-    private verifyConditions(nextPosition: Coordinate) {
-        if (nextPosition.x > COLUMN_NUMBERS || nextPosition.y > ROW_NUMBERS) return true;
-        if (!this.gameboard.getLetterTile(nextPosition).isOccupied) return true;
-        return false;
+    private letterIsInRackAndCanBePlaced(rack: string[], childLetter: string, nextPosition: Coordinate): boolean | undefined {
+        const isBlankLetter: boolean = rack.includes('*') ? true : false;
+        const isChildLetterLegalHere = this.legalLetterForBoardTiles
+            .get(this.gameboard.getLetterTile(nextPosition).coordinate)
+            ?.includes(childLetter);
+        return (rack.includes(childLetter) || isBlankLetter) && isChildLetterLegalHere;
     }
 
-    // TESTED
-    private crossCheck(): Map<Coordinate, string[]> {
+    private findNextChildLetter(childLetter: string, nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
+        const currentLetterFromRack = this.rack.includes(childLetter) ? childLetter : '*';
+        const currentLetterFromRackValue = currentLetterFromRack === '*' ? childLetter.toUpperCase() : childLetter;
+        const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
+
+        this.removeLetterFormRack(currentLetterFromRack);
+        this.extendWordAfterAnchor(
+            partialWord + currentLetterFromRackValue,
+            currentNode.children.get(childLetter.toLocaleLowerCase()) as LetterTreeNode,
+            nextPos,
+            true,
+        );
+        this.restoreRack(currentLetterFromRack);
+    }
+
+    private removeLetterFormRack(letterToRemove: string): void {
+        this.rack.splice(this.rack.indexOf(letterToRemove), 1);
+    }
+
+    private restoreRack(letterToRestore: string): void {
+        this.rack.push(letterToRestore);
+    }
+
+    private addBoardLetterToPartialWord(nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
+        const existingLetter: string = this.gameboard.getLetterTile(nextPosition).letter;
+        if (currentNode.children.has(existingLetter)) {
+            const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
+            this.extendWordAfterAnchor(partialWord + existingLetter, currentNode.children.get(existingLetter) as LetterTreeNode, nextPos, true);
+        }
+    }
+
+    private findLettersForBoardTiles(): Map<Coordinate, string[]> {
         const result: Map<Coordinate, string[]> = new Map();
         for (const letterTile of this.gameboard.gameboardTiles) {
             if (!letterTile.isOccupied) {
-                let lettersUp = '';
-                let scanPos = this.decrementCoord(letterTile.coordinate, !this.isHorizontal) as Coordinate;
-                while (this.gameboard.getLetterTile(scanPos).isOccupied) {
-                    lettersUp = this.gameboard.getLetterTile(scanPos).letter + lettersUp;
-                    scanPos = this.decrementCoord(scanPos, !this.isHorizontal) as Coordinate;
-                }
-                let lettersDown = '';
-                scanPos = this.incrementCoord(letterTile.coordinate, !this.isHorizontal) as Coordinate;
-                while (this.gameboard.getLetterTile(scanPos).isOccupied) {
-                    lettersDown = lettersDown + this.gameboard.getLetterTile(scanPos).letter;
-                    scanPos = this.incrementCoord(scanPos, !this.isHorizontal) as Coordinate;
-                }
-                let legalHere: string[] = [];
-                if (lettersUp.length === 0 && lettersDown.length === 0) legalHere = ALPHABET_LETTERS.split('');
-                else for (const letter of ALPHABET_LETTERS.split('')) if (this.trie.isWord(lettersUp + letter + lettersDown)) legalHere.push(letter);
+                const legalHere: string[] = this.findLettersThatCanBePlacedOnTile(letterTile.coordinate);
                 result.set(letterTile.coordinate, legalHere);
             }
         }
         return result;
     }
-    private getLimitNumber(startPosition: Coordinate, anchors: LetterTile[]): number {
+
+    private findLettersThatCanBePlacedOnTile(letterTileCoord: Coordinate): string[] {
+        const lettersUpwards: string = this.findLetters(letterTileCoord, true);
+        const lettersDownwards: string = this.findLetters(letterTileCoord, false);
+        return this.setLegalHere(lettersUpwards, lettersDownwards);
+    }
+
+    private findLetters(coord: Coordinate, isUp: boolean): string {
+        let letters = '';
+        let scanPos = this.setScanPosition(coord, isUp);
+        while (this.gameboard.getLetterTile(scanPos).isOccupied) {
+            letters = this.addLetterToString(scanPos, letters, isUp);
+            scanPos = this.setScanPosition(scanPos, isUp);
+        }
+        return letters;
+    }
+
+    private setScanPosition(coord: Coordinate, isUp: boolean): Coordinate {
+        return isUp ? (this.decrementCoord(coord, !this.isHorizontal) as Coordinate) : (this.incrementCoord(coord, !this.isHorizontal) as Coordinate);
+    }
+
+    private addLetterToString(scanPos: Coordinate, letters: string, isUp: boolean): string {
+        return isUp ? this.gameboard.getLetterTile(scanPos).letter + letters : letters + this.gameboard.getLetterTile(scanPos).letter;
+    }
+
+    private setLegalHere(lettersUpwards: string, lettersDownwards: string): string[] {
+        return lettersUpwards.length === 0 && lettersDownwards.length === 0
+            ? ALPHABET_LETTERS.split('')
+            : (this.pushLetterToLegalHere(lettersUpwards, lettersDownwards) as string[]);
+    }
+
+    private pushLetterToLegalHere(lettersUpwards: string, lettersDownwards: string) {
+        const legalHere: string[] = [];
+        for (const letter of ALPHABET_LETTERS.split('')) if (this.trie.isWord(lettersUpwards + letter + lettersDownwards)) legalHere.push(letter);
+        return legalHere;
+    }
+
+    private getLimitNumber(startPosition: Coordinate, anchors: Coordinate[]): number {
         let limit = 0;
-        while (!this.gameboard.getLetterTile(startPosition).isOccupied && !anchors.includes(this.gameboard.getLetterTile(startPosition))) {
+        while (!this.gameboard.getLetterTile(startPosition).isOccupied && !anchors.includes(this.gameboard.getLetterTile(startPosition).coordinate)) {
             limit++;
             startPosition = this.decrementCoord(startPosition, this.isHorizontal) as Coordinate;
             if (startPosition === null) break;
         }
         return limit;
     }
+
     private buildPartialWord(scanCoord: Coordinate): string {
         let partialWord = '';
         while (this.gameboard.getLetterTile(scanCoord).isOccupied) {
@@ -211,15 +274,15 @@ export class WordSolverService {
         return partialWord;
     }
 
-    private decrementCoord(coord: Coordinate, isHorizontal: boolean) {
+    private decrementCoord(coord: Coordinate, isHorizontal: boolean): Coordinate | null {
         if (isHorizontal && coord.x !== 1) return { x: coord.x - 1, y: coord.y } as Coordinate;
         else if (!isHorizontal && coord.y !== 1) return { x: coord.x, y: coord.y - 1 } as Coordinate;
         return null;
     }
 
-    private incrementCoord(coord: Coordinate, isHorizontal: boolean) {
-        if (isHorizontal && coord.x !== COLUMN_NUMBERS) return { x: coord.x + 1, y: coord.y } as Coordinate;
-        else if (!isHorizontal && coord.y !== ROW_NUMBERS) return { x: coord.x, y: coord.y + 1 } as Coordinate;
+    private incrementCoord(coord: Coordinate, isHorizontal: boolean): Coordinate | null {
+        if (isHorizontal && coord.x !== constants.TOTAL_TILES_IN_COLUMN) return { x: coord.x + 1, y: coord.y } as Coordinate;
+        else if (!isHorizontal && coord.y !== constants.TOTAL_TILES_IN_ROW) return { x: coord.x, y: coord.y + 1 } as Coordinate;
         return null;
     }
 }

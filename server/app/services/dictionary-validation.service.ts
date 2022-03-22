@@ -1,15 +1,11 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
+import { ValidateWordReturn } from '@app/validate-word-return';
 import * as fs from 'fs';
 import { Service } from 'typedi';
 
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
-
-export interface ValidateWordReturn {
-    points: number;
-    invalidWords: Word[];
-}
 
 @Service()
 export class DictionaryValidationService {
