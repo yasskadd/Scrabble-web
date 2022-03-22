@@ -76,10 +76,10 @@ export class Gameboard {
         return false;
     }
 
-    findAnchors(): LetterTile[] {
-        const anchors: LetterTile[] = [];
+    findAnchors(): Coordinate[] {
+        const anchors: Coordinate[] = [];
         for (const tile of this.gameboardTiles) {
-            if (this.isAnchor(tile)) anchors.push(tile);
+            if (this.isAnchor(tile)) anchors.push(tile.coordinate);
         }
         return anchors;
     }

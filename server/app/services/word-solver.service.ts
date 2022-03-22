@@ -4,7 +4,6 @@ import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { ValidateWordReturn } from '@app/validate-word-return';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import * as constants from '@common/constants/board-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Container, Service } from 'typedi';
@@ -21,7 +20,7 @@ export class WordSolverService {
     private isHorizontal: boolean;
     private commandInfoList: CommandInfo[] = new Array();
     private rack: string[];
-    private anchors: LetterTile[];
+    private anchors: Coordinate[];
 
     // TODO : use TS setter for Gameboard
 
@@ -37,22 +36,14 @@ export class WordSolverService {
     findAllOptions(rack: string[]): CommandInfo[] {
         this.rack = rack;
         this.commandInfoList.length = 0;
+
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
-            this.firstTurnOrEmpty(this.gameboard);
             this.anchors = this.gameboard.findAnchors();
             this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
-            for (const anchor of this.anchors) {
-                const leftToAnchor: Coordinate | null = this.decrementCoord(anchor.coordinate, this.isHorizontal);
-                if (leftToAnchor === null) continue;
-                if (this.gameboard.getLetterTile(leftToAnchor).isOccupied) {
-                    const partialWord = this.buildPartialWord(leftToAnchor);
-                    const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
-                    if (partialWordNode !== null) {
-                        this.extendWordAfterAnchor(partialWord, partialWordNode, anchor.coordinate, false);
-                    }
-                } else this.findWordPartBeforeAnchor('', this.trie.root, anchor.coordinate, this.getLimitNumber(leftToAnchor, this.anchors));
-            }
+
+            this.firstTurnOrEmpty();
+            this.findPossibleWordForEachAnchor();
         }
         return this.commandInfoList;
     }
@@ -70,7 +61,22 @@ export class WordSolverService {
         return commandInfoMap;
     }
 
-    placeLettersOnBoard(word: Word, commandInfo: CommandInfo) {
+    private findPossibleWordForEachAnchor() {
+        for (const anchor of this.anchors) {
+            const beforeAnchor: Coordinate | null = this.decrementCoord(anchor, this.isHorizontal);
+            if (beforeAnchor === null) continue;
+            if (this.gameboard.getLetterTile(beforeAnchor).isOccupied) this.checkIfPartialWordExistInTrie(anchor, beforeAnchor);
+            else this.findWordPartBeforeAnchor('', this.trie.root, anchor, this.getLimitNumber(beforeAnchor, this.anchors));
+        }
+    }
+
+    private checkIfPartialWordExistInTrie(currentAnchor: Coordinate, beforeAnchor: Coordinate) {
+        const partialWord = this.buildPartialWord(beforeAnchor);
+        const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
+        if (partialWordNode !== null) this.extendWordAfterAnchor(partialWord, partialWordNode, currentAnchor, false);
+    }
+
+    private placeLettersOnBoard(word: Word, commandInfo: CommandInfo) {
         const commandLettersCopy = commandInfo.letters.slice();
         word.newLetterCoords.forEach((coord) => {
             this.gameboard.placeLetter(coord, commandLettersCopy[0]);
@@ -79,7 +85,7 @@ export class WordSolverService {
         });
     }
 
-    removeLetterFromBoard(word: Word) {
+    private removeLetterFromBoard(word: Word) {
         word.newLetterCoords.forEach((coord) => {
             this.gameboard.removeLetter(coord);
         });
@@ -106,8 +112,8 @@ export class WordSolverService {
         } as CommandInfo);
     }
 
-    private firstTurnOrEmpty(gameboard: Gameboard) {
-        if (!gameboard.findAnchors().length) {
+    private firstTurnOrEmpty() {
+        if (!this.anchors.length) {
             const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
             this.findWordPartBeforeAnchor('', this.trie.root, anchor, MAX_LETTERS_LIMIT);
         }
@@ -249,9 +255,9 @@ export class WordSolverService {
         return legalHere;
     }
 
-    private getLimitNumber(startPosition: Coordinate, anchors: LetterTile[]): number {
+    private getLimitNumber(startPosition: Coordinate, anchors: Coordinate[]): number {
         let limit = 0;
-        while (!this.gameboard.getLetterTile(startPosition).isOccupied && !anchors.includes(this.gameboard.getLetterTile(startPosition))) {
+        while (!this.gameboard.getLetterTile(startPosition).isOccupied && !anchors.includes(this.gameboard.getLetterTile(startPosition).coordinate)) {
             limit++;
             startPosition = this.decrementCoord(startPosition, this.isHorizontal) as Coordinate;
             if (startPosition === null) break;
