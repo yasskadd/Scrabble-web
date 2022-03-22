@@ -8,19 +8,21 @@ import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { WordSolverService } from './word-solver.service';
 
-describe('Word solver service', () => {
+describe.only('Word solver service', () => {
     let wordSolverService: WordSolverService;
     let dictionaryValidationService: DictionaryValidationService;
     let gameboard: Gameboard;
+    let spyFindBeforePart: Sinon.SinonSpy;
+
     beforeEach(() => {
         dictionaryValidationService = new DictionaryValidationService();
         dictionaryValidationService.createTrieDictionary();
         gameboard = new Gameboard();
         wordSolverService = new WordSolverService();
         wordSolverService['gameboard'] = gameboard;
+        spyFindBeforePart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);
     });
 
-    // TODO: Temporary test, need modifications
     it('should find all options', () => {
         const rack: string[] = ['*'];
         gameboard.placeLetter({ x: 1, y: 12 }, 'z');
@@ -253,9 +255,9 @@ describe('Word solver service', () => {
             const anchor: Coordinate = { x: 1, y: 1 };
             const limit = 100;
             const spyLeftPart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);
-            const spyextendWordAfterAnchor = Sinon.spy(wordSolverService, 'extendWordAfterAnchor' as keyof WordSolverService);
+            const spyExtendWordAfterAnchor = Sinon.spy(wordSolverService, 'extendWordAfterAnchor' as keyof WordSolverService);
             wordSolverService['findWordPartBeforeAnchor']('', wordSolverService['trie'].root, anchor, limit);
-            expect(spyLeftPart.callCount && spyextendWordAfterAnchor.callCount).to.be.greaterThan(1);
+            expect(spyLeftPart.callCount && spyExtendWordAfterAnchor.callCount).to.be.greaterThan(1);
         });
     });
 
@@ -272,16 +274,19 @@ describe('Word solver service', () => {
         expect(wordSolverService['commandInfoList'][0]).to.deep.equal(expectedCommandInfo);
     });
 
-    // context('findOptions() tests', () => {
-    //     let anchors: Coordinate[];
-    //     let rack: string[];
-    //     beforeEach(() => {
-    //         rack = ['s'];
-    //         anchors = [{ x: 1, y: 1 }, { x: 5, y: 5 }];
-    //         gameboard.placeLetter(new LetterTile(5, 5, { value: 'e' } as Letter));
-    //         gameboard.placeLetter(new LetterTile(4, 5, { value: 'l' } as Letter));
-    //     });
+    it('firstTurnOrEmpty() should not call findWordPartBeforeAnchor if there is placed letters on board', () => {
+        wordSolverService['rack'] = ['t', 'e', 's', 't'];
+        wordSolverService['gameboard'].placeLetter({ x: 1, y: 1 } as Coordinate, 'a');
+        wordSolverService['firstTurnOrEmpty']();
+        expect(spyFindBeforePart.called).to.be.equal(false);
+    });
 
-    //     it('should create correct commandInfos');
-    // });
+    it('firstTurnOrEmpty() should call findWordPartBeforeAnchor if there is no placed letters on board', () => {
+        const MAX_LETTERS_LIMIT = 7;
+        wordSolverService['rack'] = ['t', 'e', 's', 't'];
+        wordSolverService['firstTurnOrEmpty']();
+        expect(
+            spyFindBeforePart.firstCall.calledWith('', wordSolverService['trie'].root, { x: 8, y: 8 } as Coordinate, MAX_LETTERS_LIMIT),
+        ).to.be.equal(true);
+    });
 });

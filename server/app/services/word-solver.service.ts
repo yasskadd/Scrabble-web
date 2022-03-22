@@ -41,7 +41,7 @@ export class WordSolverService {
         this.commandInfoList.length = 0;
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
-            this.firstTurnOrEmpty(this.gameboard);
+            this.firstTurnOrEmpty();
             this.anchors = this.gameboard.findAnchors();
             this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
             for (const anchor of this.anchors) {
@@ -108,8 +108,8 @@ export class WordSolverService {
         } as CommandInfo);
     }
 
-    private firstTurnOrEmpty(gameboard: Gameboard) {
-        if (!gameboard.findAnchors().length) {
+    private firstTurnOrEmpty() {
+        if (!this.gameboard.findAnchors().length) {
             const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
             this.findWordPartBeforeAnchor('', this.trie.root, anchor, MAX_LETTERS_LIMIT);
         }
