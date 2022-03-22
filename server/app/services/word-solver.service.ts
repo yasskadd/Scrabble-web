@@ -36,7 +36,7 @@ export class WordSolverService {
             this.isHorizontal = direction;
             this.firstTurnOrEmpty(this.gameboard, rack);
             const anchors = this.gameboard.findAnchors();
-            this.crossCheckResults = this.crossCheck();
+            this.crossCheckResults = this.findLettersForBoardTiles();
             for (const anchor of anchors) {
                 const leftToAnchor: Coordinate | null = this.decrementCoord(anchor.coordinate, this.isHorizontal);
                 if (leftToAnchor === null) continue;
@@ -166,7 +166,7 @@ export class WordSolverService {
     }
 
     // TESTED
-    private crossCheck(): Map<Coordinate, string[]> {
+    private findLettersForBoardTiles(): Map<Coordinate, string[]> {
         const result: Map<Coordinate, string[]> = new Map();
         for (const letterTile of this.gameboard.gameboardTiles) {
             if (!letterTile.isOccupied) {
@@ -178,13 +178,13 @@ export class WordSolverService {
     }
 
     private findLettersThatCanBePlacedOnTile(letterTileCoord: Coordinate): string[] {
-        let lettersUpwards: string = this.findLetters(letterTileCoord, true);
-        let lettersDownwards: string = this.findLetters(letterTileCoord, false);
+        const lettersUpwards: string = this.findLetters(letterTileCoord, true);
+        const lettersDownwards: string = this.findLetters(letterTileCoord, false);
         return this.setLegalHere(lettersUpwards, lettersDownwards);
     }
 
     private findLetters(coord: Coordinate, isUp: boolean) {
-        let letters: string = '';
+        let letters = '';
         let scanPos = this.setScanPosition(coord, isUp);
         while (this.gameboard.getLetterTile(scanPos).isOccupied) {
             letters = this.addLettertoString(scanPos, letters, isUp);
