@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
     providedIn: 'root',
 })
 export class ClientSocketService {
-    socket: Socket;
+    private socket: Socket;
 
     constructor() {
         this.establishConnection();

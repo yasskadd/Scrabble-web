@@ -19,14 +19,12 @@ export class GridService {
     static middlePosHeight = GridService.squareHeight * constants.MIDDLE_POSITION;
 
     letterSize: number;
-    boardTileSize: number;
-    letterPointsSize: number;
-
     gridContext: CanvasRenderingContext2D;
+
+    private boardTileSize: number;
     constructor() {
         this.letterSize = constants.FONT_SIZE;
         this.boardTileSize = constants.BOARD_TILE_SIZE;
-        this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
     drawGrid(gameboard: LetterTileInterface[]) {

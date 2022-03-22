@@ -1,5 +1,5 @@
-import { Coordinate } from '@common/interfaces/coordinate';
-import { Multiplier } from '@common/interfaces/multiplier';
+import { Coordinate } from './coordinate';
+import { Multiplier } from './multiplier';
 
 export interface LetterTileInterface {
     coordinate: Coordinate;
