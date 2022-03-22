@@ -6,6 +6,7 @@ import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
+import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 import { Game } from './game.service';
 import { ErrorType, LetterPlacementService } from './letter-placement.service';
@@ -120,8 +121,8 @@ describe('Game tests', () => {
             const validWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([validWord, null]);
+            letterReserveService.isEmpty.returns(true);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
-            game.letterReserve = new LetterReserveService();
             expect(game.play(player2, commandInfo)).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
         });
 
@@ -134,78 +135,109 @@ describe('Game tests', () => {
             });
         });
 
-        // eslint-disable-next-line max-len
-        it('play() should call generateLetter of letterReserveService and gives everything in the reserve if there is more letter placed than the number of letter in the reserve', () => {
+        it('play() should call giveNewLetterToRack and endOfGameVerification', () => {
+            const giveNewLetterToRackStub = sinon.stub(game, 'giveNewLetterToRack' as never);
+            const endOfGameVerificationStub = sinon.stub(game, 'endOfGameVerification' as never);
+            const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
             letterReserveService.totalQuantity.returns(1);
             letterReserveService.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
             letterReserveService.generateLetters.returns([letterA]);
             game.play(player1, commandInfo);
+            expect(giveNewLetterToRackStub.called).to.equal(true);
+            expect(endOfGameVerificationStub.called).to.equal(true);
+        });
+
+        // eslint-disable-next-line max-len
+        it('giveNewLetterToRack() should call generateLetter of letterReserveService and gives everything in the reserve if there is more letter placed than the number of letter in the reserve', () => {
+            const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
+            turn.validating.returns(true);
+            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
+            letterReserveService.totalQuantity.returns(1);
+            letterReserveService.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
+            letterReserveService.generateLetters.returns([letterA]);
+            // eslint-disable-next-line dot-notation
+            game['giveNewLetterToRack'](player1, commandInfo.letters.length, placeLettersReturnStub);
             expect(letterReserveService.generateLetters.calledWith(1)).to.equal(true);
         });
 
-        it('play() should call generateLetter of letterReserveService if placeLetters of letterPlacementService return true', () => {
+        it('giveNewLetterToRack() should call generateLetter of letterReserveService if placeLetters of letterPlacementService return true', () => {
+            const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
+            letterReserveService.isEmpty.returns(false);
+            letterReserveService.totalQuantity.returns(commandInfo.letters.length);
             game.letterReserve = new LetterReserveService();
-            game.play(player1, commandInfo);
+            // eslint-disable-next-line dot-notation
+            game['giveNewLetterToRack'](player1, commandInfo.letters.length, placeLettersReturnStub);
             expect(letterReserveService.generateLetters.called).to.equal(true);
         });
 
-        it('play() should call generateLetter of letterReserveService with the quantity of letter that equals the quantity of letter placed', () => {
+        // eslint-disable-next-line max-len
+        it('giveNewLetterToRack() should call generateLetter of letterReserveService with the quantity of letter that equals the quantity of letter placed', () => {
+            const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             game = new Game(player1, player2, turn, letterReserveService, letterPlacementService);
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterReserveService.isEmpty.returns(false);
+            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
             letterReserveService.totalQuantity.returns(commandInfo.letters.length);
             letterReserveService.generateLetters.returns([letterA, letterA]);
-            game.play(player1, commandInfo);
+            // eslint-disable-next-line dot-notation
+            game['giveNewLetterToRack'](player1, commandInfo.letters.length, placeLettersReturnStub);
             expect(letterReserveService.generateLetters.calledWith(commandInfo.letters.length)).to.equal(true);
         });
 
-        it('play() should call end if the rack of the player1 and the letter reserve is empty on play', () => {
+        it('endGameVerification() should call end if the rack of the player1 and the letter reserve is empty on play', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
-            game.play(player1, commandInfo);
+            // eslint-disable-next-line dot-notation
+            game['endOfGameVerification'](player1);
             expect(endSpy.called).to.equal(true);
         });
 
-        it('play() should call end if the rack of the player2 and the letter reserve is empty on play', () => {
+        it('endGameVerification() should call end if the rack of the player2 and the letter reserve is empty on play', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserveService.isEmpty.returns(true);
             player1.rack = [];
-            game.play(player2, commandInfo);
+            // eslint-disable-next-line dot-notation
+            game['endOfGameVerification'](player2);
             expect(endSpy.called).to.equal(true);
         });
 
-        it('play() should call resetSkipCounter and end of turn if the rack of the player1 or/and the letter reserve is not empty on play', () => {
+        // eslint-disable-next-line max-len
+        it('endGameVerification() should call resetSkipCounter and end of turn if the rack of the player1 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserveService.isEmpty.returns(false);
             game.letterReserve = new LetterReserveService();
-            game.play(player1, commandInfo);
+            // eslint-disable-next-line dot-notation
+            game['endOfGameVerification'](player1);
             expect(turn.end.called).to.equal(true);
             expect(turn.resetSkipCounter.called).to.equal(true);
         });
 
-        it('play() should call resetSkipCounter and end of turn if the rack of the player2 or/and the letter reserve is not empty on play', () => {
+        // eslint-disable-next-line max-len
+        it('endGameVerification() should call resetSkipCounter and end of turn if the rack of the player2 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             player2.rack = [];
             game.letterReserve = new LetterReserveService();
-            game.play(player2, commandInfo);
+            // eslint-disable-next-line dot-notation
+            game['endOfGameVerification'](player2);
             expect(turn.end.called).to.equal(true);
             expect(turn.resetSkipCounter.called).to.equal(true);
         });

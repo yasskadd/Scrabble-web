@@ -58,21 +58,8 @@ export class Game {
                 return errorType;
             }
             placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
-
-            if (placeLettersReturn.hasPassed) {
-                if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
-                    player.rack = this.letterReserve.generateLetters(this.letterReserve.totalQuantity(), player.rack);
-                } else if (!this.letterReserve.isEmpty()) {
-                    player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
-                }
-            }
-
-            if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
-                this.end();
-            } else {
-                this.turn.resetSkipCounter();
-                this.turn.end();
-            }
+            this.giveNewLetterToRack(player, numberOfLetterPlaced, placeLettersReturn);
+            this.endOfGameVerification(player);
         }
         return placeLettersReturn;
     }
@@ -89,5 +76,22 @@ export class Game {
 
     abandon(): void {
         this.end();
+    }
+
+    private giveNewLetterToRack(player: Player, numberOfLetterPlaced: number, placeLettersReturn: PlaceLettersReturn) {
+        if (!placeLettersReturn.hasPassed) return;
+        if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
+            player.rack = this.letterReserve.generateLetters(this.letterReserve.totalQuantity(), player.rack);
+        } else if (!this.letterReserve.isEmpty()) {
+            player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
+        }
+    }
+
+    private endOfGameVerification(player: Player) {
+        if (player.rackIsEmpty() && this.letterReserve.isEmpty()) this.end();
+        else {
+            this.turn.resetSkipCounter();
+            this.turn.end();
+        }
     }
 }
