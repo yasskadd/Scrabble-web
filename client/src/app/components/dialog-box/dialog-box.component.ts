@@ -15,7 +15,6 @@ export class DialogBoxComponent implements OnInit {
     constructor(@Inject(MAT_DIALOG_DATA) private data: string, private dialogRef: MatDialogRef<DialogBoxComponent>) {}
     ngOnInit(): void {
         this.gameMode = this.data;
-        // this.multiplayerCreateLink = '/game';
         this.multiplayerCreateLink = `/multijoueur/creer/${this.data}`;
         this.multiplayerjoinLink = `/multijoueur/rejoindre/${this.gameMode}`;
         this.singleplayerLink = `/solo/${this.gameMode}`;

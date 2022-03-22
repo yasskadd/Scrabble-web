@@ -1,26 +1,23 @@
 import { Injectable } from '@angular/core';
 
+const SECOND = 60;
+const MINUTE = 60;
 @Injectable({
     providedIn: 'root',
 })
 export class TimerService {
     timerToMinute(time: number): number {
-        const second = 60;
-        return Math.floor(time / second);
+        return Math.floor(time / SECOND);
     }
 
     timerToSecond(timer: number): number {
-        const minute = 60;
-        const second = 60;
-        const hour = minute * second;
-        return timer - Math.floor(timer / hour) * hour - Math.floor((timer - Math.floor(timer / hour) * hour) / second) * minute;
+        const hour = MINUTE * SECOND;
+        return timer - Math.floor(timer / hour) * hour - Math.floor((timer - Math.floor(timer / hour) * hour) / SECOND) * MINUTE;
     }
 
     secondToMinute(time: number): string {
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        const minute = Math.floor(time / 60);
-        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-        const second = time - minute * 60;
+        const minute = Math.floor(time / SECOND);
+        const second = time - minute * SECOND;
 
         if (second === 0) {
             return minute.toString() + ':00 minutes';

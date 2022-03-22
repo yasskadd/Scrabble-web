@@ -27,6 +27,10 @@ export class GameClientService {
     turnFinish: ReplaySubject<boolean>;
 
     constructor(private clientSocketService: ClientSocketService) {
+        this.timer = 0;
+        this.letterReserveLength = 0;
+        this.playerOne = {} as Player;
+        this.secondPlayer = {} as Player;
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
@@ -180,11 +184,13 @@ export class GameClientService {
     private findWinnerByScore(): void {
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
-        } else if (this.playerOne.score > this.secondPlayer.score) {
-            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
-        } else {
-            this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
+            return;
         }
+        if (this.playerOne.score > this.secondPlayer.score) {
+            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
+            return;
+        }
+        this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
     }
     private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {
         let letterString = '';
