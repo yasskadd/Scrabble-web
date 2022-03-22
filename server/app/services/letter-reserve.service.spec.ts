@@ -1,4 +1,4 @@
-import * as letterTypes from '@app/letter-reserve';
+import * as letterTypes from '@app/constants/letter-reserve';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { spy, stub } from 'sinon';

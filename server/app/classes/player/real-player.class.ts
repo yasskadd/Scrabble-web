@@ -1,6 +1,6 @@
 import { CommandInfo } from '@app/interfaces/command-info';
+import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { Game } from '@app/services/game.service';
-import { PlaceLettersReturn } from '@app/services/letter-placement.service';
 import { Player } from './player.class';
 
 export class RealPlayer extends Player {

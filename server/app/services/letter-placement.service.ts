@@ -1,25 +1,18 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
+import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { CommandInfo } from '@common/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
 import { Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
-const BOARD_LENGTH = 15;
-
 export enum ErrorType {
     CommandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
     LettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
     InvalidFirstWordPlacement = "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
     InvalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
-}
-
-export interface PlaceLettersReturn {
-    hasPassed: boolean;
-    gameboard: Gameboard;
-    invalidWords: Word[];
 }
 
 const SEVEN_LETTERS = 7;
@@ -50,8 +43,10 @@ export class LetterPlacementService {
             this.removeLettersFromBoard(commandWord, currentGameboard);
             return { hasPassed: false, gameboard: currentGameboard, invalidWords: validateWordReturn.invalidWords };
         }
+
         this.updatePlayerScore(validateWordReturn.points, commandWord, player);
         this.updatePlayerRack(commandInfo.letters, player);
+
         return { hasPassed: true, gameboard: currentGameboard, invalidWords: [] as Word[] };
     }
 
@@ -62,12 +57,8 @@ export class LetterPlacementService {
     }
 
     private validateCommandCoordinate(commandCoord: Coordinate, gameboard: Gameboard): boolean {
-        if (!gameboard.getLetterTile(commandCoord).isOccupied) return this.isWithinBoardLimits(commandCoord);
+        if (!gameboard.getLetterTile(commandCoord).isOccupied) return gameboard.isWithinBoardLimits(commandCoord);
         else return false;
-    }
-
-    private isWithinBoardLimits(coord: Coordinate): boolean {
-        return coord.x >= 1 && coord.x <= BOARD_LENGTH && coord.y >= 1 && coord.y <= BOARD_LENGTH;
     }
 
     private createTempRack(player: Player): Letter[] {
@@ -122,6 +113,7 @@ export class LetterPlacementService {
         letterCoords.forEach((coord) => {
             coordList.push({ x: coord.x, y: coord.y });
         });
+
         return this.containsMiddleCoord(coordList);
     }
 
@@ -131,7 +123,6 @@ export class LetterPlacementService {
 
     private isWordIsAttachedToBoardLetter(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
         let lettersWithAdjacencyCount = 0;
-
         letterCoords.forEach((coord) => {
             if (this.upDownLeftOrRightAreOccupied(gameboard, coord)) lettersWithAdjacencyCount++;
         });
@@ -142,10 +133,10 @@ export class LetterPlacementService {
 
     private upDownLeftOrRightAreOccupied(gameboard: Gameboard, coord: Coordinate): boolean {
         return (
-            (gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied && this.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 })) ||
-            (gameboard.getLetterTile({ x: coord.x, y: coord.y + 1 }).isOccupied && this.isWithinBoardLimits({ x: coord.x, y: coord.y + 1 })) ||
-            (gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied && this.isWithinBoardLimits({ x: coord.x - 1, y: coord.y })) ||
-            (gameboard.getLetterTile({ x: coord.x + 1, y: coord.y }).isOccupied && this.isWithinBoardLimits({ x: coord.x + 1, y: coord.y }))
+            (gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied && gameboard.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 })) ||
+            (gameboard.getLetterTile({ x: coord.x, y: coord.y + 1 }).isOccupied && gameboard.isWithinBoardLimits({ x: coord.x, y: coord.y + 1 })) ||
+            (gameboard.getLetterTile({ x: coord.x - 1, y: coord.y }).isOccupied && gameboard.isWithinBoardLimits({ x: coord.x - 1, y: coord.y })) ||
+            (gameboard.getLetterTile({ x: coord.x + 1, y: coord.y }).isOccupied && gameboard.isWithinBoardLimits({ x: coord.x + 1, y: coord.y }))
         );
     }
 

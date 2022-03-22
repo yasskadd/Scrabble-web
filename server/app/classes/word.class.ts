@@ -59,8 +59,8 @@ export class Word {
         const up = { x: firstCoord.x, y: firstCoord.y - 1 };
         const down = { x: firstCoord.x, y: firstCoord.y + 1 };
         return (
-            (gameboard.getLetterTile(up).isOccupied && this.isWithinBoardLimits(up)) ||
-            (gameboard.getLetterTile(down).isOccupied && this.isWithinBoardLimits(down))
+            (gameboard.getLetterTile(up).isOccupied && gameboard.isWithinBoardLimits(up)) ||
+            (gameboard.getLetterTile(down).isOccupied && gameboard.isWithinBoardLimits(up))
         );
     }
 
@@ -68,16 +68,16 @@ export class Word {
         const left = { x: firstCoord.x - 1, y: firstCoord.y };
         const right = { x: firstCoord.x + 1, y: firstCoord.y };
         return (
-            (gameboard.getLetterTile(left).isOccupied && this.isWithinBoardLimits(left)) ||
-            (gameboard.getLetterTile(right).isOccupied && this.isWithinBoardLimits(right))
+            (gameboard.getLetterTile(left).isOccupied && gameboard.isWithinBoardLimits(left)) ||
+            (gameboard.getLetterTile(right).isOccupied && gameboard.isWithinBoardLimits(right))
         );
     }
 
     private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {
         const backwardPosition = this.isHorizontal ? { x: coord.x - 1, y: coord.y } : { x: coord.x, y: coord.y - 1 };
 
-        if (this.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied) {
-            while (this.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied)
+        if (gameboard.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied) {
+            while (gameboard.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied)
                 this.decrementBackwardPosition(backwardPosition);
             this.incrementPosition(backwardPosition);
             return backwardPosition;
@@ -95,7 +95,7 @@ export class Word {
 
         if (commandLettersCopy[0] === '') commandLettersCopy.shift();
 
-        while ((commandLettersCopy.length > 0 || gameboard.getLetterTile(position).isOccupied) && this.isWithinBoardLimits(position)) {
+        while ((commandLettersCopy.length > 0 || gameboard.getLetterTile(position).isOccupied) && gameboard.isWithinBoardLimits(position)) {
             if (!gameboard.getLetterTile(position).isOccupied) this.addNewLetter(position, commandLettersCopy);
             else this.addGameboardLetter(position, gameboard);
 
@@ -125,11 +125,6 @@ export class Word {
     private checkValidity(commandLettersCopy: string[]) {
         if (commandLettersCopy.length !== 0) this.isValid = false;
         if (this.wordCoords.length < 2) this.isValid = false;
-    }
-
-    private isWithinBoardLimits(coord: Coordinate): boolean {
-        const boardSize = 15;
-        return coord.x >= 1 && coord.x <= boardSize && coord.y >= 1 && coord.y <= boardSize;
     }
 
     private addLetterPoints(placedWord: Word, gameboard: Gameboard) {
