@@ -2,7 +2,8 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
-import { LetterPlacementService, PlaceLettersReturn } from '@app/services/letter-placement.service';
+import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/command-info';
 import { Letter } from '@common/interfaces/letter';
@@ -12,6 +13,7 @@ const MAX_QUANTITY = 7;
 
 export class Game {
     gameboard: Gameboard;
+    isGameFinish: boolean;
 
     constructor(
         player1: Player,
@@ -22,6 +24,7 @@ export class Game {
     ) {
         this.start(player1, player2);
         this.gameboard = new Gameboard();
+        this.isGameFinish = false;
     }
 
     start(player1: Player, player2: Player): void {
@@ -42,6 +45,7 @@ export class Game {
     }
 
     play(player: Player, commandInfo: CommandInfo): PlaceLettersReturn | string {
+        if (commandInfo.letters.length === 1) commandInfo.isHorizontal = undefined;
         let placeLettersReturn: PlaceLettersReturn = { hasPassed: false, gameboard: this.gameboard, invalidWords: [] as Word[] };
         const numberOfLetterPlaced = commandInfo.letters.length;
 
@@ -51,13 +55,13 @@ export class Game {
             const errorType = validationInfo[1] as string;
             if (errorType !== null) {
                 this.turn.resetSkipCounter();
-                return errorType as string;
+                return errorType;
             }
             placeLettersReturn = this.letterPlacement.placeLetters(newWord, commandInfo, player, this.gameboard);
 
-            if (placeLettersReturn.hasPassed === true) {
+            if (placeLettersReturn.hasPassed) {
                 if (!this.letterReserve.isEmpty() && this.letterReserve.totalQuantity() < numberOfLetterPlaced) {
-                    player.rack = this.letterReserve.generateLetters(this.letterReserve.lettersReserve.length, player.rack);
+                    player.rack = this.letterReserve.generateLetters(this.letterReserve.totalQuantity(), player.rack);
                 } else if (!this.letterReserve.isEmpty()) {
                     player.rack = this.letterReserve.generateLetters(numberOfLetterPlaced, player.rack);
                 }

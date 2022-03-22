@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SinonFakeTimers, spy, useFakeTimers } from 'sinon';
+import { restore, SinonFakeTimers, spy, stub, useFakeTimers } from 'sinon';
 import { Player } from './player/player.class';
 import { Turn } from './turn';
 
@@ -23,6 +23,7 @@ describe('turn', () => {
 
     afterEach(() => {
         clock.restore();
+        restore();
     });
 
     it('start() should start the timer and not skip it when there is still time left on the clock', () => {
@@ -40,6 +41,26 @@ describe('turn', () => {
     });
 
     it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other', () => {
+        turn.determinePlayer(player1, player2);
+        const activePlayer = turn.activePlayer;
+        const inactivePlayer = turn.inactivePlayer;
+        expect(activePlayer).to.not.equal(undefined);
+        expect(inactivePlayer).to.not.equal(undefined);
+        expect(activePlayer).to.not.equal(inactivePlayer);
+    });
+
+    it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other when random number is 0', () => {
+        stub(Math, 'floor').returns(0);
+        turn.determinePlayer(player1, player2);
+        const activePlayer = turn.activePlayer;
+        const inactivePlayer = turn.inactivePlayer;
+        expect(activePlayer).to.not.equal(undefined);
+        expect(inactivePlayer).to.not.equal(undefined);
+        expect(activePlayer).to.not.equal(inactivePlayer);
+    });
+
+    it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other when random number is 1', () => {
+        stub(Math, 'floor').returns(1);
         turn.determinePlayer(player1, player2);
         const activePlayer = turn.activePlayer;
         const inactivePlayer = turn.inactivePlayer;
@@ -88,14 +109,12 @@ describe('turn', () => {
     it('skipTurn() should increment skipCounter by 1', () => {
         turn.skipTurn();
 
-        // eslint-disable-next-line dot-notation
-        expect(turn['skipCounter']).to.equal(1);
+        expect(turn.skipCounter).to.equal(1);
     });
 
     it('skipTurn() should call end with true as argument when the skipCounter is at 6', () => {
         const endSpy = spy(turn, 'end');
-        // eslint-disable-next-line dot-notation
-        turn['skipCounter'] = 5;
+        turn.skipCounter = 5;
         turn.skipTurn();
 
         expect(endSpy.calledWith(true)).to.equal(true);
@@ -103,27 +122,23 @@ describe('turn', () => {
 
     it('skipTurn() should call end without true as argument when the skipCounter is not at 6', () => {
         const endSpy = spy(turn, 'end');
-        // eslint-disable-next-line dot-notation
-        turn['skipCounter'] = 4;
+        turn.skipCounter = 4;
         turn.skipTurn();
 
         expect(endSpy.calledWith(true)).to.equal(false);
     });
 
     it('resetSkipCounter() should assign skipCounter to 0', () => {
-        // eslint-disable-next-line dot-notation
-        turn['skipCounter'] = 4;
+        turn.skipCounter = 4;
         turn.resetSkipCounter();
 
-        // eslint-disable-next-line dot-notation
-        expect(turn['skipCounter']).to.equal(0);
+        expect(turn.skipCounter).to.equal(0);
     });
 
     it('incrementSkipCounter() should increment skipCounter by 1', () => {
         // eslint-disable-next-line dot-notation
         turn['incrementSkipCounter']();
 
-        // eslint-disable-next-line dot-notation
-        expect(turn['skipCounter']).to.equal(1);
+        expect(turn.skipCounter).to.equal(1);
     });
 });

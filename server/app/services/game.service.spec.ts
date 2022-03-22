@@ -99,6 +99,7 @@ describe('Game tests', () => {
         });
 
         it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
+            commandInfo.letters = ['a'];
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
 

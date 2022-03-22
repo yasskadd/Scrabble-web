@@ -155,15 +155,19 @@ describe('BotBeginner', () => {
     context('exchangeLetters() tests', () => {
         let stubGetRandom: Sinon.SinonStub<unknown[], unknown>;
         let mockSocketManager: Sinon.SinonMock;
+        let stubTotalQuantity: Sinon.SinonStub<[], number>;
         beforeEach(() => {
             stubGetRandom = Sinon.stub(botBeginner, 'getRandomNumber' as keyof BeginnerBot);
             botBeginner.rack = [{ value: 'a' } as Letter, { value: 'b' } as Letter, { value: 'c' } as Letter];
             mockSocketManager = Sinon.mock(botBeginner['socketManager']);
             botBeginner.setGame(gameStub);
+            botBeginner['game'].letterReserve = new LetterReserveService();
+            stubTotalQuantity = Sinon.stub(botBeginner['game'].letterReserve, 'totalQuantity').returns(20);
         });
 
         afterEach(() => {
             mockSocketManager.restore();
+            Sinon.restore();
         });
 
         it('should call game.exchange() with correct letters to exchange and this parameter', () => {
@@ -186,6 +190,21 @@ describe('BotBeginner', () => {
         it('should not call game.exchange() if playedTurn is set to true', () => {
             botBeginner['playedTurned'] = true;
             botBeginner.exchangeLetter();
+            expect(gameStub.exchange.called).to.be.equal(false);
+        });
+
+        it('should not call game.exchange() if there is less than 7 letters in letterReserve and should skipTurn() after 20 seconds', () => {
+            const mockSkipTurn = Sinon.mock(botBeginner).expects('skipTurn').exactly(1);
+            const clock = Sinon.useFakeTimers();
+            botBeginner['playedTurned'] = false;
+            stubTotalQuantity.returns(5);
+            botBeginner.game.turn.activePlayer = botBeginner.name;
+            botBeginner.start();
+            botBeginner.exchangeLetter();
+            botBeginner.game.turn.countdown.next(40);
+            clock.restore();
+            mockSkipTurn.verify();
+            botBeginner.game.turn.countdown.unsubscribe();
             expect(gameStub.exchange.called).to.be.equal(false);
         });
     });
@@ -217,7 +236,7 @@ describe('BotBeginner', () => {
         });
     });
 
-    context('emitPlacementCommand() tests', () => {
+    context('emitPlacementCommand() tests and placement is horizontal', () => {
         it('should emitRoom() with correct arguments', () => {
             botBeginner.game.letterReserve = new LetterReserveService();
             const commandInfoStub: CommandInfo = {
@@ -226,6 +245,28 @@ describe('BotBeginner', () => {
                 letters: ['t', 'e', 's', 't'],
             };
             const expectedCommand = '!placer a1h test';
+            const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
+            const expectation = mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
+            mockSocketManager
+                .expects('emitRoom')
+                .exactly(1)
+                .withArgs(botBeginner.room, SocketEvents.LetterReserveUpdated, botBeginner['game'].letterReserve.lettersReserve);
+            botBeginner['emitPlaceCommand'](commandInfoStub);
+            expectation.verify();
+            mockSocketManager.restore();
+        });
+
+        it('should emitRoom() with correct arguments and placement is vertical', () => {
+            botBeginner.game.letterReserve = new LetterReserveService();
+            const commandInfoStub: CommandInfo = {
+                firstCoordinate: { x: 1, y: 1 } as Coordinate,
+                isHorizontal: false,
+                letters: ['t', 'e', 's', 't'],
+            };
+            const expectedCommand = '!placer a1v test';
             const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
             const expectation = mockSocketManager
                 .expects('emitRoom')

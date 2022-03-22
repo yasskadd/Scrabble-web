@@ -5,6 +5,7 @@ import { Service } from 'typedi';
 import { DatabaseService } from './services/database/database.service';
 import { SocketManager } from './services/socket-manager.service';
 import { SocketSubscribeHandler } from './services/socket-subscribe-handler.service';
+
 @Service()
 export class Server {
     private static readonly appPort: string | number | boolean = Server.normalizePort(process.env.PORT || '3000');

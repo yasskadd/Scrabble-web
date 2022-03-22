@@ -227,6 +227,34 @@ describe('ChatboxHandlerService', () => {
         expect(spy2).not.toHaveBeenCalled();
     });
 
+    it('validParameters() should return false when the parameters of the command are not valid', () => {
+        const IS_COMMAND = '!echanger 56g';
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validParameters'](IS_COMMAND)).toBeFalsy();
+    });
+
+    it('validParameters() should return true when the parameters of the command are valid', () => {
+        const IS_COMMAND = '!echanger gagner';
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validParameters'](IS_COMMAND)).toBeTruthy();
+    });
+
+    it('validSyntax() should return false when the syntax of the command is not valid', () => {
+        const IS_COMMAND = '!echanreer gbr';
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validSyntax'](IS_COMMAND)).toBeFalsy();
+    });
+
+    it('validParameters() should return true when the syntax of the command is valid', () => {
+        const IS_COMMAND = '!echanger gbr';
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['validSyntax'](IS_COMMAND)).toBeTruthy();
+    });
+
     it('isCommand() should recognize a command structure', () => {
         const IS_COMMAND = '!aide';
         // Reason : testing a private method
@@ -248,6 +276,56 @@ describe('ChatboxHandlerService', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         expect(service['validCommand'](VALID_COMMAND)).toBeTruthy();
+    });
+
+    it('validCommand() should call validCommandSyntax when it is the turn of the player', () => {
+        const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'validCommandSyntax' as never);
+        const VALID_COMMAND = '!passer';
+        gameClientServiceSpy.playerOneTurn = true;
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['validCommand'](VALID_COMMAND);
+        expect(spyOnvalidCommandSyntax).toHaveBeenCalled();
+    });
+
+    it('validCommandSyntax() should call validParameters when the command has the good syntax', () => {
+        const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'validCommandParameters' as never);
+        const VALID_COMMAND = '!passer';
+        gameClientServiceSpy.playerOneTurn = true;
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['validCommandSyntax'](VALID_COMMAND);
+        expect(spyOnvalidCommandSyntax).toHaveBeenCalled();
+    });
+
+    it('validCommandSyntax() should not call validParameters when the command has not the good syntax', () => {
+        const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'validCommandParameters' as never);
+        const VALID_COMMAND = '!pastser';
+        gameClientServiceSpy.playerOneTurn = true;
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['validCommandSyntax'](VALID_COMMAND);
+        expect(spyOnvalidCommandSyntax).not.toHaveBeenCalled();
+    });
+
+    it('validParameters() should call isCommandExchangePossible when the command has the good parameters', () => {
+        const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'isCommandExchangePossible' as never);
+        const VALID_COMMAND = '!echanger ate';
+        gameClientServiceSpy.playerOneTurn = true;
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['validCommandParameters'](VALID_COMMAND);
+        expect(spyOnvalidCommandSyntax).toHaveBeenCalled();
+    });
+
+    it('validCommandParameters() should not call isCommandExchangePossible when the command has not the good parameters', () => {
+        const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'isCommandExchangePossible' as never);
+        const VALID_COMMAND = '!echanger 3dt';
+        gameClientServiceSpy.playerOneTurn = true;
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['validCommandParameters'](VALID_COMMAND);
+        expect(spyOnvalidCommandSyntax).not.toHaveBeenCalled();
     });
 
     it('validCommand() should add the corresponding error to the displayed messages and return false on an invalid syntax', () => {
@@ -326,19 +404,39 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(EXPECTED_USER_DISCONNECTED_MESSAGE);
     });
 
-    it('submitMessage() should call sendCommand() if the command is valid ', () => {
+    it('submitMessage() should call isMessageACommand() if the input is valid ', () => {
+        const spyOnSendMessage = spyOn<ChatboxHandlerService>(service, 'isMessageACommand' as never);
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND = '!passer';
 
         service.submitMessage(VALID_COMMAND);
+        expect(spyOnSendMessage).toHaveBeenCalled();
+    });
+
+    it('submitMessage() should not call isMessageACommand() if the input is empty ', () => {
+        const spyOnSendMessage = spyOn<ChatboxHandlerService>(service, 'isMessageACommand' as never);
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND = '';
+
+        service.submitMessage(VALID_COMMAND);
+        expect(spyOnSendMessage).not.toHaveBeenCalled();
+    });
+
+    it('isMessageACommand() should call sendCommand() if the command is valid ', () => {
+        gameClientServiceSpy.playerOneTurn = true;
+        const VALID_COMMAND = '!passer';
+
+        // eslint-disable-next-line dot-notation
+        service['isMessageACommand'](VALID_COMMAND);
         expect(commandHandlerSpy.sendCommand).toHaveBeenCalled();
     });
 
-    it('submitMessage() should call sendMessage() if the command is valid ', () => {
+    it('isMessageACommand() should call sendMessage() if the command is valid ', () => {
         const spyOnSendMessage = spyOn<ChatboxHandlerService>(service, 'sendMessage' as never);
         const MESSAGE = 'Bonjour monsieur Robert';
 
-        service.submitMessage(MESSAGE);
+        // eslint-disable-next-line dot-notation
+        service['isMessageACommand'](MESSAGE);
         expect(spyOnSendMessage).toHaveBeenCalled();
     });
 
@@ -408,7 +506,7 @@ describe('ChatboxHandlerService', () => {
         expect(service.messages.pop()).toEqual(message1);
     });
 
-    it('configureClueCommand should push  3 message with the possible word placements given by the command Indice if 3 option are push', () => {
+    it('addClueCommand should push  3 message with the possible word placements given by the command Indice if 3 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
             { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
@@ -435,13 +533,13 @@ describe('ChatboxHandlerService', () => {
         };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
-        service['configureClueCommand'](wordPlacements as never);
+        service['addClueCommand'](wordPlacements as never);
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);
     });
 
-    it('configureClueCommand should push 2 message with the possible word placements given by the command Indice if 2 option are push', () => {
+    it('addClueCommand should push 2 message with the possible word placements given by the command Indice if 2 option are push', () => {
         const CHAR_ASCII = 96;
         const wordPlacements = [
             { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
@@ -462,18 +560,32 @@ describe('ChatboxHandlerService', () => {
         const message3 = { type: 'system-message', data: 'Aucune autre possibilité possible' };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
-        service['configureClueCommand'](wordPlacements as never);
+        service['addClueCommand'](wordPlacements as never);
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
         expect(service.messages.pop()).toEqual(message1);
     });
 
     it('configureClueCommand should explain to the player that no word placement are possible with the letters on his rack', () => {
+        const spy = spyOn(service, 'addClueCommand' as never);
         const message1 = { type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         service['configureClueCommand']([] as never);
         expect(service.messages.pop()).toEqual(message1);
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('configureClueCommand should call addClueCommand when the clueCommand array has a length of more than 0', () => {
+        const spy = spyOn(service, 'addClueCommand' as never);
+        const wordPlacements = [
+            { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
+            { firstCoordinate: { x: 3, y: 2 }, isHorizontal: false, letters: ['b', 'i', 'l', 'l', 'e'] },
+        ];
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['configureClueCommand'](wordPlacements as never);
+        expect(spy).toHaveBeenCalledOnceWith(wordPlacements as never);
     });
 
     it('should emit 3 messages to show in the chatBox when the game is finish', fakeAsync(() => {

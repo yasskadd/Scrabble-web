@@ -1,7 +1,7 @@
-import * as letterTypes from '@app/letter-reserve';
+import * as letterTypes from '@app/constants/letter-reserve';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
-import { spy } from 'sinon';
+import { spy, stub } from 'sinon';
 import { LetterReserveService } from './letter-reserve.service';
 
 describe('LetterReserveService', () => {
@@ -85,7 +85,8 @@ describe('LetterReserveService', () => {
     it('should not exchange letter when the reserve has less than 7 letters', () => {
         const nLetters = 6;
         const oldRack = sampleRack;
-        letterReserveService.lettersReserve = letterReserveService.lettersReserve.slice(0, nLetters);
+        const totalQuantityStub = stub(letterReserveService, 'totalQuantity' as never);
+        totalQuantityStub.returns(nLetters);
         const newRack = letterReserveService.exchangeLetter(
             sampleRack.map((letter) => {
                 return letter.value;
@@ -103,7 +104,7 @@ describe('LetterReserveService', () => {
     });
 
     it('should return true if the reserve is empty', () => {
-        letterReserveService.lettersReserve = [];
+        letterReserveService.lettersReserve = [{ value: 'b', quantity: 0, points: 3 }];
         const isEmpty = letterReserveService.isEmpty();
         expect(isEmpty).to.eql(true);
     });

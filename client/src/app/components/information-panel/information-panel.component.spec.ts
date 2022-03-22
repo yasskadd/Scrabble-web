@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSliderModule } from '@angular/material/slider';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSliderChange, MatSliderModule } from '@angular/material/slider';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -59,7 +60,7 @@ describe('InformationPanelComponent', () => {
     let letterPlacementService: jasmine.SpyObj<LetterPlacementService>;
 
     beforeEach(async () => {
-        gameClientSpy = jasmine.createSpyObj('GameClientService', ['startTimer', 'quitGame'], {
+        gameClientSpy = jasmine.createSpyObj('GameClientService', ['startTimer', 'quitGame', 'updateGameboard'], {
             playerOne: PLAYER_ONE,
             secondPlayer: PLAYER_TWO,
             gameTimer: TIMER,
@@ -70,6 +71,7 @@ describe('InformationPanelComponent', () => {
                 MatSliderModule,
                 FormsModule,
                 BrowserModule,
+                MatIconModule,
                 RouterTestingModule.withRoutes([{ path: MULTIPLAYER_HOME_PAGE, component: StubComponent }]),
             ],
             declarations: [InformationPanelComponent],
@@ -114,11 +116,6 @@ describe('InformationPanelComponent', () => {
         const expectedValue = '4px';
         const testedValue = component.formatLabel(valueToFormat);
         expect(testedValue).toEqual(expectedValue);
-    });
-
-    it('should call the method letterPlacementService.resetGameBoardView if updateFontSize is called', () => {
-        component.updateFontSize();
-        expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
     });
 
     it('should have a div with the timer when it is your turn to play', () => {
@@ -213,23 +210,11 @@ describe('InformationPanelComponent', () => {
         expect(message).not.toBeTruthy();
     });
 
-    it('should call updateFontSize() when the mat-slider is pressed', fakeAsync(() => {
-        const button = fixture.debugElement.nativeElement.querySelector('#updateFontSlider');
-        button.click();
-        tick();
+    it('should call updateGameboard() when the mat-slider is triggered', () => {
+        const mockSlider = new MatSliderChange();
+        component.updateFontSize(mockSlider);
         fixture.detectChanges();
+        expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
         expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
-    }));
-
-    it('timerToMinute() should return number of minute in the timer', () => {
-        const twoMinute = 120;
-        const expectedValue = 2;
-        expect(component.timerToMinute(twoMinute)).toEqual(expectedValue);
-    });
-
-    it('timerToSecond() should return number of second in the timer', () => {
-        const fiftyNineSecond = 179;
-        const expectedValue = 59;
-        expect(component.timerToSecond(fiftyNineSecond)).toEqual(expectedValue);
     });
 });

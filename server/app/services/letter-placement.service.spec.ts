@@ -56,8 +56,37 @@ describe('Letter Placement Service', () => {
         });
 
         it('validateCommandCoordinate() should return false if coord already isOccupied on board', () => {
-            gameboard.placeLetter({ x: 0, y: 0 }, 'a');
-            expect(placementService['validateCommandCoordinate']({ x: 0, y: 0 }, gameboard)).to.equal(false);
+            gameboard.placeLetter({ x: 1, y: 1 }, 'a');
+            expect(placementService['validateCommandCoordinate']({ x: 1, y: 1 }, gameboard)).to.equal(false);
+        });
+    });
+
+    context('upDownLeftOrRightAreOccupied tests', () => {
+        it('upDownLeftOrRightAreOccupied() should return true if up, down, left and right are ALL in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 2, y: 1 }, 'a');
+            gameboard.placeLetter({ x: 2, y: 3 }, 'a');
+            gameboard.placeLetter({ x: 1, y: 2 }, 'a');
+            gameboard.placeLetter({ x: 3, y: 2 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return false if left or up in not in board limits and isOccupied false', () => {
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 1, y: 1 }, gameboard)).to.equal(false);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return true if ONLY down in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 2, y: 3 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return true if ONLY left in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 1, y: 2 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return true if ONLY right in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 3, y: 2 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
         });
     });
 
@@ -153,15 +182,12 @@ describe('Letter Placement Service', () => {
             expect(placementService['findLettersPresentInRack'](['c'], player.rack)).to.eql([]);
         });
 
-        // TODO
-        // it('should set isBlank attribute to true and points to 0 if letter i uppercase', () => {
-        //     placementService['associateLettersWithRack']('C', player);
-        //     expect(letters[0].letter.isBlankLetter).to.equal(true);
-        //     expect(letters[0].letter.points).to.equal(0);
-        // });
-
-        it('should return false if lettersCoords do not match the player rack', () => {
+        it('should return false if letters do not match the player rack', () => {
             expect(placementService['areLettersInRack'](['c', 'a'], player)).to.equal(false);
+        });
+
+        it('should return false if letters do not match the player rack', () => {
+            expect(placementService['areLettersInRack'](['c', '*'], player)).to.equal(false);
         });
 
         it('should return false if there is only one letter not matching the player rack', () => {
@@ -177,7 +203,7 @@ describe('Letter Placement Service', () => {
             expect(placementService['areLettersInRack'](['a', 'a'], player)).to.equal(false);
         });
 
-        it('should return true if all lettersCoords match exactly the player rack', () => {
+        it('should return true if all letters match exactly the player rack', () => {
             expect(placementService['areLettersInRack'](['a', 'b'], player)).to.equal(true);
         });
 
@@ -357,6 +383,11 @@ describe('Letter Placement Service', () => {
                 points: 0,
                 invalidWords: [] as Word[],
             });
+            commandInfo = {
+                firstCoordinate: { x: 1, y: 1 },
+                isHorizontal: true,
+                letters: ['a', 'l', 'L'],
+            };
             placementService.placeLetters(word, commandInfo, player, gameboard);
             expect(dictionaryValidation.validateWord.calledOnce).to.equal(true);
         });
@@ -431,6 +462,15 @@ describe('Letter Placement Service', () => {
             dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
             placementService.placeLetters(sevenLetterWord, newCommandInfo, player, gameboard);
             expect(player.score).to.equal(points + bonusPoint);
+        });
+
+        it('updatePlayerRack should remove * if capital letter is found in commandInfo.letters', () => {
+            player.rack = [
+                { value: 'a', quantity: 1, points: 1 },
+                { value: '*', quantity: 1, points: 0 },
+            ];
+            placementService['updatePlayerRack'](['a', 'L'], player.rack);
+            expect(player.rack.length).to.equal(0);
         });
     });
 });

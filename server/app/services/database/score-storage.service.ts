@@ -18,33 +18,14 @@ export class ScoreStorageService {
         const scorePlace = this.getTopScoresPosition(currentTopScores, scoreInfo.score);
         if (scorePlace === ScoreStorageService.lastElement) return;
         const currentElement = currentTopScores[scorePlace - 1];
-        if (currentElement !== undefined) {
-            if (currentElement.score === scoreInfo.score && !this.isNameAlreadyThere(scoreInfo.username, currentElement.username)) {
-                this.database.replaceDocument(
-                    { position: scorePlace },
-                    {
-                        position: scorePlace,
-                        username: currentElement.username + ' - ' + scoreInfo.username,
-                        type: scoreInfo.type,
-                        score: scoreInfo.score,
-                    },
-                );
-            } else if (currentElement.score !== scoreInfo.score) {
-                currentTopScores.forEach((value) => {
-                    if (value.position >= scorePlace && value.position !== ScoreStorageService.lastElement) {
-                        this.database.replaceDocument(
-                            { position: value.position + 1 },
-                            { position: value.position + 1, username: value.username, type: value.type, score: value.score },
-                        );
-                    }
-                });
-                this.database.replaceDocument(
-                    { position: scorePlace },
-                    { position: scorePlace, username: scoreInfo.username, type: scoreInfo.type, score: scoreInfo.score },
-                );
-            }
+        if (currentElement === undefined) return;
+        if (currentElement.score === scoreInfo.score && !this.isNameAlreadyThere(scoreInfo.username, currentElement.username)) {
+            await this.addPlayerToSameScore(scoreInfo, scorePlace, currentElement);
+            return;
         }
+        if (currentElement.score !== scoreInfo.score) await this.addNewScore(currentTopScores, scorePlace, scoreInfo);
     }
+
     async getLOG2990TopScores(): Promise<Document[]> {
         await this.populateDb();
         const currentTopScores = await this.database.fetchDocuments({ type: 'LOG2990' });
@@ -77,6 +58,33 @@ export class ScoreStorageService {
         }
     }
 
+    private async addPlayerToSameScore(scoreInfo: ScoreInfo, scorePlace: number, currentElement: Document) {
+        await this.database.replaceDocument(
+            { position: scorePlace },
+            {
+                position: scorePlace,
+                username: currentElement.username + ' - ' + scoreInfo.username,
+                type: scoreInfo.type,
+                score: scoreInfo.score,
+            },
+        );
+    }
+
+    private async addNewScore(currentTopScores: Document[], scorePlace: number, scoreInfo: ScoreInfo) {
+        currentTopScores.forEach((value) => {
+            if (value.position >= scorePlace && value.position !== ScoreStorageService.lastElement) {
+                this.database.replaceDocument(
+                    { position: value.position + 1 },
+                    { position: value.position + 1, username: value.username, type: value.type, score: value.score },
+                );
+            }
+        });
+        this.database.replaceDocument(
+            { position: scorePlace },
+            { position: scorePlace, username: scoreInfo.username, type: scoreInfo.type, score: scoreInfo.score },
+        );
+    }
+
     private getTopScoresPosition(currentTopScores: Document[], score: number): number {
         const scores = currentTopScores.map((element) => element.score as number);
         scores.push(score);
@@ -85,6 +93,7 @@ export class ScoreStorageService {
         });
         return scores.indexOf(score) + 1;
     }
+
     private isNameAlreadyThere(newPlayer: string, currentPlayer: string): boolean {
         const notFound = -1;
         const playerName = currentPlayer.split(' - ');
