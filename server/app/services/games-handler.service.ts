@@ -7,6 +7,7 @@ import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
+import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -19,14 +20,6 @@ import { WordSolverService } from './word-solver.service';
 const MAX_SKIP = 6;
 const SECOND = 1000;
 const CHAR_ASCII = 96;
-
-interface GameScrabbleInformation {
-    playerName: string[];
-    roomId: string;
-    timer: number;
-    socketId: string[];
-}
-
 @Service()
 export class GamesHandler {
     private players: Map<string, Player>;
