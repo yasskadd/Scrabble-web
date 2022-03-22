@@ -188,24 +188,24 @@ describe('Word solver service', () => {
         });
     });
 
-    context('verifyConditions() tests', () => {
+    context('isOutOfBoundsOrIsOccupied() tests', () => {
         it('should return true if the coordinate is out of bounds horizontally', () => {
             const outOfBoundsCoord: Coordinate = { x: 17, y: 1 };
-            expect(wordSolverService['verifyConditions'](outOfBoundsCoord)).to.equal(true);
+            expect(wordSolverService['isOutOfBoundsOrIsOccupied'](outOfBoundsCoord)).to.equal(true);
         });
 
         it('should return true if the coordinate is out of bounds horizontally', () => {
             const outOfBoundsCoord: Coordinate = { x: 1, y: 17 };
-            expect(wordSolverService['verifyConditions'](outOfBoundsCoord)).to.equal(true);
+            expect(wordSolverService['isOutOfBoundsOrIsOccupied'](outOfBoundsCoord)).to.equal(true);
         });
 
         it('should return false if coordinate is placed on the gameboard', () => {
             gameboard.placeLetter({ x: 1, y: 1 }, '');
-            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 })).to.equal(false);
+            expect(wordSolverService['isOutOfBoundsOrIsOccupied']({ x: 1, y: 1 })).to.equal(false);
         });
 
         it('should return true if coordinate is not placed on the gameboard', () => {
-            expect(wordSolverService['verifyConditions']({ x: 1, y: 1 })).to.equal(true);
+            expect(wordSolverService['isOutOfBoundsOrIsOccupied']({ x: 1, y: 1 })).to.equal(true);
         });
     });
 
