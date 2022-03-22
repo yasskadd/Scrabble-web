@@ -12,9 +12,7 @@ const ROW_NUMBERS = 15;
 const COLUMN_NUMBERS = 15;
 const INDEX_NOT_FOUND = -1;
 const LIMIT = 7;
-// TODO: NEED 100% COVERAGE
 
-// Temporary function, waiting for refactor.
 @Service()
 export class WordSolverService {
     private trie: LetterTree;
@@ -111,7 +109,6 @@ export class WordSolverService {
         }
     }
 
-    // Tested
     private findLeftPart(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, rack: string[], limit: number) {
         this.extendRight(partialWord, currentNode, rack, anchor, false);
         if (limit > 0) {
@@ -189,8 +186,8 @@ export class WordSolverService {
         let letters: string = '';
         let scanPos = this.setScanPosition(coord, isUp);
         while (this.gameboard.getLetterTile(scanPos).isOccupied) {
-            letters = this.addLettertoString(scanPos, letters, false);
-            scanPos = this.setScanPosition(scanPos, false);
+            letters = this.addLettertoString(scanPos, letters, isUp);
+            scanPos = this.setScanPosition(scanPos, isUp);
         }
         return letters;
     }
