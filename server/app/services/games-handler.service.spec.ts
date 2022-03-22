@@ -5,6 +5,7 @@ import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
+import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-handler.service';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -18,10 +19,11 @@ import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { RealPlayer } from './../classes/player/real-player.class';
 import { Game } from './game.service';
-import { LetterPlacementService, PlaceLettersReturn } from './letter-placement.service';
+import { LetterPlacementService } from './letter-placement.service';
 import { LetterReserveService } from './letter-reserve.service';
 import { SocketManager } from './socket-manager.service';
 import { WordSolverService } from './word-solver.service';
+
 const ROOM = '0';
 
 describe('GamesHandler Service', () => {

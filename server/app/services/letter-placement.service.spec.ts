@@ -56,8 +56,38 @@ describe('Letter Placement Service', () => {
         });
 
         it('validateCommandCoordinate() should return false if coord already isOccupied on board', () => {
-            gameboard.placeLetter({ x: 0, y: 0 }, 'a');
-            expect(placementService['validateCommandCoordinate']({ x: 0, y: 0 }, gameboard)).to.equal(false);
+            gameboard.placeLetter({ x: 1, y: 1 }, 'a');
+            expect(placementService['validateCommandCoordinate']({ x: 1, y: 1 }, gameboard)).to.equal(false);
+        });
+    });
+
+    context('upDownLeftOrRightAreOccupied tests', () => {
+        it('upDownLeftOrRightAreOccupied() should return true if up, down, left and right are ALL in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 2, y: 1 }, 'a');
+            gameboard.placeLetter({ x: 2, y: 3 }, 'a');
+            gameboard.placeLetter({ x: 1, y: 2 }, 'a');
+            gameboard.placeLetter({ x: 3, y: 2 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return true if ONLY up in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 2, y: 1 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return true if ONLY down in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 2, y: 3 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return true if ONLY left in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 1, y: 2 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
+        });
+
+        it('upDownLeftOrRightAreOccupied() should return true if ONLY right in board limits and isOccupied true', () => {
+            gameboard.placeLetter({ x: 3, y: 2 }, 'a');
+            expect(placementService['upDownLeftOrRightAreOccupied']({ x: 2, y: 2 }, gameboard)).to.equal(true);
         });
     });
 
