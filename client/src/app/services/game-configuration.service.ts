@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoomClient } from '@app/interfaces/game-room-client';
+import { RoomInformation } from '@app/interfaces/room-information';
 import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
@@ -9,13 +10,6 @@ const FOUND_OPPONENT_MESSAGE = 'Adversaire Trouvé';
 const SEARCHING_OPPONENT = "En Attente d'un Adversaire ...";
 const WAITING_OPPONENT_CONFIRMATION = "En Attente de la confirmation de L'adversaire";
 
-interface RoomInformation {
-    playerName: string[];
-    roomId: string;
-    isCreator: boolean;
-    statusGame: string;
-    timer: number;
-}
 @Injectable({
     providedIn: 'root',
 })
