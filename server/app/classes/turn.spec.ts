@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { SinonFakeTimers, spy, useFakeTimers } from 'sinon';
+import { restore, SinonFakeTimers, spy, stub, useFakeTimers } from 'sinon';
 import { Player } from './player/player.class';
 import { Turn } from './turn';
 
@@ -23,6 +23,7 @@ describe('turn', () => {
 
     afterEach(() => {
         clock.restore();
+        restore();
     });
 
     it('start() should start the timer and not skip it when there is still time left on the clock', () => {
@@ -40,6 +41,26 @@ describe('turn', () => {
     });
 
     it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other', () => {
+        turn.determinePlayer(player1, player2);
+        const activePlayer = turn.activePlayer;
+        const inactivePlayer = turn.inactivePlayer;
+        expect(activePlayer).to.not.equal(undefined);
+        expect(inactivePlayer).to.not.equal(undefined);
+        expect(activePlayer).to.not.equal(inactivePlayer);
+    });
+
+    it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other when random number is 0', () => {
+        stub(Math, 'floor').returns(0);
+        turn.determinePlayer(player1, player2);
+        const activePlayer = turn.activePlayer;
+        const inactivePlayer = turn.inactivePlayer;
+        expect(activePlayer).to.not.equal(undefined);
+        expect(inactivePlayer).to.not.equal(undefined);
+        expect(activePlayer).to.not.equal(inactivePlayer);
+    });
+
+    it('determinePlayer() should initialize activePlayer and inactivePlayer both different from each other when random number is 1', () => {
+        stub(Math, 'floor').returns(1);
         turn.determinePlayer(player1, player2);
         const activePlayer = turn.activePlayer;
         const inactivePlayer = turn.inactivePlayer;
