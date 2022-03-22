@@ -3,10 +3,11 @@ import { LetterTreeNode } from '@app/classes/trie/letter-tree-node.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
+import { ValidateWordReturn } from '@app/validate-word-return';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Container, Service } from 'typedi';
-import { DictionaryValidationService, ValidateWordReturn } from './dictionary-validation.service';
+import { DictionaryValidationService } from './dictionary-validation.service';
 
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const ROW_NUMBERS = 15;
