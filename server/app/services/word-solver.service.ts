@@ -1,5 +1,6 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterTree, LetterTreeNode } from '@app/classes/trie/letter-tree.class';
+import { LetterTreeNode } from '@app/classes/trie/letter-tree-node.class';
+import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { LetterTile } from '@common/classes/letter-tile.class';

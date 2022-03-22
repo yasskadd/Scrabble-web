@@ -1,4 +1,6 @@
+/* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable no-restricted-imports */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
@@ -44,40 +46,31 @@ describe('Dictionary Validation Service', () => {
 
     it('checkWordInDictionary() should set word isValid attribute to false if they dont exist', () => {
         const validWords: Word[] = [invalidWord1, invalidWord2];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](validWords);
         expect(invalidWord1.isValid && invalidWord2.isValid).to.eql(false);
     });
 
     it('isolateInvalidWords() should return true if words are not in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.eql(true);
     });
 
     it('isolateInvalidWords() should return array of length 2 if 2 words are not in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(2);
     });
 
     it('isolateInvalidWords should return false if words are in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.eql(false);
     });
 
     it('isolateInvalidWords should return array of 0 if words are in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(0);
     });
 
@@ -90,13 +83,13 @@ describe('Dictionary Validation Service', () => {
 
     it('should call isolateInvalidWords() when calculateTurnPoints() is called', () => {
         const spyisolateInvalidWords = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
-        dictionaryValidationService.calculateTurnPoints([validWord1], gameboard);
+        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
         expect(spyisolateInvalidWords.called).to.eql(true);
     });
 
     it('should call calculateWordPoints() when calculateTurnPoints() is called for each word in the list if there is no invalid words', () => {
         const spyCalculate1 = Sinon.spy(validWord1, 'calculateWordPoints');
-        dictionaryValidationService.calculateTurnPoints([validWord1], gameboard);
+        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
         expect(spyCalculate1.called).to.eql(true);
     });
 
@@ -118,7 +111,7 @@ describe('Dictionary Validation Service', () => {
         let trie: LetterTree;
         before(() => {
             dictionaryValidationService = new DictionaryValidationService();
-            dictionaryValidationService.createTrieDictionary();
+            dictionaryValidationService['createTrieDictionary']();
             trie = dictionaryValidationService.trie;
         });
 
