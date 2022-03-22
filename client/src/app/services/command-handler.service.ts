@@ -75,10 +75,12 @@ export class CommandHandlerService {
         if (this.isDigit(placementArray[2]) && placementArray[3] != null) {
             const coordinateX = +(placementArray[1] + placementArray[2]);
             return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, placementArray[3]];
-        } else if (this.isDigit(placementArray[2])) {
+        }
+        if (this.isDigit(placementArray[2])) {
             const coordinateX = +(placementArray[1] + placementArray[2]);
             return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
-        } else if (placementArray[2] == null) {
+        }
+        if (placementArray[2] == null) {
             const coordinateX = +placementArray[1];
             return [{ x: coordinateX, y: parseInt(placementArray[0], 36) - coordinateRatio } as Coordinate, '' as string];
         }
