@@ -5,14 +5,12 @@ import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { ValidateWordReturn } from '@app/validate-word-return';
 import { LetterTile } from '@common/classes/letter-tile.class';
+import * as constants from '@common/constants/board-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Container, Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
-const ROW_NUMBERS = 15;
-const COLUMN_NUMBERS = 15;
-const INDEX_NOT_FOUND = -1;
 const MAX_LETTERS_LIMIT = 7;
 
 @Service()
@@ -97,7 +95,7 @@ export class WordSolverService {
                 firstCoordinate = lastPosition;
                 placedLetters.unshift(wordCopy.slice(wordCopy.length - 1));
             }
-            wordCopy = wordCopy.slice(0, INDEX_NOT_FOUND);
+            wordCopy = wordCopy.slice(0, constants.INVALID_INDEX);
             wordIndex--;
             if (wordIndex >= 0) lastPosition = this.decrementCoord(lastPosition, this.isHorizontal) as Coordinate;
         }
@@ -151,7 +149,11 @@ export class WordSolverService {
     }
 
     private isOutOfBoundsOrIsOccupied(nextPosition: Coordinate): boolean {
-        return nextPosition.x > COLUMN_NUMBERS || nextPosition.y > ROW_NUMBERS || !this.gameboard.getLetterTile(nextPosition).isOccupied;
+        return (
+            nextPosition.x > constants.TOTAL_TILES_IN_COLUMN ||
+            nextPosition.y > constants.TOTAL_TILES_IN_ROW ||
+            !this.gameboard.getLetterTile(nextPosition).isOccupied
+        );
     }
 
     private addRackLetterToPartialWord(nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
@@ -273,8 +275,8 @@ export class WordSolverService {
     }
 
     private incrementCoord(coord: Coordinate, isHorizontal: boolean): Coordinate | null {
-        if (isHorizontal && coord.x !== COLUMN_NUMBERS) return { x: coord.x + 1, y: coord.y } as Coordinate;
-        else if (!isHorizontal && coord.y !== ROW_NUMBERS) return { x: coord.x, y: coord.y + 1 } as Coordinate;
+        if (isHorizontal && coord.x !== constants.TOTAL_TILES_IN_COLUMN) return { x: coord.x + 1, y: coord.y } as Coordinate;
+        else if (!isHorizontal && coord.y !== constants.TOTAL_TILES_IN_ROW) return { x: coord.x, y: coord.y + 1 } as Coordinate;
         return null;
     }
 }
