@@ -42,10 +42,23 @@ export class WordSolverService {
             this.anchors = this.gameboard.findAnchors();
             this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
 
-            this.firstTurnOrEmpty(this.gameboard);
+            this.firstTurnOrEmpty();
             this.findPossibleWordForEachAnchor();
         }
         return this.commandInfoList;
+    }
+
+    commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
+        const dictionaryService: DictionaryValidationService = Container.get(DictionaryValidationService);
+        const commandInfoMap: Map<CommandInfo, number> = new Map();
+        commandInfoList.forEach((commandInfo) => {
+            const word = new Word(commandInfo, this.gameboard);
+            this.placeLettersOnBoard(word, commandInfo);
+            const placementScore: ValidateWordReturn = dictionaryService.validateWord(word, this.gameboard);
+            commandInfoMap.set(commandInfo, placementScore.points);
+            this.removeLetterFromBoard(word);
+        });
+        return commandInfoMap;
     }
 
     private findPossibleWordForEachAnchor() {
@@ -63,20 +76,7 @@ export class WordSolverService {
         if (partialWordNode !== null) this.extendWordAfterAnchor(partialWord, partialWordNode, currentAnchor, false);
     }
 
-    commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
-        const dictionaryService: DictionaryValidationService = Container.get(DictionaryValidationService);
-        const commandInfoMap: Map<CommandInfo, number> = new Map();
-        commandInfoList.forEach((commandInfo) => {
-            const word = new Word(commandInfo, this.gameboard);
-            this.placeLettersOnBoard(word, commandInfo);
-            const placementScore: ValidateWordReturn = dictionaryService.validateWord(word, this.gameboard);
-            commandInfoMap.set(commandInfo, placementScore.points);
-            this.removeLetterFromBoard(word);
-        });
-        return commandInfoMap;
-    }
-
-    placeLettersOnBoard(word: Word, commandInfo: CommandInfo) {
+    private placeLettersOnBoard(word: Word, commandInfo: CommandInfo) {
         const commandLettersCopy = commandInfo.letters.slice();
         word.newLetterCoords.forEach((coord) => {
             this.gameboard.placeLetter(coord, commandLettersCopy[0]);
@@ -85,7 +85,7 @@ export class WordSolverService {
         });
     }
 
-    removeLetterFromBoard(word: Word) {
+    private removeLetterFromBoard(word: Word) {
         word.newLetterCoords.forEach((coord) => {
             this.gameboard.removeLetter(coord);
         });
@@ -112,7 +112,7 @@ export class WordSolverService {
         } as CommandInfo);
     }
 
-    private firstTurnOrEmpty(gameboard: Gameboard) {
+    private firstTurnOrEmpty() {
         if (!this.anchors.length) {
             const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
             this.findWordPartBeforeAnchor('', this.trie.root, anchor, MAX_LETTERS_LIMIT);
