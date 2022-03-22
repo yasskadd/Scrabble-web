@@ -1,5 +1,5 @@
-import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
-import { GameSessions } from '@app/services/game-sessions.service';
+import { ChatboxHandlerService } from '@app/services/client-utilities/chatbox-handler.service';
+import { GameSessions } from '@app/services/client-utilities/game-sessions.service';
 import { GamesHandler } from '@app/services/games-handler.service';
 import { assert } from 'console';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';

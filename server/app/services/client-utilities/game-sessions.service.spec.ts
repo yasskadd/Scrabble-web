@@ -2,7 +2,8 @@
 /* eslint-disable max-lines */
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoom } from '@app/interfaces/game-room';
-import { GameSessions } from '@app/services/game-sessions.service';
+import { GameSessions } from '@app/services/client-utilities/game-sessions.service';
+import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { assert, expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -10,7 +11,6 @@ import { AddressInfo } from 'net';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
-import { SocketManager } from './socket/socket-manager.service';
 
 type Parameters = { id: string; name: string };
 type SioSignature = SocketManager['sio'];
