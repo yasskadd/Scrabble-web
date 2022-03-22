@@ -1,6 +1,4 @@
-/* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-restricted-imports */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
@@ -92,13 +90,13 @@ describe('Dictionary Validation Service', () => {
 
     it('should call isolateInvalidWords() when calculateTurnPoints() is called', () => {
         const spyisolateInvalidWords = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
-        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
+        dictionaryValidationService.calculateTurnPoints([validWord1], gameboard);
         expect(spyisolateInvalidWords.called).to.eql(true);
     });
 
     it('should call calculateWordPoints() when calculateTurnPoints() is called for each word in the list if there is no invalid words', () => {
         const spyCalculate1 = Sinon.spy(validWord1, 'calculateWordPoints');
-        dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
+        dictionaryValidationService.calculateTurnPoints([validWord1], gameboard);
         expect(spyCalculate1.called).to.eql(true);
     });
 
@@ -120,7 +118,7 @@ describe('Dictionary Validation Service', () => {
         let trie: LetterTree;
         before(() => {
             dictionaryValidationService = new DictionaryValidationService();
-            dictionaryValidationService['createTrieDictionary']();
+            dictionaryValidationService.createTrieDictionary();
             trie = dictionaryValidationService.trie;
         });
 

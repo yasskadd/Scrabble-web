@@ -1,12 +1,4 @@
-/* eslint-disable max-classes-per-file */
-export class LetterTreeNode {
-    letter: string;
-    isWord: boolean;
-    children: Map<string, LetterTreeNode> = new Map();
-    constructor(isWord: boolean) {
-        this.isWord = isWord;
-    }
-}
+import { LetterTreeNode } from './letter-tree-node.class';
 
 export class LetterTree {
     root: LetterTreeNode;
