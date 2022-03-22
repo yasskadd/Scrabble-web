@@ -140,11 +140,7 @@ export class PlayerRackComponent implements OnInit {
     exchange() {
         let letters = '';
         for (const i of this.lettersToExchange) {
-            for (const letter of this.rack) {
-                if (i === this.rack.indexOf(letter)) {
-                    letters += letter.value;
-                }
-            }
+            letters += this.rack[i].value;
         }
         this.cancel();
         this.chatBoxHandler.submitMessage('!échanger ' + letters);
