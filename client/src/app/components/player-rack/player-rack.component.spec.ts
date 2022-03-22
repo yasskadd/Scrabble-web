@@ -209,15 +209,6 @@ describe('PlayerRackComponent', () => {
         expect(lettersDiv[indexLetter].classList).toContain('rack-letter-exchange-selected');
     });
 
-    // it('when rack has duplicates, only letter selected for exchange is to be exchanged when button is pressed', () => {
-    //     const index = 5;
-    //     const mockClick = new MouseEvent('oncontextmenu');
-    //     component.onRightClick(mockClick, index);
-    //     fixture.detectChanges();
-    //     expect(component.lettersToExchange.length).toEqual(1);
-    //     expect(component.lettersToExchange[0]).toEqual(index);
-    // });
-
     it('onLeftClick should call cancel', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('click');
@@ -329,7 +320,7 @@ describe('PlayerRackComponent', () => {
         expect(letterPlacementServiceSpy.submitPlacement).toHaveBeenCalled();
     });
 
-    it('repositionRack should do nothing if the rack is empty', () => {
+    it('repositionRack should do nothing if the rack is empty and player tries to manipulate it', () => {
         gameClientServiceSpy.playerOne.rack = [];
         const moveLeftSpy = spyOn(component, 'moveLeft');
         component.buttonPressed = 'ArrowLeft';
