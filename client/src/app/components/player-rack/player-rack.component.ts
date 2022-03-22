@@ -1,9 +1,10 @@
 import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
-import * as constants from '@app/constants';
+import * as constants from '@app/board-view';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import * as board from '@common/constants/board-info';
 import { Letter } from '@common/interfaces/letter';
 import { Subject } from 'rxjs';
 
@@ -34,7 +35,7 @@ export class PlayerRackComponent implements OnInit {
     ) {
         this.buttonPressed = '';
         this.currentSelection = 0;
-        this.previousSelection = constants.INVALID_INDEX;
+        this.previousSelection = board.INVALID_INDEX;
         this.lettersToExchange = [];
         this.lettersToManipulate = [];
         this.duplicates = [];
@@ -104,7 +105,7 @@ export class PlayerRackComponent implements OnInit {
 
     repositionRack() {
         if (!this.rack.length) return;
-        this.previousSelection = constants.INVALID_INDEX;
+        this.previousSelection = board.INVALID_INDEX;
         if (this.buttonPressed === 'ArrowLeft') {
             this.moveLeft();
         }

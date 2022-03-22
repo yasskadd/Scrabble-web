@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Turn } from '@app/classes/turn';
+import { BotInformation } from '@app/interfaces/bot-information';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
@@ -12,7 +13,7 @@ import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { ReplaySubject } from 'rxjs';
 import * as Sinon from 'sinon';
-import { BeginnerBot, BotInformation } from './bot-beginner.class';
+import { BeginnerBot } from './bot-beginner.class';
 
 describe('BotBeginner', () => {
     let botBeginner: BeginnerBot;
