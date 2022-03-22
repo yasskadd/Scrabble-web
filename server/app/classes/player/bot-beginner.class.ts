@@ -1,5 +1,5 @@
+import { Game } from '@app/classes/game';
 import { CommandInfo } from '@app/interfaces/command-info';
-import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';

@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+import { Game } from '@app/classes/game';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
+import { ErrorType, LetterPlacementService } from '@app/services/letter-placement.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
-import { Game } from './game.service';
-import { ErrorType, LetterPlacementService } from './letter-placement.service';
 
 describe('Game tests', () => {
     let player1: Player;

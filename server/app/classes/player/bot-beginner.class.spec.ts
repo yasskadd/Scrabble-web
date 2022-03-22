@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
+import { Game } from '@app/classes/game';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/interfaces/command-info';
-import { Game } from '@app/services/game.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Coordinate } from '@common/interfaces/coordinate';

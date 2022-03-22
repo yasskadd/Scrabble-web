@@ -4,7 +4,7 @@ import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { spy, stub } from 'sinon';
 
-describe('LetterReserveService', () => {
+describe('LetterReserve', () => {
     let letterReserve: LetterReserve;
     let sampleRack: Letter[];
     let emptyRack: Letter[];

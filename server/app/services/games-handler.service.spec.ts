@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { Game } from '@app/classes/game';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
@@ -19,7 +20,6 @@ import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { RealPlayer } from './../classes/player/real-player.class';
-import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
 import { SocketManager } from './socket/socket-manager.service';
 import { WordSolverService } from './word-solver.service';
