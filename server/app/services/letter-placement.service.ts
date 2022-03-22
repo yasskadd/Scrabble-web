@@ -58,7 +58,7 @@ export class LetterPlacementService {
 
     private validateCommandCoordinate(commandCoord: Coordinate, gameboard: Gameboard): boolean {
         if (!gameboard.getLetterTile(commandCoord).isOccupied) return gameboard.isWithinBoardLimits(commandCoord);
-        else return false;
+        return false;
     }
 
     private createTempRack(player: Player): Letter[] {
@@ -124,14 +124,14 @@ export class LetterPlacementService {
     private isWordIsAttachedToBoardLetter(letterCoords: Coordinate[], gameboard: Gameboard): boolean {
         let lettersWithAdjacencyCount = 0;
         letterCoords.forEach((coord) => {
-            if (this.upDownLeftOrRightAreOccupied(gameboard, coord)) lettersWithAdjacencyCount++;
+            if (this.upDownLeftOrRightAreOccupied(coord, gameboard)) lettersWithAdjacencyCount++;
         });
 
         if (lettersWithAdjacencyCount === 0) return false;
         else return true;
     }
 
-    private upDownLeftOrRightAreOccupied(gameboard: Gameboard, coord: Coordinate): boolean {
+    private upDownLeftOrRightAreOccupied(coord: Coordinate, gameboard: Gameboard): boolean {
         return (
             (gameboard.getLetterTile({ x: coord.x, y: coord.y - 1 }).isOccupied && gameboard.isWithinBoardLimits({ x: coord.x, y: coord.y - 1 })) ||
             (gameboard.getLetterTile({ x: coord.x, y: coord.y + 1 }).isOccupied && gameboard.isWithinBoardLimits({ x: coord.x, y: coord.y + 1 })) ||
