@@ -184,6 +184,7 @@ export class WordSolverService {
         return this.setLegalHere(lettersUpwards, lettersDownwards);
     }
 
+    // BUG PROBABLY HERE --------------------------------------------------------------------------------------------------
     private findLetters(coord: Coordinate, isUp: boolean) {
         let letters: string = '';
         let scanPos = this.setScanPosition(coord, isUp);
@@ -201,6 +202,7 @@ export class WordSolverService {
     private addLettertoString(scanPos: Coordinate, letters: string, isUp: boolean): string {
         return isUp ? this.gameboard.getLetterTile(scanPos).letter + letters : letters + this.gameboard.getLetterTile(scanPos).letter;
     }
+    //------------------------------------------------------------------------------------------------------------------
 
     private setLegalHere(lettersUpwards: string, lettersDownwards: string): string[] {
         return lettersUpwards.length === 0 && lettersDownwards.length === 0
