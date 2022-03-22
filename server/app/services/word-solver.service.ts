@@ -127,9 +127,9 @@ export class WordSolverService {
     }
 
     private extendWordAfterAnchor(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
-        if (nextPosition === null) return;
         if (currentNode.isWord && this.isOutOfBoundsOrIsOccupied(nextPosition) && anchorFilled)
             this.createCommandInfo(partialWord, this.decrementCoord(nextPosition, this.isHorizontal) as Coordinate);
+        if (nextPosition === null) return;
         if (!this.gameboard.getLetterTile(nextPosition).isOccupied) this.addRackLetterToPartialWord(rack, nextPosition, partialWord, currentNode);
         else this.addBoardLetterToPartialWord(rack, nextPosition, partialWord, currentNode);
     }
