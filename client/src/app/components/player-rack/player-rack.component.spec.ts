@@ -252,6 +252,20 @@ describe('PlayerRackComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
+    it('should have a button to exchange letter when there is at least one letter selected', () => {
+        component.lettersToExchange = [0, 2];
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#exchange');
+        expect(button).toBeTruthy();
+    });
+
+    it('should  not have a button to exchange letter when there is not at least one letter selected', () => {
+        component.lettersToExchange = [];
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#exchange');
+        expect(button).toBeFalsy();
+    });
+
     it('exchange should call submitMessage of chatBoxHandler with the letters to exchange as argument', () => {
         component.lettersToExchange = [0];
         component.exchange();
@@ -281,6 +295,20 @@ describe('PlayerRackComponent', () => {
         fixture.detectChanges();
         expect(spy).toHaveBeenCalled();
     }));
+
+    it('should have a button to cancel selection of letter to exchange when there is at least one letter selected', () => {
+        component.lettersToExchange = [0, 2];
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#cancel');
+        expect(button).toBeTruthy();
+    });
+
+    it('should not have a button to cancel selection of letter to exchange when there is not at least one letter selected', () => {
+        component.lettersToExchange = [];
+        fixture.detectChanges();
+        const button = fixture.debugElement.nativeElement.querySelector('#cancel');
+        expect(button).toBeFalsy();
+    });
 
     it('cancel should return set lettersToExchange to an empty array', () => {
         component.lettersToExchange = [0];
