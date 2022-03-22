@@ -25,19 +25,15 @@ export class SocketManager {
         if (!this.onEvents.has(event)) {
             this.onEvents.set(event, []);
         }
-        const onElement = this.onEvents.get(event);
-        if (onElement !== undefined) {
-            onElement.push(callback);
-        }
+        const onElement = this.onEvents.get(event) as CallbackSignature[];
+        onElement.push(callback);
     }
     io(event: string, callback: OnSioCallbackSignature) {
         if (!this.onAndSioEvents.has(event)) {
             this.onAndSioEvents.set(event, []);
         }
-        const onElement = this.onAndSioEvents.get(event);
-        if (onElement) {
-            onElement.push(callback);
-        }
+        const onElement = this.onAndSioEvents.get(event) as OnSioCallbackSignature[];
+        onElement.push(callback);
     }
 
     emitRoom(room: string, event: string, ...args: unknown[]) {
