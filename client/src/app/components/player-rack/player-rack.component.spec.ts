@@ -241,6 +241,18 @@ describe('PlayerRackComponent', () => {
         expect(lettersDiv[indexLetter].className).toEqual('rack-letter');
     });
 
+    it('onRightClick should select a letter that was selected for manipulation', () => {
+        const index = 3;
+        component.lettersToManipulate = [index];
+        expect(component.lettersToExchange.length).toEqual(0);
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onLeftClick(mockClick, index);
+        component.onRightClick(mockClick, index);
+        fixture.detectChanges();
+        expect(component.lettersToManipulate.length).toEqual(0);
+        expect(component.lettersToExchange.length).toEqual(1);
+    });
+
     it('should call exchange when the button to exchange is pressed and it is your turn to play', fakeAsync(() => {
         const spy = spyOn(component, 'exchange');
         component.lettersToExchange = [0];
@@ -276,6 +288,15 @@ describe('PlayerRackComponent', () => {
         const spy = spyOn(component, 'cancel');
         component.exchange();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('when right click is done twice on the same letter, lettersToExchange should be empty and letter should be deselected', () => {
+        const index = 5;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, index);
+        component.onRightClick(mockClick, index);
+        fixture.detectChanges();
+        expect(component.lettersToExchange.length).toEqual(0);
     });
 
     it("letterSize should return a letter's size", () => {
@@ -326,6 +347,20 @@ describe('PlayerRackComponent', () => {
         component.playPlacedLetters();
         expect(letterPlacementServiceSpy.submitPlacement).toHaveBeenCalled();
     });
+
+    it('repositionRack should do nothing if the rack is empty and player tries to manipulate it', () => {
+        gameClientServiceSpy.playerOne.rack = [];
+        const moveLeftSpy = spyOn(component, 'moveLeft');
+        component.buttonPressed = 'ArrowLeft';
+        component.repositionRack();
+        expect(moveLeftSpy).not.toHaveBeenCalled();
+
+        const moveRightSpy = spyOn(component, 'moveRight');
+        component.buttonPressed = 'ArrowRight';
+        component.repositionRack();
+        expect(moveRightSpy).not.toHaveBeenCalled();
+    });
+
     it('repositionRack should call moveLeft', () => {
         const spy = spyOn(component, 'moveLeft');
         component.buttonPressed = 'ArrowLeft';

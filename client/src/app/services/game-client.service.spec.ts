@@ -91,7 +91,8 @@ describe('GameClientService', () => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid', 'drawRack']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
-        socketServiceMock.socket = socketEmulator as unknown as Socket;
+        // eslint-disable-next-line dot-notation
+        socketServiceMock['socket'] = socketEmulator as unknown as Socket;
         TestBed.configureTestingModule({
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },

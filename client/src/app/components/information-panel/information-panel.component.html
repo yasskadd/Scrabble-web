@@ -7,7 +7,6 @@
         <div>{{ this.gameClientService.playerOne.name }}</div>
         <div>score : {{ this.gameClientService.playerOne.score }}</div>
     </div>
-    <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div id="playerNumberLettersRack" *ngIf="this.gameClientService.playerOne.rack.length < 7">
         {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet
     </div>
@@ -24,7 +23,6 @@
         <div>{{ this.gameClientService.secondPlayer.name }}</div>
         <div>score : {{ this.gameClientService.secondPlayer.score }}</div>
     </div>
-    <!-- <div>objectif + points qu'ils rapportent lorsque c'est en mode log2990</div> -->
     <div *ngIf="this.gameClientService.secondPlayer.rack.length < 7">
         {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
     </div>

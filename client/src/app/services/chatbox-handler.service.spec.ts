@@ -72,7 +72,8 @@ describe('ChatboxHandlerService', () => {
         commandHandlerSpy = jasmine.createSpyObj('CommandHandlerService', ['sendCommand']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
-        socketServiceMock.socket = socketEmulator as unknown as Socket;
+        // eslint-disable-next-line dot-notation
+        socketServiceMock['socket'] = socketEmulator as unknown as Socket;
 
         TestBed.configureTestingModule({
             providers: [

@@ -103,6 +103,7 @@ export class PlayerRackComponent implements OnInit {
     }
 
     repositionRack() {
+        if (!this.rack.length) return;
         this.previousSelection = constants.INVALID_INDEX;
         if (this.buttonPressed === 'ArrowLeft') {
             this.moveLeft();

@@ -27,9 +27,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
     botName: string;
     playerName: string;
     form: FormGroup;
-    navigator: Navigator;
     gameMode: string;
-    difficultyList = ['Débutant'];
+    difficultyList: string[];
     timerList = [
         TimeOptions.ThirtySecond,
         TimeOptions.OneMinute,
@@ -50,10 +49,12 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private fb: FormBuilder,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
+        this.playerName = '';
+        this.botName = '';
+        this.difficultyList = ['Débutant'];
     }
 
     ngOnInit(): void {
-        // Get current route to instantiate solo from multiplayer
         this.gameConfiguration.resetRoomInformation();
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({

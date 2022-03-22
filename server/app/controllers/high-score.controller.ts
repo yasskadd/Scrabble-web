@@ -14,13 +14,11 @@ export class HighScoreController {
         this.router = Router();
 
         this.router.get('/classique', async (req: Request, res: Response) => {
-            // Send the request to the service and send the response
             const highScore = await this.scoreStorage.getClassicTopScores();
             res.json(highScore);
         });
 
         this.router.get('/log2990', async (req: Request, res: Response) => {
-            // Send the request to the service and send the response
             const highScore = await this.scoreStorage.getLOG2990TopScores();
             res.json(highScore);
         });
