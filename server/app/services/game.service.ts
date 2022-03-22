@@ -5,7 +5,7 @@ import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { LetterReserveService } from '@app/services/letter-reserve.service';
-import { CommandInfo } from '@common/command-info';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
 

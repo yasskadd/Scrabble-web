@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { CommandInfo } from '@common/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { CommandHandlerService } from './command-handler.service';
 
 describe('CommandHandlerService', () => {

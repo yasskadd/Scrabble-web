@@ -3,7 +3,7 @@ import * as constants from '@app/constants';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTileInterface } from '@common/letter-tile-interface';
+import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 
 @Injectable({
     providedIn: 'root',

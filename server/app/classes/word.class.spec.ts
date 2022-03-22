@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { CommandInfo } from '@common/command-info';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { expect } from 'chai';
 import { Gameboard } from './gameboard.class';
 import { Word } from './word.class';
