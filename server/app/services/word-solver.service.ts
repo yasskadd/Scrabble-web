@@ -2,7 +2,6 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree, LetterTreeNode } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Container, Service } from 'typedi';
 import { DictionaryValidationService, ValidateWordReturn } from './dictionary-validation.service';
@@ -21,7 +20,7 @@ export class WordSolverService {
     private isHorizontal: boolean;
     private commandInfoList: CommandInfo[] = new Array();
     private rack: string[];
-    private anchors: LetterTile[];
+    private anchors: Coordinate[];
 
     // TODO : use TS setter for Gameboard
 
@@ -39,19 +38,19 @@ export class WordSolverService {
         this.commandInfoList.length = 0;
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
-            this.firstTurnOrEmpty(this.gameboard);
             this.anchors = this.gameboard.findAnchors();
+            this.firstTurnOrEmpty(this.gameboard);
             this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
             for (const anchor of this.anchors) {
-                const leftToAnchor: Coordinate | null = this.decrementCoord(anchor.coordinate, this.isHorizontal);
+                const leftToAnchor: Coordinate | null = this.decrementCoord(anchor, this.isHorizontal);
                 if (leftToAnchor === null) continue;
                 if (this.gameboard.getLetterTile(leftToAnchor).isOccupied) {
                     const partialWord = this.buildPartialWord(leftToAnchor);
                     const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
                     if (partialWordNode !== null) {
-                        this.extendWordAfterAnchor(partialWord, partialWordNode, anchor.coordinate, false);
+                        this.extendWordAfterAnchor(partialWord, partialWordNode, anchor, false);
                     }
-                } else this.findWordPartBeforeAnchor('', this.trie.root, anchor.coordinate, this.getLimitNumber(leftToAnchor, this.anchors));
+                } else this.findWordPartBeforeAnchor('', this.trie.root, anchor, this.getLimitNumber(leftToAnchor, this.anchors));
             }
         }
         return this.commandInfoList;
@@ -107,7 +106,7 @@ export class WordSolverService {
     }
 
     private firstTurnOrEmpty(gameboard: Gameboard) {
-        if (!gameboard.findAnchors().length) {
+        if (!this.anchors.length) {
             const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
             this.findWordPartBeforeAnchor('', this.trie.root, anchor, MAX_LETTERS_LIMIT);
         }
@@ -245,9 +244,9 @@ export class WordSolverService {
         return legalHere;
     }
 
-    private getLimitNumber(startPosition: Coordinate, anchors: LetterTile[]): number {
+    private getLimitNumber(startPosition: Coordinate, anchors: Coordinate[]): number {
         let limit = 0;
-        while (!this.gameboard.getLetterTile(startPosition).isOccupied && !anchors.includes(this.gameboard.getLetterTile(startPosition))) {
+        while (!this.gameboard.getLetterTile(startPosition).isOccupied && !anchors.includes(this.gameboard.getLetterTile(startPosition).coordinate)) {
             limit++;
             startPosition = this.decrementCoord(startPosition, this.isHorizontal) as Coordinate;
             if (startPosition === null) break;
