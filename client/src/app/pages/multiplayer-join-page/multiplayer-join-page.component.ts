@@ -20,6 +20,7 @@ export class MultiplayerJoinPageComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
+        this.playerName = '';
     }
 
     ngOnInit(): void {

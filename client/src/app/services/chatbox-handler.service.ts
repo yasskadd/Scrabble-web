@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/interfaces/chatbox-message';
-import { CommandInfo } from '@common/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { ClientSocketService } from './client-socket.service';
 import { CommandHandlerService } from './command-handler.service';
@@ -12,8 +12,8 @@ const EXCHANGE_ALLOWED_MINIMUM = 7;
 const CHAR_ASCII = 96;
 const TIMEOUT = 15;
 const VALID_COMMAND_REGEX_STRING =
-    // eslint-disable-next-line max-len
-    '^!r(é|e)serve$|^!indice$|^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
+    '^!r(é|e)serve$|^!indice$|^!aide$|^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]$' +
+    '|^!placer [a-o][0-9]{1,2}(v|h) ([a-zA-Z]){1,7}$|^!(é|e)changer ([a-z]|[*]){1,7}$|^!passer$';
 const VALID_COMMAND_REGEX = new RegExp(VALID_COMMAND_REGEX_STRING);
 const IS_COMMAND_REGEX_STRING = '^!';
 const IS_COMMAND_REGEX = new RegExp(IS_COMMAND_REGEX_STRING);

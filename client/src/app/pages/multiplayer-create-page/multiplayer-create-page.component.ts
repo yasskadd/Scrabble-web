@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
@@ -27,9 +27,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
     botName: string;
     playerName: string;
     form: FormGroup;
-    navigator: Navigator;
     gameMode: string;
-    difficultyList = ['Débutant'];
+    difficultyList: string[];
     timerList = [
         TimeOptions.ThirtySecond,
         TimeOptions.OneMinute,
@@ -50,10 +49,12 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private fb: FormBuilder,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
+        this.playerName = '';
+        this.botName = '';
+        this.difficultyList = ['Débutant'];
     }
 
     ngOnInit(): void {
-        // Get current route to instantiate solo from multiplayer
         this.gameConfiguration.resetRoomInformation();
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({
@@ -71,7 +72,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     createGame() {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
-            timer: this.form.get('timer')?.value,
+            timer: (this.form.get('timer') as AbstractControl).value,
             dictionary: 'francais',
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,

@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 // Pris de l'exemple vu en classe
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
@@ -10,7 +11,7 @@ describe('ClientSocketService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({});
         service = TestBed.inject(ClientSocketService);
-        service.socket = new SocketTestEmulator() as unknown as Socket;
+        service['socket'] = new SocketTestEmulator() as unknown as Socket;
     });
 
     it('should be created', () => {
@@ -18,31 +19,31 @@ describe('ClientSocketService', () => {
     });
 
     it('should disconnect', () => {
-        const spy = spyOn(service.socket, 'disconnect');
+        const spy = spyOn(service['socket'], 'disconnect');
         service.disconnect();
         expect(spy).toHaveBeenCalled();
     });
 
     it('establishConnection should not call connect if the socket is not alive', () => {
         const spy = spyOn(service, 'connect');
-        service.socket.connected = true;
+        service['socket'].connected = true;
         service.establishConnection();
         expect(spy).not.toHaveBeenCalled();
     });
     it('isSocketAlive should return true if the socket is still connected', () => {
-        service.socket.connected = true;
+        service['socket'].connected = true;
         const isAlive = service.isSocketAlive();
         expect(isAlive).toBeTruthy();
     });
 
     it('isSocketAlive should return false if the socket is no longer connected', () => {
-        service.socket.connected = false;
+        service['socket'].connected = false;
         const isAlive = service.isSocketAlive();
         expect(isAlive).toBeFalsy();
     });
 
     it('isSocketAlive should return false if the socket is not defined', () => {
-        (service.socket as unknown) = undefined;
+        (service['socket'] as unknown) = undefined;
         const isAlive = service.isSocketAlive();
         expect(isAlive).toBeFalsy();
     });
@@ -51,7 +52,7 @@ describe('ClientSocketService', () => {
         const event = 'helloWorld';
         // eslint-disable-next-line
         const action = () => {};
-        const spy = spyOn(service.socket, 'on');
+        const spy = spyOn(service['socket'], 'on');
         service.on(event, action);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event, action);
@@ -60,7 +61,7 @@ describe('ClientSocketService', () => {
     it('should call emit with data when using send', () => {
         const event = 'helloWorld';
         const data = 42;
-        const spy = spyOn(service.socket, 'emit');
+        const spy = spyOn(service['socket'], 'emit');
         service.send(event, data);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event, data);
@@ -69,7 +70,7 @@ describe('ClientSocketService', () => {
     it('should call emit without data when using send if data is undefined', () => {
         const event = 'helloWorld';
         const data = undefined;
-        const spy = spyOn(service.socket, 'emit');
+        const spy = spyOn(service['socket'], 'emit');
         service.send(event, data);
         expect(spy).toHaveBeenCalled();
         expect(spy).toHaveBeenCalledWith(event);

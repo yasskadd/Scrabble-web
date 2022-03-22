@@ -24,7 +24,7 @@ export class HighScoresComponent implements OnInit {
         this.httpHandler.getLOG2990HighScore().subscribe((highScore) => (this.highScoreLOG29990 = highScore));
         setTimeout(() => {
             if (this.highScoreClassic === undefined && this.highScoreLOG29990 === undefined)
-                this.openSnackBar("Impossible de recevoir l'information du serveur");
+                this.openSnackBar("Impossible de reçevoir l'information du serveur");
         }, TIMEOUT);
     }
 

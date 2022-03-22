@@ -1,6 +1,6 @@
-import { Coordinate } from '@common/interfaces/coordinate';
-import { Multiplier } from '@common/interfaces/multiplier';
-import * as letterTypes from '@common/letter-reserve';
+import * as letterTypes from '../../server/app/constants/letter-reserve';
+import { Coordinate } from '../interfaces/coordinate';
+import { Multiplier } from '../interfaces/multiplier';
 
 export class LetterTile {
     coordinate: Coordinate;

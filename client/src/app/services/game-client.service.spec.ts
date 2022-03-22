@@ -4,7 +4,7 @@ import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTileInterface } from '@common/letter-tile-interface';
+import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './client-socket.service';
 import { GameClientService } from './game-client.service';
@@ -91,7 +91,8 @@ describe('GameClientService', () => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid', 'drawRack']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
-        socketServiceMock.socket = socketEmulator as unknown as Socket;
+        // eslint-disable-next-line dot-notation
+        socketServiceMock['socket'] = socketEmulator as unknown as Socket;
         TestBed.configureTestingModule({
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },

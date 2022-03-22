@@ -3,7 +3,7 @@ import * as constants from '@app/constants';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTileInterface } from '@common/letter-tile-interface';
+import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 
 @Injectable({
     providedIn: 'root',
@@ -19,14 +19,12 @@ export class GridService {
     static middlePosHeight = GridService.squareHeight * constants.MIDDLE_POSITION;
 
     letterSize: number;
-    boardTileSize: number;
-    letterPointsSize: number;
-
     gridContext: CanvasRenderingContext2D;
+
+    private boardTileSize: number;
     constructor() {
         this.letterSize = constants.FONT_SIZE;
         this.boardTileSize = constants.BOARD_TILE_SIZE;
-        this.letterPointsSize = constants.POINTS_FONT_SIZE;
     }
 
     drawGrid(gameboard: LetterTileInterface[]) {

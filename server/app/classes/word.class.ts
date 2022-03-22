@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-imports */
-import { CommandInfo } from '@common/command-info';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Gameboard } from './gameboard.class';
 

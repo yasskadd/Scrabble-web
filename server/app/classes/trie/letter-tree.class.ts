@@ -1,4 +1,4 @@
-import { LetterTreeNode } from './letter-tree-node.class';
+import { LetterTreeNode } from '@app/classes/trie/letter-tree-node.class';
 
 export class LetterTree {
     root: LetterTreeNode;

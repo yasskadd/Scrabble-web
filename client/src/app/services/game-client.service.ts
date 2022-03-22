@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTileInterface } from '@common/letter-tile-interface';
+import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 import { ReplaySubject, Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 
@@ -27,6 +27,10 @@ export class GameClientService {
     turnFinish: ReplaySubject<boolean>;
 
     constructor(private clientSocketService: ClientSocketService) {
+        this.timer = 0;
+        this.letterReserveLength = 0;
+        this.playerOne = {} as Player;
+        this.secondPlayer = {} as Player;
         this.winningMessage = '';
         this.playerOneTurn = false;
         this.isGameFinish = false;
@@ -42,7 +46,6 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
-            this.secondPlayer = player;
             this.updateOpponentInformationEvent(player);
         });
 
@@ -181,11 +184,13 @@ export class GameClientService {
     private findWinnerByScore(): void {
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
-        } else if (this.playerOne.score > this.secondPlayer.score) {
-            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
-        } else {
-            this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
+            return;
         }
+        if (this.playerOne.score > this.secondPlayer.score) {
+            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
+            return;
+        }
+        this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
     }
     private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {
         let letterString = '';

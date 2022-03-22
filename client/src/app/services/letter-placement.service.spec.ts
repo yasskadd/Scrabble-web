@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTileInterface } from '@common/letter-tile-interface';
+import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 import { of } from 'rxjs';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
@@ -277,19 +277,6 @@ describe('LetterPlacementService', () => {
         expect(updateLettersViewSpy).not.toHaveBeenCalled();
     });
 
-    it("placeLetter shouldn't do anything if it's not the player's turn", () => {
-        const LETTER = {} as Letter;
-        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
-        (Object.getOwnPropertyDescriptor(gameClientServiceSpy, 'playerOneTurn')?.get as jasmine.Spy<() => boolean>).and.returnValue(false);
-        // eslint-disable-next-line dot-notation
-        service['isPlacingActive'] = true;
-        service.placeLetter(LETTER);
-
-        // eslint-disable-next-line dot-notation
-        expect(service['placedLetters'].includes(LETTER)).not.toBeTruthy();
-        expect(updateLettersViewSpy).not.toHaveBeenCalled();
-    });
-
     it('placeLetterStartPosition should update the view', () => {
         gridServiceSpy.getPosition.and.returnValue({ x: 1, y: 1 });
 
@@ -395,19 +382,6 @@ describe('LetterPlacementService', () => {
         expect(gameClientServiceSpy.playerOne.rack).toEqual([{ value: 'b' } as Letter]);
         expect(resetGameBoardViewSpy).toHaveBeenCalled();
         expect(updateLettersViewSpy).toHaveBeenCalled();
-    });
-
-    it("undoPlacement shouldn't do anything if there's no placed letters", () => {
-        const resetGameBoardViewSpy = spyOn(service, 'resetGameBoardView' as never);
-        const updateLettersViewSpy = spyOn(service, 'updateLettersView' as never);
-
-        // eslint-disable-next-line dot-notation
-        service['placedLetters'] = [];
-
-        service.undoPlacement();
-
-        expect(resetGameBoardViewSpy).not.toHaveBeenCalled();
-        expect(updateLettersViewSpy).not.toHaveBeenCalled();
     });
 
     it("undoPlacement shouldn't do anything if there's no placed letters", () => {
