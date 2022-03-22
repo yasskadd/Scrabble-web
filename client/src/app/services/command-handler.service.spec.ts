@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { CommandInfo } from '@common/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { CommandHandlerService } from './command-handler.service';
 
 describe('CommandHandlerService', () => {
@@ -71,7 +71,7 @@ describe('CommandHandlerService', () => {
         expect(spy).toHaveBeenCalledWith(SocketEvents.ClueCommand);
     });
 
-    it('sendCommandPlacer() should send to the server all the information of the command in an object', () => {
+    it('sendCommandPlacer() should send to the server all the information of the command in an object if the placement is vertical', () => {
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocket'], 'send');
@@ -80,6 +80,38 @@ describe('CommandHandlerService', () => {
             firstCoordinate: { x: 3, y: 5 },
             isHorizontal: false,
             letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'],
+        };
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['sendCommand'](commandTest);
+        expect(spy).toHaveBeenCalledWith(SocketEvents.Play, commandInformation);
+    });
+
+    it('sendCommandPlacer() should send to the server all the information of the command in an object if the placement is horizontal', () => {
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        const commandTest = '!placer e3h bonjour';
+        const commandInformation: CommandInfo = {
+            firstCoordinate: { x: 3, y: 5 },
+            isHorizontal: true,
+            letters: ['b', 'o', 'n', 'j', 'o', 'u', 'r'],
+        };
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['sendCommand'](commandTest);
+        expect(spy).toHaveBeenCalledWith(SocketEvents.Play, commandInformation);
+    });
+
+    it('sendCommandPlacer() should send to the server all the information of the command in an object if the placement is one letter', () => {
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(service['clientSocket'], 'send');
+        const commandTest = '!placer e3 b';
+        const commandInformation: CommandInfo = {
+            firstCoordinate: { x: 3, y: 5 },
+            isHorizontal: undefined,
+            letters: ['b'],
         };
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation

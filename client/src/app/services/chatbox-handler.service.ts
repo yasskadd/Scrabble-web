@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ChatboxMessage } from '@app/interfaces/chatbox-message';
-import { CommandInfo } from '@common/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { ClientSocketService } from './client-socket.service';
 import { CommandHandlerService } from './command-handler.service';

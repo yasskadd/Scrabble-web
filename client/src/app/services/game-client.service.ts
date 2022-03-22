@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
-import { LetterTileInterface } from '@common/letter-tile-interface';
+import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 import { ReplaySubject, Subject } from 'rxjs';
 import { ClientSocketService } from './client-socket.service';
 

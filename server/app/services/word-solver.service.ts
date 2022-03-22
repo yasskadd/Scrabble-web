@@ -51,7 +51,7 @@ export class WordSolverService {
         }
         return this.commandInfoList;
     }
-
+    // Letter
     commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
         const dictionaryService: DictionaryValidationService = Container.get(DictionaryValidationService);
         const commandInfoMap: Map<CommandInfo, number> = new Map();
@@ -80,6 +80,7 @@ export class WordSolverService {
         });
     }
 
+    // Tested
     private createCommandInfo(word: string, lastPosition: Coordinate) {
         let wordIndex = word.length - 1;
         let wordCopy = word.slice();
@@ -124,7 +125,7 @@ export class WordSolverService {
             }
         }
     }
-
+    // TESTED
     // eslint-disable-next-line complexity
     private extendRight(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
         if (currentNode.isWord && this.verifyConditions(nextPosition) && anchorFilled)
@@ -157,13 +158,14 @@ export class WordSolverService {
             }
         }
     }
-
+    // TESTED
     private verifyConditions(nextPosition: Coordinate) {
         if (nextPosition.x > COLUMN_NUMBERS || nextPosition.y > ROW_NUMBERS) return true;
         if (!this.gameboard.getLetterTile(nextPosition).isOccupied) return true;
         return false;
     }
 
+    // TESTED
     private crossCheck(): Map<Coordinate, string[]> {
         const result: Map<Coordinate, string[]> = new Map();
         for (const letterTile of this.gameboard.gameboardTiles) {
@@ -220,7 +222,6 @@ export class WordSolverService {
         }
         return limit;
     }
-
     private buildPartialWord(scanCoord: Coordinate): string {
         let partialWord = '';
         while (this.gameboard.getLetterTile(scanCoord).isOccupied) {

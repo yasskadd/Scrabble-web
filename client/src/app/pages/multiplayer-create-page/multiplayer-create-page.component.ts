@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
@@ -71,7 +71,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     createGame() {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
-            timer: this.form.get('timer')?.value,
+            timer: (this.form.get('timer') as AbstractControl).value,
             dictionary: 'francais',
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,
