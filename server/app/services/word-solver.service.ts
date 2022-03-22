@@ -6,7 +6,7 @@ import { CommandInfo } from '@app/interfaces/command-info';
 import { ValidateWordReturn } from '@app/validate-word-return';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Coordinate } from '@common/interfaces/coordinate';
-import { Container, Service } from 'typedi';
+import { Inject, Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
@@ -17,6 +17,7 @@ const MAX_LETTERS_LIMIT = 7;
 
 @Service()
 export class WordSolverService {
+    @Inject() private dictionaryService: DictionaryValidationService;
     private trie: LetterTree;
     private gameboard: Gameboard;
     private legalLetterForBoardTiles: Map<Coordinate, string[]> = new Map();
@@ -28,8 +29,7 @@ export class WordSolverService {
     // TODO : use TS setter for Gameboard
 
     constructor() {
-        const dictionary = Container.get(DictionaryValidationService);
-        this.trie = dictionary.trie;
+        this.trie = this.dictionaryService.trie;
     }
 
     setGameboard(gameboard: Gameboard) {
@@ -60,12 +60,11 @@ export class WordSolverService {
     }
 
     commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
-        const dictionaryService: DictionaryValidationService = Container.get(DictionaryValidationService);
         const commandInfoMap: Map<CommandInfo, number> = new Map();
         commandInfoList.forEach((commandInfo) => {
             const word = new Word(commandInfo, this.gameboard);
             this.placeLettersOnBoard(word, commandInfo);
-            const placementScore: ValidateWordReturn = dictionaryService.validateWord(word, this.gameboard);
+            const placementScore: ValidateWordReturn = this.dictionaryService.validateWord(word, this.gameboard);
             commandInfoMap.set(commandInfo, placementScore.points);
             this.removeLetterFromBoard(word);
         });
