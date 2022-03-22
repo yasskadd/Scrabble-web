@@ -1,8 +1,8 @@
+import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
+import { GameSessions } from '@app/services/game-sessions.service';
+import { GamesHandler } from '@app/services/games-handler.service';
 import { assert } from 'console';
 import { createStubInstance, SinonStubbedInstance } from 'sinon';
-import { ChatboxHandlerService } from './chatbox-handler.service';
-import { GameSessions } from './game-sessions.service';
-import { GamesHandler } from './games-handler.service';
 import { SocketSubscribeHandler } from './socket-subscribe-handler.service';
 
 describe('Socket subscribe handler tests', () => {

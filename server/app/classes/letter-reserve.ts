@@ -5,7 +5,7 @@ import { Service } from 'typedi';
 const NUMBER_OF_LETTERS_ON_RACK = 7;
 
 @Service()
-export class LetterReserveService {
+export class LetterReserve {
     lettersReserve: Letter[];
     constructor() {
         this.lettersReserve = this.getDefaultLetterReserve();

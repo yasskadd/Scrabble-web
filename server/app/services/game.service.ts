@@ -1,10 +1,10 @@
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterReserve } from '@app/classes/letter-reserve';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
@@ -19,7 +19,7 @@ export class Game {
         player1: Player,
         player2: Player,
         public turn: Turn,
-        public letterReserve: LetterReserveService,
+        public letterReserve: LetterReserve,
         @Inject() private letterPlacement: LetterPlacementService,
     ) {
         this.start(player1, player2);

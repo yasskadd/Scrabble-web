@@ -3,8 +3,8 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { DatabaseService } from './services/database/database.service';
-import { SocketManager } from './services/socket-manager.service';
-import { SocketSubscribeHandler } from './services/socket-subscribe-handler.service';
+import { SocketManager } from './services/socket/socket-manager.service';
+import { SocketSubscribeHandler } from './services/socket/socket-subscribe-handler.service';
 
 @Service()
 export class Server {

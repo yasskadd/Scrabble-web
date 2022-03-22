@@ -1,4 +1,5 @@
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterReserve } from '@app/classes/letter-reserve';
 import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
@@ -12,8 +13,7 @@ import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
-import { LetterReserveService } from './letter-reserve.service';
-import { SocketManager } from './socket-manager.service';
+import { SocketManager } from './socket/socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 
 const MAX_SKIP = 6;
@@ -235,7 +235,7 @@ export class GamesHandler {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamePlayers.get(gameInfo.roomId) as Player[];
-        return new Game(players[0], players[1], new Turn(gameInfo.timer), new LetterReserveService(), Container.get(LetterPlacementService));
+        return new Game(players[0], players[1], new Turn(gameInfo.timer), new LetterReserve(), Container.get(LetterPlacementService));
     }
 
     private updatePlayerInfo(socket: Socket, roomId: string, game: Game) {

@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterReserve } from '@app/classes/letter-reserve';
 import { BeginnerBot } from '@app/classes/player/bot-beginner.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
@@ -20,8 +21,7 @@ import { io as Client, Socket } from 'socket.io-client';
 import { RealPlayer } from './../classes/player/real-player.class';
 import { Game } from './game.service';
 import { LetterPlacementService } from './letter-placement.service';
-import { LetterReserveService } from './letter-reserve.service';
-import { SocketManager } from './socket-manager.service';
+import { SocketManager } from './socket/socket-manager.service';
 import { WordSolverService } from './word-solver.service';
 
 const ROOM = '0';
@@ -75,7 +75,7 @@ describe('GamesHandler Service', () => {
 
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
-        game.letterReserve = new LetterReserveService();
+        game.letterReserve = new LetterReserve();
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
 
@@ -144,7 +144,7 @@ describe('GamesHandler Service', () => {
                 { value: 'r', quantity: 2, points: 1 },
                 { value: 'p', quantity: 2, points: 1 },
             ],
-        } as LetterReserveService;
+        } as LetterReserve;
 
         // eslint-disable-next-line dot-notation
         gamesHandler['players'].set(serverSocket.id, player1);
@@ -166,7 +166,7 @@ describe('GamesHandler Service', () => {
                 { value: 'r', quantity: 2, points: 1 },
                 { value: 'p', quantity: 2, points: 1 },
             ],
-        } as LetterReserveService;
+        } as LetterReserve;
         let testBoolean = true;
         clientSocket.on(SocketEvents.AllReserveLetters, () => {
             testBoolean = false;

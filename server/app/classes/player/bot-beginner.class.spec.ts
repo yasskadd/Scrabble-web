@@ -1,10 +1,10 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
+import { LetterReserve } from '@app/classes/letter-reserve';
 import { Turn } from '@app/classes/turn';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
-import { LetterReserveService } from '@app/services/letter-reserve.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Coordinate } from '@common/interfaces/coordinate';
@@ -161,7 +161,7 @@ describe('BotBeginner', () => {
             botBeginner.rack = [{ value: 'a' } as Letter, { value: 'b' } as Letter, { value: 'c' } as Letter];
             mockSocketManager = Sinon.mock(botBeginner['socketManager']);
             botBeginner.setGame(gameStub);
-            botBeginner['game'].letterReserve = new LetterReserveService();
+            botBeginner['game'].letterReserve = new LetterReserve();
             stubTotalQuantity = Sinon.stub(botBeginner['game'].letterReserve, 'totalQuantity').returns(20);
         });
 
@@ -238,7 +238,7 @@ describe('BotBeginner', () => {
 
     context('emitPlacementCommand() tests and placement is horizontal', () => {
         it('should emitRoom() with correct arguments', () => {
-            botBeginner.game.letterReserve = new LetterReserveService();
+            botBeginner.game.letterReserve = new LetterReserve();
             const commandInfoStub: CommandInfo = {
                 firstCoordinate: { x: 1, y: 1 } as Coordinate,
                 isHorizontal: true,
@@ -260,7 +260,7 @@ describe('BotBeginner', () => {
         });
 
         it('should emitRoom() with correct arguments and placement is vertical', () => {
-            botBeginner.game.letterReserve = new LetterReserveService();
+            botBeginner.game.letterReserve = new LetterReserve();
             const commandInfoStub: CommandInfo = {
                 firstCoordinate: { x: 1, y: 1 } as Coordinate,
                 isHorizontal: false,
@@ -384,7 +384,7 @@ describe('BotBeginner', () => {
             Sinon.restore();
             mockGame = Sinon.mock(botBeginner['game']);
             mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            botBeginner.game.letterReserve = new LetterReserveService();
+            botBeginner.game.letterReserve = new LetterReserve();
         });
 
         afterEach(() => {

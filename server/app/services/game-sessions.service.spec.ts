@@ -10,7 +10,7 @@ import { AddressInfo } from 'net';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
-import { SocketManager } from './socket-manager.service';
+import { SocketManager } from './socket/socket-manager.service';
 
 type Parameters = { id: string; name: string };
 type SioSignature = SocketManager['sio'];
