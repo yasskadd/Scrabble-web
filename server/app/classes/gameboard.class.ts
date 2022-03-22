@@ -3,8 +3,8 @@ import { LetterTile } from '@common/classes/letter-tile.class';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
 
-const ROW_NUMBERS = 15;
-const COLUMN_NUMBERS = 15;
+const ROWS = 15;
+const COLUMNS = 15;
 const MIDDLE_COORD = { x: 8, y: 8 };
 
 export class Gameboard {
@@ -16,8 +16,8 @@ export class Gameboard {
     }
 
     createLetterTiles() {
-        for (let i = 1; i <= ROW_NUMBERS; i++) {
-            for (let j = 1; j <= COLUMN_NUMBERS; j++) {
+        for (let i = 1; i <= ROWS; i++) {
+            for (let j = 1; j <= COLUMNS; j++) {
                 this.gameboardTiles.push(new LetterTile({ x: j, y: i }));
             }
         }
@@ -44,15 +44,15 @@ export class Gameboard {
     }
 
     getLetterTile(position: Coordinate): LetterTile {
-        if (position === null || this.isOutOfBounds(position)) return {} as LetterTile;
+        if (position === null || !this.isWithinBoardLimits(position)) return {} as LetterTile;
 
         return this.gameboardTiles.filter(
             (gameboardTile) => gameboardTile.coordinate.x === position.x && gameboardTile.coordinate.y === position.y,
         )[0];
     }
 
-    isOutOfBounds(position: Coordinate) {
-        return position.x > ROW_NUMBERS || position.x < 1 || position.y > ROW_NUMBERS || position.y < 1;
+    isWithinBoardLimits(coord: Coordinate): boolean {
+        return coord.x >= 1 && coord.x <= ROWS && coord.y >= 1 && coord.y <= COLUMNS;
     }
 
     placeLetter(position: Coordinate, letter: string) {
