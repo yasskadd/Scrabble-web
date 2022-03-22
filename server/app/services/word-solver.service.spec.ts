@@ -93,16 +93,20 @@ describe('Word solver service', () => {
         it('should return empty string if coordinate passed as an argument is not occupied and isHorizontal is true or false', () => {
             wordSolverService['isHorizontal'] = true;
             const result1 = wordSolverService['buildPartialWord']({ x: 7, y: 7 });
+
             wordSolverService['isVertical'] = false;
             const result2 = wordSolverService['buildPartialWord']({ x: 7, y: 7 });
+
             expect(result1 && result2).to.eql('');
         });
 
         it('should return single string if coordinate passed as an argument is occupied and there is no adjacent letter', () => {
             wordSolverService['isHorizontal'] = true;
             const result1 = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
+
             wordSolverService['isHorizontal'] = false;
             const result2 = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
+
             expect(result1 && result2).to.eql('s');
         });
 
@@ -111,6 +115,7 @@ describe('Word solver service', () => {
             gameboard.placeLetter({ x: 6, y: 8 }, 'l');
             wordSolverService['isHorizontal'] = true;
             const result = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
+
             expect(result).to.eql('les');
         });
 
@@ -119,6 +124,7 @@ describe('Word solver service', () => {
             gameboard.placeLetter({ x: 8, y: 6 }, 'l');
             wordSolverService['isHorizontal'] = false;
             const result = wordSolverService['buildPartialWord']({ x: 8, y: 8 });
+
             expect(result).to.eql('les');
         });
     });
@@ -210,33 +216,33 @@ describe('Word solver service', () => {
     });
 
     context('extendWordAfterAnchor() tests', () => {
-        let rack: string[];
         let spyCreateCommand: Sinon.SinonSpy<[rack: string[]]>;
 
         beforeEach(() => {
-            rack = ['p', 'e', 'u', 'r'];
+            wordSolverService['rack'] = ['p', 'e', 'u', 'r'];
             wordSolverService['isHorizontal'] = true;
             wordSolverService['legalLetterForBoardTiles'] = wordSolverService['findLettersForBoardTiles']();
             spyCreateCommand = Sinon.spy(wordSolverService, 'createCommandInfo' as keyof WordSolverService);
         });
+
         it('createCommandInfo should be called if we could form a word with the rack letters', () => {
             const nextPosition: Coordinate = { x: 2, y: 2 };
-            wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, rack, nextPosition, false);
+            wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, nextPosition, false);
             expect(spyCreateCommand.called).to.equal(true);
         });
 
         it('createCommandInfo should be called if we could form a word with rack and placed letters on the board', () => {
             const nextPosition: Coordinate = { x: 2, y: 2 };
             gameboard.placeLetter({ x: 3, y: 2 }, 'a');
-            wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, rack, nextPosition, false);
+            wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, nextPosition, false);
             expect(spyCreateCommand.called).to.equal(true);
         });
 
         it('createCommandInfo should be called if we could form a word with blank letter and letters on the board', () => {
-            rack = ['*'];
+            wordSolverService['rack'] = ['*'];
             const nextPosition: Coordinate = { x: 2, y: 2 };
             gameboard.placeLetter({ x: 2, y: 2 }, 'l');
-            wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, rack, nextPosition, false);
+            wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, nextPosition, false);
             expect(spyCreateCommand.called).to.equal(true);
         });
     });
@@ -262,6 +268,7 @@ describe('Word solver service', () => {
             letters: ['t', 's', 't'],
         };
         wordSolverService['createCommandInfo']('test', { x: 4, y: 1 });
+
         expect(wordSolverService['commandInfoList'][0]).to.deep.equal(expectedCommandInfo);
     });
 

@@ -21,7 +21,8 @@ export class WordSolverService {
     private isHorizontal: boolean;
     private commandInfoList: CommandInfo[] = new Array();
     private rack: string[];
-    // TODO : make rack a class attribute
+    private anchors: LetterTile[];
+
     // TODO : use TS setter for Gameboard
 
     constructor() {
@@ -38,19 +39,19 @@ export class WordSolverService {
         this.commandInfoList.length = 0;
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
-            this.firstTurnOrEmpty(this.gameboard, this.rack);
-            const anchors = this.gameboard.findAnchors();
+            this.firstTurnOrEmpty(this.gameboard);
+            this.anchors = this.gameboard.findAnchors();
             this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
-            for (const anchor of anchors) {
+            for (const anchor of this.anchors) {
                 const leftToAnchor: Coordinate | null = this.decrementCoord(anchor.coordinate, this.isHorizontal);
                 if (leftToAnchor === null) continue;
                 if (this.gameboard.getLetterTile(leftToAnchor).isOccupied) {
                     const partialWord = this.buildPartialWord(leftToAnchor);
                     const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
                     if (partialWordNode !== null) {
-                        this.extendWordAfterAnchor(partialWord, partialWordNode, rack, anchor.coordinate, false);
+                        this.extendWordAfterAnchor(partialWord, partialWordNode, anchor.coordinate, false);
                     }
-                } else this.findWordPartBeforeAnchor('', this.trie.root, anchor.coordinate, this.getLimitNumber(leftToAnchor, anchors));
+                } else this.findWordPartBeforeAnchor('', this.trie.root, anchor.coordinate, this.getLimitNumber(leftToAnchor, this.anchors));
             }
         }
         return this.commandInfoList;
@@ -105,7 +106,7 @@ export class WordSolverService {
         } as CommandInfo);
     }
 
-    private firstTurnOrEmpty(gameboard: Gameboard, rack: string[]) {
+    private firstTurnOrEmpty(gameboard: Gameboard) {
         if (!gameboard.findAnchors().length) {
             const anchor: Coordinate = { x: 8, y: 8 } as Coordinate;
             this.findWordPartBeforeAnchor('', this.trie.root, anchor, MAX_LETTERS_LIMIT);
@@ -113,7 +114,7 @@ export class WordSolverService {
     }
 
     private findWordPartBeforeAnchor(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, limit: number) {
-        this.extendWordAfterAnchor(partialWord, currentNode, this.rack, anchor, false);
+        this.extendWordAfterAnchor(partialWord, currentNode, anchor, false);
         if (limit <= 0) return;
         for (const childLetter of currentNode.children.keys()) {
             if (this.rack.includes(childLetter) || this.rackHasBlankLetter())
@@ -139,21 +140,21 @@ export class WordSolverService {
         this.restoreRack(currentLetterFromRack);
     }
 
-    private extendWordAfterAnchor(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
+    private extendWordAfterAnchor(partialWord: string, currentNode: LetterTreeNode, nextPosition: Coordinate, anchorFilled: boolean) {
         if (currentNode.isWord && this.isOutOfBoundsOrIsOccupied(nextPosition) && anchorFilled)
             this.createCommandInfo(partialWord, this.decrementCoord(nextPosition, this.isHorizontal) as Coordinate);
         if (nextPosition === null) return;
-        if (!this.gameboard.getLetterTile(nextPosition).isOccupied) this.addRackLetterToPartialWord(rack, nextPosition, partialWord, currentNode);
-        else this.addBoardLetterToPartialWord(rack, nextPosition, partialWord, currentNode);
+        if (!this.gameboard.getLetterTile(nextPosition).isOccupied) this.addRackLetterToPartialWord(nextPosition, partialWord, currentNode);
+        else this.addBoardLetterToPartialWord(nextPosition, partialWord, currentNode);
     }
 
     private isOutOfBoundsOrIsOccupied(nextPosition: Coordinate): boolean {
         return nextPosition.x > COLUMN_NUMBERS || nextPosition.y > ROW_NUMBERS || !this.gameboard.getLetterTile(nextPosition).isOccupied;
     }
 
-    private addRackLetterToPartialWord(rack: string[], nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
+    private addRackLetterToPartialWord(nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
         for (const childLetter of currentNode.children.keys()) {
-            if (this.letterIsInRackAndCanBePlaced(rack, childLetter, nextPosition)) {
+            if (this.letterIsInRackAndCanBePlaced(this.rack, childLetter, nextPosition)) {
                 this.findNextChildLetter(childLetter, nextPosition, partialWord, currentNode);
             }
         }
@@ -175,7 +176,6 @@ export class WordSolverService {
         this.extendWordAfterAnchor(
             partialWord + currentLetterFromRackValue,
             currentNode.children.get(childLetter.toLocaleLowerCase()) as LetterTreeNode,
-            this.rack,
             nextPos,
             true,
         );
@@ -190,11 +190,11 @@ export class WordSolverService {
         this.rack.push(letterToRestore);
     }
 
-    private addBoardLetterToPartialWord(rack: string[], nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
+    private addBoardLetterToPartialWord(nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
         const existingLetter: string = this.gameboard.getLetterTile(nextPosition).letter;
         if (currentNode.children.has(existingLetter)) {
             const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
-            this.extendWordAfterAnchor(partialWord + existingLetter, currentNode.children.get(existingLetter) as LetterTreeNode, rack, nextPos, true);
+            this.extendWordAfterAnchor(partialWord + existingLetter, currentNode.children.get(existingLetter) as LetterTreeNode, nextPos, true);
         }
     }
 
