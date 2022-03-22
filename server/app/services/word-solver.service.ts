@@ -36,24 +36,31 @@ export class WordSolverService {
     findAllOptions(rack: string[]): CommandInfo[] {
         this.rack = rack;
         this.commandInfoList.length = 0;
+
         for (const direction of [true, false]) {
             this.isHorizontal = direction;
             this.anchors = this.gameboard.findAnchors();
-            this.firstTurnOrEmpty(this.gameboard);
             this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
-            for (const anchor of this.anchors) {
-                const leftToAnchor: Coordinate | null = this.decrementCoord(anchor, this.isHorizontal);
-                if (leftToAnchor === null) continue;
-                if (this.gameboard.getLetterTile(leftToAnchor).isOccupied) {
-                    const partialWord = this.buildPartialWord(leftToAnchor);
-                    const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
-                    if (partialWordNode !== null) {
-                        this.extendWordAfterAnchor(partialWord, partialWordNode, anchor, false);
-                    }
-                } else this.findWordPartBeforeAnchor('', this.trie.root, anchor, this.getLimitNumber(leftToAnchor, this.anchors));
-            }
+
+            this.firstTurnOrEmpty(this.gameboard);
+            this.findPossibleWordForEachAnchor();
         }
         return this.commandInfoList;
+    }
+
+    private findPossibleWordForEachAnchor() {
+        for (const anchor of this.anchors) {
+            const beforeAnchor: Coordinate | null = this.decrementCoord(anchor, this.isHorizontal);
+            if (beforeAnchor === null) continue;
+            if (this.gameboard.getLetterTile(beforeAnchor).isOccupied) this.checkIfPartialWordExistInTrie(anchor, beforeAnchor);
+            else this.findWordPartBeforeAnchor('', this.trie.root, anchor, this.getLimitNumber(beforeAnchor, this.anchors));
+        }
+    }
+
+    private checkIfPartialWordExistInTrie(currentAnchor: Coordinate, beforeAnchor: Coordinate) {
+        const partialWord = this.buildPartialWord(beforeAnchor);
+        const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
+        if (partialWordNode !== null) this.extendWordAfterAnchor(partialWord, partialWordNode, currentAnchor, false);
     }
 
     commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
