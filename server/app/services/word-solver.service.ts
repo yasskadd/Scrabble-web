@@ -171,54 +171,47 @@ export class WordSolverService {
         const result: Map<Coordinate, string[]> = new Map();
         for (const letterTile of this.gameboard.gameboardTiles) {
             if (!letterTile.isOccupied) {
-                let lettersUpwards = this.findLettersUpwards(letterTile.coordinate);
-                let lettersDownwards = this.findLettersDownwards(letterTile.coordinate);
-                let legalHere: string[] = [];
-                if (lettersUpwards.length === 0 && lettersDownwards.length === 0) legalHere = ALPHABET_LETTERS.split('');
-                else
-                    for (const letter of ALPHABET_LETTERS.split(''))
-                        if (this.trie.isWord(lettersUpwards + letter + lettersDownwards)) legalHere.push(letter);
+                const legalHere: string[] = this.findLettersThatCanBePlacedOnTile(letterTile.coordinate);
                 result.set(letterTile.coordinate, legalHere);
             }
         }
         return result;
     }
 
-    private findLettersUpwards(coord: Coordinate): string {
-        return this.findLetters(coord, true);
-    }
-
-    private findLettersDownwards(coord: Coordinate): string {
-        return this.findLetters(coord, false);
+    private findLettersThatCanBePlacedOnTile(letterTileCoord: Coordinate): string[] {
+        let lettersUpwards: string = this.findLetters(letterTileCoord, true);
+        let lettersDownwards: string = this.findLetters(letterTileCoord, false);
+        return this.setLegalHere(lettersUpwards, lettersDownwards);
     }
 
     private findLetters(coord: Coordinate, isUp: boolean) {
         let letters: string = '';
-        let scanPos = this.initializeSanPos(coord, isUp);
+        let scanPos = this.setScanPosition(coord, isUp);
         while (this.gameboard.getLetterTile(scanPos).isOccupied) {
             letters = this.addLettertoString(scanPos, letters, false);
-            scanPos = this.updateScanPos(scanPos, false);
+            scanPos = this.setScanPosition(scanPos, false);
         }
         return letters;
     }
 
-    private initializeSanPos(coord: Coordinate, isUp: boolean) {
-        let scanPos: Coordinate;
-        if (isUp) scanPos = this.decrementCoord(coord, !this.isHorizontal) as Coordinate;
-        else scanPos = this.incrementCoord(coord, !this.isHorizontal) as Coordinate;
-        return scanPos;
+    private setScanPosition(coord: Coordinate, isUp: boolean): Coordinate {
+        return isUp ? (this.decrementCoord(coord, !this.isHorizontal) as Coordinate) : (this.incrementCoord(coord, !this.isHorizontal) as Coordinate);
     }
 
     private addLettertoString(scanPos: Coordinate, letters: string, isUp: boolean): string {
-        if (isUp) letters = this.gameboard.getLetterTile(scanPos).letter + letters;
-        else letters = letters + this.gameboard.getLetterTile(scanPos).letter;
-        return letters;
+        return isUp ? this.gameboard.getLetterTile(scanPos).letter + letters : letters + this.gameboard.getLetterTile(scanPos).letter;
     }
 
-    private updateScanPos(scanPos: Coordinate, isUp: boolean): Coordinate {
-        if (isUp) scanPos = this.decrementCoord(scanPos, !this.isHorizontal) as Coordinate;
-        else scanPos = this.incrementCoord(scanPos, !this.isHorizontal) as Coordinate;
-        return scanPos;
+    private setLegalHere(lettersUpwards: string, lettersDownwards: string): string[] {
+        return lettersUpwards.length === 0 && lettersDownwards.length === 0
+            ? ALPHABET_LETTERS.split('')
+            : (this.pushLetterToLegalHere(lettersUpwards, lettersDownwards) as string[]);
+    }
+
+    private pushLetterToLegalHere(lettersUpwards: string, lettersDownwards: string) {
+        const legalHere: string[] = [];
+        for (const letter of ALPHABET_LETTERS.split('')) if (this.trie.isWord(lettersUpwards + letter + lettersDownwards)) legalHere.push(letter);
+        return legalHere;
     }
 
     private getLimitNumber(startPosition: Coordinate, anchors: LetterTile[]): number {
