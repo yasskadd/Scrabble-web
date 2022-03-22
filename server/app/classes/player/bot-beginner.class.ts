@@ -1,3 +1,5 @@
+import * as Constant from '@app/constants/bot';
+import { BotInformation } from '@app/interfaces/bot-information';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket-manager.service';
@@ -6,26 +8,6 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { Container } from 'typedi';
 import { Player } from './player.class';
 
-const MAX_NUMBER = 10;
-const CHAR_ASCII = 96;
-const RANGE_6 = 6;
-const RANGE_7 = 7;
-const RANGE_12 = 12;
-const RANGE_13 = 13;
-const RANGE_18 = 18;
-const PROB_4 = 4;
-const PROB_5 = 5;
-const PROB_7 = 7;
-const TIME_SKIP = 20;
-const SECOND_3 = 3000;
-const SECOND_1 = 1000;
-const letterReserveMinQuantity = 7;
-
-export interface BotInformation {
-    timer: number;
-    roomId: string;
-}
-
 export class BeginnerBot extends Player {
     isPlayerOne: boolean;
     roomId: string;
@@ -33,16 +15,14 @@ export class BeginnerBot extends Player {
     private wordSolver: WordSolverService = Container.get(WordSolverService);
     private socketManager: SocketManager = Container.get(SocketManager);
     private timer: number;
-    private countUp: number;
-    private playedTurned: boolean;
+    private countUp: number = 0;
+    private playedTurned: boolean = false;
 
     constructor(isPlayerOne: boolean, name: string, private botInfo: BotInformation) {
         super(name);
         this.isPlayerOne = isPlayerOne;
         this.room = botInfo.roomId;
         this.timer = botInfo.timer;
-        this.playedTurned = false;
-        this.countUp = 0;
     }
 
     setGame(game: Game) {
@@ -53,7 +33,7 @@ export class BeginnerBot extends Player {
     start() {
         this.game.turn.countdown.subscribe((countdown) => {
             this.countUp = this.timer - (countdown as number);
-            if (this.countUp === TIME_SKIP && this.name === this.game.turn.activePlayer) this.skipTurn();
+            if (this.countUp === Constant.TIME_SKIP && this.name === this.game.turn.activePlayer) this.skipTurn();
         });
         this.game.turn.endTurn.subscribe((activePlayer) => {
             this.playedTurned = false;
@@ -65,19 +45,17 @@ export class BeginnerBot extends Player {
     }
 
     choosePlayMove() {
-        const randomNumber = this.getRandomNumber(MAX_NUMBER);
+        const randomNumber = this.getRandomNumber(Constant.MAX_NUMBER);
         if (randomNumber < 3) {
             setTimeout(() => {
                 if (randomNumber === 1) this.skipTurn();
                 else this.exchangeLetter();
-            }, SECOND_3 - this.countUp * SECOND_1);
-            return;
-        }
-        this.placeLetter();
+            }, Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
+        } else this.placeLetter();
     }
 
     exchangeLetter(): void {
-        if (this.game === undefined || this.playedTurned || this.game.letterReserve.totalQuantity() < letterReserveMinQuantity) return;
+        if (this.game === undefined || this.playedTurned || this.game.letterReserve.totalQuantity() < Constant.letterReserveMinQuantity) return;
         const rack: string[] = [...this.rackToString()];
         let numberOfLetters = this.getRandomNumber(rack.length);
         const lettersToExchange: string[] = new Array();
@@ -99,14 +77,14 @@ export class BeginnerBot extends Player {
 
     placeLetter() {
         const commandInfoMap = this.processWordSolver();
-        const commandInfoList = this.addCommandInfoToList(commandInfoMap, this.getRandomNumber(MAX_NUMBER));
+        const commandInfoList = this.addCommandInfoToList(commandInfoMap, this.getRandomNumber(Constant.MAX_NUMBER));
         if (commandInfoList.length === 0) {
-            setTimeout(() => this.skipTurn(), SECOND_3 - this.countUp * SECOND_1);
+            setTimeout(() => this.skipTurn(), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
             return;
         }
         const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
-        if (this.countUp >= 3 && this.countUp < TIME_SKIP) this.play(randomCommandInfo);
-        else if (this.countUp < 3) setTimeout(() => this.play(randomCommandInfo), SECOND_3 - this.countUp * SECOND_1);
+        if (this.countUp >= 3 && this.countUp < Constant.TIME_SKIP) this.play(randomCommandInfo);
+        else if (this.countUp < 3) setTimeout(() => this.play(randomCommandInfo), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
     }
 
     private play(commandInfo: CommandInfo) {
@@ -125,24 +103,24 @@ export class BeginnerBot extends Player {
 
     private addCommandInfoToList(commandInfoMap: Map<CommandInfo, number>, randomNumber: number): CommandInfo[] {
         const commandInfoList = new Array();
-        if (this.inRange(randomNumber, 1, PROB_4)) {
+        if (this.inRange(randomNumber, 1, Constant.PROB_4)) {
             commandInfoMap.forEach((value, key) => {
-                if (this.inRange(value, 1, RANGE_6)) commandInfoList.push(key);
+                if (this.inRange(value, 1, Constant.RANGE_6)) commandInfoList.push(key);
             });
-        } else if (this.inRange(randomNumber, PROB_5, PROB_7)) {
+        } else if (this.inRange(randomNumber, Constant.PROB_5, Constant.PROB_7)) {
             commandInfoMap.forEach((value, key) => {
-                if (this.inRange(value, RANGE_7, RANGE_12)) commandInfoList.push(key);
+                if (this.inRange(value, Constant.RANGE_7, Constant.RANGE_12)) commandInfoList.push(key);
             });
         } else {
             commandInfoMap.forEach((value, key) => {
-                if (this.inRange(value, RANGE_13, RANGE_18)) commandInfoList.push(key);
+                if (this.inRange(value, Constant.RANGE_13, Constant.RANGE_18)) commandInfoList.push(key);
             });
         }
         return commandInfoList;
     }
 
     private emitPlaceCommand(randomCommandInfo: CommandInfo) {
-        const coordString = `${String.fromCharCode(CHAR_ASCII + randomCommandInfo.firstCoordinate.y)}${randomCommandInfo.firstCoordinate.x}`;
+        const coordString = `${String.fromCharCode(Constant.CHAR_ASCII + randomCommandInfo.firstCoordinate.y)}${randomCommandInfo.firstCoordinate.x}`;
         const placeCommand = `!placer ${coordString}${randomCommandInfo.isHorizontal ? 'h' : 'v'} ${randomCommandInfo.letters.join('')}`;
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, placeCommand);
         this.game.play(this, randomCommandInfo);

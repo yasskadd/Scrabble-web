@@ -1,6 +1,5 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable no-restricted-imports */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
@@ -75,16 +74,16 @@ describe('Dictionary Validation Service', () => {
     });
 
     it('should call calculateTurnPoints() and checkWordInDictionary() when validateWord() is called', () => {
-        const spycalculateTurnPoints = Sinon.spy(dictionaryValidationService, 'calculateTurnPoints' as keyof DictionaryValidationService);
-        const spyCcheckWordInDictionary = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
+        const spyCalculateTurnPoints = Sinon.spy(dictionaryValidationService, 'calculateTurnPoints' as keyof DictionaryValidationService);
+        const spyCheckWordInDictionary = Sinon.spy(dictionaryValidationService, 'checkWordInDictionary' as keyof DictionaryValidationService);
         dictionaryValidationService.validateWord(validWord1, gameboard);
-        expect(spycalculateTurnPoints.called && spyCcheckWordInDictionary.called).to.eql(true);
+        expect(spyCalculateTurnPoints.called && spyCheckWordInDictionary.called).to.eql(true);
     });
 
     it('should call isolateInvalidWords() when calculateTurnPoints() is called', () => {
-        const spyisolateInvalidWords = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
+        const spyIsolateInvalidWords = Sinon.spy(dictionaryValidationService, 'isolateInvalidWords' as keyof DictionaryValidationService);
         dictionaryValidationService['calculateTurnPoints']([validWord1], gameboard);
-        expect(spyisolateInvalidWords.called).to.eql(true);
+        expect(spyIsolateInvalidWords.called).to.eql(true);
     });
 
     it('should call calculateWordPoints() when calculateTurnPoints() is called for each word in the list if there is no invalid words', () => {

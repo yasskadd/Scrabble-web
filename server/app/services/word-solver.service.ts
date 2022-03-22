@@ -1,12 +1,14 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterTree, LetterTreeNode } from '@app/classes/trie/letter-tree.class';
+import { LetterTreeNode } from '@app/classes/trie/letter-tree-node.class';
+import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
+import { ValidateWordReturn } from '@app/validate-word-return';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import * as constants from '@common/constants/board-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Container, Service } from 'typedi';
-import { DictionaryValidationService, ValidateWordReturn } from './dictionary-validation.service';
+import { DictionaryValidationService } from './dictionary-validation.service';
 
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const MAX_LETTERS_LIMIT = 7;
@@ -221,7 +223,7 @@ export class WordSolverService {
         let letters = '';
         let scanPos = this.setScanPosition(coord, isUp);
         while (this.gameboard.getLetterTile(scanPos).isOccupied) {
-            letters = this.addLettertoString(scanPos, letters, isUp);
+            letters = this.addLetterToString(scanPos, letters, isUp);
             scanPos = this.setScanPosition(scanPos, isUp);
         }
         return letters;
@@ -231,7 +233,7 @@ export class WordSolverService {
         return isUp ? (this.decrementCoord(coord, !this.isHorizontal) as Coordinate) : (this.incrementCoord(coord, !this.isHorizontal) as Coordinate);
     }
 
-    private addLettertoString(scanPos: Coordinate, letters: string, isUp: boolean): string {
+    private addLetterToString(scanPos: Coordinate, letters: string, isUp: boolean): string {
         return isUp ? this.gameboard.getLetterTile(scanPos).letter + letters : letters + this.gameboard.getLetterTile(scanPos).letter;
     }
 

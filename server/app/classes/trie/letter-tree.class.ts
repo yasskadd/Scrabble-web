@@ -1,12 +1,4 @@
-/* eslint-disable max-classes-per-file */
-export class LetterTreeNode {
-    letter: string;
-    isWord: boolean;
-    children: Map<string, LetterTreeNode> = new Map();
-    constructor(isWord: boolean) {
-        this.isWord = isWord;
-    }
-}
+import { LetterTreeNode } from '@app/classes/trie/letter-tree-node.class';
 
 export class LetterTree {
     root: LetterTreeNode;
@@ -19,9 +11,7 @@ export class LetterTree {
         let currentNode = this.root;
         const letterArray = word.split('');
         for (const letter of letterArray) {
-            if (!currentNode.children.has(letter)) {
-                currentNode.children.set(letter, new LetterTreeNode(false));
-            }
+            if (!currentNode.children.has(letter)) currentNode.children.set(letter, new LetterTreeNode(false));
             currentNode = currentNode.children.get(letter) as LetterTreeNode;
         }
         currentNode.isWord = true;
@@ -37,9 +27,7 @@ export class LetterTree {
         let currentNode = this.root;
         const letterArray = word.split('');
         for (const letter of letterArray) {
-            if (!currentNode.children.has(letter)) {
-                return null;
-            }
+            if (!currentNode.children.has(letter)) return null;
             currentNode = currentNode.children.get(letter) as LetterTreeNode;
         }
         return currentNode;
