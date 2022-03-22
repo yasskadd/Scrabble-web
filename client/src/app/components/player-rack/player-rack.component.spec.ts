@@ -328,6 +328,20 @@ describe('PlayerRackComponent', () => {
         component.playPlacedLetters();
         expect(letterPlacementServiceSpy.submitPlacement).toHaveBeenCalled();
     });
+
+    it('repositionRack should do nothing if the rack is empty', () => {
+        gameClientServiceSpy.playerOne.rack = [];
+        const moveLeftSpy = spyOn(component, 'moveLeft');
+        component.buttonPressed = 'ArrowLeft';
+        component.repositionRack();
+        expect(moveLeftSpy).not.toHaveBeenCalled();
+
+        const moveRightSpy = spyOn(component, 'moveRight');
+        component.buttonPressed = 'ArrowRight';
+        component.repositionRack();
+        expect(moveRightSpy).not.toHaveBeenCalled();
+    });
+
     it('repositionRack should call moveLeft', () => {
         const spy = spyOn(component, 'moveLeft');
         component.buttonPressed = 'ArrowLeft';
