@@ -3,7 +3,7 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 import { ReplaySubject, Subject } from 'rxjs';
-import { ClientSocketService } from './client-socket.service';
+import { ClientSocketService } from './communication/client-socket.service';
 
 type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };

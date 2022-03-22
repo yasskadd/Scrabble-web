@@ -1,5 +1,5 @@
+import { Game } from '@app/classes/game';
 import { Gameboard } from '@app/classes/gameboard.class';
-import { Game } from '@app/services/game.service';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as sinon from 'sinon';

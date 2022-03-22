@@ -4,7 +4,7 @@ import { GameRoomClient } from '@app/interfaces/game-room-client';
 import { RoomInformation } from '@app/interfaces/room-information';
 import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
-import { ClientSocketService } from './client-socket.service';
+import { ClientSocketService } from './communication/client-socket.service';
 
 const FOUND_OPPONENT_MESSAGE = 'Adversaire Trouvé';
 const SEARCHING_OPPONENT = "En Attente d'un Adversaire ...";

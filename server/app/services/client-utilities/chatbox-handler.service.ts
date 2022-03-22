@@ -1,7 +1,7 @@
+import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
-import { SocketManager } from './socket-manager.service';
 
 type MessageParameters = { roomId: string; message: string };
 @Service()

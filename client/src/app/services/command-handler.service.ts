@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { SocketEvents } from '@common/constants/socket-events';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
-import { ClientSocketService } from './client-socket.service';
+import { ClientSocketService } from './communication/client-socket.service';
 
 @Injectable({
     providedIn: 'root',

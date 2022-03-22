@@ -1,4 +1,4 @@
-import { Game } from '@app/services/game.service';
+import { Game } from '@app/classes/game';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
 

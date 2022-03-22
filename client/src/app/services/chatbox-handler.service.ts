@@ -3,8 +3,8 @@ import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { SocketEvents } from '@common/constants/socket-events';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
-import { ClientSocketService } from './client-socket.service';
 import { CommandHandlerService } from './command-handler.service';
+import { ClientSocketService } from './communication/client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 
