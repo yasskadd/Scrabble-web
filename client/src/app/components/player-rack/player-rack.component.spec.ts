@@ -209,6 +209,15 @@ describe('PlayerRackComponent', () => {
         expect(lettersDiv[indexLetter].classList).toContain('rack-letter-exchange-selected');
     });
 
+    it('when rack has duplicates, only letter selected for exchange is to be exchanged when button is pressed', () => {
+        const index = 5;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, index);
+        fixture.detectChanges();
+        expect(component.lettersToExchange.length).toEqual(1);
+        expect(component.lettersToExchange[0]).toEqual(index);
+    });
+
     it('onLeftClick should call cancel', () => {
         const indexLetter = 0;
         const mockClick = new MouseEvent('click');
@@ -241,6 +250,17 @@ describe('PlayerRackComponent', () => {
         expect(lettersDiv[indexLetter].className).toEqual('rack-letter');
     });
 
+    it('onRightClick should select a letter that was selected for manipulation', () => {
+        const index = 3;
+        expect(component.lettersToExchange.length).toEqual(0);
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onLeftClick(mockClick, index);
+        component.onRightClick(mockClick, index);
+        fixture.detectChanges();
+        expect(component.lettersToManipulate.length).toEqual(0);
+        expect(component.lettersToExchange.length).toEqual(1);
+    });
+
     it('should call exchange when the button to exchange is pressed and it is your turn to play', fakeAsync(() => {
         const spy = spyOn(component, 'exchange');
         component.lettersToExchange = [0];
@@ -262,6 +282,15 @@ describe('PlayerRackComponent', () => {
         const spy = spyOn(component, 'cancel');
         component.exchange();
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('when right click is done twice on the same letter, lettersToExchange should be empty and letter should be deselected', () => {
+        const index = 5;
+        const mockClick = new MouseEvent('oncontextmenu');
+        component.onRightClick(mockClick, index);
+        component.onRightClick(mockClick, index);
+        fixture.detectChanges();
+        expect(component.lettersToExchange.length).toEqual(0);
     });
 
     it("letterSize should return a letter's size", () => {
