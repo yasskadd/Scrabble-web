@@ -1,3 +1,4 @@
+import { BotInformation } from '@app/interfaces/bot-information';
 import { CommandInfo } from '@app/interfaces/command-info';
 import { Game } from '@app/services/game.service';
 import { SocketManager } from '@app/services/socket-manager.service';
@@ -19,11 +20,6 @@ const PROB_7 = 7;
 const TIME_SKIP = 20;
 const SECOND_3 = 3000;
 const SECOND_1 = 1000;
-
-export interface BotInformation {
-    timer: number;
-    roomId: string;
-}
 
 export class BeginnerBot extends Player {
     isPlayerOne: boolean;

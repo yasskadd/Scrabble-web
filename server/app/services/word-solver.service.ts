@@ -82,7 +82,6 @@ export class WordSolverService {
         });
     }
 
-    // Tested
     private createCommandInfo(word: string, lastPosition: Coordinate) {
         let wordIndex = word.length - 1;
         let wordCopy = word.slice();
@@ -112,7 +111,6 @@ export class WordSolverService {
         }
     }
 
-    // Tested
     private findLeftPart(partialWord: string, currentNode: LetterTreeNode, anchor: Coordinate, rack: string[], limit: number) {
         this.extendRight(partialWord, currentNode, rack, anchor, false);
         if (limit > 0) {
@@ -128,7 +126,6 @@ export class WordSolverService {
             }
         }
     }
-    // TESTED
     // eslint-disable-next-line complexity
     private extendRight(partialWord: string, currentNode: LetterTreeNode, rack: string[], nextPosition: Coordinate, anchorFilled: boolean) {
         if (currentNode.isWord && this.verifyConditions(nextPosition) && anchorFilled)
@@ -161,14 +158,12 @@ export class WordSolverService {
             }
         }
     }
-    // TESTED
     private verifyConditions(nextPosition: Coordinate) {
         if (nextPosition.x > COLUMN_NUMBERS || nextPosition.y > ROW_NUMBERS) return true;
         if (!this.gameboard.getLetterTile(nextPosition).isOccupied) return true;
         return false;
     }
 
-    // TESTED
     private crossCheck(): Map<Coordinate, string[]> {
         const result: Map<Coordinate, string[]> = new Map();
         for (const letterTile of this.gameboard.gameboardTiles) {
