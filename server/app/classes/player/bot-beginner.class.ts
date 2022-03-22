@@ -75,7 +75,6 @@ export class BeginnerBot extends Player {
         this.playedTurned = true;
     }
 
-    // TODO : maybe make a function for waiting till 3 seconds?
     placeLetter() {
         const commandInfoMap = this.processWordSolver();
         const commandInfoList = this.addCommandInfoToList(commandInfoMap, this.getRandomNumber(Constant.MAX_NUMBER));

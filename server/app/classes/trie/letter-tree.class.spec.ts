@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { LetterTree } from './letter-tree.class';
 const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
-describe.only('Letter Trie tests', () => {
+describe('Letter Trie tests', () => {
     let trie: LetterTree;
     before(() => {
         trie = new LetterTree(jsonDictionary.words);
