@@ -216,7 +216,7 @@ describe('Word solver service', () => {
         beforeEach(() => {
             rack = ['p', 'e', 'u', 'r'];
             wordSolverService['isHorizontal'] = true;
-            wordSolverService['findLettersForBoardTilesResults'] = wordSolverService['findLettersForBoardTiles']();
+            wordSolverService['legalLetterForBoardTiles'] = wordSolverService['findLettersForBoardTiles']();
             spyCreateCommand = Sinon.spy(wordSolverService, 'createCommandInfo' as keyof WordSolverService);
         });
         it('createCommandInfo should be called if we could form a word with the rack letters', () => {
