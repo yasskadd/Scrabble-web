@@ -42,7 +42,6 @@ export class GameClientService {
         });
 
         this.clientSocketService.on(SocketEvents.UpdateOpponentInformation, (player: Player) => {
-            this.secondPlayer = player;
             this.updateOpponentInformationEvent(player);
         });
 

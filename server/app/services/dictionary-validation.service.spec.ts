@@ -46,40 +46,31 @@ describe('Dictionary Validation Service', () => {
 
     it('checkWordInDictionary() should set word isValid attribute to false if they dont exist', () => {
         const validWords: Word[] = [invalidWord1, invalidWord2];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](validWords);
         expect(invalidWord1.isValid && invalidWord2.isValid).to.eql(false);
     });
 
     it('isolateInvalidWords() should return true if words are not in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.eql(true);
     });
 
     it('isolateInvalidWords() should return array of length 2 if 2 words are not in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2, invalidWord2, invalidWord1];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(2);
     });
 
     it('isolateInvalidWords should return false if words are in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[0]).to.eql(false);
     });
 
     it('isolateInvalidWords should return array of 0 if words are in dictionary', () => {
         const wordList: Word[] = [validWord1, validWord2];
-        // eslint-disable-next-line dot-notation
         dictionaryValidationService['checkWordInDictionary'](wordList);
-        // eslint-disable-next-line dot-notation
         expect(dictionaryValidationService['isolateInvalidWords'](wordList)[1].length).to.be.equal(0);
     });
 
