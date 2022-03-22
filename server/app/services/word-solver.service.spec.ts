@@ -243,12 +243,12 @@ describe('Word solver service', () => {
 
     context('findWordPartBeforeAnchor() tests', () => {
         it('should call findWordPartBeforeAnchor() and extendWordAfterAnchor() more than once if a word could be found', () => {
-            const rack = ['l', 'e', 's'];
+            wordSolverService['rack'] = ['l', 'e', 's'];
             const anchor: Coordinate = { x: 1, y: 1 };
             const limit = 100;
             const spyLeftPart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);
             const spyextendWordAfterAnchor = Sinon.spy(wordSolverService, 'extendWordAfterAnchor' as keyof WordSolverService);
-            wordSolverService['findWordPartBeforeAnchor']('', wordSolverService['trie'].root, anchor, rack, limit);
+            wordSolverService['findWordPartBeforeAnchor']('', wordSolverService['trie'].root, anchor, limit);
             expect(spyLeftPart.callCount && spyextendWordAfterAnchor.callCount).to.be.greaterThan(1);
         });
     });
