@@ -45,7 +45,7 @@ export class LetterPlacementService {
         }
 
         this.updatePlayerScore(validateWordReturn.points, commandWord, player);
-        this.updatePlayerRack(commandInfo.letters, player);
+        this.updatePlayerRack(commandInfo.letters, player.rack);
 
         return { hasPassed: true, gameboard: currentGameboard, invalidWords: [] as Word[] };
     }
@@ -158,13 +158,13 @@ export class LetterPlacementService {
         if (commandWord.newLetterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
     }
 
-    private updatePlayerRack(letters: string[], player: Player): void {
+    private updatePlayerRack(letters: string[], playerRack: Letter[]): void {
         const INDEX_NOT_FOUND = -1;
         letters.forEach((letter) => {
             if (letter === letter.toUpperCase()) letter = '*';
-            const itemInRack = player.rack.filter((item: Letter) => item.value === letter)[0];
-            const index = player.rack.indexOf(itemInRack);
-            if (index > INDEX_NOT_FOUND) player.rack.splice(index, 1);
+            const itemInRack = playerRack.filter((item: Letter) => item.value === letter)[0];
+            const index = playerRack.indexOf(itemInRack);
+            if (index > INDEX_NOT_FOUND) playerRack.splice(index, 1);
         });
     }
 }
