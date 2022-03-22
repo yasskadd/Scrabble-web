@@ -5,7 +5,7 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@common/command-info';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';

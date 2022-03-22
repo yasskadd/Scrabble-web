@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CommandInfo } from '@common/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { ClientSocketService } from './client-socket.service';
 
