@@ -59,7 +59,7 @@ export class Word {
         const down = { x: firstCoord.x, y: firstCoord.y + 1 };
         return (
             (gameboard.getLetterTile(up).isOccupied && gameboard.isWithinBoardLimits(up)) ||
-            (gameboard.getLetterTile(down).isOccupied && gameboard.isWithinBoardLimits(up))
+            (gameboard.getLetterTile(down).isOccupied && gameboard.isWithinBoardLimits(down))
         );
     }
 
