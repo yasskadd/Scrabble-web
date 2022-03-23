@@ -51,7 +51,6 @@ export class SocketClientServiceMock extends ClientSocketService {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     override connect() {}
 }
-// { provide: ClientSocketService, useValue: SocketClientServiceMock }
 describe('ChatboxHandlerService', () => {
     let service: ChatboxHandlerService;
     let socketServiceMock: SocketClientServiceMock;
@@ -83,7 +82,6 @@ describe('ChatboxHandlerService', () => {
                 { provide: CommandHandlerService, useValue: commandHandlerSpy },
             ],
         });
-        // socketServiceMock = new SocketClientServiceMock();
         service = TestBed.inject(ChatboxHandlerService);
     });
 

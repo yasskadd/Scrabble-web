@@ -1,7 +1,7 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
-import { ValidateWordReturn } from '@app/validate-word-return';
+import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
 import * as fs from 'fs';
 import { Service } from 'typedi';
 

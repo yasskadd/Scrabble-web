@@ -3,12 +3,11 @@ import { LetterTreeNode } from '@app/classes/trie/letter-tree-node.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@app/interfaces/command-info';
-import { ValidateWordReturn } from '@app/validate-word-return';
+import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
 import * as constants from '@common/constants/board-info';
 import { Coordinate } from '@common/interfaces/coordinate';
-import { Container, Service } from 'typedi';
+import { Inject, Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
-
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const MAX_LETTERS_LIMIT = 7;
 
@@ -22,9 +21,8 @@ export class WordSolverService {
     private rack: string[];
     private anchors: Coordinate[];
 
-    constructor() {
-        const dictionary = Container.get(DictionaryValidationService);
-        this.trie = dictionary.trie;
+    constructor(@Inject() private dictionaryService: DictionaryValidationService) {
+        this.trie = this.dictionaryService.trie;
     }
 
     setGameboard(gameboard: Gameboard) {
@@ -39,7 +37,6 @@ export class WordSolverService {
             this.isHorizontal = direction;
             this.anchors = this.gameboard.findAnchors();
             this.legalLetterForBoardTiles = this.findLettersForBoardTiles();
-
             this.firstTurnOrEmpty();
             this.findPossibleWordForEachAnchor();
         }
@@ -47,12 +44,11 @@ export class WordSolverService {
     }
 
     commandInfoScore(commandInfoList: CommandInfo[]): Map<CommandInfo, number> {
-        const dictionaryService: DictionaryValidationService = Container.get(DictionaryValidationService);
         const commandInfoMap: Map<CommandInfo, number> = new Map();
         commandInfoList.forEach((commandInfo) => {
             const word = new Word(commandInfo, this.gameboard);
             this.placeLettersOnBoard(word, commandInfo);
-            const placementScore: ValidateWordReturn = dictionaryService.validateWord(word, this.gameboard);
+            const placementScore: ValidateWordReturn = this.dictionaryService.validateWord(word, this.gameboard);
             commandInfoMap.set(commandInfo, placementScore.points);
             this.removeLetterFromBoard(word);
         });
@@ -62,7 +58,10 @@ export class WordSolverService {
     private findPossibleWordForEachAnchor() {
         for (const anchor of this.anchors) {
             const beforeAnchor: Coordinate | null = this.decrementCoord(anchor, this.isHorizontal);
-            if (beforeAnchor === null) continue;
+            if (beforeAnchor === null) {
+                this.extendWordAfterAnchor('', this.dictionaryService.trie.root, anchor, false);
+                continue;
+            }
             if (this.gameboard.getLetterTile(beforeAnchor).isOccupied) this.checkIfPartialWordExistInTrie(anchor, beforeAnchor);
             else this.findWordPartBeforeAnchor('', this.trie.root, anchor, this.getLimitNumber(beforeAnchor, this.anchors));
         }

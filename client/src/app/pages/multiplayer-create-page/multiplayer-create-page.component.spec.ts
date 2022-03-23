@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import { Location } from '@angular/common';
@@ -277,7 +278,7 @@ describe('MultiplayerCreatePageComponent', () => {
         component.createGame();
         setTimeout(() => {
             expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalled();
-        }, 0);
+        }, 150);
         flush();
     }));
 
@@ -307,7 +308,7 @@ describe('MultiplayerCreatePageComponent', () => {
         component.createGame();
         setTimeout(() => {
             expect(gameConfigurationServiceSpy.beginScrabbleGame).not.toHaveBeenCalled();
-        }, 0);
+        }, 150);
         flush();
     }));
 
