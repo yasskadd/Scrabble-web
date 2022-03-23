@@ -19,7 +19,6 @@ describe('Word solver service', () => {
         wordSolverService['gameboard'] = gameboard;
     });
 
-    // TODO: Temporary test, need modifications
     it('should find all options', () => {
         const rack: string[] = ['*'];
         gameboard.placeLetter({ x: 1, y: 12 }, 'z');

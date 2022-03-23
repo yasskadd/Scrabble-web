@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
+/* eslint-disable max-len*/
+/* eslint-disable dot-notation*/
 import { Game } from '@app/classes/game';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { Player } from '@app/classes/player/player.class';
@@ -86,7 +88,6 @@ describe('Game tests', () => {
             };
         });
 
-        // eslint-disable-next-line max-len
         it('play() should return ReturnLetterReturn object and resetSkipCounter and endTurn() if the command word does not exist in dictionary for player1 on play', () => {
             game.gameboard.placeLetter({ x: 10, y: 8 }, 'a');
             const invalidWord = new Word(commandInfo, game.gameboard);
@@ -150,7 +151,6 @@ describe('Game tests', () => {
             expect(endOfGameVerificationStub.called).to.equal(true);
         });
 
-        // eslint-disable-next-line max-len
         it('giveNewLetterToRack() should call generateLetter of letterReserve and gives everything in the reserve if there is more letter placed than the number of letter in the reserve', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             turn.validating.returns(true);
@@ -159,7 +159,7 @@ describe('Game tests', () => {
             letterReserve.totalQuantity.returns(1);
             letterReserve.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
             letterReserve.generateLetters.returns([letterA]);
-            // eslint-disable-next-line dot-notation
+
             game['giveNewLetterToRack'](player1, commandInfo.letters.length, placeLettersReturnStub);
             expect(letterReserve.generateLetters.calledWith(1)).to.equal(true);
         });
@@ -172,12 +172,11 @@ describe('Game tests', () => {
             letterReserve.isEmpty.returns(false);
             letterReserve.totalQuantity.returns(commandInfo.letters.length);
             game.letterReserve = new LetterReserve();
-            // eslint-disable-next-line dot-notation
+
             game['giveNewLetterToRack'](player1, commandInfo.letters.length, placeLettersReturnStub);
             expect(letterReserve.generateLetters.called).to.equal(true);
         });
 
-        // eslint-disable-next-line max-len
         it('giveNewLetterToRack() should call generateLetter of letterReserve with the quantity of letter that equals the quantity of letter placed', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             game = new Game(player1, player2, turn, letterReserve, letterPlacementService);
@@ -187,7 +186,7 @@ describe('Game tests', () => {
             letterPlacementService.placeLetters.returns(placeLettersReturnStub);
             letterReserve.totalQuantity.returns(commandInfo.letters.length);
             letterReserve.generateLetters.returns([letterA, letterA]);
-            // eslint-disable-next-line dot-notation
+
             game['giveNewLetterToRack'](player1, commandInfo.letters.length, placeLettersReturnStub);
             expect(letterReserve.generateLetters.calledWith(commandInfo.letters.length)).to.equal(true);
         });
@@ -199,7 +198,7 @@ describe('Game tests', () => {
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserve.isEmpty.returns(true);
             player1.rack = [];
-            // eslint-disable-next-line dot-notation
+
             game['endOfGameVerification'](player1);
             expect(endSpy.called).to.equal(true);
         });
@@ -211,32 +210,30 @@ describe('Game tests', () => {
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserve.isEmpty.returns(true);
             player1.rack = [];
-            // eslint-disable-next-line dot-notation
+
             game['endOfGameVerification'](player2);
             expect(endSpy.called).to.equal(true);
         });
 
-        // eslint-disable-next-line max-len
         it('endGameVerification() should call resetSkipCounter and end of turn if the rack of the player1 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserve.isEmpty.returns(false);
             game.letterReserve = new LetterReserve();
-            // eslint-disable-next-line dot-notation
+
             game['endOfGameVerification'](player1);
             expect(turn.end.called).to.equal(true);
             expect(turn.resetSkipCounter.called).to.equal(true);
         });
 
-        // eslint-disable-next-line max-len
         it('endGameVerification() should call resetSkipCounter and end of turn if the rack of the player2 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             player2.rack = [];
             game.letterReserve = new LetterReserve();
-            // eslint-disable-next-line dot-notation
+
             game['endOfGameVerification'](player2);
             expect(turn.end.called).to.equal(true);
             expect(turn.resetSkipCounter.called).to.equal(true);

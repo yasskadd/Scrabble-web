@@ -213,7 +213,6 @@ describe('Letter Placement Service', () => {
     });
 
     it('should return deep copy of playerRack', () => {
-        // eslint-disable-next-line dot-notation
         const copyRack = placementService['createTempRack'](player);
         expect(copyRack).to.not.equal(player.rack);
         expect(copyRack).to.deep.equal(player.rack);
