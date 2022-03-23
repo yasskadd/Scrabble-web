@@ -248,7 +248,6 @@ export class GamesHandler {
 
     private changeTurn(roomId: string) {
         const players = this.gamePlayers.get(roomId) as Player[];
-        // Might crash server in an unforseen event
         const gameInfo = {
             gameboard: players[0].game.gameboard.gameboardTiles,
             players: players.map((x) => x.getInformation()),

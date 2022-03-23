@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation*/
 import { expect } from 'chai';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
 import { DatabaseService } from './database.service';
@@ -10,90 +11,79 @@ describe('Database Service', () => {
         mongod = await MongoMemoryServer.create();
         mongod.start();
         databaseService = new DatabaseService();
-        // eslint-disable-next-line dot-notation
         DatabaseService['dbName'] = mongod.instanceInfo?.dbName as string;
-        // eslint-disable-next-line dot-notation
         DatabaseService['dbUrl'] = mongod.getUri();
     });
+
     afterEach(async () => {
         await mongod.stop();
     });
 
-    // TODO : add more tests if there's a need to
-
     it('the first connect() should connect to the server', async () => {
-        // eslint-disable-next-line dot-notation
         await databaseService['connect']();
-        // eslint-disable-next-line dot-notation
         expect(databaseService['isConnected']).to.be.equal(true);
     });
+
     it("connect() shouldn't change isConnected in case of no connection to the server", async () => {
-        // eslint-disable-next-line dot-notation
         DatabaseService['dbName'] = '';
-        // eslint-disable-next-line dot-notation
         DatabaseService['dbUrl'] = '';
-        // eslint-disable-next-line dot-notation
         await databaseService['connect']();
-        // eslint-disable-next-line dot-notation
         expect(databaseService['isConnected']).to.be.equal(false);
     });
+
     it('addDocument() should add a document to the collection', async () => {
-        // eslint-disable-next-line dot-notation
         await databaseService['addDocument']({ tests: 'I hate tests', helloWorld: 'WorldHello' });
-        // eslint-disable-next-line dot-notation
+
         const documentCount = await databaseService['collection'].countDocuments({});
+
         expect(documentCount).to.be.equal(1);
     });
+
     it('removeDocument() should remove a document from the collection', async () => {
-        // eslint-disable-next-line dot-notation
         await databaseService['connect']();
-        // eslint-disable-next-line dot-notation
         await databaseService['collection'].insertOne({ tests: 'I hate tests', helloWorld: 'WorldHello' });
-        // eslint-disable-next-line dot-notation
+
         const documentCount = await databaseService['collection'].countDocuments({});
-        // eslint-disable-next-line dot-notation
+
         await databaseService['removeDocument']({ tests: 'I hate tests' });
-        // eslint-disable-next-line dot-notation
+
         const currentCount = await databaseService['collection'].countDocuments({});
+
         expect(currentCount).to.be.equal(documentCount - 1);
     });
+
     it('resetDatabase() should remove all documents from the collection', async () => {
-        // eslint-disable-next-line dot-notation
         await databaseService['connect']();
-        // eslint-disable-next-line dot-notation
         await databaseService['collection'].insertOne({ tests: 'I hate tests', helloWorld: 'WorldHello' });
-        // eslint-disable-next-line dot-notation
+
         await databaseService['collection'].insertOne({ tests: 'I hate 2 tests' });
-        // eslint-disable-next-line dot-notation
+
         const documentCount = await databaseService['collection'].countDocuments({});
+
         expect(documentCount).to.be.equal(2);
-        // eslint-disable-next-line dot-notation
         await databaseService['resetDatabase']();
-        // eslint-disable-next-line dot-notation
         const currentCount = await databaseService['collection'].countDocuments({});
+
         expect(currentCount).to.be.equal(0);
     });
+
     it('fetchDocuments() should return all documents with the correct parameters', async () => {
         const TEST_DOCUMENT = { tests: 'I hate tests', helloWorld: 'WorldHello' };
-        // eslint-disable-next-line dot-notation
         await databaseService['connect']();
-        // eslint-disable-next-line dot-notation
         await databaseService['collection'].insertOne(TEST_DOCUMENT);
-        // eslint-disable-next-line dot-notation
         await databaseService['collection'].insertOne({ tests: 'I hate 2 tests' });
-        // eslint-disable-next-line dot-notation
+
         const currentDocuments = await databaseService['fetchDocuments']({ tests: 'I hate tests' }, { projection: { tests: 1, _id: 0 } });
+
         expect(currentDocuments).to.be.deep.equal([{ tests: 'I hate tests' }]);
     });
+
     it('replaceDocument() should replace the correct document in the database', async () => {
         const TEST_DOCUMENT = { tests: 'I hate tests', helloWorld: 'WorldHello' };
-        // eslint-disable-next-line dot-notation
         await databaseService['connect']();
-        // eslint-disable-next-line dot-notation
         await databaseService['collection'].insertOne({ tests: 'I hate tests' });
-        // eslint-disable-next-line dot-notation
+
         await databaseService['replaceDocument']({ tests: 'I hate tests' }, TEST_DOCUMENT);
-        // eslint-disable-next-line dot-notation
         const currentDocuments = await databaseService['collection'].find({}, { projection: { _id: 0 } }).toArray();
         expect(currentDocuments).to.be.deep.equal([TEST_DOCUMENT]);
     });

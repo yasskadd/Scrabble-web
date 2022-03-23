@@ -22,8 +22,6 @@ export class WordSolverService {
     private rack: string[];
     private anchors: Coordinate[];
 
-    // TODO : use TS setter for Gameboard
-
     constructor() {
         const dictionary = Container.get(DictionaryValidationService);
         this.trie = dictionary.trie;

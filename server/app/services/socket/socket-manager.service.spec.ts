@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation*/
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
@@ -46,7 +47,6 @@ describe('SocketManager service tests', () => {
         service = Container.get(SocketManager);
         httpServer = createServer();
         service.init(httpServer);
-        // eslint-disable-next-line dot-notation
         sio = service['sio'];
         httpServer.listen(() => {
             port = (httpServer.address() as AddressInfo).port;
@@ -67,7 +67,6 @@ describe('SocketManager service tests', () => {
     it('on() should create a callback array if empty and add a callback in the array in onEvents', () => {
         service.on('event', joinCallbackOn);
 
-        // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onEvents'].get('event');
         expect(callBackEventArray).to.not.equal(undefined);
         expect(callBackEventArray?.pop()).to.equal(joinCallbackOn);
@@ -77,7 +76,6 @@ describe('SocketManager service tests', () => {
         service.on('event', joinCallbackOn);
         service.on('event', emitMessageCallbackOn);
 
-        // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onEvents'].get('event');
         expect(callBackEventArray?.pop()).to.be.equal(emitMessageCallbackOn);
         expect(callBackEventArray?.pop()).to.be.equal(joinCallbackOn);
@@ -86,7 +84,6 @@ describe('SocketManager service tests', () => {
     it('io() should create a callback array if empty and add a callback in the array in onAndSioEvents', () => {
         service.io('event', joinCallbackSio);
 
-        // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onAndSioEvents'].get('event');
         expect(callBackEventArray).to.not.equal(undefined);
         expect(callBackEventArray?.pop()).to.equal(joinCallbackSio);
@@ -96,7 +93,6 @@ describe('SocketManager service tests', () => {
         service.io('event', joinCallbackSio);
         service.io('event', emitMessageCallbackSio);
 
-        // eslint-disable-next-line dot-notation
         const callBackEventArray = service['onAndSioEvents'].get('event');
         expect(callBackEventArray?.pop()).to.be.equal(emitMessageCallbackSio);
         expect(callBackEventArray?.pop()).to.be.equal(joinCallbackSio);
@@ -140,7 +136,6 @@ describe('SocketManager service tests', () => {
             clientSocket.close();
             done();
         });
-        // eslint-disable-next-line dot-notation
         service['emitRoom'](ROOM, EVENT_TEST, INFORMATION);
     });
 });
