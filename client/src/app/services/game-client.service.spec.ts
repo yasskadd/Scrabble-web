@@ -6,7 +6,7 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
 import { Socket } from 'socket.io-client';
-import { ClientSocketService } from './client-socket.service';
+import { ClientSocketService } from './communication/client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 type Player = { name: string; score: number; rack: Letter[]; room: string };

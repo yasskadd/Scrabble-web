@@ -1,3 +1,4 @@
+import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { expect } from 'chai';
 import { createServer, Server as HttpServer } from 'http';
@@ -7,7 +8,6 @@ import { createStubInstance, SinonStubbedInstance } from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
-import { SocketManager } from './socket-manager.service';
 
 type SioSignature = SocketManager['sio'];
 describe('Chatbox handler service tests', () => {

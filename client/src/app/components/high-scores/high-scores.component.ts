@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HighScores } from '@app/interfaces/high-score-parameters';
-import { HttpHandlerService } from '@app/services/http-handler.service';
+import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 
 const TIMEOUT = 3000;
 

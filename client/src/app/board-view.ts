@@ -1,28 +1,15 @@
 export const TOTAL_COLUMNS = 16;
 export const TOTAL_ROWS = 16;
 
-export const TOTAL_TILES_IN_COLUMN = TOTAL_COLUMNS - 1;
-export const TOTAL_TILES_IN_ROW = TOTAL_ROWS - 1;
-export const INVALID_INDEX = -1;
-
 export const GRID_CANVAS_WIDTH = 600;
 export const GRID_CANVAS_HEIGHT = 600;
-export const RACK_WIDTH = 300;
-export const RACK_HEIGHT = 45;
-
 export const FONT_SIZE = 20;
 export const BOARD_TILE_SIZE = 16;
-
-export const POINTS_RATIO = 0.45;
-export const POINTS_FONT_SIZE = FONT_SIZE * POINTS_RATIO;
 
 export const MULTIPLIER_NUMBER_RATIO = 0.45;
 export const MULTIPLIER_TYPE_RATIO = 0.55;
 export const LETTER_TILE_RATIO = 0.8;
-export const LETTER_TILE_SIZE = 40;
 export const LETTER_WEIGHT_RATIO = 0.75;
-export const LETTER_CANVAS_HEIGHT = 75;
-export const LETTER_CANVAS_WIDTH = 300;
 
 export const MIDDLE_POSITION = 8;
 

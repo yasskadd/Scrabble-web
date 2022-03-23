@@ -4,7 +4,7 @@ import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulat
 import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { Socket } from 'socket.io-client';
-import { ClientSocketService } from './client-socket.service';
+import { ClientSocketService } from './communication/client-socket.service';
 import { GameConfigurationService } from './game-configuration.service';
 
 interface RoomInformation {

@@ -1,7 +1,7 @@
+import { ChatboxHandlerService } from '@app/services/client-utilities/chatbox-handler.service';
+import { GameSessions } from '@app/services/client-utilities/game-sessions.service';
+import { GamesHandler } from '@app/services/games-handler.service';
 import { Service } from 'typedi';
-import { ChatboxHandlerService } from './chatbox-handler.service';
-import { GameSessions } from './game-sessions.service';
-import { GamesHandler } from './games-handler.service';
 
 @Service()
 export class SocketSubscribeHandler {

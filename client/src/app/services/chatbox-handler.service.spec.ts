@@ -6,8 +6,8 @@ import { Letter } from '@common/interfaces/letter';
 import { ReplaySubject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { ChatboxHandlerService } from './chatbox-handler.service';
-import { ClientSocketService } from './client-socket.service';
 import { CommandHandlerService } from './command-handler.service';
+import { ClientSocketService } from './communication/client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GameConfigurationService } from './game-configuration.service';
 

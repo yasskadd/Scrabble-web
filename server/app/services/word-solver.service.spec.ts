@@ -1,7 +1,6 @@
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
 import { CommandInfo } from '@app/interfaces/command-info';
-import { LetterTile } from '@common/classes/letter-tile.class';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
@@ -134,7 +133,7 @@ describe('Word solver service', () => {
     });
 
     context('getLimitNumber() Tests', () => {
-        let anchorsList: LetterTile[];
+        let anchorsList: Coordinate[];
         const NUMBER_5 = 5;
         beforeEach(() => {
             gameboard.placeLetter({ x: 5, y: 5 }, '');
@@ -296,11 +295,13 @@ describe('Word solver service', () => {
     it('firstTurnOrEmpty() should not call findWordPartBeforeAnchor if there is placed letters on board', () => {
         wordSolverService['rack'] = ['t', 'e', 's', 't'];
         wordSolverService['gameboard'].placeLetter({ x: 1, y: 1 } as Coordinate, 'a');
+        wordSolverService['anchors'] = wordSolverService['gameboard'].findAnchors();
         wordSolverService['firstTurnOrEmpty']();
         expect(spyFindBeforePart.called).to.be.equal(false);
     });
 
     it('firstTurnOrEmpty() should call findWordPartBeforeAnchor if there is no placed letters on board', () => {
+        wordSolverService['anchors'] = wordSolverService['gameboard'].findAnchors();
         const MAX_LETTERS_LIMIT = 7;
         wordSolverService['rack'] = ['t', 'e', 's', 't'];
         wordSolverService['firstTurnOrEmpty']();

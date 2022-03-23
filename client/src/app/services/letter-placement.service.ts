@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import * as constants from '@app/constants';
+import * as constants from '@common/constants/board-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
 import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
-
-const INDEX_NOT_FOUND = -1;
 
 @Injectable({
     providedIn: 'root',
@@ -29,7 +27,7 @@ export class LetterPlacementService {
         if (!this.isPlacingActive || this.hasPlacingEnded) return;
         const normalizedLetter = this.normalizeLetter(letterValue);
         const indexOfLetter = this.findLetterFromRack(normalizedLetter);
-        if (indexOfLetter === INDEX_NOT_FOUND) return;
+        if (indexOfLetter === constants.INVALID_INDEX) return;
         const placedLetter = this.gameClientService.playerOne.rack.splice(indexOfLetter, 1)[0];
         if (placedLetter.value === '*') placedLetter.value = letterValue;
         this.placeLetter(placedLetter);

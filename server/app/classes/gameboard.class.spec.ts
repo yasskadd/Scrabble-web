@@ -1,6 +1,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { LetterTile } from '@common/classes/letter-tile.class';
+import { Coordinate } from '@common/interfaces/coordinate';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { Gameboard } from './gameboard.class';
@@ -107,7 +108,7 @@ describe('gameboard', () => {
 
         // TODO: Fix findAnchors() test
         it('findAnchors() should return correct anchors tiles', () => {
-            const foundTiles: LetterTile[] = gameboard.findAnchors();
+            const foundTiles: Coordinate[] = gameboard.findAnchors();
             expect(foundTiles.length).to.be.greaterThan(0);
         });
     });

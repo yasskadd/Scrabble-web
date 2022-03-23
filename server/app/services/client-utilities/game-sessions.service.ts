@@ -1,9 +1,9 @@
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoom } from '@app/interfaces/game-room';
+import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Server, Socket } from 'socket.io';
 import { Service } from 'typedi';
-import { SocketManager } from './socket-manager.service';
 
 const UNAVAILABLE_ELEMENT_INDEX = -1;
 const SECOND = 1000;

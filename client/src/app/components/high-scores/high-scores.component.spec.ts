@@ -3,7 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { HttpHandlerService } from '@app/services/http-handler.service';
+import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { of } from 'rxjs';
 import { HighScoresComponent } from './high-scores.component';
 const TIMEOUT = 3001;

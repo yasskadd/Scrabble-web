@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { TestBed } from '@angular/core/testing';
 import { CanvasTestHelper } from '@app/classes/test-classes/canvas-test-helper';
-import * as constants from '@app/constants';
+import * as constants from '@app/board-view';
 import { GridService } from '@app/services/grid.service';
 import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
