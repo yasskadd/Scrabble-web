@@ -17,6 +17,7 @@ const enum TimeOptions {
     FiveMinute = 300,
 }
 const BOT_NAME_LIST = ['robert', 'jean', 'albert'];
+const TIME_OUT_150 = 150;
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -81,7 +82,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
             this.validateName();
             setTimeout(() => {
                 this.gameConfiguration.beginScrabbleGame(this.botName);
-            }, 0);
+            }, TIME_OUT_150);
         }
         this.resetInput();
         this.navigatePage();

@@ -17,7 +17,6 @@ const MAX_LETTERS_LIMIT = 7;
 
 @Service()
 export class WordSolverService {
-    @Inject() private dictionaryService: DictionaryValidationService;
     private trie: LetterTree;
     private gameboard: Gameboard;
     private legalLetterForBoardTiles: Map<Coordinate, string[]> = new Map();
@@ -28,7 +27,7 @@ export class WordSolverService {
 
     // TODO : use TS setter for Gameboard
 
-    constructor() {
+    constructor(@Inject() private dictionaryService: DictionaryValidationService) {
         this.trie = this.dictionaryService.trie;
     }
 
@@ -50,9 +49,7 @@ export class WordSolverService {
                 if (this.gameboard.getLetterTile(leftToAnchor).isOccupied) {
                     const partialWord = this.buildPartialWord(leftToAnchor);
                     const partialWordNode: LetterTreeNode | null = this.trie.lookUp(partialWord);
-                    if (partialWordNode !== null) {
-                        this.extendWordAfterAnchor(partialWord, partialWordNode, anchor.coordinate, false);
-                    }
+                    if (partialWordNode !== null) this.extendWordAfterAnchor(partialWord, partialWordNode, anchor.coordinate, false);
                 } else this.findWordPartBeforeAnchor('', this.trie.root, anchor.coordinate, this.getLimitNumber(leftToAnchor, this.anchors));
             }
         }

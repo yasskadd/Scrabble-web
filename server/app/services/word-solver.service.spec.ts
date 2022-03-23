@@ -14,27 +14,29 @@ describe('Word solver service', () => {
     let gameboard: Gameboard;
     let spyFindBeforePart: Sinon.SinonSpy;
 
-    beforeEach(() => {
+    before(() => {
         dictionaryValidationService = new DictionaryValidationService();
         dictionaryValidationService.createTrieDictionary();
+    });
+
+    beforeEach(() => {
+        wordSolverService = new WordSolverService(dictionaryValidationService);
         gameboard = new Gameboard();
-        wordSolverService = new WordSolverService();
         wordSolverService['gameboard'] = gameboard;
         spyFindBeforePart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);
     });
 
-    it('should find all options', () => {
-        const rack: string[] = ['*'];
-        gameboard.placeLetter({ x: 1, y: 12 }, 'z');
-        gameboard.placeLetter({ x: 2, y: 1 }, 'l');
-        gameboard.placeLetter({ x: 7, y: 10 }, 'a');
-        gameboard.placeLetter({ x: 7, y: 8 }, 'j');
-        gameboard.placeLetter({ x: 8, y: 8 }, 'e');
+    it('findAllOptions should not call extendWordAfterAnchor() if partialWordNode is null', () => {
+        const rack: string[] = ['l'];
+        const spyExtendAfter = Sinon.spy(wordSolverService, 'extendWordAfterAnchor' as never);
+        const stubPartialWordNode = Sinon.stub(wordSolverService, 'buildPartialWord' as never);
+        stubPartialWordNode.returns('notInTrie');
+        gameboard.placeLetter({ x: 8, y: 8 } as Coordinate, 'e');
         wordSolverService.findAllOptions(rack);
-        expect(wordSolverService.commandInfoScore(wordSolverService['commandInfoList']).size).to.be.greaterThan(1);
+        expect(spyExtendAfter.calledWith('notInTrie')).to.be.equal(false);
     });
 
-    it(' setGameboard should set the gameboard attribute of the service', () => {
+    it('setGameboard should set the gameboard attribute of the service', () => {
         const gameboardStub = new Gameboard();
         gameboardStub.placeLetter({ x: 1, y: 12 }, 'z');
         gameboardStub.placeLetter({ x: 2, y: 1 }, 'x');
@@ -247,6 +249,24 @@ describe('Word solver service', () => {
             wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, nextPosition, false);
             expect(spyCreateCommand.called).to.equal(true);
         });
+
+        it('should not call addRackLetterToPartialWord() or addBoardLetterToPartialWord() if nextPosition is null', () => {
+            const spyAddRackLetterToWord = Sinon.spy(wordSolverService, 'addRackLetterToPartialWord' as never);
+            const spyBoardLetterToWord = Sinon.spy(wordSolverService, 'addBoardLetterToPartialWord' as never);
+            wordSolverService['extendWordAfterAnchor']('', wordSolverService['trie'].root, null as never, false);
+            expect(spyAddRackLetterToWord.called && spyBoardLetterToWord.called).to.be.equal(false);
+        });
+    });
+
+    it('should find all options', () => {
+        const rack: string[] = ['*'];
+        gameboard.placeLetter({ x: 1, y: 12 }, 'z');
+        gameboard.placeLetter({ x: 2, y: 1 }, 'l');
+        gameboard.placeLetter({ x: 7, y: 10 }, 'a');
+        gameboard.placeLetter({ x: 7, y: 8 }, 'j');
+        gameboard.placeLetter({ x: 8, y: 8 }, 'e');
+        wordSolverService.findAllOptions(rack);
+        expect(wordSolverService.commandInfoScore(wordSolverService['commandInfoList']).size).to.be.greaterThan(1);
     });
 
     context('findWordPartBeforeAnchor() tests', () => {
@@ -254,10 +274,9 @@ describe('Word solver service', () => {
             wordSolverService['rack'] = ['l', 'e', 's'];
             const anchor: Coordinate = { x: 1, y: 1 };
             const limit = 100;
-            const spyLeftPart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);
             const spyExtendWordAfterAnchor = Sinon.spy(wordSolverService, 'extendWordAfterAnchor' as keyof WordSolverService);
             wordSolverService['findWordPartBeforeAnchor']('', wordSolverService['trie'].root, anchor, limit);
-            expect(spyLeftPart.callCount && spyExtendWordAfterAnchor.callCount).to.be.greaterThan(1);
+            expect(spyFindBeforePart.callCount && spyExtendWordAfterAnchor.callCount).to.be.greaterThan(1);
         });
     });
 
@@ -288,5 +307,24 @@ describe('Word solver service', () => {
         expect(
             spyFindBeforePart.firstCall.calledWith('', wordSolverService['trie'].root, { x: 8, y: 8 } as Coordinate, MAX_LETTERS_LIMIT),
         ).to.be.equal(true);
+    });
+
+    context('CommandInfoScore() Tests', () => {
+        it('should return an empty Map if commandInfoList passed as parameter is empty', () => {
+            const mapResult: Map<CommandInfo, number> = wordSolverService.commandInfoScore([]);
+            expect(mapResult.size).to.be.equal(0);
+        });
+
+        it('should associate each commandInfo to points score in the map', () => {
+            wordSolverService['rack'] = ['a', 'l', 'l'];
+            gameboard.placeLetter({ x: 8, y: 8 } as Coordinate, 'e');
+            gameboard.placeLetter({ x: 5, y: 5 } as Coordinate, 'o');
+            const mapResult: Map<CommandInfo, number> = wordSolverService.commandInfoScore(
+                wordSolverService.findAllOptions(wordSolverService['rack']),
+            );
+            mapResult.forEach((value) => {
+                expect(value).to.be.greaterThan(0);
+            });
+        });
     });
 });
