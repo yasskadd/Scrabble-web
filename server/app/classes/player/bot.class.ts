@@ -25,15 +25,15 @@ export class Bot extends Player {
         this.timer = botInfo.timer;
     }
 
-    setGame(game: Game) {
+    setGame(game: Game): void {
         this.game = game;
         if (game.turn.activePlayer === this.name) this.playTurn();
     }
 
-    playTurn() {
+    playTurn(): void {
         return;
     }
-    start() {
+    start(): void {
         this.game.turn.countdown.subscribe((countdown) => {
             this.countUp = this.timer - (countdown as number);
             if (this.countUp === Constant.TIME_SKIP && this.name === this.game.turn.activePlayer) this.skipTurn();
@@ -54,7 +54,7 @@ export class Bot extends Player {
         this.playedTurned = true;
     }
 
-    protected play(commandInfo: CommandInfo) {
+    protected play(commandInfo: CommandInfo): void {
         if (commandInfo === undefined || this.playedTurned) {
             this.skipTurn();
             return;
@@ -63,12 +63,12 @@ export class Bot extends Player {
         this.playedTurned = true;
     }
 
-    protected processWordSolver() {
+    protected processWordSolver(): Map<CommandInfo, number> {
         this.wordSolver.setGameboard(this.game.gameboard);
         return this.wordSolver.commandInfoScore(this.wordSolver.findAllOptions(this.rackToString()));
     }
 
-    protected emitPlaceCommand(randomCommandInfo: CommandInfo) {
+    protected emitPlaceCommand(randomCommandInfo: CommandInfo): void {
         const coordString = `${String.fromCharCode(Constant.CHAR_ASCII + randomCommandInfo.firstCoordinate.y)}${randomCommandInfo.firstCoordinate.x}`;
         const placeCommand = `!placer ${coordString}${randomCommandInfo.isHorizontal ? 'h' : 'v'} ${randomCommandInfo.letters.join('')}`;
         this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, placeCommand);

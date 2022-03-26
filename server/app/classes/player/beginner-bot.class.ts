@@ -1,10 +1,10 @@
 import * as Constant from '@app/constants/bot';
-import { CommandInfo } from '@app/interfaces/command-info';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Bot } from './bot.class';
 
 export class BeginnerBot extends Bot {
-    playTurn() {
+    playTurn(): void {
         const randomNumber = this.getRandomNumber(Constant.MAX_NUMBER);
         if (randomNumber < 3) {
             setTimeout(() => {
@@ -29,8 +29,7 @@ export class BeginnerBot extends Bot {
     }
 
     placeLetters() {
-        const commandInfoMap = this.processWordSolver();
-        const commandInfoList = this.addCommandInfoToList(commandInfoMap, this.getRandomNumber(Constant.MAX_NUMBER));
+        const commandInfoList = this.addCommandInfoToList(this.processWordSolver(), this.getRandomNumber(Constant.MAX_NUMBER));
         if (commandInfoList.length === 0) {
             setTimeout(() => this.skipTurn(), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
             return;

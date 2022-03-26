@@ -15,7 +15,7 @@ import { ReplaySubject } from 'rxjs';
 import * as Sinon from 'sinon';
 import { BeginnerBot } from './beginner-bot.class';
 
-describe('BotBeginner', () => {
+describe.only('BotBeginner', () => {
     let botBeginner: BeginnerBot;
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
@@ -46,9 +46,9 @@ describe('BotBeginner', () => {
             expect(botBeginner.game).to.eql(gameStub);
         });
 
-        it('setGame() should call choosePlayMove() if it is the bot turn', () => {
+        it('setGame() should call playTurn() if it is the bot turn', () => {
             gameStub.turn.activePlayer = botBeginner.name;
-            const stubChooseMove = Sinon.stub(botBeginner, 'choosePlayMove');
+            const stubChooseMove = Sinon.stub(botBeginner, 'playTurn');
             botBeginner.setGame(gameStub);
             expect(stubChooseMove.calledOnce).to.equal(true);
         });
@@ -94,7 +94,7 @@ describe('BotBeginner', () => {
         expect(botBeginner['getRandomNumber'](MAX_NUMBER)).to.equal(EXPECTED_RESULT);
     });
 
-    context('choosePlayMove() tests', () => {
+    context('playTurn() tests', () => {
         let mockBot: Sinon.SinonMock;
         let stubGetRandom: Sinon.SinonStub<unknown[], unknown>;
         let clock: Sinon.SinonFakeTimers;
@@ -112,17 +112,17 @@ describe('BotBeginner', () => {
         it('should call skipTurn() if random number is equal to 1', () => {
             mockBot.expects('skipTurn').exactly(1);
             stubGetRandom.returns(1);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
 
-        it('should not call skipTurn() and placeLetter() if random number is not equal to 1', () => {
+        it('should not call skipTurn() and placeLetters() if random number is not equal to 1', () => {
             mockBot.expects('skipTurn').never();
-            mockBot.expects('placeLetter').never();
+            mockBot.expects('placeLetters').never();
             mockBot.expects('exchangeLetter').exactly(1);
             stubGetRandom.returns(2);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
@@ -130,25 +130,25 @@ describe('BotBeginner', () => {
         it('should call exchangeLetter() if random number is equal to 2', () => {
             mockBot.expects('exchangeLetter').exactly(1);
             stubGetRandom.returns(2);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
 
-        it('should not call exchangeLetters() and placeLetter() if random number is equal to 1', () => {
+        it('should not call exchangeLetters() and placeLetters() if random number is equal to 1', () => {
             mockBot.expects('exchangeLetter').never();
-            mockBot.expects('placeLetter').never();
+            mockBot.expects('placeLetters').never();
             mockBot.expects('skipTurn').exactly(1);
             stubGetRandom.returns(1);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
 
-        it('should call placeLetter() if random number is between 3 and 10', () => {
-            mockBot.expects('placeLetter').exactly(1);
+        it('should call placeLetters() if random number is between 3 and 10', () => {
+            mockBot.expects('placeLetters').exactly(1);
             stubGetRandom.returns(3);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             mockBot.verify();
         });
     });
@@ -355,8 +355,8 @@ describe('BotBeginner', () => {
             mockSkip.verify();
         });
 
-        it('should reset countUp attribute and call choosePlayMove() if it is bot turn', () => {
-            mockSkip.expects('choosePlayMove').exactly(1);
+        it('should reset countUp attribute and call playTurn() if it is bot turn', () => {
+            mockSkip.expects('playTurn').exactly(1);
             botBeginner['countUp'] = 2;
             botBeginner.start();
             botBeginner.game.turn.endTurn.next(botBeginner.name);
@@ -364,8 +364,8 @@ describe('BotBeginner', () => {
             expect(botBeginner['countUp']).to.equal(0);
         });
 
-        it('should not call choosePlayMove() if it is not botTurn', () => {
-            mockSkip.expects('choosePlayMove').never();
+        it('should not call playTurn() if it is not botTurn', () => {
+            mockSkip.expects('playTurn').never();
             botBeginner.start();
             botBeginner.game.turn.endTurn.next('notBotName');
             mockSkip.verify();
@@ -421,7 +421,7 @@ describe('BotBeginner', () => {
         });
     });
 
-    context('placeLetter() tests', () => {
+    context('placeLetters() tests', () => {
         let stubCommandInfoToList: Sinon.SinonStub<unknown[], unknown>;
         let mockWordSolver: Sinon.SinonMock;
         let mockBot: Sinon.SinonMock;
@@ -454,7 +454,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             mockBot.expects('skipTurn').exactly(1);
             stubCommandInfoToList.returns([]);
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             clock.tick(3500);
             mockBot.verify();
             mockWordSolver.verify();
@@ -466,7 +466,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 5;
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             mockBot.verify();
             mockWordSolver.verify();
         });
@@ -477,7 +477,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 1;
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             clock.tick(3500);
             mockWordSolver.verify();
             mockBot.verify();
@@ -489,7 +489,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 25;
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             clock.tick(3500);
             mockWordSolver.verify();
             mockBot.verify();
