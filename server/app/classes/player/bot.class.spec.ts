@@ -21,6 +21,7 @@ describe('Bot Tests', () => {
     let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService>;
 
     beforeEach(() => {
+        stubMathRandom = Sinon.stub(Math, 'random');
         gameStub = Sinon.createStubInstance(Game) as Sinon.SinonStubbedInstance<Game> & Game;
         gameStub.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         botInfo = { timer: 60, roomId: 'testRoom' };
@@ -28,6 +29,10 @@ describe('Bot Tests', () => {
         wordSolverStub = Sinon.createStubInstance(WordSolverService);
         bot['wordSolver'] = wordSolverStub as never;
         bot.setGame(gameStub);
+    });
+
+    afterEach(() => {
+        Sinon.restore();
     });
 
     context('setGame() tests', () => {
