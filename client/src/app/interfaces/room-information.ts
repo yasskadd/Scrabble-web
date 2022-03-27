@@ -3,5 +3,7 @@ export interface RoomInformation {
     roomId: string;
     isCreator: boolean;
     statusGame: string;
+    mode: string;
     timer: number;
+    botDifficulty?: string;
 }

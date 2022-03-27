@@ -17,7 +17,6 @@ const enum TimeOptions {
     FiveMinute = 300,
 }
 const BOT_NAME_LIST = ['robert', 'jean', 'albert'];
-const TIME_OUT_150 = 150;
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -52,7 +51,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
         this.botName = '';
-        this.difficultyList = ['Débutant'];
+        this.difficultyList = ['Débutant', 'Expert'];
     }
 
     ngOnInit(): void {
@@ -60,6 +59,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({
             timer: [defaultTimer, Validators.required],
+            difficultyBot: [this.difficultyList[0], Validators.required],
         });
         this.giveNameToBot();
     }
@@ -71,19 +71,16 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     createGame() {
+        if (this.isSoloMode()) this.validateName();
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
             timer: (this.form.get('timer') as AbstractControl).value,
             dictionary: 'francais',
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,
+            opponent: this.isSoloMode() ? this.botName : undefined,
+            botDifficulty: this.isSoloMode() ? (this.form.get('difficultyBot') as AbstractControl).value : undefined,
         });
-        if (this.isSoloMode()) {
-            this.validateName();
-            setTimeout(() => {
-                this.gameConfiguration.beginScrabbleGame(this.botName);
-            }, TIME_OUT_150);
-        }
         this.resetInput();
         this.navigatePage();
     }
