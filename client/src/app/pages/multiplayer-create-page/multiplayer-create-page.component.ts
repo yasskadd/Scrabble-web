@@ -16,7 +16,7 @@ const enum TimeOptions {
     FourMinuteAndThirty = 270,
     FiveMinute = 300,
 }
-const BOT_NAME_LIST = ['robert', 'jean', 'albert'];
+const BOT_NAME_LIST = ['ScrabbleMaster', 'Spike Spiegel', 'XXDarkLegendXX'];
 const TIME_OUT_150 = 150;
 
 @Component({
