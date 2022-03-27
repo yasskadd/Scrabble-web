@@ -1,6 +1,6 @@
 /* eslint-disable dot-notation */
 import { Gameboard } from '@app/classes/gameboard.class';
-import { CommandInfo } from '@app/interfaces/command-info';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
