@@ -1,25 +1,20 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
+import { RoomInformation } from '@app/interfaces/room-information';
 import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './communication/client-socket.service';
 import { GameConfigurationService } from './game-configuration.service';
 
-interface RoomInformation {
-    playerName: string[];
-    roomId: string;
-    isCreator: boolean;
-    statusGame: string;
-    timer: number;
-}
-
 interface GameScrabbleInformation {
     playerName: string[];
     roomId: string;
     timer: number;
     socketId: string[];
+    mode: string;
+    botDifficulty?: string;
 }
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
@@ -27,6 +22,8 @@ const ROOM_INFORMATION: RoomInformation = {
     isCreator: true,
     statusGame: '',
     timer: 0,
+    mode: 'classique',
+    botDifficulty: undefined,
 };
 export class SocketClientServiceMock extends ClientSocketService {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -68,13 +65,13 @@ describe('GameConfigurationService', () => {
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
 
-        service.joinPage();
+        service.joinPage(ROOM_INFORMATION.mode);
         expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.RoomLobby);
     });
 
     it('updateAvailableRooms() should update and add the games available for a player to join', () => {
         const roomTest = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' }];
-
+        service.roomInformation.mode = 'classique';
         expect(service.availableRooms.length).toEqual(0);
         // eslint-disable-next-line dot-notation
         service['updateAvailableRooms'](roomTest);
@@ -166,17 +163,17 @@ describe('GameConfigurationService', () => {
         expect(service.errorReason).toEqual(new ReplaySubject<string>(1));
     });
 
-    it('beginScrabbleGame() should assign a name to the opponent when the method is called with the name of the bot ', () => {
-        const roomInformationUpdated: RoomInformation = {
-            playerName: ['Vincent'],
-            roomId: '1',
-            isCreator: true,
-            statusGame: "En Attente d'un Adversaire ...",
-            timer: 60,
+    it('gameInitialization() should assign a name to the opponent when the method is called with the name of the bot ', () => {
+        const testGameConfiguration = {
+            username: 'Pauline',
+            dictionary: 'francais',
+            timer: 1,
+            mode: 'classique',
+            isMultiplayer: true,
+            opponent: 'robert',
         };
-        service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
-        service.beginScrabbleGame('robert');
+        service.gameInitialization(testGameConfiguration);
         expect(service.roomInformation.playerName[1]).toEqual('robert');
     });
 
@@ -187,6 +184,8 @@ describe('GameConfigurationService', () => {
             isCreator: true,
             statusGame: "En Attente d'un Adversaire ...",
             timer: 60,
+            mode: 'classique',
+            botDifficulty: undefined,
         };
         service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
@@ -330,10 +329,14 @@ describe('GameConfigurationService', () => {
             roomId: ROOM_INFORMATION.roomId,
             timer: ROOM_INFORMATION.timer,
             socketId: socketIDUserRoom,
+            mode: 'Classique',
+            botDifficulty: undefined,
         };
         service.roomInformation.playerName = ROOM_INFORMATION.playerName;
         service.roomInformation.roomId = ROOM_INFORMATION.roomId;
         service.roomInformation.timer = ROOM_INFORMATION.timer;
+        service.roomInformation.mode = 'Classique';
+        service.roomInformation.botDifficulty = undefined;
         service.roomInformation.isCreator = true;
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
@@ -362,6 +365,8 @@ describe('GameConfigurationService', () => {
             isCreator: true,
             statusGame: 'Adversaire Trouvé',
             timer: 60,
+            mode: 'classique',
+            botDifficulty: undefined,
         };
         service.roomInformation = roomInformationUpdated;
         expect(service.roomInformation.playerName).toEqual(['Vincent', 'Marcel']);
