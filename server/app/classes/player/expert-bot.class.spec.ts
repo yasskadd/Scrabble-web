@@ -56,5 +56,7 @@ describe.only('Expert Bot Tests', () => {
         });
     });
 
-    context('exchangeLetters() tests', () => {});
+    context('exchangeLetters() tests', () => {
+        beforeEach(() => {});
+    });
 });

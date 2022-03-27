@@ -5,59 +5,39 @@ import { Bot } from './bot.class';
 
 export class BeginnerBot extends Bot {
     playTurn(): void {
-        const randomNumber = this.getRandomNumber(Constant.MAX_NUMBER);
-        if (randomNumber < 3) {
-            setTimeout(() => {
-                if (randomNumber === 1) this.skipTurn();
-                else this.exchangeLetter();
-            }, Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
-        } else this.placeLetters();
+        const bestCommandInfo: CommandInfo = [...this.processWordSolver().entries()].reduce((highestScore, currentScore) => {
+            return currentScore[1] > highestScore[1] ? currentScore : highestScore;
+        })[0];
+        if (this.countUp >= 3 && this.countUp < Constant.TIME_SKIP) this.play(bestCommandInfo);
+        else if (this.countUp < 3) setTimeout(() => this.play(bestCommandInfo), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
     }
 
-    exchangeLetter(): void {
-        if (this.game === undefined || this.playedTurned || this.game.letterReserve.totalQuantity() < Constant.letterReserveMinQuantity) return;
-        const rack: string[] = [...this.rackToString()];
-        let numberOfLetters = this.getRandomNumber(rack.length);
-        const lettersToExchange: string[] = new Array();
-        while (numberOfLetters > 0) {
-            lettersToExchange.push(rack.splice(this.getRandomNumber(rack.length) - 1, 1)[0]);
-            numberOfLetters--;
+    play(commandInfo: CommandInfo): void {
+        if (commandInfo === undefined) {
+            this.exchangeLetters();
+            return;
         }
-        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
-        this.rack = this.game.exchange(lettersToExchange, this);
+        this.emitPlaceCommand(commandInfo);
         this.playedTurned = true;
     }
 
-    placeLetters() {
-        const commandInfoList = this.addCommandInfoToList(this.processWordSolver(), this.getRandomNumber(Constant.MAX_NUMBER));
-        if (commandInfoList.length === 0) {
-            setTimeout(() => this.skipTurn(), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
-            return;
-        }
-        const randomCommandInfo = commandInfoList[Math.floor(Math.random() * commandInfoList.length)];
-        if (this.countUp >= 3 && this.countUp < Constant.TIME_SKIP) this.play(randomCommandInfo);
-        else if (this.countUp < 3) setTimeout(() => this.play(randomCommandInfo), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
-    }
-
-    private addCommandInfoToList(commandInfoMap: Map<CommandInfo, number>, randomNumber: number): CommandInfo[] {
-        const commandInfoList = new Array();
-        if (this.inRange(randomNumber, 1, Constant.PROB_4)) {
-            commandInfoMap.forEach((value, key) => {
-                if (this.inRange(value, 1, Constant.RANGE_6)) commandInfoList.push(key);
-            });
-        } else if (this.inRange(randomNumber, Constant.PROB_5, Constant.PROB_7)) {
-            commandInfoMap.forEach((value, key) => {
-                if (this.inRange(value, Constant.RANGE_7, Constant.RANGE_12)) commandInfoList.push(key);
-            });
+    exchangeLetters(): void {
+        if (this.game === undefined || this.playedTurned) return;
+        let lettersLeftInReserve: number = this.game.letterReserve.totalQuantity();
+        const rackStringArray: string[] = [...this.rackToString()];
+        if (lettersLeftInReserve === 0) this.skipTurn();
+        if (lettersLeftInReserve >= Constant.letterReserveMinQuantity) {
+            this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${rackStringArray.length} lettres`);
+            this.game.exchange(rackStringArray, this);
         } else {
-            commandInfoMap.forEach((value, key) => {
-                if (this.inRange(value, Constant.RANGE_13, Constant.RANGE_18)) commandInfoList.push(key);
-            });
+            const lettersToExchange: string[] = new Array();
+            while (lettersLeftInReserve > 0) {
+                lettersToExchange.push(rackStringArray.splice(this.getRandomNumber(rackStringArray.length) - 1, 1)[0]);
+                lettersLeftInReserve--;
+            }
+            this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
+            this.rack = this.game.exchange(lettersToExchange, this);
         }
-        return commandInfoList;
-    }
-
-    private inRange(x: number, start: number, end: number): boolean {
-        return (x - start) * (x - end) <= 0;
+        this.playedTurned = true;
     }
 }
