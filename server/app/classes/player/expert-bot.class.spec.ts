@@ -163,6 +163,14 @@ describe('Expert Bot Tests', () => {
             expect(spyPlay.calledOnceWithExactly(stubCommandInfo2)).to.be.equal(true);
         });
 
+        it('should call play() with undefined commandInfo if there is no existing commandInfo if timer is between 3 and 20 seconds', () => {
+            stubProcessWordSolver.returns(new Map());
+            expertBot.game.turn.countdown.next(45);
+            expertBot.start();
+            expertBot.playTurn();
+            expect(spyPlay.calledOnceWithExactly(undefined)).to.be.equal(true);
+        });
+
         it('should wait 3 seconds to call play() with best CommandInfo if timer is less than 3 seconds', () => {
             const clock = Sinon.useFakeTimers();
             stubProcessWordSolver.returns(stubMapCommandInfo);
