@@ -30,9 +30,12 @@ export class Bot extends Player {
         if (game.turn.activePlayer === this.name) this.playTurn();
     }
 
+    // TODO: Can we declare empty methods ?
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     playTurn(): void {
         return;
     }
+
     start(): void {
         this.game.turn.countdown.subscribe((countdown) => {
             this.countUp = this.timer - (countdown as number);

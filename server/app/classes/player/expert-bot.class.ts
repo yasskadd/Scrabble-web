@@ -8,8 +8,11 @@ export class ExpertBot extends Bot {
         const bestCommandInfo: CommandInfo = [...this.processWordSolver().entries()].reduce((highestScore, currentScore) => {
             return currentScore[1] > highestScore[1] ? currentScore : highestScore;
         })[0];
-        if (this.countUp >= 3 && this.countUp < Constant.TIME_SKIP) this.play(bestCommandInfo);
-        else if (this.countUp < 3) setTimeout(() => this.play(bestCommandInfo), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
+        if (this.countUp >= 3 && this.countUp < Constant.TIME_SKIP) {
+            this.play(bestCommandInfo);
+        } else if (this.countUp < 3) {
+            setTimeout(() => this.play(bestCommandInfo), Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
+        }
     }
 
     play(commandInfo: CommandInfo): void {
@@ -26,12 +29,12 @@ export class ExpertBot extends Bot {
         let lettersLeftInReserve: number = this.game.letterReserve.totalQuantity();
         const rackStringArray: string[] = [...this.rackToString()];
         if (lettersLeftInReserve === 0) this.skipTurn();
-        if (lettersLeftInReserve >= Constant.letterReserveMinQuantity) {
+        else if (lettersLeftInReserve >= Constant.letterReserveMinQuantity) {
             this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${rackStringArray.length} lettres`);
             this.game.exchange(rackStringArray, this);
         } else {
             const lettersToExchange: string[] = new Array();
-            while (lettersLeftInReserve > 0) {
+            while (lettersLeftInReserve > 0 && rackStringArray.length > 0) {
                 lettersToExchange.push(rackStringArray.splice(this.getRandomNumber(rackStringArray.length) - 1, 1)[0]);
                 lettersLeftInReserve--;
             }
