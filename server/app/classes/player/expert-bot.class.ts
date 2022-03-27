@@ -5,9 +5,9 @@ import { Bot } from './bot.class';
 
 export class ExpertBot extends Bot {
     playTurn(): void {
-        const bestCommandInfo: CommandInfo = [...this.processWordSolver().entries()].reduce((highestScore, currentScore) => {
+        const bestCommandInfo: CommandInfo = [...this.processWordSolver().entries()]?.reduce((highestScore, currentScore) => {
             return currentScore[1] > highestScore[1] ? currentScore : highestScore;
-        })[0];
+        }, 0)[0];
         if (this.countUp >= 3 && this.countUp < Constant.TIME_SKIP) {
             this.play(bestCommandInfo);
         } else if (this.countUp < 3) {
