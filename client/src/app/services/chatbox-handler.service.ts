@@ -136,8 +136,34 @@ export class ChatboxHandlerService {
     }
 
     private validCommand(userCommand: string): boolean {
+        if (this.isHelpCommand(userCommand)) return true;
         if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) return this.validCommandSyntax(userCommand);
         this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
+        return false;
+    }
+
+    private isHelpCommand(userCommand: string): boolean {
+        const validReserveCommand = '^!aide$';
+        const validReserveCommandRegex = new RegExp(validReserveCommand);
+        if (validReserveCommandRegex.test(userCommand)) {
+            this.messages.push({ type: 'system-message', data: 'VOICI LES COMMANDES VALIDE' });
+            this.messages.push({ type: 'system-message', data: '!passer  : Faire passer son tour' });
+            this.messages.push({ type: 'system-message', data: '!réserve : Affiche toutes les lettres disponible dans la réserve' });
+            this.messages.push({ type: 'system-message', data: "!indice  : Envoie jusqu'à 3 possibilités de placement sur la planche de jeu" });
+            this.messages.push({
+                type: 'system-message',
+                data:
+                    '!echanger <lettre>:  Echanger les lettres de notre chevalet (celle-ci doive être écrite en minuscule ou' +
+                    '* pour la lettre blanche (ex: !echanger e*a)',
+            });
+            this.messages.push({
+                type: 'system-message',
+                data:
+                    '!placer <ligne><colonne>[(h|v)] <lettres>:  Placer un mot en utilisant uniquement les lettres de notre chevalet' +
+                    '(Mettre la lettre en Majuscule lorsque nous utilisons une lettre blanche) (ex: !placer g9h adanT)',
+            });
+            return true;
+        }
         return false;
     }
 

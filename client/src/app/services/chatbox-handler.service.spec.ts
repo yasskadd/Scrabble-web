@@ -631,6 +631,21 @@ describe('ChatboxHandlerService', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('isHelpCommand() should return true if the command aide is valid', () => {
+        const input = '!aide';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['isHelpCommand'](input)).toEqual(true);
+    });
+
+    it('isHelpCommand() should return false if the command aide is not valid', () => {
+        const input = '!ae';
+
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        expect(service['isHelpCommand'](input)).toEqual(false);
+    });
     it('should called configureReserveLetterCommand  method if the server emit the Event', () => {
         const spy = spyOn(service, 'configureReserveLetterCommand' as never);
         socketEmulator.peerSideEmit(SocketEvents.AllReserveLetters);
