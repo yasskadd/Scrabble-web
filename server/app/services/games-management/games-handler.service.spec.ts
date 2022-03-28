@@ -6,12 +6,15 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Player } from '@app/classes/player/player.class';
+import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
-import { GamesHandler } from '@app/services/games-handler.service';
+import { GamesHandler } from '@app/services/games-management/games-handler.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
@@ -22,9 +25,6 @@ import { ReplaySubject } from 'rxjs';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
-import { RealPlayer } from '../../classes/player/real-player.class';
-import { LetterPlacementService } from '../letter-placement.service';
-import { WordSolverService } from '../word-solver.service';
 
 const ROOM = '0';
 
@@ -78,7 +78,6 @@ describe('GamesHandler Service', () => {
         player1.game = game;
         gamesHandler = new GamesHandler(
             socketManagerStub as unknown as SocketManager,
-            scoreStorageStub as unknown as ScoreStorageService,
             wordSolverStub as unknown as WordSolverService,
             letterPlacementStub as unknown as LetterPlacementService,
         );
@@ -1002,7 +1001,6 @@ describe('GamesHandler Service', () => {
         beforeEach(() => {
             gamesHandler = new GamesHandler(
                 socketManagerStub as unknown as SocketManager,
-                scoreStorageStub as unknown as ScoreStorageService,
                 wordSolverStub as unknown as WordSolverService,
                 letterPlacementStub as unknown as LetterPlacementService,
             );
