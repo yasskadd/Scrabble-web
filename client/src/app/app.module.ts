@@ -21,7 +21,8 @@ import { AdminDictionariesComponent } from './components/admin-dictionaries/admi
 import { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';
 import { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
-import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
+import { DialogBoxAddDictionaryComponent } from './components/dialog-box-add-dictionary/add-dictionary-dialog-box.component';
+import { DialogBoxGameTypeComponent } from './components/dialog-box-game-type/dialog-box.component';
 import { HighScoresComponent } from './components/high-scores/high-scores.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
@@ -30,6 +31,7 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
+
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -46,7 +48,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         MultiplayerCreatePageComponent,
         WaitingOpponentPageComponent,
         ChatboxComponent,
-        DialogBoxComponent,
+        DialogBoxGameTypeComponent,
         InformationPanelComponent,
         PlayerRackComponent,
         AbandonGameDialogBoxComponent,
@@ -55,6 +57,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         AdminDictionariesComponent,
         AdminVirtualPlayersComponent,
         AdminGameHistoryComponent,
+        DialogBoxAddDictionaryComponent,
     ],
     imports: [
         CommonModule,
