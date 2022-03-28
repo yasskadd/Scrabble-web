@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DialogBoxComponent } from './dialog-box.component';
+import { DialogBoxGameTypeComponent } from './dialog-box.component';
 
 @Component({
     template: '',
@@ -15,9 +15,9 @@ const DATA_GAME_MODE = 'classique';
 const MULTIPLAYER_CREATE_ROUTE = 'multijoueur/creer/' + DATA_GAME_MODE;
 const MULTIPLAYER_JOIN_ROUTE = 'multijoueur/rejoindre/' + DATA_GAME_MODE;
 
-describe('DialogBoxComponent', () => {
-    let component: DialogBoxComponent;
-    let fixture: ComponentFixture<DialogBoxComponent>;
+describe('DialogBoxGameTypeComponent', () => {
+    let component: DialogBoxGameTypeComponent;
+    let fixture: ComponentFixture<DialogBoxGameTypeComponent>;
     let location: Location;
 
     const dialogMock = {
@@ -36,7 +36,7 @@ describe('DialogBoxComponent', () => {
                     { path: MULTIPLAYER_CREATE_ROUTE, component: StubComponent },
                 ]),
             ],
-            declarations: [DialogBoxComponent],
+            declarations: [DialogBoxGameTypeComponent],
             providers: [
                 { provide: MAT_DIALOG_DATA, useValue: DATA_GAME_MODE },
                 { provide: MatDialogRef, useValue: dialogMock },
@@ -45,7 +45,7 @@ describe('DialogBoxComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(DialogBoxComponent);
+        fixture = TestBed.createComponent(DialogBoxGameTypeComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
         location = TestBed.inject(Location);

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogBoxComponent } from '@app/components/dialog-box/dialog-box.component';
+import { DialogBoxGameTypeComponent } from '@app/components/dialog-box-game-type/dialog-box.component';
 import { HighScoresComponent } from '@app/components/high-scores/high-scores.component';
 
 @Component({
@@ -15,7 +15,7 @@ export class MainPageComponent {
     constructor(private dialog: MatDialog, private highScore: MatDialog) {}
 
     openDialog(gameModeValue: string): void {
-        this.dialog.open(DialogBoxComponent, {
+        this.dialog.open(DialogBoxGameTypeComponent, {
             width: this.dialogWidth,
             data: gameModeValue,
         });
