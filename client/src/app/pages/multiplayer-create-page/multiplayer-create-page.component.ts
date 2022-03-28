@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as constants from '@app/constants/game';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 
@@ -16,8 +17,6 @@ const enum TimeOptions {
     FourMinuteAndThirty = 270,
     FiveMinute = 300,
 }
-const BOT_NAME_LIST = ['robert', 'jean', 'albert'];
-const TIME_OUT_150 = 150;
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -82,7 +81,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
             this.validateName();
             setTimeout(() => {
                 this.gameConfiguration.beginScrabbleGame(this.botName);
-            }, TIME_OUT_150);
+            }, constants.TIME_OUT_150);
         }
         this.resetInput();
         this.navigatePage();
@@ -99,7 +98,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     createBotName(): void {
-        this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
+        this.botName = constants.BOT_NAME_LIST[Math.floor(Math.random() * constants.BOT_NAME_LIST.length)];
     }
 
     private resetInput(): void {
@@ -108,7 +107,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
 
     private validateName(): void {
         while (this.playerName.toLowerCase() === this.botName) {
-            this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
+            this.botName = constants.BOT_NAME_LIST[Math.floor(Math.random() * constants.BOT_NAME_LIST.length)];
         }
     }
 }
