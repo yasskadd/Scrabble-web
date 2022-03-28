@@ -17,19 +17,19 @@ import { AppMaterialModule } from '@app/modules/material.module';
 import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { AbandonGameDialogBoxComponent } from './components/abandon-game-dialog-box/abandon-game-dialog-box.component';
+import { AdminDictionariesComponent } from './components/admin-dictionaries/admin-dictionaries.component';
+import { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';
+import { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxComponent } from './components/dialog-box/dialog-box.component';
 import { HighScoresComponent } from './components/high-scores/high-scores.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
+import { AdminPageComponent } from './pages/admin-page/admin-page.component';
 import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
-import { AdminPageComponent } from './pages/admin-page/admin-page.component';
-import { AdminDictionariesComponent } from './admin-dictionaries/admin-dictionaries.component';
-import { AdminVirtualPlayersComponent } from './admin-virtual-players/admin-virtual-players.component';
-import { AdminGameHistoryComponent } from './admin-game-history/admin-game-history.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
