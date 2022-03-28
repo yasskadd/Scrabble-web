@@ -27,6 +27,9 @@ import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
+import { AdminDictionariesComponent } from './admin-dictionaries/admin-dictionaries.component';
+import { AdminVirtualPlayersComponent } from './admin-virtual-players/admin-virtual-players.component';
+import { AdminGameHistoryComponent } from './admin-game-history/admin-game-history.component';
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -49,6 +52,9 @@ import { AdminPageComponent } from './pages/admin-page/admin-page.component';
         AbandonGameDialogBoxComponent,
         HighScoresComponent,
         AdminPageComponent,
+        AdminDictionariesComponent,
+        AdminVirtualPlayersComponent,
+        AdminGameHistoryComponent,
     ],
     imports: [
         CommonModule,
