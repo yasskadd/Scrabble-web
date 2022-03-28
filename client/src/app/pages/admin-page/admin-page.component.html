@@ -1,5 +1,13 @@
 <body class="justified">
-    <app-admin-dictionaries id="dictionary"></app-admin-dictionaries>
-    <app-admin-virtual-players id="virtual-players"></app-admin-virtual-players>
-    <app-admin-game-history id="game-history"></app-admin-game-history>
+    <mat-tab-group>
+        <mat-tab label="Dictionnaires">
+            <app-admin-dictionaries id="dictionary"></app-admin-dictionaries>
+        </mat-tab>
+        <mat-tab label="Joueurs Virtuels">
+            <app-admin-virtual-players id="virtual-players"></app-admin-virtual-players>
+        </mat-tab>
+        <mat-tab label="Historique de Jeu">
+            <app-admin-game-history id="game-history"></app-admin-game-history>
+        </mat-tab>
+    </mat-tab-group>
 </body>
