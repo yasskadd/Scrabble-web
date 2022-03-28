@@ -22,7 +22,7 @@ export class GameConfigurationService {
 
     constructor(private clientSocket: ClientSocketService) {
         this.availableRooms = [];
-        this.roomInformation = { playerName: [], roomId: '', timer: 0, isCreator: false, statusGame: '' };
+        this.roomInformation = { playerName: [], roomId: '', timer: 0, isCreator: false, statusGame: '', mode: '', botDifficulty: undefined };
         this.clientSocket.establishConnection();
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
         this.isGameStarted = new ReplaySubject<boolean>(1);
@@ -101,10 +101,15 @@ export class GameConfigurationService {
 
     gameInitialization(parameters: GameParameters): void {
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
+        if (parameters.opponent !== undefined) {
+            this.roomInformation.playerName[1] = parameters.opponent;
+            this.roomInformation.botDifficulty = parameters.botDifficulty;
+        }
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
         this.roomInformation.playerName[0] = parameters.username;
         this.roomInformation.isCreator = true;
+        this.roomInformation.mode = parameters.mode;
     }
 
     joinGame(roomId: string, username: string): void {
@@ -112,17 +117,19 @@ export class GameConfigurationService {
         this.roomInformation.playerName[0] = username;
         this.roomInformation.roomId = roomId;
     }
-    joinPage(): void {
+    joinPage(gameMode: string): void {
         this.clientSocket.send(SocketEvents.RoomLobby);
+        this.roomInformation.mode = gameMode;
     }
 
-    beginScrabbleGame(opponentBot?: string): void {
-        if (opponentBot !== undefined) this.roomInformation.playerName[1] = opponentBot;
+    beginScrabbleGame(): void {
         this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
 
     resetRoomInformation(): void {
         this.roomInformation.roomId = '';
+        this.roomInformation.botDifficulty = undefined;
+        this.roomInformation.mode = '';
         this.roomInformation.playerName = [];
         this.roomInformation.statusGame = '';
         this.roomInformation.isCreator = false;
@@ -139,6 +146,7 @@ export class GameConfigurationService {
 
     private gameCreatedConfirmationEvent(roomId: string): void {
         this.roomInformation.roomId = roomId;
+        if (this.roomInformation.playerName[1]) this.clientSocket.send(SocketEvents.StartScrabbleGame, this.roomInformation.roomId);
     }
 
     private opponentLeaveEvent(): void {
@@ -158,6 +166,8 @@ export class GameConfigurationService {
                 roomId: this.roomInformation.roomId,
                 timer: this.roomInformation.timer,
                 socketId: socketIDUserRoom,
+                mode: this.roomInformation.mode,
+                botDifficulty: this.roomInformation.botDifficulty,
             });
         }
         this.setIsGameStartedSubject();
@@ -177,6 +187,12 @@ export class GameConfigurationService {
     }
 
     private updateAvailableRooms(availableRooms: GameRoomClient[]): void {
-        this.availableRooms = availableRooms;
+        this.availableRooms = this.filterGameMode(this.roomInformation.mode, availableRooms);
+    }
+
+    private filterGameMode(gameMode: string, availableRooms: GameRoomClient[]): GameRoomClient[] {
+        return availableRooms.filter((element) => {
+            return element.mode === gameMode;
+        });
     }
 }

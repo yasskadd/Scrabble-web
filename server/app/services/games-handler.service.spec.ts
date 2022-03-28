@@ -8,12 +8,12 @@ import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@app/interfaces/command-info';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -39,7 +39,7 @@ describe('GamesHandler Service', () => {
     let serverSocket: ServerSocket;
     let port: number;
     let sio: ioServer;
-    let gameInfo: { playerName: string[]; roomId: string; timer: number; socketId: string[] };
+    let gameInfo: { playerName: string[]; roomId: string; timer: number; socketId: string[]; mode: string; botDifficulty?: string };
     const player1 = sinon.createStubInstance(RealPlayer);
     const player2 = sinon.createStubInstance(RealPlayer);
 
@@ -90,7 +90,7 @@ describe('GamesHandler Service', () => {
             clientSocket = Client(`http://localhost:${port}`);
             sio.on('connection', (socket) => {
                 serverSocket = socket;
-                gameInfo = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id] };
+                gameInfo = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id], mode: 'Classique', botDifficulty: undefined };
             });
             clientSocket.on('connect', done);
         });
@@ -362,7 +362,14 @@ describe('GamesHandler Service', () => {
         const EXPECTED_NEW_PLAYER = new Player(FIRST_PLAYER);
         EXPECTED_NEW_PLAYER.room = ROOM;
 
-        const gameInformation = { playerName: [FIRST_PLAYER], roomId: ROOM, timer: 0, socketId: [FIRST_PLAYER_SOCKET_ID] };
+        const gameInformation = {
+            playerName: [FIRST_PLAYER],
+            roomId: ROOM,
+            timer: 0,
+            socketId: [FIRST_PLAYER_SOCKET_ID],
+            mode: 'Classique',
+            botDifficulty: undefined,
+        };
 
         const newPlayer = gamesHandler['setAndGetPlayer'](gameInformation) as Player;
         expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
@@ -382,6 +389,8 @@ describe('GamesHandler Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID, SECOND_PLAYER_SOCKET_ID],
+            mode: 'Classique',
+            botDifficulty: undefined,
         };
 
         gamesHandler['setAndGetPlayer'](gameInformation) as Player;
@@ -392,7 +401,7 @@ describe('GamesHandler Service', () => {
         expect(gamesHandler['players'].get(SECOND_PLAYER_SOCKET_ID) as Player).to.be.eql(EXPECTED_NEW_PLAYER as Player);
     });
 
-    it('setAndGetPlayer() should set a bot player and return him for the second player', () => {
+    it('setAndGetPlayer() should set a Beginner bot player and return him for the second player', () => {
         const FIRST_PLAYER = 'BIGBROTHER';
         const SECOND_PLAYER = 'LITTLEBROTHER';
         const FIRST_PLAYER_SOCKET_ID = '0';
@@ -402,6 +411,29 @@ describe('GamesHandler Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID],
+            mode: 'Classique',
+            botDifficulty: 'Débutant',
+        };
+        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, { timer: gameInformation.timer, roomId: gameInformation.roomId });
+
+        gamesHandler['setAndGetPlayer'](gameInformation) as Player;
+
+        const newPlayer = gamesHandler['setAndGetPlayer'](gameInformation) as Player;
+        expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
+    });
+
+    it('setAndGetPlayer() should set a  Expert bot player and return him for the second player', () => {
+        const FIRST_PLAYER = 'BIGBROTHER';
+        const SECOND_PLAYER = 'LITTLEBROTHER';
+        const FIRST_PLAYER_SOCKET_ID = '0';
+
+        const gameInformation = {
+            playerName: [FIRST_PLAYER, SECOND_PLAYER],
+            roomId: ROOM,
+            timer: 0,
+            socketId: [FIRST_PLAYER_SOCKET_ID],
+            mode: 'Classique',
+            botDifficulty: 'Expert',
         };
         const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, { timer: gameInformation.timer, roomId: gameInformation.roomId });
 
@@ -426,6 +458,8 @@ describe('GamesHandler Service', () => {
             roomId: '1',
             timer: TIMER,
             socketId: [serverSocket.id],
+            mode: 'Classique',
+            botDifficulty: undefined,
         };
 
         gamesHandler['gamePlayers'].set(player1.room, [player1, player2]);

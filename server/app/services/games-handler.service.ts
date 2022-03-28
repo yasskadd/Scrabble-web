@@ -2,16 +2,18 @@ import { Game } from '@app/classes/game';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
+import { Bot } from '@app/classes/player/bot.class';
+import { ExpertBot } from '@app/classes/player/expert-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@app/interfaces/command-info';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { LetterPlacementService } from './letter-placement.service';
@@ -173,8 +175,8 @@ export class GamesHandler {
     private initializePlayers(players: Player[], game: Game, socketId: string[]) {
         (players[0] as RealPlayer).setGame(game, true);
         if (socketId.length === 1) {
-            (players[1] as BeginnerBot).setGame(game);
-            (players[1] as BeginnerBot).start();
+            (players[1] as Bot).setGame(game);
+            (players[1] as Bot).start();
             return;
         }
         (players[1] as RealPlayer).setGame(game, false);
@@ -214,8 +216,10 @@ export class GamesHandler {
     private setAndGetPlayer(gameInfo: GameScrabbleInformation): Player {
         const player = this.players.has(gameInfo.socketId[0]) ? 1 : 0;
         let newPlayer: Player;
-        if (player === 1 && gameInfo.socketId[player] === undefined) {
-            newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+        if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
+            if (gameInfo.botDifficulty === 'Débutant')
+                newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+            else newPlayer = new ExpertBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
             newPlayer.room = gameInfo.roomId;
