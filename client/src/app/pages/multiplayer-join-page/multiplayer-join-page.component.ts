@@ -26,7 +26,7 @@ export class MultiplayerJoinPageComponent implements OnInit {
     ngOnInit(): void {
         this.listenToServerResponse();
         this.gameConfiguration.resetRoomInformation();
-        this.gameConfiguration.joinPage();
+        this.gameConfiguration.joinPage(this.gameMode);
     }
 
     get availableRooms() {

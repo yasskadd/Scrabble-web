@@ -33,12 +33,15 @@
                 <mat-select disabled required><mat-option value="francais" disabled>Francais</mat-option> </mat-select>
             </mat-form-field>
 
-            <form *ngIf="isSoloMode()" class="soloMode">
+            <form *ngIf="isSoloMode()" class="soloMode" [formGroup]="form">
                 <mat-card-title>Difficulté</mat-card-title>
                 <mat-form-field appearance="fill">
                     <mat-label>Difficulté</mat-label>
-                    <mat-select disabled required> </mat-select>
-                    <mat-option *ngFor="let difficulty of this.difficultyList" [value]="difficulty" disabled>Débutant</mat-option>
+                    <mat-select id="difficulty-select"  formControlName="difficultyBot">
+                        <mat-option id="difficulty-options" *ngFor="let difficulty of this.difficultyList" [value]="difficulty">
+                            {{ difficulty }}
+                        </mat-option>
+                    </mat-select>
                 </mat-form-field>
             </form>
 

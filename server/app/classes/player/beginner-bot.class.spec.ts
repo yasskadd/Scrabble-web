@@ -1,13 +1,11 @@
-/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Game } from '@app/classes/game';
 import { LetterReserve } from '@app/classes/letter-reserve';
 import { Turn } from '@app/classes/turn';
 import { BotInformation } from '@app/interfaces/bot-information';
-import { CommandInfo } from '@app/interfaces/command-info';
 import { WordSolverService } from '@app/services/word-solver.service';
-import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
@@ -19,12 +17,7 @@ describe('BotBeginner', () => {
     let botBeginner: BeginnerBot;
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
-    let stubMathRandom: Sinon.SinonStub<[], number>;
     let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService>;
-
-    before(() => {
-        stubMathRandom = Sinon.stub(Math, 'random');
-    });
 
     beforeEach(() => {
         gameStub = Sinon.createStubInstance(Game) as Sinon.SinonStubbedInstance<Game> & Game;
@@ -34,24 +27,6 @@ describe('BotBeginner', () => {
         wordSolverStub = Sinon.createStubInstance(WordSolverService);
         botBeginner['wordSolver'] = wordSolverStub as never;
         botBeginner.setGame(gameStub);
-    });
-
-    context('setGame() tests', () => {
-        beforeEach(() => {
-            const turn = new Turn(60);
-            gameStub.turn = turn;
-        });
-        it('setGame() should set game attribute to the game passed as a parameter', () => {
-            expect(botBeginner.game).to.not.equal(undefined);
-            expect(botBeginner.game).to.eql(gameStub);
-        });
-
-        it('setGame() should call choosePlayMove() if it is the bot turn', () => {
-            gameStub.turn.activePlayer = botBeginner.name;
-            const stubChooseMove = Sinon.stub(botBeginner, 'choosePlayMove');
-            botBeginner.setGame(gameStub);
-            expect(stubChooseMove.calledOnce).to.equal(true);
-        });
     });
 
     context('inRange() tests', () => {
@@ -86,15 +61,7 @@ describe('BotBeginner', () => {
         });
     });
 
-    it('getRandomNumber() should return correct number depending on the max number passed as a parameter', () => {
-        const MAX_NUMBER = 10;
-        const MATH_RANDOM_RETURN = 0.5;
-        const EXPECTED_RESULT = 6;
-        stubMathRandom.returns(MATH_RANDOM_RETURN);
-        expect(botBeginner['getRandomNumber'](MAX_NUMBER)).to.equal(EXPECTED_RESULT);
-    });
-
-    context('choosePlayMove() tests', () => {
+    context('playTurn() tests', () => {
         let mockBot: Sinon.SinonMock;
         let stubGetRandom: Sinon.SinonStub<unknown[], unknown>;
         let clock: Sinon.SinonFakeTimers;
@@ -112,43 +79,43 @@ describe('BotBeginner', () => {
         it('should call skipTurn() if random number is equal to 1', () => {
             mockBot.expects('skipTurn').exactly(1);
             stubGetRandom.returns(1);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
 
-        it('should not call skipTurn() and placeLetter() if random number is not equal to 1', () => {
+        it('should not call skipTurn() and placeLetters() if random number is not equal to 1', () => {
             mockBot.expects('skipTurn').never();
-            mockBot.expects('placeLetter').never();
-            mockBot.expects('exchangeLetter').exactly(1);
+            mockBot.expects('placeLetters').never();
+            mockBot.expects('exchangeLetters').exactly(1);
             stubGetRandom.returns(2);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
 
         it('should call exchangeLetter() if random number is equal to 2', () => {
-            mockBot.expects('exchangeLetter').exactly(1);
+            mockBot.expects('exchangeLetters').exactly(1);
             stubGetRandom.returns(2);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
 
-        it('should not call exchangeLetters() and placeLetter() if random number is equal to 1', () => {
-            mockBot.expects('exchangeLetter').never();
-            mockBot.expects('placeLetter').never();
+        it('should not call exchangeLetters() and placeLetters() if random number is equal to 1', () => {
+            mockBot.expects('exchangeLetters').never();
+            mockBot.expects('placeLetters').never();
             mockBot.expects('skipTurn').exactly(1);
             stubGetRandom.returns(1);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             clock.tick(3500);
             mockBot.verify();
         });
 
-        it('should call placeLetter() if random number is between 3 and 10', () => {
-            mockBot.expects('placeLetter').exactly(1);
+        it('should call placeLetters() if random number is between 3 and 10', () => {
+            mockBot.expects('placeLetters').exactly(1);
             stubGetRandom.returns(3);
-            botBeginner.choosePlayMove();
+            botBeginner.playTurn();
             mockBot.verify();
         });
     });
@@ -177,20 +144,20 @@ describe('BotBeginner', () => {
             stubGetRandom.onFirstCall().returns(2);
             stubGetRandom.returns(1);
             const expectedRack: string[] = ['a', 'b'];
-            botBeginner.exchangeLetter();
+            botBeginner.exchangeLetters();
             expectation.verify();
             expect(gameStub.exchange.calledOnceWithExactly(expectedRack, botBeginner)).to.equal(true);
         });
 
         it('should not call game.exchange() if this.game is undefined', () => {
             botBeginner.game = undefined as never;
-            botBeginner.exchangeLetter();
+            botBeginner.exchangeLetters();
             expect(gameStub.exchange.called).to.be.equal(false);
         });
 
         it('should not call game.exchange() if playedTurn is set to true', () => {
             botBeginner['playedTurned'] = true;
-            botBeginner.exchangeLetter();
+            botBeginner.exchangeLetters();
             expect(gameStub.exchange.called).to.be.equal(false);
         });
 
@@ -201,85 +168,12 @@ describe('BotBeginner', () => {
             stubTotalQuantity.returns(5);
             botBeginner.game.turn.activePlayer = botBeginner.name;
             botBeginner.start();
-            botBeginner.exchangeLetter();
+            botBeginner.exchangeLetters();
             botBeginner.game.turn.countdown.next(40);
             clock.restore();
             mockSkipTurn.verify();
             botBeginner.game.turn.countdown.unsubscribe();
             expect(gameStub.exchange.called).to.be.equal(false);
-        });
-    });
-
-    context('skipTurn() tests', () => {
-        let mockSocketManager: Sinon.SinonMock;
-        beforeEach(() => {
-            mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            botBeginner.game = gameStub;
-        });
-
-        afterEach(() => {
-            mockSocketManager.restore();
-        });
-
-        it('should not call game.skip() if game is undefined', () => {
-            const expectation = mockSocketManager.expects('emitRoom').never();
-            botBeginner.game = undefined as never;
-            botBeginner.skipTurn();
-            expectation.verify();
-            expect(gameStub.skip.called).to.equal(false);
-        });
-
-        it('should call game.skip() with correct name as an argument if game is not undefined', () => {
-            const expectation = mockSocketManager.expects('emitRoom').exactly(1).withArgs(botBeginner['botInfo'].roomId);
-            botBeginner.skipTurn();
-            expectation.verify();
-            expect(gameStub.skip.calledOnce).to.equal(true);
-        });
-    });
-
-    context('emitPlacementCommand() tests and placement is horizontal', () => {
-        it('should emitRoom() with correct arguments', () => {
-            botBeginner.game.letterReserve = new LetterReserve();
-            const commandInfoStub: CommandInfo = {
-                firstCoordinate: { x: 1, y: 1 } as Coordinate,
-                isHorizontal: true,
-                letters: ['t', 'e', 's', 't'],
-            };
-            const expectedCommand = '!placer a1h test';
-            const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            const expectation = mockSocketManager
-                .expects('emitRoom')
-                .exactly(1)
-                .withArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
-            mockSocketManager
-                .expects('emitRoom')
-                .exactly(1)
-                .withArgs(botBeginner.room, SocketEvents.LetterReserveUpdated, botBeginner['game'].letterReserve.lettersReserve);
-            botBeginner['emitPlaceCommand'](commandInfoStub);
-            expectation.verify();
-            mockSocketManager.restore();
-        });
-
-        it('should emitRoom() with correct arguments and placement is vertical', () => {
-            botBeginner.game.letterReserve = new LetterReserve();
-            const commandInfoStub: CommandInfo = {
-                firstCoordinate: { x: 1, y: 1 } as Coordinate,
-                isHorizontal: false,
-                letters: ['t', 'e', 's', 't'],
-            };
-            const expectedCommand = '!placer a1v test';
-            const mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            const expectation = mockSocketManager
-                .expects('emitRoom')
-                .exactly(1)
-                .withArgs(botBeginner['botInfo'].roomId, SocketEvents.GameMessage, expectedCommand);
-            mockSocketManager
-                .expects('emitRoom')
-                .exactly(1)
-                .withArgs(botBeginner.room, SocketEvents.LetterReserveUpdated, botBeginner['game'].letterReserve.lettersReserve);
-            botBeginner['emitPlaceCommand'](commandInfoStub);
-            expectation.verify();
-            mockSocketManager.restore();
         });
     });
 
@@ -317,111 +211,7 @@ describe('BotBeginner', () => {
         });
     });
 
-    context('start() tests with timer of 60 seconds', () => {
-        let mockSkip: Sinon.SinonMock;
-        beforeEach(() => {
-            botBeginner.setGame(gameStub);
-            mockSkip = Sinon.mock(botBeginner);
-        });
-
-        afterEach(() => {
-            Sinon.restore();
-            botBeginner['game'].turn.countdown.unsubscribe();
-            botBeginner['game'].turn.endTurn.unsubscribe();
-            mockSkip.restore();
-        });
-
-        it('should call skipTurn() if 20 seconds have passed in the timer and it is the bot turn', () => {
-            mockSkip.expects('skipTurn').exactly(1);
-            botBeginner['game'].turn.activePlayer = botBeginner.name;
-            botBeginner.start();
-            botBeginner.game.turn.countdown.next(40);
-            mockSkip.verify();
-        });
-
-        it('should not call skipTurn() time passed is not 20 seconds', () => {
-            mockSkip.expects('skipTurn').never();
-            botBeginner['playedTurned'] = false;
-            botBeginner.start();
-            gameStub.turn.countdown.next(50);
-            mockSkip.verify();
-        });
-
-        it('should not call skipTurn() if it is not the bot turn', () => {
-            mockSkip.expects('skipTurn').never();
-            botBeginner.start();
-            gameStub.turn.countdown.next(40);
-            gameStub.turn.activePlayer = 'notBotName';
-            mockSkip.verify();
-        });
-
-        it('should reset countUp attribute and call choosePlayMove() if it is bot turn', () => {
-            mockSkip.expects('choosePlayMove').exactly(1);
-            botBeginner['countUp'] = 2;
-            botBeginner.start();
-            botBeginner.game.turn.endTurn.next(botBeginner.name);
-            mockSkip.verify();
-            expect(botBeginner['countUp']).to.equal(0);
-        });
-
-        it('should not call choosePlayMove() if it is not botTurn', () => {
-            mockSkip.expects('choosePlayMove').never();
-            botBeginner.start();
-            botBeginner.game.turn.endTurn.next('notBotName');
-            mockSkip.verify();
-        });
-    });
-
-    it('processWordSolver() should call setGameboard() and commandInfoScore()', () => {
-        botBeginner.setGame(gameStub);
-        botBeginner['processWordSolver']();
-        expect(wordSolverStub.commandInfoScore.calledOnce && wordSolverStub.setGameboard.calledOnce).to.equal(true);
-    });
-
-    context('play tests', () => {
-        let mockGame: Sinon.SinonMock;
-        let mockSocketManager: Sinon.SinonMock;
-        beforeEach(() => {
-            Sinon.restore();
-            mockGame = Sinon.mock(botBeginner['game']);
-            mockSocketManager = Sinon.mock(botBeginner['socketManager']);
-            botBeginner.game.letterReserve = new LetterReserve();
-        });
-
-        afterEach(() => {
-            mockGame.restore();
-            mockSocketManager.restore();
-        });
-
-        it('should call skipTurn() if commandInfo is undefined', () => {
-            mockGame.expects('skip').exactly(1).calledWithExactly(botBeginner.name);
-            mockSocketManager.expects('emitRoom').exactly(1).calledWithExactly(botBeginner.roomId, SocketEvents.GameMessage, '!passer');
-            const commandInfoStub = undefined as never;
-            const spySkipTurn = Sinon.spy(botBeginner, 'skipTurn');
-            botBeginner['play'](commandInfoStub);
-            mockGame.verify();
-            mockSocketManager.verify();
-            expect(spySkipTurn.calledOnce).to.be.equal(true);
-        });
-
-        it('should call emitPlaceCommand() if commandInfo is not undefined and playedTurn is set to false', () => {
-            const commandInfoStub: CommandInfo = {
-                firstCoordinate: { x: 1, y: 1 } as Coordinate,
-                isHorizontal: true,
-                letters: ['t', 'e', 's', 't'],
-            };
-            botBeginner['playedTurned'] = false;
-            mockGame.expects('play').exactly(1).withExactArgs(botBeginner, commandInfoStub);
-            mockSocketManager.expects('emitRoom').exactly(2);
-            const spyEmitCommand = Sinon.spy(botBeginner, 'emitPlaceCommand' as keyof BeginnerBot);
-            botBeginner['play'](commandInfoStub);
-            mockGame.verify();
-            mockSocketManager.verify();
-            expect(spyEmitCommand.calledOnceWithExactly(commandInfoStub)).to.be.equal(true);
-        });
-    });
-
-    context('placeLetter() tests', () => {
+    context('placeLetters() tests', () => {
         let stubCommandInfoToList: Sinon.SinonStub<unknown[], unknown>;
         let mockWordSolver: Sinon.SinonMock;
         let mockBot: Sinon.SinonMock;
@@ -454,7 +244,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             mockBot.expects('skipTurn').exactly(1);
             stubCommandInfoToList.returns([]);
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             clock.tick(3500);
             mockBot.verify();
             mockWordSolver.verify();
@@ -466,7 +256,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 5;
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             mockBot.verify();
             mockWordSolver.verify();
         });
@@ -477,7 +267,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 1;
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             clock.tick(3500);
             mockWordSolver.verify();
             mockBot.verify();
@@ -489,7 +279,7 @@ describe('BotBeginner', () => {
             mockWordSolver.expects('commandInfoScore').exactly(1);
             stubCommandInfoToList.returns([commandInfoStub]);
             botBeginner['countUp'] = 25;
-            botBeginner['placeLetter']();
+            botBeginner['placeLetters']();
             clock.tick(3500);
             mockWordSolver.verify();
             mockBot.verify();

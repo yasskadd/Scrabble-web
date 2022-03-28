@@ -16,8 +16,9 @@ const enum TimeOptions {
     FourMinuteAndThirty = 270,
     FiveMinute = 300,
 }
-const BOT_NAME_LIST = ['robert', 'jean', 'albert'];
-const TIME_OUT_150 = 150;
+const BOT_EXPERT_NAME_LIST = ['ScrabbleMaster', 'Spike Spiegel', 'XXDarkLegendXX'];
+
+const BOT_BEGINNER_NAME_LIST = ['paul', 'marc', 'robert'];
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -52,7 +53,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
         this.botName = '';
-        this.difficultyList = ['Débutant'];
+        this.difficultyList = ['Débutant', 'Expert'];
     }
 
     ngOnInit(): void {
@@ -60,6 +61,10 @@ export class MultiplayerCreatePageComponent implements OnInit {
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({
             timer: [defaultTimer, Validators.required],
+            difficultyBot: [this.difficultyList[0], Validators.required],
+        });
+        (this.form.get('difficultyBot') as AbstractControl).valueChanges.subscribe(() => {
+            this.giveNameToBot();
         });
         this.giveNameToBot();
     }
@@ -71,19 +76,16 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     createGame() {
+        if (this.isSoloMode()) this.validateName();
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
             timer: (this.form.get('timer') as AbstractControl).value,
             dictionary: 'francais',
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,
+            opponent: this.isSoloMode() ? this.botName : undefined,
+            botDifficulty: this.isSoloMode() ? (this.form.get('difficultyBot') as AbstractControl).value : undefined,
         });
-        if (this.isSoloMode()) {
-            this.validateName();
-            setTimeout(() => {
-                this.gameConfiguration.beginScrabbleGame(this.botName);
-            }, TIME_OUT_150);
-        }
         this.resetInput();
         this.navigatePage();
     }
@@ -99,7 +101,11 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     createBotName(): void {
-        this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
+        if ((this.form.get('difficultyBot') as AbstractControl).value === 'Débutant') {
+            this.botName = BOT_BEGINNER_NAME_LIST[Math.floor(Math.random() * BOT_BEGINNER_NAME_LIST.length)];
+            return;
+        }
+        this.botName = BOT_EXPERT_NAME_LIST[Math.floor(Math.random() * BOT_EXPERT_NAME_LIST.length)];
     }
 
     private resetInput(): void {
@@ -107,8 +113,14 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     private validateName(): void {
+        if ((this.form.get('difficultyBot') as AbstractControl).value === 'Débutant') {
+            while (this.playerName.toLowerCase() === this.botName) {
+                this.botName = BOT_BEGINNER_NAME_LIST[Math.floor(Math.random() * BOT_BEGINNER_NAME_LIST.length)];
+            }
+            return;
+        }
         while (this.playerName.toLowerCase() === this.botName) {
-            this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
+            this.botName = BOT_EXPERT_NAME_LIST[Math.floor(Math.random() * BOT_EXPERT_NAME_LIST.length)];
         }
     }
 }

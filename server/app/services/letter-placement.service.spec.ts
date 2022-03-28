@@ -356,8 +356,6 @@ describe('Letter Placement Service', () => {
     });
 
     context('placeLetters tests', () => {
-        const bonusPoint = 50;
-        const points = 10;
         beforeEach(() => {
             word = {
                 isValid: true,
@@ -425,42 +423,6 @@ describe('Letter Placement Service', () => {
             dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
             const expected = { hasPassed: true, gameboard, invalidWords: [] };
             expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
-        });
-
-        it('should give a bonus of 50 points', () => {
-            const sevenLetterWord = {
-                isValid: true,
-                isHorizontal: true,
-                stringFormat: 'a',
-                points: 10,
-                newLetterCoords: [
-                    { x: 1, y: 1 },
-                    { x: 2, y: 1 },
-                    { x: 3, y: 1 },
-                    { x: 4, y: 1 },
-                    { x: 5, y: 1 },
-                    { x: 6, y: 1 },
-                    { x: 7, y: 1 },
-                ],
-                wordCoords: [
-                    { x: 1, y: 1 },
-                    { x: 2, y: 1 },
-                    { x: 3, y: 1 },
-                    { x: 4, y: 1 },
-                    { x: 5, y: 1 },
-                    { x: 6, y: 1 },
-                    { x: 7, y: 1 },
-                ],
-            } as Word;
-
-            const newCommandInfo = {
-                firstCoordinate: { x: 1, y: 1 },
-                isHorizontal: true,
-                letters: ['a', 'l', 'l', 'a', 'l', 'l', 'l', 'l'],
-            };
-            dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
-            placementService.placeLetters(sevenLetterWord, newCommandInfo, player, gameboard);
-            expect(player.score).to.equal(points + bonusPoint);
         });
 
         it('updatePlayerRack should remove * if capital letter is found in commandInfo.letters', () => {

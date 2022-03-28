@@ -169,7 +169,25 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('createBotName should assign a name to the opponent', () => {
+    it('createBotName should assign a name to the Expert opponent', fakeAsync(() => {
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        fixture.detectChanges();
+        const difficultySelect = fixture.debugElement.nativeElement.querySelector('#difficulty-select');
+        difficultySelect.click();
+        tick();
+        fixture.detectChanges();
+        const difficultyOption = fixture.debugElement.queryAll(By.css('#difficulty-options'));
+        difficultyOption[1].nativeElement.click();
+        tick();
+        fixture.detectChanges();
+        flush();
+        // eslint-disable-next-line dot-notation
+        component['createBotName']();
+        expect(component.botName).not.toEqual('');
+    }));
+
+    it('createBotName should assign a name to the Beginner opponent', () => {
         // eslint-disable-next-line dot-notation
         component['createBotName']();
         expect(component.botName).not.toEqual('');
@@ -248,7 +266,35 @@ describe('MultiplayerCreatePageComponent', () => {
 
     it('createGame should call gameConfiguration.gameInitialization with the good Value', fakeAsync(() => {
         component.playerName = 'Vincent';
-        const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: 'francais', mode: 'classique', isMultiplayer: true };
+        const TEST_PLAYER = {
+            username: component.playerName,
+            timer: 60,
+            dictionary: 'francais',
+            mode: 'classique',
+            isMultiplayer: true,
+            opponent: undefined,
+            botDifficulty: undefined,
+        };
+        component.createGame();
+        expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
+        expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
+    }));
+
+    it('createGame should call gameConfiguration.gameInitialization with the good Value when we create a solo game', fakeAsync(() => {
+        component.playerName = 'Vincent';
+        component.botName = 'robert';
+        const TEST_PLAYER = {
+            username: component.playerName,
+            timer: 60,
+            dictionary: 'francais',
+            mode: 'classique',
+            isMultiplayer: false,
+            opponent: 'robert',
+            botDifficulty: 'Débutant',
+        };
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        fixture.detectChanges();
         component.createGame();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
@@ -270,16 +316,43 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
-    it('createGame should call gameConfiguration.beginScrabbleGame when we create a SoloMode', fakeAsync(() => {
-        component.playerName = 'Vincent';
+    it('should call giveNameToBot() when the difficulty of the bot change', fakeAsync(() => {
+        const spy = spyOn(component, 'giveNameToBot');
         router.navigateByUrl(SOLO_MODE);
         tick();
         fixture.detectChanges();
-        component.createGame();
-        setTimeout(() => {
-            expect(gameConfigurationServiceSpy.beginScrabbleGame).toHaveBeenCalled();
-        }, 150);
+        const difficultySelect = fixture.debugElement.nativeElement.querySelector('#difficulty-select');
+        difficultySelect.click();
+        tick();
+        fixture.detectChanges();
+        const difficultyOption = fixture.debugElement.queryAll(By.css('#difficulty-options'));
+        difficultyOption[1].nativeElement.click();
+        tick();
+        fixture.detectChanges();
         flush();
+        component.createGame();
+        expect(component.form.get('difficultyBot')?.value).toEqual(component.difficultyList[1]);
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('should call giveNameToBot() two times when the difficulty of the bot change to Expert', fakeAsync(() => {
+        const spy = spyOn(component, 'giveNameToBot');
+        router.navigateByUrl(SOLO_MODE);
+        tick();
+        fixture.detectChanges();
+        const difficultySelect = fixture.debugElement.nativeElement.querySelector('#difficulty-select');
+        difficultySelect.click();
+        tick();
+        fixture.detectChanges();
+        const difficultyOption = fixture.debugElement.queryAll(By.css('#difficulty-options'));
+        difficultyOption[1].nativeElement.click();
+        tick();
+        fixture.detectChanges();
+        difficultyOption[0].nativeElement.click();
+        tick();
+        fixture.detectChanges();
+        flush();
+        expect(spy).toHaveBeenCalledTimes(2);
     }));
 
     it('validateName should change the name of the bot if he has the same name as the player', () => {

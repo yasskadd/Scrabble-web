@@ -15,8 +15,6 @@ export enum ErrorType {
     InvalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
 }
 
-const SEVEN_LETTERS = 7;
-const SEVEN_LETTER_BONUS = 50;
 const MIDDLE_X = 8;
 const MIDDLE_Y = 8;
 
@@ -155,7 +153,6 @@ export class LetterPlacementService {
 
     private updatePlayerScore(wordScore: number, commandWord: Word, player: Player) {
         player.score += wordScore;
-        if (commandWord.newLetterCoords.length === SEVEN_LETTERS) player.score += SEVEN_LETTER_BONUS;
     }
 
     private updatePlayerRack(letters: string[], playerRack: Letter[]): void {
