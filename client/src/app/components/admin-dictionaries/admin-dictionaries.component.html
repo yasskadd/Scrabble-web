@@ -1,5 +1,13 @@
 <h1>Dictionnaires</h1>
 <button>Add dictionary</button>
-<div *ngFor="let dictionary of dictionaries">
-    <div></div>
-</div>
+
+<mat-selection-list [multiple]="false">
+    <mat-list-option *ngFor="let dictionary of dictionaries" [value]="dictionary">
+        <div class="justified">
+            <div>{{ dictionary.title }}</div>
+            <div>{{ dictionary.description }}</div>
+            <button mat-raised-button>Modifier</button>
+            <button mat-raised-button>Supprimer</button>
+        </div>
+    </mat-list-option>
+</mat-selection-list>
