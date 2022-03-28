@@ -22,9 +22,9 @@ import { ReplaySubject } from 'rxjs';
 import * as sinon from 'sinon';
 import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
-import { RealPlayer } from './../classes/player/real-player.class';
-import { LetterPlacementService } from './letter-placement.service';
-import { WordSolverService } from './word-solver.service';
+import { RealPlayer } from '../../classes/player/real-player.class';
+import { LetterPlacementService } from '../letter-placement.service';
+import { WordSolverService } from '../word-solver.service';
 
 const ROOM = '0';
 

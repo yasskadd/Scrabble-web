@@ -1,0 +1,145 @@
+import { Game } from '@app/classes/game';
+import { Gameboard } from '@app/classes/gameboard.class';
+import { Player } from '@app/classes/player/player.class';
+import { RealPlayer } from '@app/classes/player/real-player.class';
+import { Word } from '@app/classes/word.class';
+import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
+import { SocketEvents } from '@common/constants/socket-events';
+import { CommandInfo } from '@common/interfaces/command-info';
+import { Socket } from 'socket.io';
+import { Service } from 'typedi';
+
+const CHAR_ASCII = 96;
+@Service()
+export class GamesHandler {
+    players: Map<string, Player>;
+    gamePlayers: Map<string, Player[]>;
+
+    constructor(private socketManager: SocketManager, private wordSolver: WordSolverService, private letterPlacement: LetterPlacementService) {
+        this.players = new Map();
+        this.gamePlayers = new Map();
+    }
+    initSocketsEvents(): void {
+        this.socketManager.on(SocketEvents.Play, (socket, commandInfo: CommandInfo) => {
+            this.playGame(socket, commandInfo);
+        });
+
+        this.socketManager.on(SocketEvents.Exchange, (socket, letters: string[]) => {
+            this.exchange(socket, letters);
+        });
+
+        this.socketManager.on(SocketEvents.ReserveCommand, (socket) => {
+            this.reserveCommand(socket);
+        });
+
+        this.socketManager.on(SocketEvents.Skip, (socket) => {
+            this.skip(socket);
+        });
+
+        this.socketManager.on(SocketEvents.ClueCommand, (socket) => {
+            this.clueCommand(socket);
+        });
+    }
+
+    updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
+        const player = this.players.get(socket.id) as Player;
+        const players = this.gamePlayers.get(player.room) as Player[];
+        if (players === undefined) return;
+        const playerIndex = player.isPlayerOne ? 0 : 1;
+        const secondPlayerIndex = Math.abs(playerIndex - 1);
+
+        socket.emit(SocketEvents.UpdatePlayerInformation, players[playerIndex].getInformation());
+        socket.emit(SocketEvents.UpdateOpponentInformation, players[secondPlayerIndex].getInformation());
+        socket.broadcast.to(roomId).emit(SocketEvents.UpdatePlayerInformation, players[secondPlayerIndex].getInformation());
+        socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, players[playerIndex].getInformation());
+
+        this.socketManager.emitRoom(roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
+    }
+
+    private clueCommand(this: this, socket: Socket) {
+        const letterString: string[] = [];
+        const player = this.players.get(socket.id) as Player;
+        this.wordSolver.setGameboard(player.game.gameboard as Gameboard);
+        player.rack.forEach((letter) => {
+            letterString.push(letter.value);
+        });
+        const wordToChoose: CommandInfo[] = this.configureClueCommand(this.wordSolver.findAllOptions(letterString));
+        socket.emit(SocketEvents.ClueCommand, wordToChoose);
+    }
+
+    private configureClueCommand(commandInfoList: CommandInfo[]): CommandInfo[] {
+        const wordToChoose: CommandInfo[] = [];
+        for (let i = 0; i < 3; i++) {
+            if (commandInfoList.length === 0) break;
+            const random = Math.floor(Math.random() * commandInfoList.length);
+            wordToChoose.push(commandInfoList[random]);
+            commandInfoList.splice(random, 1);
+        }
+        return wordToChoose;
+    }
+
+    private reserveCommand(this: this, socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+        const player = this.players.get(socket.id) as Player;
+        socket.emit(SocketEvents.AllReserveLetters, player.game.letterReserve.lettersReserve);
+    }
+
+    private skip(this: this, socket: Socket) {
+        if (!this.players.has(socket.id)) return;
+
+        const player = this.players.get(socket.id) as RealPlayer;
+        player.skipTurn();
+        socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, '!passer');
+    }
+
+    private exchange(this: this, socket: Socket, letters: string[]) {
+        if (!this.players.has(socket.id)) return;
+        const lettersToExchange = letters.length;
+        const player = this.players.get(socket.id) as RealPlayer;
+        if (!this.letterPlacement.areLettersInRack(letters, player)) {
+            socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne possédez pas toutes les lettres à échanger');
+            return;
+        }
+        player.exchangeLetter(letters);
+        socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
+        this.updatePlayerInfo(socket, player.room, player.game);
+        this.socketManager.emitRoom(player.room, SocketEvents.Play, player.getInformation(), player.game.turn.activePlayer);
+    }
+
+    private playGame(this: this, socket: Socket, commandInfo: CommandInfo) {
+        if (!this.players.has(socket.id)) return;
+        let direction: string;
+        if (commandInfo.isHorizontal === undefined) direction = '';
+        else direction = commandInfo.isHorizontal ? 'h' : 'v';
+
+        const commandWrite = `!placer ${String.fromCharCode(CHAR_ASCII + commandInfo.firstCoordinate.y)}${
+            commandInfo.firstCoordinate.x
+        }${direction} ${commandInfo.letters.join('')}`;
+        const player = this.players.get(socket.id) as RealPlayer;
+        const play = player.placeLetter(commandInfo);
+
+        if (typeof play === 'string') {
+            socket.emit(SocketEvents.ImpossibleCommandError, play);
+            return;
+        }
+        this.socketManager.emitRoom(player.room, SocketEvents.ViewUpdate, {
+            gameboard: play.gameboard.gameboardTiles,
+            activePlayer: player.game.turn.activePlayer,
+        });
+        this.updatePlayerInfo(socket, player.room, player.game);
+        this.sendValidCommand(play, socket, player.room, commandWrite);
+    }
+
+    private sendValidCommand(play: PlaceLettersReturn, socket: Socket, room: string, commandWrite: string) {
+        if (play.hasPassed) {
+            socket.broadcast.to(room).emit(SocketEvents.GameMessage, commandWrite);
+            return;
+        }
+        play.invalidWords.forEach((invalidWord: Word) =>
+            socket.emit(SocketEvents.ImpossibleCommandError, 'Le mot "' + invalidWord.stringFormat + '" ne fait pas partie du dictionnaire français'),
+        );
+    }
+}
