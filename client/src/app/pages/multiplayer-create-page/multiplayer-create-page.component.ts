@@ -42,6 +42,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FourMinuteAndThirty,
         TimeOptions.FiveMinute,
     ];
+
+    dictList = ['francais', 'anglais', 'espagnole'];
+
     constructor(
         public gameConfiguration: GameConfigurationService,
         public timer: TimerService,
@@ -60,6 +63,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({
             timer: [defaultTimer, Validators.required],
+            dictionary: ['Francais', Validators.required],
         });
         this.giveNameToBot();
     }
@@ -74,7 +78,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
             timer: (this.form.get('timer') as AbstractControl).value,
-            dictionary: 'francais',
+            dictionary: (this.form.get('dictionary') as AbstractControl).value,
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,
         });
