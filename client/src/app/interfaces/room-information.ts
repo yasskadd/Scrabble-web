@@ -4,4 +4,5 @@ export interface RoomInformation {
     isCreator: boolean;
     statusGame: string;
     timer: number;
+    dictionary: string;
 }
