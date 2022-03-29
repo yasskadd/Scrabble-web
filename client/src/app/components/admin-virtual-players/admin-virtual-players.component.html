@@ -3,10 +3,10 @@
     <button mat-raised-button (click)="this.virtualPlayerService.deleteBotName()">-</button>
 </div>
 
-<mat-selection-list #shoes [multiple]="false">
+<mat-selection-list #names [multiple]="false">
     <mat-list-option *ngFor="let name of botNames" [value]="name">
         {{ name }}
     </mat-list-option>
 </mat-selection-list>
 
-<p>Option selected: {{ shoes.selectedOptions.selected[0]?.value }}</p>
+<p>Option selected: {{ names.selectedOptions.selected[0]?.value }}</p>
