@@ -19,7 +19,7 @@ const MAX_SKIP = 6;
 const SECOND = 1000;
 
 @Service()
-export class GamesState {
+export class GamesStateService {
     constructor(private socketManager: SocketManager, private gamesHandler: GamesHandler, private readonly scoreStorage: ScoreStorageService) {}
 
     initSocketsEvents(): void {
