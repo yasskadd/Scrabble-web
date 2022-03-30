@@ -31,10 +31,17 @@
                 <mat-card-title>Dictionnaire</mat-card-title>
                 <mat-form-field appearance="fill">
                     <mat-label>Liste</mat-label>
-                    <mat-select formControlName="dictionary"
-                        ><mat-option *ngFor="let dict of this.dictList" [value]="dict">{{ dict.charAt(0).toUpperCase() + dict.slice(1) }}</mat-option>
+                    <mat-select (click)="onOpen()" formControlName="dictionary">
+                        <mat-option *ngFor="let dictionary of this.dictionaryList" [value]="dictionary.title">
+                            {{ dictionary.title.charAt(0).toUpperCase() + dictionary.title.slice(1) }}
+                            <span (mouseover)="onMouseOver(dictionary)" (mouseout)="onMouseOut()" id="dict-info">ⓘ</span>
+                        </mat-option>
                     </mat-select>
                 </mat-form-field>
+                <div #info id="info">
+                    <p></p>
+                    <p></p>
+                </div>
             </form>
 
             <form *ngIf="isSoloMode()" class="soloMode">

@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Dictionary } from '@app/interfaces/dictionary';
+import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 
+const defaultDictionary: Dictionary = { title: 'Francais', description: 'Description de base', words: [] };
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -25,6 +28,8 @@ const TIME_OUT_150 = 150;
     styleUrls: ['./multiplayer-create-page.component.scss'],
 })
 export class MultiplayerCreatePageComponent implements OnInit {
+    @ViewChild('info', { static: false }) info: ElementRef;
+
     botName: string;
     playerName: string;
     form: FormGroup;
@@ -42,8 +47,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FourMinuteAndThirty,
         TimeOptions.FiveMinute,
     ];
-
-    dictList = ['francais', 'anglais', 'espagnole'];
+    dictionaryList: Dictionary[];
 
     constructor(
         public gameConfiguration: GameConfigurationService,
@@ -51,6 +55,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private fb: FormBuilder,
+        private readonly httpHandler: HttpHandlerService,
+        private renderer: Renderer2,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
@@ -66,6 +72,21 @@ export class MultiplayerCreatePageComponent implements OnInit {
             dictionary: ['Francais', Validators.required],
         });
         this.giveNameToBot();
+        this.httpHandler.getDictionaries().subscribe((dictionary) => (this.dictionaryList = [defaultDictionary].concat(dictionary)));
+    }
+
+    onMouseOver(dictionary: Dictionary) {
+        this.info.nativeElement.children[0].textContent = dictionary.title;
+        this.info.nativeElement.children[1].textContent = dictionary.description;
+        this.renderer.setStyle(this.info.nativeElement, 'visibility', 'visible');
+    }
+
+    onMouseOut() {
+        this.renderer.setStyle(this.info.nativeElement, 'visibility', 'hidden');
+    }
+
+    onOpen() {
+        this.httpHandler.getDictionaries().subscribe((dictionary) => (this.dictionaryList = [defaultDictionary].concat(dictionary)));
     }
 
     giveNameToBot(): void {
@@ -78,7 +99,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
             timer: (this.form.get('timer') as AbstractControl).value,
-            dictionary: (this.form.get('dictionary') as AbstractControl).value,
+            dictionary: this.getDictionary((this.form.get('dictionary') as AbstractControl).value).words,
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,
         });
@@ -114,5 +135,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
         while (this.playerName.toLowerCase() === this.botName) {
             this.botName = BOT_NAME_LIST[Math.floor(Math.random() * BOT_NAME_LIST.length)];
         }
+    }
+
+    private getDictionary(title: string): Dictionary {
+        return this.dictionaryList.find((dictionary) => dictionary.title === title) as Dictionary;
     }
 }
