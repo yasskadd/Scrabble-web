@@ -60,7 +60,7 @@ export class ChatboxHandlerService {
 
     private configureBaseSocketFeatures(): void {
         this.clientSocket.on(SocketEvents.GameMessage, (broadcastMessage: string) => {
-            this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
+            this.messages.push({ type: 'opponent-user', data: `${this.gameClient.secondPlayer.name} : ${broadcastMessage}` });
         });
 
         this.clientSocket.on(SocketEvents.ImpossibleCommandError, (error: string) => {
@@ -128,7 +128,7 @@ export class ChatboxHandlerService {
     }
 
     private addDisconnect(): void {
-        this.messages.push({ type: 'system-message', data: `${this.gameConfiguration.roomInformation.playerName[1]} a quitté le jeu` });
+        this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} a quitté le jeu` });
     }
 
     private isCommand(userInput: string): boolean {

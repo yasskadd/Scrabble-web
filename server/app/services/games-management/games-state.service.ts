@@ -59,6 +59,7 @@ export class GamesStateService {
         if (socketId.length === 1) {
             (players[1] as Bot).setGame(game);
             (players[1] as Bot).start();
+            game.isModeSolo = true;
             return;
         }
         (players[1] as RealPlayer).setGame(game, false);
@@ -68,7 +69,7 @@ export class GamesStateService {
         game.turn.endTurn.subscribe(() => {
             this.endGameScore(gameInfo.roomId);
             this.changeTurn(gameInfo.roomId);
-            if (game.turn.activePlayer === undefined) this.userConnected(gameInfo.socketId);
+            if (game.turn.activePlayer === undefined) this.userConnected(gameInfo.socketId, gameInfo.roomId);
         });
 
         game.turn.countdown.subscribe((timer: number) => {
@@ -136,11 +137,33 @@ export class GamesStateService {
 
         const player = this.gamesHandler.players.get(socket.id) as Player;
         const room = player.room;
-        this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
-        this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
         this.gamesHandler.players.delete(socket.id);
         socket.leave(room);
+        if (!player.game.isModeSolo) {
+            this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+            this.switchToSolo(socket, player);
+            return;
+        }
         player.game.abandon();
+    }
+
+    private switchToSolo(socket: Socket, playerToReplace: Player) {
+        const info = playerToReplace.getInformation();
+
+        const botPlayer = new BeginnerBot(false, 'Maurice', { timer: playerToReplace.game.turn.time, roomId: playerToReplace.room });
+        botPlayer.score = info.score;
+        botPlayer.rack = info.rack;
+        const playerInRoom = this.gamesHandler.gamePlayers.get(playerToReplace.room);
+        if (playerToReplace.game.turn.activePlayer === playerToReplace.name) playerToReplace.game.turn.activePlayer = botPlayer.name;
+        else playerToReplace.game.turn.inactivePlayer = botPlayer.name;
+        if (playerInRoom !== undefined) {
+            if (playerInRoom[1] === playerToReplace) this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[0], botPlayer]);
+            else this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[1], botPlayer]);
+        }
+        botPlayer.setGame(playerToReplace.game);
+        botPlayer.start();
+        playerToReplace.game.isModeSolo = true;
+        this.gamesHandler.updatePlayerInfo(socket, playerToReplace.room, playerToReplace.game);
     }
 
     private disconnect(socket: Socket) {
@@ -148,7 +171,7 @@ export class GamesStateService {
         const player = this.gamesHandler.players.get(socket.id) as Player;
         const room = player.room;
         if (this.gamesHandler.gamePlayers.get(player.room) !== undefined && !player.game.isGameFinish) {
-            this.waitBeforeDisconnect(socket, room, player);
+            this.waitBeforeDisconnect(socket);
             return;
         }
         socket.leave(room);
@@ -156,17 +179,12 @@ export class GamesStateService {
         this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
     }
 
-    private waitBeforeDisconnect(socket: Socket, room: string, player: Player) {
+    private waitBeforeDisconnect(socket: Socket) {
         let tempTime = 5;
         setInterval(() => {
             tempTime = tempTime - 1;
             if (tempTime === 0) {
-                if (!this.gamesHandler.players.has(socket.id)) return;
-                socket.leave(room);
-                this.gamesHandler.players.delete(socket.id);
-                this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
-                this.socketManager.emitRoom(room, SocketEvents.OpponentGameLeave);
-                player.game.abandon();
+                this.abandonGame(socket);
             }
         }, SECOND);
     }
@@ -184,19 +202,21 @@ export class GamesStateService {
         await this.scoreStorage.addTopScores({ username: player.name, type: 'Classique', score: player.score });
     }
 
-    private async userConnected(socketId: string[]) {
-        if (this.gamesHandler.players.get(socketId[0]) && this.gamesHandler.players.get(socketId[1])) {
+    private async userConnected(socketId: string[], roomId: string) {
+        const player1Room = this.gamesHandler.players.get(socketId[0])?.room;
+        const player2Room = this.gamesHandler.players.get(socketId[1])?.room;
+        if (player1Room === roomId && player2Room === roomId) {
             this.endGame(socketId[0]);
             await this.sendHighScore(socketId[0]);
             await this.sendHighScore(socketId[1]);
             return;
         }
-        if (this.gamesHandler.players.get(socketId[0])) {
+        if (player1Room === roomId) {
             this.endGame(socketId[0]);
             await this.sendHighScore(socketId[0]);
             return;
         }
-        if (this.gamesHandler.players.get(socketId[1])) {
+        if (player2Room === roomId) {
             this.endGame(socketId[1]);
             await this.sendHighScore(socketId[1]);
         }

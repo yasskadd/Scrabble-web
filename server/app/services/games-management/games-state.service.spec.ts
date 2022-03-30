@@ -217,7 +217,8 @@ describe('GamesState Service', () => {
         expect(socketManagerStub.emitRoom.calledOnceWith(ROOM, SocketEvents.TimerClientUpdate, 0));
     });
 
-    it('abandonGame() should emit to the room that the opponent left and that the game ended', () => {
+    it('abandonGame() should emit to the room that the opponent left when it his a multiplayerGame', () => {
+        const switchToSoloStub = sinon.stub(gamesStateService, 'switchToSolo' as never);
         const gameStub = sinon.createStubInstance(Game);
         const player = sinon.createStubInstance(Player);
         player.game = gameStub as unknown as Game;
@@ -226,9 +227,24 @@ describe('GamesState Service', () => {
         gamesHandlerStub['players'].set(serverSocket.id, player);
 
         gamesStateService['abandonGame'](serverSocket);
-        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave));
-        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd));
+        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.UserDisconnect)).to.equal(true);
+        expect(switchToSoloStub.called).to.equal(true);
     });
+
+    it('abandonGame() should not emit to the room that the opponent left when it his a solo Game', () => {
+        const switchToSoloStub = sinon.stub(gamesStateService, 'switchToSolo' as never);
+        const gameStub = sinon.createStubInstance(Game);
+        const player = sinon.createStubInstance(Player);
+        player.game = gameStub as unknown as Game;
+        player.room = ROOM;
+        player.game.isModeSolo = true;
+        gamesHandlerStub['players'].set(serverSocket.id, player);
+
+        gamesStateService['abandonGame'](serverSocket);
+        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.UserDisconnect)).to.equal(false);
+        expect(switchToSoloStub.called).to.equal(false);
+    });
+
     it("abandonGame() shouldn't do anything if the player isn't in the map ()", () => {
         gamesStateService['abandonGame'](serverSocket);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
@@ -285,7 +301,8 @@ describe('GamesState Service', () => {
         done();
     });
 
-    it('waitBeforeDisconnect() should emit to the room that the opponent left/ game ended after 5 seconds of waiting for a reconnect', (done) => {
+    it('waitBeforeDisconnect() should call abandonGame after 5 seconds of waiting for a reconnect', (done) => {
+        const abandonGameStub = sinon.stub(gamesStateService, 'abandonGame' as never);
         const clock = sinon.useFakeTimers();
         const player = new Player('Jean');
         player.room = ROOM;
@@ -299,29 +316,9 @@ describe('GamesState Service', () => {
         gamesHandlerStub['players'].set(serverSocket.id, player);
         gamesHandlerStub['gamePlayers'].set(ROOM, [player]);
 
-        gamesStateService['waitBeforeDisconnect'](serverSocket, ROOM, player);
+        gamesStateService['waitBeforeDisconnect'](serverSocket);
         clock.tick(timeOut5Seconds);
-        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.be.equal(true);
-        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.UserDisconnect)).to.be.equal(true);
-        done();
-    });
-    it('waitBeforeDisconnect() should not emit after 5 seconds of waiting for a reconnect if the socketID is invalid', (done) => {
-        const clock = sinon.useFakeTimers();
-        const player = new Player('Jean');
-        player.room = ROOM;
-        const gameHolderTest = sinon.createStubInstance(Game);
-        gameHolderTest.gameboard = { gameboardCoords: [] } as unknown as Gameboard;
-        gameHolderTest.turn = { activePlayer: '' } as Turn;
-        gameHolderTest.skip.returns(true);
-        player.game = gameHolderTest as unknown as Game;
-        const timeOut5Seconds = 5500;
-
-        gamesHandlerStub['gamePlayers'].set(ROOM, [player]);
-
-        gamesStateService['waitBeforeDisconnect'](serverSocket, ROOM, player);
-        clock.tick(timeOut5Seconds);
-        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
-        expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.UserDisconnect)).to.not.be.equal(true);
+        expect(abandonGameStub.called).to.be.equal(true);
         done();
     });
 
@@ -342,7 +339,7 @@ describe('GamesState Service', () => {
         gamesHandlerStub['players'].set(socketId[0], player1);
         gamesHandlerStub['players'].set(socketId[1], player2);
 
-        gamesStateService['userConnected'](socketId);
+        gamesStateService['userConnected'](socketId, player1.room);
         expect(endGameStub.called).to.equal(true);
         expect(sendHighScoreStub.called).to.equal(true);
     });
@@ -353,7 +350,7 @@ describe('GamesState Service', () => {
 
         gamesHandlerStub['players'].set(socketId[0], player1);
 
-        gamesStateService['userConnected'](socketId);
+        gamesStateService['userConnected'](socketId, player1.room);
         expect(endGameStub.called).to.equal(true);
         expect(sendHighScoreStub.called).to.equal(true);
     });
@@ -364,7 +361,7 @@ describe('GamesState Service', () => {
 
         gamesHandlerStub['players'].set(socketId[1], player2);
 
-        gamesStateService['userConnected'](socketId);
+        gamesStateService['userConnected'](socketId, player1.room);
         expect(endGameStub.called).to.equal(true);
         expect(sendHighScoreStub.called).to.equal(true);
     });
@@ -374,7 +371,7 @@ describe('GamesState Service', () => {
         const sendHighScoreStub = sinon.stub(gamesStateService, 'sendHighScore' as never);
         const socketId = ['asdjcvknxcv', '534876tgsdfj'];
 
-        gamesStateService['userConnected'](socketId);
+        gamesStateService['userConnected'](socketId, player1.room);
         expect(endGameStub.called).to.not.equal(true);
         expect(sendHighScoreStub.called).to.not.equal(true);
     });
