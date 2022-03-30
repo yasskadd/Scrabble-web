@@ -158,7 +158,7 @@ export class GamesStateService {
         if (playerToReplace.game.turn.activePlayer === playerToReplace.name) playerToReplace.game.turn.activePlayer = botPlayer.name;
         else playerToReplace.game.turn.inactivePlayer = botPlayer.name;
         if (playerInRoom[1] === playerToReplace) this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[0], botPlayer]);
-        else this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[1], botPlayer]);
+        else this.gamesHandler.gamePlayers.set(playerToReplace.room, [botPlayer, playerInRoom[1]]);
 
         this.updateNewBot(socket, playerToReplace.game, playerToReplace.room, botPlayer);
     }
