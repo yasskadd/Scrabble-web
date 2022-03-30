@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-// import * as constants from '@app/constants/game';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
+import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 const enum TimeOptions {
     ThirtySecond = 30,
@@ -17,8 +17,6 @@ const enum TimeOptions {
     FourMinuteAndThirty = 270,
     FiveMinute = 300,
 }
-const BOT_EXPERT_NAME_LIST = ['ScrabbleMaster', 'Spike Spiegel', 'XXDarkLegendXX'];
-const BOT_BEGINNER_NAME_LIST = ['paul', 'marc', 'robert'];
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -44,6 +42,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FiveMinute,
     ];
     constructor(
+        public virtualPlayers: VirtualPlayersService,
         public gameConfiguration: GameConfigurationService,
         public timer: TimerService,
         private router: Router,
@@ -103,8 +102,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
     createBotName(): void {
         this.botName =
             (this.form.get('difficultyBot') as AbstractControl).value === 'Débutant'
-                ? BOT_BEGINNER_NAME_LIST[Math.floor(Math.random() * BOT_BEGINNER_NAME_LIST.length)]
-                : BOT_EXPERT_NAME_LIST[Math.floor(Math.random() * BOT_EXPERT_NAME_LIST.length)];
+                ? this.virtualPlayers.beginnerBotNames[Math.floor(Math.random() * this.virtualPlayers.beginnerBotNames.length)]
+                : this.virtualPlayers.expertBotNames[Math.floor(Math.random() * this.virtualPlayers.expertBotNames.length)];
     }
 
     private resetInput(): void {

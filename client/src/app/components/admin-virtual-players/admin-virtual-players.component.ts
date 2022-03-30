@@ -9,7 +9,11 @@ import { VirtualPlayersService } from '@app/services/virtual-players.service';
 export class AdminVirtualPlayersComponent {
     constructor(public virtualPlayerService: VirtualPlayersService) {}
 
-    get botNames(): string[] {
-        return this.virtualPlayerService.botNames;
+    get expertBots(): string[] {
+        return this.virtualPlayerService.expertBotNames;
+    }
+
+    get beginnerBots(): string[] {
+        return this.virtualPlayerService.beginnerBotNames;
     }
 }

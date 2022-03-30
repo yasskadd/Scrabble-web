@@ -5,9 +5,11 @@ import * as constants from '@app/constants/game';
     providedIn: 'root',
 })
 export class VirtualPlayersService {
-    botNames: string[];
+    beginnerBotNames: string[];
+    expertBotNames: string[];
     constructor() {
-        this.botNames = constants.BOT_NAME_LIST;
+        this.beginnerBotNames = constants.BOT_BEGINNER_NAME_LIST;
+        this.expertBotNames = constants.BOT_EXPERT_NAME_LIST;
     }
 
     addBotName() {
