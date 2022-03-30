@@ -170,6 +170,7 @@ describe('GamesState Service', () => {
         const newPlayer = gamesStateService['setAndGetPlayer'](gameInformation) as Player;
         expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
     });
+
     it('setAndGetPlayer() should set a  Expert bot player and return him for the second player', () => {
         const FIRST_PLAYER = 'BIGBROTHER';
         const SECOND_PLAYER = 'LITTLEBROTHER';
@@ -249,6 +250,68 @@ describe('GamesState Service', () => {
         gamesStateService['abandonGame'](serverSocket);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.OpponentGameLeave)).to.not.be.equal(true);
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd)).to.not.be.equal(true);
+    });
+
+    it('switchToSolo() should call updateNewBot when we replace a player with a bot', () => {
+        const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+
+        gamesHandlerStub['players'].set(serverSocket.id, player1);
+        gamesHandlerStub['players'].set(socketId[1], player2);
+        gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
+
+        player1.getInformation.returns({
+            name: 'vincent',
+            score: player1.score,
+            rack: player1.rack,
+            room: player1.room,
+            gameboard: game.gameboard.gameboardTiles,
+        });
+
+        gamesStateService['switchToSolo'](serverSocket, player1);
+
+        expect(updateNewBotStub.called).to.equal(true);
+    });
+
+    it('switchToSolo() should call updateNewBot when we replace a player with a bot', () => {
+        const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+        player1.game.turn.activePlayer = 'Bob';
+        gamesHandlerStub['players'].set(serverSocket.id, player1);
+        gamesHandlerStub['players'].set(socketId[1], player2);
+        gamesHandlerStub['gamePlayers'].set(player1.room, [player2, player1]);
+
+        player1.getInformation.returns({
+            name: 'vincent',
+            score: player1.score,
+            rack: player1.rack,
+            room: player1.room,
+            gameboard: game.gameboard.gameboardTiles,
+        });
+
+        gamesStateService['switchToSolo'](serverSocket, player1);
+
+        expect(updateNewBotStub.called).to.equal(true);
+    });
+
+    it('switchToSolo() should  not call updateNewBot when there is no player in the room', () => {
+        const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+        const socketId = ['asdjcvknxcv', '534876tgsdfj'];
+
+        gamesHandlerStub['players'].set(serverSocket.id, player1);
+        gamesHandlerStub['players'].set(socketId[1], player2);
+
+        player1.getInformation.returns({
+            name: 'vincent',
+            score: player1.score,
+            rack: player1.rack,
+            room: player1.room,
+            gameboard: game.gameboard.gameboardTiles,
+        });
+
+        gamesStateService['switchToSolo'](serverSocket, player1);
+
+        expect(updateNewBotStub.called).to.equal(false);
     });
 
     it('disconnect() should call this.waitBeforeDisconnect() when the game is not already finish', () => {
@@ -476,7 +539,7 @@ describe('GamesState Service', () => {
         });
     });
 
-    context('CreateGame(), gameSubscriptions and initializePlayers() Tests', () => {
+    context('CreateGame(), gameSubscriptions, initializePlayers() and updateNewBot() Tests', () => {
         let createNewGameStub: sinon.SinonStub<unknown[], unknown>;
         let setAndGetPlayerStub: sinon.SinonStub<unknown[], unknown>;
         let botPlayer: sinon.SinonStubbedInstance<BeginnerBot>;
@@ -539,6 +602,14 @@ describe('GamesState Service', () => {
             expect(realPlayer.setGame.called).to.equal(true);
             expect(botPlayer.setGame.called).to.equal(true);
             expect(botPlayer.start.called).to.equal(true);
+            done();
+        });
+
+        it('updateNewBot() should call the setGame and the start function of the bot and update the Player info', (done) => {
+            gamesStateService['updateNewBot'](serverSocket, botPlayer.game, botPlayer.room, botPlayer);
+            expect(botPlayer.setGame.called).to.equal(true);
+            expect(botPlayer.start.called).to.equal(true);
+            expect(gamesHandlerStub.updatePlayerInfo.called).to.equal(true);
             done();
         });
 

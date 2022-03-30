@@ -149,21 +149,25 @@ export class GamesStateService {
 
     private switchToSolo(socket: Socket, playerToReplace: Player) {
         const info = playerToReplace.getInformation();
-
+        const playerInRoom = this.gamesHandler.gamePlayers.get(playerToReplace.room);
+        if (playerInRoom === undefined) return;
         const botPlayer = new BeginnerBot(false, 'Maurice', { timer: playerToReplace.game.turn.time, roomId: playerToReplace.room });
         botPlayer.score = info.score;
         botPlayer.rack = info.rack;
-        const playerInRoom = this.gamesHandler.gamePlayers.get(playerToReplace.room);
+
         if (playerToReplace.game.turn.activePlayer === playerToReplace.name) playerToReplace.game.turn.activePlayer = botPlayer.name;
         else playerToReplace.game.turn.inactivePlayer = botPlayer.name;
-        if (playerInRoom !== undefined) {
-            if (playerInRoom[1] === playerToReplace) this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[0], botPlayer]);
-            else this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[1], botPlayer]);
-        }
-        botPlayer.setGame(playerToReplace.game);
-        botPlayer.start();
-        playerToReplace.game.isModeSolo = true;
-        this.gamesHandler.updatePlayerInfo(socket, playerToReplace.room, playerToReplace.game);
+        if (playerInRoom[1] === playerToReplace) this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[0], botPlayer]);
+        else this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[1], botPlayer]);
+
+        this.updateNewBot(socket, playerToReplace.game, playerToReplace.room, botPlayer);
+    }
+
+    private updateNewBot(socket: Socket, game: Game, roomId: string, botPlayer: Player) {
+        game.isModeSolo = true;
+        (botPlayer as BeginnerBot).setGame(game);
+        (botPlayer as BeginnerBot).start();
+        this.gamesHandler.updatePlayerInfo(socket, roomId, game);
     }
 
     private disconnect(socket: Socket) {
