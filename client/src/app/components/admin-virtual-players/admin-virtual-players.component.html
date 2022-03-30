@@ -1,12 +1,29 @@
-<div>
-    <button mat-raised-button (click)="this.virtualPlayerService.addBotName()">+</button>
-    <button mat-raised-button (click)="this.virtualPlayerService.deleteBotName()">-</button>
+<div class="Parent">
+    <div class="child1">
+        Joueurs virtuels débutants
+        <mat-selection-list #beginnerNames [multiple]="false">
+            <mat-list-option *ngFor="let name of beginnerBots" [value]="name">
+                <div class="justified">
+                    <div>{{ name }}</div>
+                    <button mat-raised-button (click)="addName()">supprimer</button>
+                </div>
+            </mat-list-option>
+        </mat-selection-list>
+        <p>Joueur débutant selectionné: {{ beginnerNames.selectedOptions.selected[0]?.value }}</p>
+        <button mat-raised-button (click)="addName()">Ajouter un joueur débutant</button>
+    </div>
+
+    <div class="child2">
+        Joueurs virtuels experts
+        <mat-selection-list id="list" #expertNames [multiple]="false">
+            <mat-list-option *ngFor="let name of expertBots" [value]="name">
+                <div class="justified">
+                    <div>{{ name }}</div>
+                    <button mat-raised-button (click)="addName()">supprimer</button>
+                </div>
+            </mat-list-option>
+        </mat-selection-list>
+        <p>Joueur expert selectionné: {{ expertNames.selectedOptions.selected[0]?.value }}</p>
+        <button mat-raised-button (click)="addName()">Ajouter un joueur expert</button>
+    </div>
 </div>
-
-<mat-selection-list #names [multiple]="false">
-    <mat-list-option *ngFor="let name of botNames" [value]="name">
-        {{ name }}
-    </mat-list-option>
-</mat-selection-list>
-
-<p>Option selected: {{ names.selectedOptions.selected[0]?.value }}</p>

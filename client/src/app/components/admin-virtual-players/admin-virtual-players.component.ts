@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 @Component({
@@ -6,7 +6,7 @@ import { VirtualPlayersService } from '@app/services/virtual-players.service';
     templateUrl: './admin-virtual-players.component.html',
     styleUrls: ['./admin-virtual-players.component.scss'],
 })
-export class AdminVirtualPlayersComponent {
+export class AdminVirtualPlayersComponent implements OnInit {
     constructor(public virtualPlayerService: VirtualPlayersService) {}
 
     get expertBots(): string[] {
@@ -15,5 +15,11 @@ export class AdminVirtualPlayersComponent {
 
     get beginnerBots(): string[] {
         return this.virtualPlayerService.beginnerBotNames;
+    }
+
+    ngOnInit(): void {}
+
+    addName() {
+        // this.virtualPlayerService.addBotName('random', 'beginner');
     }
 }
