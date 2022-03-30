@@ -14,7 +14,7 @@ export class DictionaryController {
         this.router = Router();
 
         this.router.get('/', async (req: Request, res: Response) => {
-            const dictionaries = await this.dictionaryStorage.getAllDictionaryInfo();
+            const dictionaries = await this.dictionaryStorage.getAllDictionary();
             res.json(dictionaries);
         });
 
