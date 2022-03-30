@@ -3,5 +3,5 @@ export interface GameScrabbleInformation {
     roomId: string;
     timer: number;
     socketId: string[];
-    dictionary: string;
+    dictionary: string[];
 }
