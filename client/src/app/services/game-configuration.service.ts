@@ -22,7 +22,7 @@ export class GameConfigurationService {
 
     constructor(private clientSocket: ClientSocketService) {
         this.availableRooms = [];
-        this.roomInformation = { playerName: [], roomId: '', timer: 0, isCreator: false, statusGame: '' };
+        this.roomInformation = { playerName: [], roomId: '', timer: 0, isCreator: false, statusGame: '', dictionary: [] };
         this.clientSocket.establishConnection();
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
         this.isGameStarted = new ReplaySubject<boolean>(1);
@@ -103,6 +103,7 @@ export class GameConfigurationService {
         this.roomInformation.statusGame = SEARCHING_OPPONENT;
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
+        this.roomInformation.dictionary = parameters.dictionary;
         this.roomInformation.playerName[0] = parameters.username;
         this.roomInformation.isCreator = true;
     }
@@ -157,6 +158,7 @@ export class GameConfigurationService {
                 playerName: this.roomInformation.playerName,
                 roomId: this.roomInformation.roomId,
                 timer: this.roomInformation.timer,
+                dictionary: this.roomInformation.dictionary,
                 socketId: socketIDUserRoom,
             });
         }
