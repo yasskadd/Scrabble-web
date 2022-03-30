@@ -113,10 +113,22 @@ describe('GamesHandler Service', () => {
             secondSocket.on(SocketEvents.UpdatePlayerInformation, (information) => {
                 expect(information).to.be.eql(playerOne.getInformation());
             });
-
+            playerOne.isPlayerOne = false;
             gamesHandler['gamePlayers'].set(playerOne.room, [playerOne, playerTwo]);
 
-            gamesHandler['players'].set(serverSocket.id, playerOne);
+            gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
+        });
+
+        it('updatePlayerInfo() should broadcast correct info to the first Player when we play with a bot', (done) => {
+            secondSocket.on(SocketEvents.UpdateOpponentInformation, (information) => {
+                expect(information).to.be.eql(playerOne.getInformation());
+                done();
+            });
+            secondSocket.on(SocketEvents.UpdatePlayerInformation, (information) => {
+                expect(information).to.be.eql(playerTwo.getInformation());
+            });
+            playerOne.isPlayerOne = true;
+            gamesHandler['gamePlayers'].set(playerOne.room, [playerOne, playerTwo]);
 
             gamesHandler['updatePlayerInfo'](serverSocket, ROOM, game);
         });

@@ -17,9 +17,13 @@ export class GamesHandler {
 
     updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
         const player = this.players.get(socket.id) as Player;
-        const players = this.gamePlayers.get(player.room) as Player[];
+        const players = this.gamePlayers.get(roomId) as Player[];
+        let playerIndex: number;
         if (players === undefined) return;
-        const playerIndex = player.isPlayerOne ? 0 : 1;
+        if (player === undefined) {
+            if (players[0].isPlayerOne) playerIndex = 1;
+            else playerIndex = 0;
+        } else playerIndex = player.isPlayerOne ? 0 : 1;
         const secondPlayerIndex = Math.abs(playerIndex - 1);
 
         socket.emit(SocketEvents.UpdatePlayerInformation, players[playerIndex].getInformation());

@@ -37,7 +37,7 @@ const PLAYER1_INFORMATION: Player = {
     room: '1',
 };
 const SECOND_PLAYER_INFORMATION: Player = {
-    name: 'Vincent',
+    name: 'Richard',
     score: 70,
     rack: [
         { value: 'w', quantity: 2, points: 1 },
@@ -395,11 +395,25 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('addDisconnect() should add a system-message to the messages Array saying that the other player disconnected from the room', () => {
-        const EXPECTED_USER_DISCONNECTED_MESSAGE = { type: 'system-message', data: 'RICHARD a quitté le jeu' };
-
+        const EXPECTED_USER_DISCONNECTED_MESSAGE = { type: 'system-message', data: 'Richard a quitté le jeu' };
+        gameClientServiceSpy.isGameFinish = true;
         // Reason : testing a private method
         // eslint-disable-next-line dot-notation
         service['addDisconnect']();
+        expect(service.messages.pop()).toEqual(EXPECTED_USER_DISCONNECTED_MESSAGE);
+    });
+
+    it('addDisconnect() should add a message when the player is replace by a beginner bot player', () => {
+        const EXPECTED_USER_DISCONNECTED_MESSAGE = { type: 'system-message', data: 'Richard a quitté le jeu' };
+        const EXPECTED_REPLACE_USER = {
+            type: 'system-message',
+            data: "------L'adversaire à été remplacé par un joueur virtuel Débutant------",
+        };
+        gameClientServiceSpy.isGameFinish = false;
+        // Reason : testing a private method
+        // eslint-disable-next-line dot-notation
+        service['addDisconnect']();
+        expect(service.messages.pop()).toEqual(EXPECTED_REPLACE_USER);
         expect(service.messages.pop()).toEqual(EXPECTED_USER_DISCONNECTED_MESSAGE);
     });
 
@@ -601,7 +615,7 @@ describe('ChatboxHandlerService', () => {
 
     it('should add a message emit from the server when gameMessage event is emit', () => {
         const messageReceive = '!passer';
-        const messageShow = { type: 'opponent-user', data: `${gameConfigurationServiceSpy.roomInformation.playerName[1]} : ${messageReceive}` };
+        const messageShow = { type: 'opponent-user', data: `${gameClientServiceSpy.secondPlayer.name} : ${messageReceive}` };
         socketEmulator.peerSideEmit(SocketEvents.GameMessage, messageReceive);
         expect(service.messages.pop()).toEqual(messageShow);
     });
