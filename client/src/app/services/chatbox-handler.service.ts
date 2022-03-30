@@ -129,6 +129,8 @@ export class ChatboxHandlerService {
 
     private addDisconnect(): void {
         this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} a quitté le jeu` });
+        if (!this.gameClient.isGameFinish)
+            this.messages.push({ type: 'system-message', data: "------L'adversaire à été remplacé par un joueur virtuel Débutant------" });
     }
 
     private isCommand(userInput: string): boolean {
