@@ -2,6 +2,7 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import { Location } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,7 +17,10 @@ import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Dictionary } from '@app/interfaces/dictionary';
+import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
+import { of } from 'rxjs';
 import { MultiplayerCreatePageComponent } from './multiplayer-create-page.component';
 
 @Component({
@@ -36,6 +40,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let location: Location;
     let router: Router;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
+    let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
 
     const mockMatSnackBar = {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -48,8 +53,15 @@ describe('MultiplayerCreatePageComponent', () => {
             'resetRoomInformation',
             'beginScrabbleGame',
         ]);
+
+        httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
+        httpHandlerSpy.getDictionaries.and.returnValue(
+            of([{ _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire', words: ['string'] }]),
+        );
+        httpHandlerSpy.addDictionary.and.returnValue(of({} as unknown as void));
         await TestBed.configureTestingModule({
             imports: [
+                HttpClientModule,
                 BrowserAnimationsModule,
                 MatInputModule,
                 MatFormFieldModule,
@@ -83,6 +95,7 @@ describe('MultiplayerCreatePageComponent', () => {
                     },
                 },
                 { provide: FormBuilder },
+                { provide: HttpHandlerService, useValue: httpHandlerSpy },
             ],
         }).compileComponents();
     });
@@ -248,7 +261,8 @@ describe('MultiplayerCreatePageComponent', () => {
 
     it('createGame should call gameConfiguration.gameInitialization with the good Value', fakeAsync(() => {
         component.playerName = 'Vincent';
-        const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: 'francais', mode: 'classique', isMultiplayer: true };
+        const TEST_PLAYER = { username: component.playerName, timer: 60, dictionary: ['francais'], mode: 'classique', isMultiplayer: true };
+        component.selectedFile = { words: ['francais'] } as Dictionary;
         component.createGame();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);

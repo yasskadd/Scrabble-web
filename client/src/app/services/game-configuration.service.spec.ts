@@ -13,6 +13,7 @@ interface RoomInformation {
     isCreator: boolean;
     statusGame: string;
     timer: number;
+    dictionary: string[];
 }
 
 interface GameScrabbleInformation {
@@ -20,6 +21,7 @@ interface GameScrabbleInformation {
     roomId: string;
     timer: number;
     socketId: string[];
+    dictionary: string[];
 }
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
@@ -27,6 +29,7 @@ const ROOM_INFORMATION: RoomInformation = {
     isCreator: true,
     statusGame: '',
     timer: 0,
+    dictionary: ['string'],
 };
 export class SocketClientServiceMock extends ClientSocketService {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -100,7 +103,7 @@ describe('GameConfigurationService', () => {
     });
 
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
-        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique', isMultiplayer: true };
+        const testGameConfiguration = { username: 'Pauline', dictionary: ['francais'], timer: 1, mode: 'classique', isMultiplayer: true };
         const testStatusGame = "En Attente d'un Adversaire ...";
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
@@ -173,6 +176,7 @@ describe('GameConfigurationService', () => {
             isCreator: true,
             statusGame: "En Attente d'un Adversaire ...",
             timer: 60,
+            dictionary: ['string'],
         };
         service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
@@ -187,6 +191,7 @@ describe('GameConfigurationService', () => {
             isCreator: true,
             statusGame: "En Attente d'un Adversaire ...",
             timer: 60,
+            dictionary: ['string'],
         };
         service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
@@ -330,6 +335,7 @@ describe('GameConfigurationService', () => {
             roomId: ROOM_INFORMATION.roomId,
             timer: ROOM_INFORMATION.timer,
             socketId: socketIDUserRoom,
+            dictionary: ROOM_INFORMATION.dictionary,
         };
         service.roomInformation.playerName = ROOM_INFORMATION.playerName;
         service.roomInformation.roomId = ROOM_INFORMATION.roomId;
@@ -362,6 +368,7 @@ describe('GameConfigurationService', () => {
             isCreator: true,
             statusGame: 'Adversaire Trouvé',
             timer: 60,
+            dictionary: ['string'],
         };
         service.roomInformation = roomInformationUpdated;
         expect(service.roomInformation.playerName).toEqual(['Vincent', 'Marcel']);
