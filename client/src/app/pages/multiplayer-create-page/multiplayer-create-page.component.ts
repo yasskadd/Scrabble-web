@@ -82,24 +82,26 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     uploadDictionary() {
-        const selectedFile = this.file.nativeElement.files[0];
-        const fileReader = new FileReader();
-        fileReader.readAsText(selectedFile, 'UTF-8');
-        fileReader.onload = () => {
-            const newDictionary = JSON.parse(fileReader.result as string);
-            if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
-                this.fileError.nativeElement.textContent = this.dictionaryVerification.globalVerification(newDictionary);
-                this.fileError.nativeElement.style.color = 'red';
-            } else {
-                this.fileError.nativeElement.textContent = 'Ajout avec succès du nouveau dictionnaire';
-                this.fileError.nativeElement.style.color = 'black';
-                this.selectedFile = newDictionary;
-                this.httpHandler.addDictionary(newDictionary).subscribe();
-            }
-        };
-        fileReader.onerror = (error) => {
-            console.log(error);
-        };
+        if (this.file.nativeElement.files.length !== 0) {
+            const selectedFile = this.file.nativeElement.files[0];
+            const fileReader = new FileReader();
+            fileReader.readAsText(selectedFile, 'UTF-8');
+            fileReader.onload = () => {
+                const newDictionary = JSON.parse(fileReader.result as string);
+                if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
+                    this.updateImportMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
+                } else {
+                    this.updateImportMessage('Ajout avec succès du nouveau dictionnaire', 'black');
+                    this.selectedFile = newDictionary;
+                    this.httpHandler.addDictionary(newDictionary).subscribe();
+                }
+            };
+            fileReader.onerror = (error) => {
+                console.log(error);
+            };
+        } else {
+            this.updateImportMessage("Il n'y a aucun fichier séléctioné", 'red');
+        }
     }
 
     detectImportFile() {
@@ -109,6 +111,11 @@ export class MultiplayerCreatePageComponent implements OnInit {
             this.selectedFile = null;
             this.form.controls.dictionary.enable();
         }
+    }
+
+    updateImportMessage(message: string, color: string) {
+        this.fileError.nativeElement.textContent = message;
+        this.fileError.nativeElement.style.color = color;
     }
 
     onMouseOver(dictionary: Dictionary) {

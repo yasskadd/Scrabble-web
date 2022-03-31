@@ -14,12 +14,12 @@ export class DictionaryVerificationService {
     constructor(private readonly httpHandler: HttpHandlerService) {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaries = dictionaries));
     }
-    globalVerification(dictionary: Dictionary): string {
+    globalVerification(dictionary: unknown): string {
         if (!this.isDictionary(dictionary))
             return "Le fichier téléversé n'est pas un dictionnaire. Les champs title, description ou words sont manquant.";
-        if (this.fieldEmptyVerification(dictionary) !== 'Passed') return this.fieldEmptyVerification(dictionary);
-        if (this.fieldLimitVerification(dictionary) !== 'Passed') return this.fieldLimitVerification(dictionary);
-        if (this.alreadyExist(dictionary.title) !== 'Passed') return this.alreadyExist(dictionary.title);
+        if (this.fieldEmptyVerification(dictionary as Dictionary) !== 'Passed') return this.fieldEmptyVerification(dictionary as Dictionary);
+        if (this.fieldLimitVerification(dictionary as Dictionary) !== 'Passed') return this.fieldLimitVerification(dictionary as Dictionary);
+        if (this.alreadyExist((dictionary as Dictionary).title) !== 'Passed') return this.alreadyExist((dictionary as Dictionary).title);
         return 'Passed';
     }
 
@@ -62,7 +62,7 @@ export class DictionaryVerificationService {
         return 'Passed';
     }
 
-    private wordsListIsValid(words: unknown[]): boolean {
+    private wordsListIsValid(words: unknown): boolean {
         if (Array.isArray(words)) {
             if (words.some((word) => !this.wordIsValid(word))) return false;
             return true;
