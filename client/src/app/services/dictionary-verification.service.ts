@@ -72,24 +72,24 @@ export class DictionaryVerificationService {
 
     private wordIsValid(word: unknown): boolean {
         if (typeof word !== 'string') return false;
-        if (this.wordHasSpace(word)) return false;
-        if (this.isOneLetterWord(word)) return false;
-        if (this.wordHasHyphen(word)) return false;
-        return true;
+        // if (this.wordHasSpace(word)) return false;
+        // if (this.isOneLetterWord(word)) return false;
+        // if (this.wordHasHyphen(word)) return false;
+        return /^[a-z][a-z]+$/.test(word as string);
     }
 
-    private wordHasSpace(word: string): boolean {
-        if (word.indexOf(' ') >= 0) return true;
-        return false;
-    }
+    // private wordHasSpace(word: string): boolean {
+    //     if (word.indexOf(' ') >= 0) return true;
+    //     return false;
+    // }
 
-    private isOneLetterWord(word: string): boolean {
-        if (word.length === 1) return true;
-        return false;
-    }
+    // private isOneLetterWord(word: string): boolean {
+    //     if (word.length === 1) return true;
+    //     return false;
+    // }
 
-    private wordHasHyphen(word: string): boolean {
-        if (word.indexOf('-') >= 0) return true;
-        return false;
-    }
+    // private wordHasHyphen(word: string): boolean {
+    //     if (word.indexOf('-') >= 0) return true;
+    //     return false;
+    // }
 }
