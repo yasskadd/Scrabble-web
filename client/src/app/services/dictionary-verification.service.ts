@@ -15,7 +15,8 @@ export class DictionaryVerificationService {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaries = dictionaries));
     }
     globalVerification(dictionary: Dictionary): string {
-        if (!this.isDictionary(dictionary)) return 'The uploaded file is not a dictionary. You maybe missing a title, a description or a words list';
+        if (!this.isDictionary(dictionary))
+            return "Le fichier téléversé n'est pas un dictionnaire. Les champs title, description ou words sont manquant.";
         if (this.fieldEmptyVerification(dictionary) !== 'Passed') return this.fieldEmptyVerification(dictionary);
         if (this.fieldLimitVerification(dictionary) !== 'Passed') return this.fieldLimitVerification(dictionary);
         if (this.alreadyExist(dictionary.title) !== 'Passed') return this.alreadyExist(dictionary.title);
@@ -34,15 +35,15 @@ export class DictionaryVerificationService {
     }
 
     private fieldEmptyVerification(dictionary: Dictionary): string {
-        if (this.fieldIsEmpty(dictionary.title)) return "This dictionary doesn't have a title";
-        if (this.fieldIsEmpty(dictionary.description)) return "This dictionary doesn't have a description";
-        if (this.fieldIsEmpty(dictionary.words)) return "This dictionary doesn't have words";
+        if (this.fieldIsEmpty(dictionary.title)) return "Le dictionnaire n'a pas de titre";
+        if (this.fieldIsEmpty(dictionary.description)) return "Le dictionnaire n'a pas de description";
+        if (this.fieldIsEmpty(dictionary.words)) return "Le dictionnaire n'a pas une liste de mots";
         return 'Passed';
     }
 
     private fieldLimitVerification(dictionary: Dictionary): string {
-        if (this.fieldCharacterLimit(dictionary.title.split(''), MAX_TITLE_CHAR)) return 'This dictionary title is too long!';
-        if (this.fieldCharacterLimit(dictionary.description.split(''), MAX_DESCRIPTION_CHAR)) return 'This dictionary description is too long!';
+        if (this.fieldCharacterLimit(dictionary.title.split(''), MAX_TITLE_CHAR)) return 'Le titre du dictionnaire est trop long!';
+        if (this.fieldCharacterLimit(dictionary.description.split(''), MAX_DESCRIPTION_CHAR)) return 'La description du dictionnaire est trop long!';
         return 'Passed';
     }
 
@@ -57,7 +58,7 @@ export class DictionaryVerificationService {
 
     private alreadyExist(title: string): string {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaries = dictionaries));
-        if (this.dictionaries.some((dictionary) => dictionary.title === title)) return 'This dictionary already exist';
+        if (this.dictionaries.some((dictionary) => dictionary.title === title)) return 'Le dictionnaire existe déjà dans la base de données';
         return 'Passed';
     }
 

@@ -89,7 +89,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
                 this.fileError.nativeElement.textContent = this.dictionaryVerification.globalVerification(newDictionary);
                 this.fileError.nativeElement.style.color = 'red';
             } else {
-                this.fileError.nativeElement.textContent = '';
+                this.fileError.nativeElement.textContent = 'Ajout avec succès du nouveau dictionnaire';
+                this.fileError.nativeElement.style.color = 'black';
                 this.httpHandler.addDictionary(newDictionary).subscribe();
             }
         };
