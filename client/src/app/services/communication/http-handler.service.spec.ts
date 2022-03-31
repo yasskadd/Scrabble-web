@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { HttpHandlerService } from './http-handler.service';
 
@@ -50,6 +51,31 @@ describe('HttpHandlerService', () => {
         expect(req.request.method).toBe('GET');
         // actually send the request
         req.flush(expectedMessage);
+    });
+
+    it('should return expected dictionaries list (HttpClient called once)', () => {
+        const expectedMessage: Dictionary[] = [{ title: 'Mon dictionnaire', description: 'Une description', words: ['string'] }];
+
+        // check the content of the mocked call
+        service.getDictionaries().subscribe((dictionaries: Dictionary[]) => {
+            expect(dictionaries).toEqual(expectedMessage);
+        }, fail);
+
+        const req = httpMock.expectOne(`${baseUrl}/dictionary`);
+        expect(req.request.method).toBe('GET');
+        // actually send the request
+        req.flush(expectedMessage);
+    });
+
+    it('should not return any message when sending a POST request (HttpClient called once)', () => {
+        const sentMessage: Dictionary = { title: 'Mon dictionnaire', description: 'Une description', words: ['string'] };
+        // subscribe to the mocked call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
+        service.addDictionary(sentMessage).subscribe(() => {}, fail);
+        const req = httpMock.expectOne(`${baseUrl}/dictionary/upload`);
+        expect(req.request.method).toBe('POST');
+        // actually send the request
+        req.flush(sentMessage);
     });
 
     it('should handle http error safely', () => {
