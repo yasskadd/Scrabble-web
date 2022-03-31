@@ -51,6 +51,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FiveMinute,
     ];
     dictionaryList: Dictionary[];
+    selectedFile: Dictionary | null;
 
     constructor(
         public gameConfiguration: GameConfigurationService,
@@ -66,6 +67,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.playerName = '';
         this.botName = '';
         this.difficultyList = ['Débutant'];
+        this.selectedFile = null;
     }
 
     ngOnInit(): void {
@@ -91,6 +93,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
             } else {
                 this.fileError.nativeElement.textContent = 'Ajout avec succès du nouveau dictionnaire';
                 this.fileError.nativeElement.style.color = 'black';
+                this.selectedFile = newDictionary;
                 this.httpHandler.addDictionary(newDictionary).subscribe();
             }
         };
@@ -102,7 +105,10 @@ export class MultiplayerCreatePageComponent implements OnInit {
     detectImportFile() {
         this.fileError.nativeElement.textContent = '';
         if (this.file.nativeElement.files.length !== 0) this.form.controls.dictionary.disable();
-        else this.form.controls.dictionary.enable();
+        else {
+            this.selectedFile = null;
+            this.form.controls.dictionary.enable();
+        }
     }
 
     onMouseOver(dictionary: Dictionary) {
@@ -168,6 +174,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     private getDictionary(title: string): Dictionary {
+        if (this.selectedFile !== null) return this.selectedFile;
         return this.dictionaryList.find((dictionary) => dictionary.title === title) as Dictionary;
     }
 }
