@@ -44,6 +44,11 @@
                 </div>
             </form>
 
+            <input #file (change)="detectImportFile()" type="file" id="selectFiles" accept=".json" value="Import" /><br />
+            <button (click)="uploadDictionary()" id="import">Import</button>
+
+            <p #fileError id="file-error"></p>
+
             <form *ngIf="isSoloMode()" class="soloMode">
                 <mat-card-title>Difficulté</mat-card-title>
                 <mat-form-field appearance="fill">
