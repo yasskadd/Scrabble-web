@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
+import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 
@@ -29,6 +30,8 @@ const TIME_OUT_150 = 150;
 })
 export class MultiplayerCreatePageComponent implements OnInit {
     @ViewChild('info', { static: false }) info: ElementRef;
+    @ViewChild('file', { static: false }) file: ElementRef;
+    @ViewChild('fileError', { static: false }) fileError: ElementRef;
 
     botName: string;
     playerName: string;
@@ -57,6 +60,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private fb: FormBuilder,
         private readonly httpHandler: HttpHandlerService,
         private renderer: Renderer2,
+        private dictionaryVerification: DictionaryVerificationService,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
@@ -72,7 +76,32 @@ export class MultiplayerCreatePageComponent implements OnInit {
             dictionary: ['Francais', Validators.required],
         });
         this.giveNameToBot();
-        this.httpHandler.getDictionaries().subscribe((dictionary) => (this.dictionaryList = [defaultDictionary].concat(dictionary)));
+        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
+    }
+
+    uploadDictionary() {
+        const selectedFile = this.file.nativeElement.files[0];
+        const fileReader = new FileReader();
+        fileReader.readAsText(selectedFile, 'UTF-8');
+        fileReader.onload = () => {
+            const newDictionary = JSON.parse(fileReader.result as string);
+            if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
+                this.fileError.nativeElement.textContent = this.dictionaryVerification.globalVerification(newDictionary);
+                this.fileError.nativeElement.style.color = 'red';
+            } else {
+                this.fileError.nativeElement.textContent = '';
+                this.httpHandler.addDictionary(newDictionary).subscribe();
+            }
+        };
+        fileReader.onerror = (error) => {
+            console.log(error);
+        };
+    }
+
+    detectImportFile() {
+        this.fileError.nativeElement.textContent = '';
+        if (this.file.nativeElement.files.length !== 0) this.form.controls.dictionary.disable();
+        else this.form.controls.dictionary.enable();
     }
 
     onMouseOver(dictionary: Dictionary) {
@@ -86,7 +115,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     onOpen() {
-        this.httpHandler.getDictionaries().subscribe((dictionary) => (this.dictionaryList = [defaultDictionary].concat(dictionary)));
+        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
     }
 
     giveNameToBot(): void {
