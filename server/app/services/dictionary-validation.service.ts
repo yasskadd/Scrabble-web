@@ -5,11 +5,6 @@ import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
 import * as fs from 'fs';
 
 // const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
-export interface Dictionary {
-    title: string;
-    description: string;
-    words: string[];
-}
 
 // @Service()
 export class DictionaryValidationService {

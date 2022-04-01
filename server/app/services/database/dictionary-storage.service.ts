@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import { Document } from 'mongodb';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
@@ -18,7 +17,7 @@ export class DictionaryStorageService {
 
     async removeDictionary(dictionary: Document) {
         if (!(await this.dictionaryIsInDb(dictionary.title))) return;
-        await this.database.addDocument(dictionary);
+        await this.database.removeDocument(dictionary);
     }
 
     async dictionaryIsInDb(title: string): Promise<boolean> {
@@ -27,11 +26,11 @@ export class DictionaryStorageService {
         return document.length ? true : false;
     }
 
-    async populateDb() {
-        const inDb = await this.dictionaryIsInDb('Mon dictionnaire');
-        if (inDb) return;
-        const jsonDictionary = JSON.parse(fs.readFileSync('../common/assets/spanish.json', 'utf8'));
+    // async populateDb() {
+    //     const inDb = await this.dictionaryIsInDb('Mon dictionnaire');
+    //     if (inDb) return;
+    //     const jsonDictionary = JSON.parse(fs.readFileSync('../common/assets/spanish.json', 'utf8'));
 
-        await this.addDictionary(jsonDictionary);
-    }
+    //     await this.addDictionary(jsonDictionary);
+    // }
 }
