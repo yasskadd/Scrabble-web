@@ -7,7 +7,6 @@ import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
-import { Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
@@ -21,7 +20,7 @@ export class Game {
         player2: Player,
         public turn: Turn,
         public letterReserve: LetterReserve,
-        @Inject() private letterPlacement: LetterPlacementService,
+        private letterPlacement: LetterPlacementService,
     ) {
         this.start(player1, player2);
         this.gameboard = new Gameboard();

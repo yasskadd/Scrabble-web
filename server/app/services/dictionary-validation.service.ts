@@ -3,20 +3,28 @@ import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
 import * as fs from 'fs';
-import { Service } from 'typedi';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
+// const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
+export interface Dictionary {
+    title: string;
+    description: string;
+    words: string[];
+}
 
-@Service()
+// @Service()
 export class DictionaryValidationService {
     dictionary: Set<string> = new Set();
     trie: LetterTree;
     gameboard: Gameboard = new Gameboard();
+    jsonDictionary: string[];
 
-    constructor() {
-        jsonDictionary.words.forEach((word: string) => {
+    constructor(dictionary: string[]) {
+        if (!dictionary.length) this.jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8')).words;
+        else this.jsonDictionary = dictionary;
+        this.jsonDictionary.forEach((word: string) => {
             this.dictionary.add(word);
         });
+        console.log(this.jsonDictionary);
         this.createTrieDictionary();
     }
 
@@ -27,7 +35,7 @@ export class DictionaryValidationService {
     }
 
     createTrieDictionary() {
-        this.trie = new LetterTree(jsonDictionary.words);
+        this.trie = new LetterTree(this.jsonDictionary);
     }
 
     private checkWordInDictionary(wordList: Word[]): void {

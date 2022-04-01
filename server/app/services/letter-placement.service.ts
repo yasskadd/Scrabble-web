@@ -20,7 +20,10 @@ const MIDDLE_Y = 8;
 
 @Service()
 export class LetterPlacementService {
-    constructor(private dictionaryService: DictionaryValidationService) {}
+    private dictionaryService: DictionaryValidationService;
+    constructor(dictionary: string[]) {
+        this.dictionaryService = new DictionaryValidationService(dictionary);
+    }
 
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {
         if (!this.validateCommandCoordinate(commandInfo.firstCoordinate, gameboard)) return [{} as Word, ErrorType.CommandCoordinateOutOfBounds];

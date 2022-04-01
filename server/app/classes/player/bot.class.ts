@@ -14,7 +14,7 @@ export class Bot extends Player {
     game: Game;
     protected countUp: number = 0;
     protected socketManager: SocketManager = Container.get(SocketManager);
-    protected wordSolver: WordSolverService = Container.get(WordSolverService);
+    protected wordSolver: WordSolverService;
     protected playedTurned: boolean = false;
     private timer: number;
 
@@ -23,6 +23,7 @@ export class Bot extends Player {
         this.isPlayerOne = isPlayerOne;
         this.room = botInfo.roomId;
         this.timer = botInfo.timer;
+        this.wordSolver = new WordSolverService(botInfo.dictionary);
     }
 
     setGame(game: Game): void {

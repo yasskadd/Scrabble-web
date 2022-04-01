@@ -18,7 +18,7 @@ export class DatabaseService {
     constructor() {
         this.isConnected = false;
         DatabaseService.dbName = 'Projects';
-        DatabaseService.dbCollection = 'Scrabble';
+        DatabaseService.dbCollection = 'Dictionary';
         DatabaseService.dbUrl = `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@cluster0.hxlnx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
     }
 

@@ -53,7 +53,7 @@
                 <mat-card-title>Difficulté</mat-card-title>
                 <mat-form-field appearance="fill">
                     <mat-label>Difficulté</mat-label>
-                    <mat-select id="difficulty-select"  formControlName="difficultyBot">
+                    <mat-select id="difficulty-select" formControlName="difficultyBot">
                         <mat-option id="difficulty-options" *ngFor="let difficulty of this.difficultyList" [value]="difficulty">
                             {{ difficulty }}
                         </mat-option>
