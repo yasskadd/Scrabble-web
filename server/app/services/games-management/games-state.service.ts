@@ -1,5 +1,5 @@
 import { Game } from '@app/classes/game.class';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Bot } from '@app/classes/player/bot.class';
 import { ExpertBot } from '@app/classes/player/expert-bot.class';

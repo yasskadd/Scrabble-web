@@ -2,7 +2,7 @@
 /* eslint-disable dot-notation*/
 import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';

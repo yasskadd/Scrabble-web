@@ -1,7 +1,7 @@
 /* eslint-disable dot-notation */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { Game } from '@app/classes/game.class';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Turn } from '@app/classes/turn.class';
 import { BotInformation } from '@app/interfaces/bot-information';
 import { WordSolverService } from '@app/services/word-solver.service';
