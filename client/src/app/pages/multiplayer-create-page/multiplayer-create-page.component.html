@@ -27,11 +27,27 @@
                 </mat-form-field>
             </form>
 
-            <mat-card-title>Dictionnaire</mat-card-title>
-            <mat-form-field appearance="fill">
-                <mat-label>Français</mat-label>
-                <mat-select disabled required><mat-option value="francais" disabled>Francais</mat-option> </mat-select>
-            </mat-form-field>
+            <form [formGroup]="form">
+                <mat-card-title>Dictionnaire</mat-card-title>
+                <mat-form-field appearance="fill">
+                    <mat-label>Liste</mat-label>
+                    <mat-select (click)="onOpen()" formControlName="dictionary">
+                        <mat-option *ngFor="let dictionary of this.dictionaryList" [value]="dictionary.title">
+                            {{ dictionary.title.charAt(0).toUpperCase() + dictionary.title.slice(1) }}
+                            <span (mouseover)="onMouseOver(dictionary)" (mouseout)="onMouseOut()" id="dict-info">ⓘ</span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div #info id="info">
+                    <p></p>
+                    <p></p>
+                </div>
+            </form>
+
+            <input #file (change)="detectImportFile()" type="file" id="selectFiles" accept=".json" value="Import" /><br />
+            <button (click)="uploadDictionary()" id="import">Import</button>
+
+            <p #fileError id="file-error"></p>
 
             <form *ngIf="isSoloMode()" class="soloMode" [formGroup]="form">
                 <mat-card-title>Difficulté</mat-card-title>
