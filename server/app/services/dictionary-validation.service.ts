@@ -24,7 +24,7 @@ export class DictionaryValidationService {
         this.jsonDictionary.forEach((word: string) => {
             this.dictionary.add(word);
         });
-        console.log(this.jsonDictionary);
+        // console.log(this.jsonDictionary);
         this.createTrieDictionary();
     }
 

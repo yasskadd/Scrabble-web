@@ -14,12 +14,12 @@ describe('Word solver service', () => {
     let spyFindBeforePart: Sinon.SinonSpy;
 
     before(() => {
-        dictionaryValidationService = new DictionaryValidationService();
+        dictionaryValidationService = new DictionaryValidationService(['string']);
         dictionaryValidationService.createTrieDictionary();
     });
 
     beforeEach(() => {
-        wordSolverService = new WordSolverService(dictionaryValidationService);
+        wordSolverService = new WordSolverService(['string']);
         gameboard = new Gameboard();
         wordSolverService['gameboard'] = gameboard;
         spyFindBeforePart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);

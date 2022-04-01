@@ -66,12 +66,7 @@ describe('GamesActions Service', () => {
         wordSolverStub = sinon.createStubInstance(WordSolverService);
         gamesHandlerStub = sinon.createStubInstance(GamesHandler);
         letterPlacementStub = sinon.createStubInstance(LetterPlacementService);
-        gamesActionsService = new GamesActionsService(
-            socketManagerStub as never,
-            wordSolverStub as never,
-            letterPlacementStub as never,
-            gamesHandlerStub as never,
-        );
+        gamesActionsService = new GamesActionsService(socketManagerStub as never, gamesHandlerStub as never);
 
         gamesHandlerStub.players = new Map();
         gamesHandlerStub.gamePlayers = new Map();
