@@ -96,9 +96,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
                     this.httpHandler.addDictionary(newDictionary).subscribe();
                 }
             };
-            fileReader.onerror = (error) => {
-                console.log(error);
-            };
         } else {
             this.updateImportMessage("Il n'y a aucun fichier séléctioné", 'red');
         }

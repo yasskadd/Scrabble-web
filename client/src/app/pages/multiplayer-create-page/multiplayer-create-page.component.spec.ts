@@ -3,7 +3,7 @@
 // eslint-disable-next-line max-classes-per-file
 import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, Renderer2, Type } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -19,6 +19,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
+import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { of } from 'rxjs';
 import { MultiplayerCreatePageComponent } from './multiplayer-create-page.component';
@@ -33,6 +34,7 @@ const SOLO_MODE = 'solo/classique';
 const CREATE_MULTIPLAYER_GAME = 'multijoueur/creer/classique';
 const RETURN_ROUTE = 'home';
 const GAME_ROUTE = 'game';
+const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire', words: ['string'] };
 
 describe('MultiplayerCreatePageComponent', () => {
     let component: MultiplayerCreatePageComponent;
@@ -41,6 +43,9 @@ describe('MultiplayerCreatePageComponent', () => {
     let router: Router;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
+    let dictionaryVerificationSpy: jasmine.SpyObj<DictionaryVerificationService>;
+    let renderer2: Renderer2;
+    let setStyleSpy: unknown;
 
     const mockMatSnackBar = {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -55,10 +60,10 @@ describe('MultiplayerCreatePageComponent', () => {
         ]);
 
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
-        httpHandlerSpy.getDictionaries.and.returnValue(
-            of([{ _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire', words: ['string'] }]),
-        );
+        httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
         httpHandlerSpy.addDictionary.and.returnValue(of({} as unknown as void));
+
+        dictionaryVerificationSpy = jasmine.createSpyObj('DictionaryVerificationService', ['globalVerification']);
         await TestBed.configureTestingModule({
             imports: [
                 HttpClientModule,
@@ -95,7 +100,9 @@ describe('MultiplayerCreatePageComponent', () => {
                     },
                 },
                 { provide: FormBuilder },
+                { provide: Renderer2 },
                 { provide: HttpHandlerService, useValue: httpHandlerSpy },
+                { provide: DictionaryVerificationService, useValue: dictionaryVerificationSpy },
             ],
         }).compileComponents();
     });
@@ -106,10 +113,111 @@ describe('MultiplayerCreatePageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         location = TestBed.inject(Location);
+        renderer2 = fixture.componentRef.injector.get<Renderer2>(Renderer2 as Type<Renderer2>);
+        setStyleSpy = spyOn(renderer2, 'setStyle').and.callThrough();
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    // it('uploadDictionary() should call updateImportMessage if file did not pass globalVerification of DictionaryVerificationService', () => {
+    //     const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+    //     const dT = new DataTransfer();
+    //     dT.items.add(new File([blob], 'test.json'));
+    //     component.file.nativeElement.files = dT.files;
+    //     dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
+    //     component.uploadDictionary();
+    //     expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
+    // });
+
+    // it('uploadDictionary() should set selectedFile to file selected if it passed globalVerification of DictionaryVerificationService', () => {
+    //     const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+    //     const dT = new DataTransfer();
+    //     dT.items.add(new File([blob], 'test.json'));
+    //     component.file.nativeElement.files = dT.files;
+    //     dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Passed');
+    //     component.uploadDictionary();
+    //     expect(component.selectedFile).toEqual(DB_DICTIONARY);
+    // });
+
+    it('uploadDictionary() should set textContent of fileError with no file selected message if there is no selected file to upload', () => {
+        const messageSpy = spyOn(component, 'updateImportMessage');
+        component.uploadDictionary();
+        expect(messageSpy).toHaveBeenCalledWith("Il n'y a aucun fichier séléctioné", 'red');
+    });
+
+    it('clicking on import button should call uploadDictionary()', fakeAsync(() => {
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
+        const uploadDictionarySpy = spyOn(component, 'uploadDictionary');
+        const button = fixture.debugElement.nativeElement.querySelector('#import');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(uploadDictionarySpy).toHaveBeenCalled();
+    }));
+
+    it('detectImportFile() should disable dictionary select options if a file has been selected', () => {
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        const disableSpy = spyOn(component.form.controls.dictionary, 'disable');
+        dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
+        component.detectImportFile();
+        expect(disableSpy).toHaveBeenCalled();
+    });
+
+    it('detectImportFile() should set textContent of fileError to nothing', () => {
+        const message = '';
+        component.detectImportFile();
+        expect(component.fileError.nativeElement.textContent).toEqual(message);
+    });
+
+    it('selecting a file should call detectImportFile()', fakeAsync(() => {
+        const detectImportFileSpy = spyOn(component, 'detectImportFile');
+        const input = fixture.debugElement.nativeElement.querySelector('#selectFiles');
+        input.dispatchEvent(new Event('change'));
+        tick();
+        fixture.detectChanges();
+        expect(detectImportFileSpy).toHaveBeenCalled();
+    }));
+
+    it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
+        const message = 'Message';
+        const color = 'red';
+        component.updateImportMessage(message, color);
+        expect(component.fileError.nativeElement.textContent).toEqual(message);
+        expect(component.fileError.nativeElement.style.color).toEqual(color);
+    });
+
+    it('onMouseOver() should set textContent of info panel with title and description of the dictionary passed as param', () => {
+        component.onMouseOver(DB_DICTIONARY);
+        expect(component.info.nativeElement.children[0].textContent).toEqual(DB_DICTIONARY.title);
+        expect(component.info.nativeElement.children[1].textContent).toEqual(DB_DICTIONARY.description);
+    });
+
+    it('onMouseOver() should call setStyle of Renderer2 and show dictionary info panel', () => {
+        component.onMouseOver(DB_DICTIONARY);
+        expect(setStyleSpy).toHaveBeenCalledWith(component.info.nativeElement, 'visibility', 'visible');
+    });
+
+    it('onMouseOut() should call setStyle of Renderer2 and hide dictionary info panel', () => {
+        component.onMouseOut();
+        expect(setStyleSpy).toHaveBeenCalledWith(component.info.nativeElement, 'visibility', 'hidden');
+    });
+
+    it('onOpen() should call getDictionaries() of HttpHandlerService', () => {
+        component.onOpen();
+        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
+    });
+
+    it('onOpen() should set dictionaryList', () => {
+        component.dictionaryList = [];
+        component.onOpen();
+        expect(component.dictionaryList.length).not.toEqual(0);
     });
 
     it('navigatePage should redirect to salleAttente when we create a multiplayer Game', fakeAsync(() => {
@@ -146,7 +254,7 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component.isSoloMode()).toEqual(false);
     }));
 
-    it('Should have a form with the solo Mode difficulty when we create a solo game', fakeAsync(() => {
+    it('should have a form with the solo Mode difficulty when we create a solo game', fakeAsync(() => {
         router.navigateByUrl(SOLO_MODE);
         tick();
         fixture.detectChanges();
@@ -154,7 +262,7 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(form).toBeTruthy();
     }));
 
-    it('Should  not have a form with the solo Mode difficulty when we create a multiplayer game', fakeAsync(() => {
+    it('should not have a form with the solo Mode difficulty when we create a multiplayer game', fakeAsync(() => {
         router.navigateByUrl(CREATE_MULTIPLAYER_GAME);
         tick();
         fixture.detectChanges();
@@ -238,7 +346,6 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component.form.get('timer')?.value).toEqual(component.timerList[3]);
     }));
 
-    //
     it('should display the timer option selected', fakeAsync(() => {
         const expectedValue = '2:00 minutes';
         const timerSelect = fixture.debugElement.nativeElement.querySelector('#timer-select');
@@ -326,12 +433,24 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
     }));
 
-    it('ResetInput() should clear the playerName', () => {
+    it('resetInput() should clear the playerName', () => {
         const VALID_NAME = 'Serge';
         component.playerName = VALID_NAME;
         // Testing private method
         // eslint-disable-next-line dot-notation
         component['resetInput']();
         expect(component.playerName).toEqual('');
+    });
+
+    it('getDictionary() should return selectedFile if a file has been imported', () => {
+        const expectedDictionary = {} as Dictionary;
+        component.selectedFile = expectedDictionary;
+        // eslint-disable-next-line dot-notation
+        expect(component['getDictionary']('title')).toEqual(expectedDictionary);
+    });
+
+    it('getDictionary() should return the dictionary matching param title if there is no import file', () => {
+        // eslint-disable-next-line dot-notation
+        expect(component['getDictionary'](DB_DICTIONARY.title)).toEqual(DB_DICTIONARY);
     });
 });
