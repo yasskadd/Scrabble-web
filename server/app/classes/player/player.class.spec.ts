@@ -1,4 +1,4 @@
-import { Game } from '@app/classes/game';
+import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';

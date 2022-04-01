@@ -1,13 +1,13 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-empty-function*/
 /* eslint-disable dot-notation*/
-import { Game } from '@app/classes/game';
+import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
-import { Turn } from '@app/classes/turn';
+import { Turn } from '@app/classes/turn.class';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';

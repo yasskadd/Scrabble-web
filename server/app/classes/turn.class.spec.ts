@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { restore, SinonFakeTimers, spy, stub, useFakeTimers } from 'sinon';
 import { Player } from './player/player.class';
-import { Turn } from './turn';
+import { Turn } from './turn.class';
 
 const SECOND = 1000;
 

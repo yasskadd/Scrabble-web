@@ -1,11 +1,11 @@
-import { Game } from '@app/classes/game';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { Game } from '@app/classes/game.class';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Bot } from '@app/classes/player/bot.class';
 import { ExpertBot } from '@app/classes/player/expert-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
-import { Turn } from '@app/classes/turn';
+import { Turn } from '@app/classes/turn.class';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';

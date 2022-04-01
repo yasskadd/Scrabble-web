@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-empty-function*/
 /* eslint-disable dot-notation*/
-import { Game } from '@app/classes/game';
+import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
-import { Turn } from '@app/classes/turn';
+import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';

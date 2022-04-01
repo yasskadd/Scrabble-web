@@ -1,4 +1,4 @@
-import { Game } from '@app/classes/game';
+import { Game } from '@app/classes/game.class';
 import { Player } from '@app/classes/player/player.class';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
