@@ -8,15 +8,15 @@ type MongoDocument = Document & { _id?: ObjectId | undefined };
 export class DatabaseCollection {
     private static dbUrl: string;
     private static dbName: string;
-    private static dbCollection: string;
     collection: Collection;
+    private dbCollection: string;
     private isConnected: boolean;
     private mongoClient: MongoClient;
 
     constructor(collection: string) {
+        this.dbCollection = collection;
         this.isConnected = false;
         DatabaseCollection.dbName = 'Projects';
-        DatabaseCollection.dbCollection = collection;
         DatabaseCollection.dbUrl =
             `mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}` + '@cluster0.hxlnx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
     }
@@ -42,7 +42,7 @@ export class DatabaseCollection {
         await this.collection.replaceOne(parameters, document);
     }
 
-    async resetDatabase() {
+    async resetCollection() {
         await this.connect();
         await this.collection.deleteMany({});
     }
@@ -52,7 +52,7 @@ export class DatabaseCollection {
         try {
             this.mongoClient = new MongoClient(DatabaseCollection.dbUrl);
             await this.mongoClient.connect();
-            this.collection = this.mongoClient.db(DatabaseCollection.dbName).collection(DatabaseCollection.dbCollection);
+            this.collection = this.mongoClient.db(DatabaseCollection.dbName).collection(this.dbCollection);
             this.isConnected = true;
         } catch (e) {
             // REASON : We need to know why the connection isn't establishing in case of unexpected error

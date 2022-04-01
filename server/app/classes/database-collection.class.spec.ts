@@ -52,7 +52,7 @@ describe('Database Service', () => {
         expect(currentCount).to.be.equal(documentCount - 1);
     });
 
-    it('resetDatabase() should remove all documents from the collection', async () => {
+    it('resetresetCollection() should remove all documents from the collection', async () => {
         await databaseCollection['connect']();
         await databaseCollection['collection'].insertOne({ tests: 'I hate tests', helloWorld: 'WorldHello' });
 
@@ -61,7 +61,7 @@ describe('Database Service', () => {
         const documentCount = await databaseCollection['collection'].countDocuments({});
 
         expect(documentCount).to.be.equal(2);
-        await databaseCollection['resetDatabase']();
+        await databaseCollection['resetCollection']();
         const currentCount = await databaseCollection['collection'].countDocuments({});
 
         expect(currentCount).to.be.equal(0);
