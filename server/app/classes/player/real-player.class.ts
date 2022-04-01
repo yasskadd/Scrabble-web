@@ -1,4 +1,4 @@
-import { Game } from '@app/classes/game';
+import { Game } from '@app/classes/game.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Player } from './player.class';

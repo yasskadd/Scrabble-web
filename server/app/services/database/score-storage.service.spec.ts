@@ -1,8 +1,11 @@
 /* eslint-disable dot-notation*/
+import { DatabaseCollection } from '@app/classes/database-collection.class';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { DatabaseService } from './database.service';
 import { ScoreStorageService } from './score-storage.service';
+
+type CollectionStub = Sinon.SinonStubbedInstance<DatabaseCollection>;
 
 const TOP_SCORES = [
     {
@@ -60,6 +63,8 @@ describe('scoreStorage Service', () => {
 
     beforeEach(async () => {
         databaseServiceStub = Sinon.createStubInstance(DatabaseService);
+        databaseServiceStub.scores = Sinon.createStubInstance(DatabaseCollection) as never;
+
         scoreStorageService = new ScoreStorageService(databaseServiceStub as unknown as DatabaseService);
     });
     afterEach(async () => {
@@ -67,13 +72,13 @@ describe('scoreStorage Service', () => {
     });
 
     it('getLOG2990TopScores() should return the LOG2990 top scores from the database', async () => {
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES);
         const scoresLOG2990 = await scoreStorageService.getLOG2990TopScores();
         expect(scoresLOG2990).to.be.deep.equal(TOP_SCORES);
     });
 
     it('getClassicTopScores() should return the classic top scores from the database', async () => {
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES);
         const scoresClassic = await scoreStorageService.getClassicTopScores();
         expect(scoresClassic).to.be.deep.equal(TOP_SCORES);
     });
@@ -98,24 +103,34 @@ describe('scoreStorage Service', () => {
     });
 
     it("populateDb() should populate the database if it's not populated", async () => {
-        databaseServiceStub.fetchDocuments.resolves([]);
-        databaseServiceStub.addDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves([]);
+        (databaseServiceStub.scores as unknown as CollectionStub).addDocument.resolves();
         await scoreStorageService['populateDb']();
         for (let i = 1; i < ScoreStorageService['lastElement']; i++) {
             expect(
-                databaseServiceStub.addDocument.withArgs({ username: 'Tarnished', type: 'Classique', score: 0, position: i }).callCount,
+                (databaseServiceStub.scores as unknown as CollectionStub).addDocument.withArgs({
+                    username: 'Tarnished',
+                    type: 'Classique',
+                    score: 0,
+                    position: i,
+                }).callCount,
             ).to.be.equal(1);
-            expect(databaseServiceStub.addDocument.withArgs({ username: 'EldenLord', type: 'LOG2990', score: 0, position: i }).callCount).to.be.equal(
-                1,
-            );
+            expect(
+                (databaseServiceStub.scores as unknown as CollectionStub).addDocument.withArgs({
+                    username: 'EldenLord',
+                    type: 'LOG2990',
+                    score: 0,
+                    position: i,
+                }).callCount,
+            ).to.be.equal(1);
         }
     });
 
     it("populateDb() shouldn't populate the database if it's already populated", async () => {
-        databaseServiceStub.fetchDocuments.resolves([{}, {}]);
-        databaseServiceStub.addDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves([{}, {}]);
+        (databaseServiceStub.scores as unknown as CollectionStub).addDocument.resolves();
         await scoreStorageService['populateDb']();
-        expect(databaseServiceStub.addDocument.called).to.be.equal(false);
+        expect((databaseServiceStub.scores as unknown as CollectionStub).addDocument.called).to.be.equal(false);
     });
 
     it('addTopScores() should call addNewScore when there is a new highScore register ', async () => {
@@ -129,8 +144,8 @@ describe('scoreStorage Service', () => {
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
         topScoresPositionStub.returns(POSITION);
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
-        databaseServiceStub.replaceDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.resolves();
         await scoreStorageService['addTopScores'](scoreInfo);
         expect(addNewScoreStub.called).to.equal(true);
     });
@@ -145,11 +160,16 @@ describe('scoreStorage Service', () => {
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
         topScoresPositionStub.returns(POSITION);
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
-        databaseServiceStub.replaceDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.resolves();
         await scoreStorageService['addNewScore'](TOP_SCORES_CLASSIC, POSITION, scoreInfo);
 
-        expect(databaseServiceStub.replaceDocument.withArgs({ position: POSITION }, { ...scoreInfo, position: POSITION }).callCount).to.be.equal(1);
+        expect(
+            (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.withArgs(
+                { position: POSITION },
+                { ...scoreInfo, position: POSITION },
+            ).callCount,
+        ).to.be.equal(1);
     });
 
     it('addPlayerToSameScore() should add the name of the player if he has the same score of someone else ', async () => {
@@ -166,11 +186,11 @@ describe('scoreStorage Service', () => {
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
         topScoresPositionStub.returns(POSITION);
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
-        databaseServiceStub.replaceDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.resolves();
         await scoreStorageService['addPlayerToSameScore'](scoreInfo, POSITION, TOP_SCORES_CLASSIC[2]);
         expect(
-            databaseServiceStub.replaceDocument.withArgs(
+            (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.withArgs(
                 { position: POSITION },
                 { ...infoPlayer, username: TOP_SCORES_CLASSIC[2].username + ' - ' + scoreInfo.username, position: POSITION },
             ).callCount,
@@ -187,8 +207,8 @@ describe('scoreStorage Service', () => {
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
         topScoresPositionStub.returns(POSITION);
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
-        databaseServiceStub.replaceDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.resolves();
         await scoreStorageService['addTopScores'](scoreInfo);
         expect(addPlayerToSameScoreStub.called).to.equal(true);
     });
@@ -204,8 +224,8 @@ describe('scoreStorage Service', () => {
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
         topScoresPositionStub.returns(POSITION);
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES_CLASSIC);
-        databaseServiceStub.replaceDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.resolves();
         await scoreStorageService['addTopScores'](scoreInfo);
         expect(addPlayerToSameScoreStub.called).to.not.equal(true);
     });
@@ -222,8 +242,8 @@ describe('scoreStorage Service', () => {
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
         topScoresPositionStub.returns(POSITION);
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
-        databaseServiceStub.replaceDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES);
+        (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.resolves();
         await scoreStorageService['addTopScores'](scoreInfo);
         expect(addPlayerToSameScoreStub.called).to.not.equal(true);
         expect(addNewScoreStub.called).to.not.equal(true);
@@ -241,8 +261,8 @@ describe('scoreStorage Service', () => {
         Sinon.stub(scoreStorageService, 'populateDb' as never);
         const topScoresPositionStub = Sinon.stub(scoreStorageService, 'getTopScoresPosition' as never);
         topScoresPositionStub.returns(POSITION);
-        databaseServiceStub.fetchDocuments.resolves(TOP_SCORES);
-        databaseServiceStub.replaceDocument.resolves();
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES);
+        (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.resolves();
         await scoreStorageService['addTopScores'](scoreInfo);
         expect(addPlayerToSameScoreStub.called).to.not.equal(true);
         expect(addNewScoreStub.called).to.not.equal(true);

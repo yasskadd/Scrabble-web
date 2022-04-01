@@ -14,7 +14,7 @@ export class ScoreStorageService {
     }
     async addTopScores(scoreInfo: ScoreInfo) {
         await this.populateDb();
-        const currentTopScores = await this.database.fetchDocuments({ type: scoreInfo.type });
+        const currentTopScores = await this.database.scores.fetchDocuments({ type: scoreInfo.type });
         const scorePlace = this.getTopScoresPosition(currentTopScores, scoreInfo.score);
         if (scorePlace === ScoreStorageService.lastElement) return;
         const currentElement = currentTopScores[scorePlace - 1];
@@ -28,17 +28,17 @@ export class ScoreStorageService {
 
     async getLOG2990TopScores(): Promise<Document[]> {
         await this.populateDb();
-        const currentTopScores = await this.database.fetchDocuments({ type: 'LOG2990' });
+        const currentTopScores = await this.database.scores.fetchDocuments({ type: 'LOG2990' });
         return currentTopScores;
     }
     async getClassicTopScores(): Promise<Document[]> {
         await this.populateDb();
-        const currentTopScores = await this.database.fetchDocuments({ type: 'Classique' });
+        const currentTopScores = await this.database.scores.fetchDocuments({ type: 'Classique' });
         return currentTopScores;
     }
 
     private async populateDb() {
-        const currentTopScores = await this.database.fetchDocuments({});
+        const currentTopScores = await this.database.scores.fetchDocuments({});
         if (currentTopScores.length !== 0) return;
         const dummyClassicScoreInfo = (() => {
             let i = 1;
@@ -53,13 +53,13 @@ export class ScoreStorageService {
             };
         })();
         for (let i = 0; i < ScoreStorageService.maxLength; i++) {
-            await this.database.addDocument(dummyClassicScoreInfo());
-            await this.database.addDocument(dummyLOG2990ScoreInfo());
+            await this.database.scores.addDocument(dummyClassicScoreInfo());
+            await this.database.scores.addDocument(dummyLOG2990ScoreInfo());
         }
     }
 
     private async addPlayerToSameScore(scoreInfo: ScoreInfo, scorePlace: number, currentElement: Document) {
-        await this.database.replaceDocument(
+        await this.database.scores.replaceDocument(
             { position: scorePlace },
             {
                 position: scorePlace,
@@ -73,13 +73,13 @@ export class ScoreStorageService {
     private async addNewScore(currentTopScores: Document[], scorePlace: number, scoreInfo: ScoreInfo) {
         currentTopScores.forEach((value) => {
             if (value.position >= scorePlace && value.position !== ScoreStorageService.lastElement) {
-                this.database.replaceDocument(
+                this.database.scores.replaceDocument(
                     { position: value.position + 1 },
                     { position: value.position + 1, username: value.username, type: value.type, score: value.score },
                 );
             }
         });
-        this.database.replaceDocument(
+        this.database.scores.replaceDocument(
             { position: scorePlace },
             { position: scorePlace, username: scoreInfo.username, type: scoreInfo.type, score: scoreInfo.score },
         );
