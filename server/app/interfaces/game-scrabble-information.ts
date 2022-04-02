@@ -5,4 +5,5 @@ export interface GameScrabbleInformation {
     socketId: string[];
     mode: string;
     botDifficulty?: string;
+    dictionary: string[];
 }

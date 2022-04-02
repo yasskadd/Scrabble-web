@@ -12,7 +12,7 @@ import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
 import { GamesHandler } from './games-handler.service';
 
 const MAX_SKIP = 6;
@@ -101,8 +101,17 @@ export class GamesStateService {
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
             if (gameInfo.botDifficulty === 'Débutant')
-                newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
-            else newPlayer = new ExpertBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+                newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
+                    timer: gameInfo.timer,
+                    roomId: gameInfo.roomId,
+                    dictionary: gameInfo.dictionary,
+                });
+            else
+                newPlayer = new ExpertBot(false, gameInfo.playerName[player], {
+                    timer: gameInfo.timer,
+                    roomId: gameInfo.roomId,
+                    dictionary: gameInfo.dictionary,
+                });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
             newPlayer.room = gameInfo.roomId;
@@ -115,7 +124,7 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
-        return new Game(players[0], players[1], new Turn(gameInfo.timer), new LetterReserve(), Container.get(LetterPlacementService));
+        return new Game(players[0], players[1], new Turn(gameInfo.timer), new LetterReserve(), new LetterPlacementService(gameInfo.dictionary));
     }
 
     private changeTurn(roomId: string) {
@@ -139,36 +148,36 @@ export class GamesStateService {
         const room = player.room;
         this.gamesHandler.players.delete(socket.id);
         socket.leave(room);
-        if (!player.game.isModeSolo) {
-            this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
-            this.switchToSolo(socket, player);
-            return;
-        }
+        // if (!player.game.isModeSolo) {
+        //     this.socketManager.emitRoom(room, SocketEvents.UserDisconnect);
+        //     this.switchToSolo(socket, player);
+        //     return;
+        // }
         player.game.abandon();
     }
 
-    private switchToSolo(socket: Socket, playerToReplace: Player) {
-        const info = playerToReplace.getInformation();
-        const playerInRoom = this.gamesHandler.gamePlayers.get(playerToReplace.room);
-        if (playerInRoom === undefined) return;
-        const botPlayer = new BeginnerBot(false, 'Maurice', { timer: playerToReplace.game.turn.time, roomId: playerToReplace.room });
-        botPlayer.score = info.score;
-        botPlayer.rack = info.rack;
+    // private switchToSolo(socket: Socket, playerToReplace: Player) {
+    //     const info = playerToReplace.getInformation();
+    //     const playerInRoom = this.gamesHandler.gamePlayers.get(playerToReplace.room);
+    //     if (playerInRoom === undefined) return;
+    //     const botPlayer = new BeginnerBot(false, 'Maurice', { timer: playerToReplace.game.turn.time, roomId: playerToReplace.room });
+    //     botPlayer.score = info.score;
+    //     botPlayer.rack = info.rack;
 
-        if (playerToReplace.game.turn.activePlayer === playerToReplace.name) playerToReplace.game.turn.activePlayer = botPlayer.name;
-        else playerToReplace.game.turn.inactivePlayer = botPlayer.name;
-        if (playerInRoom[1] === playerToReplace) this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[0], botPlayer]);
-        else this.gamesHandler.gamePlayers.set(playerToReplace.room, [botPlayer, playerInRoom[1]]);
+    //     if (playerToReplace.game.turn.activePlayer === playerToReplace.name) playerToReplace.game.turn.activePlayer = botPlayer.name;
+    //     else playerToReplace.game.turn.inactivePlayer = botPlayer.name;
+    //     if (playerInRoom[1] === playerToReplace) this.gamesHandler.gamePlayers.set(playerToReplace.room, [playerInRoom[0], botPlayer]);
+    //     else this.gamesHandler.gamePlayers.set(playerToReplace.room, [botPlayer, playerInRoom[1]]);
 
-        this.updateNewBot(socket, playerToReplace.game, playerToReplace.room, botPlayer);
-    }
+    //     this.updateNewBot(socket, playerToReplace.game, playerToReplace.room, botPlayer);
+    // }
 
-    private updateNewBot(socket: Socket, game: Game, roomId: string, botPlayer: Player) {
-        game.isModeSolo = true;
-        (botPlayer as BeginnerBot).setGame(game);
-        (botPlayer as BeginnerBot).start();
-        this.gamesHandler.updatePlayerInfo(socket, roomId, game);
-    }
+    // private updateNewBot(socket: Socket, game: Game, roomId: string, botPlayer: Player) {
+    //     game.isModeSolo = true;
+    //     (botPlayer as BeginnerBot).setGame(game);
+    //     (botPlayer as BeginnerBot).start();
+    //     this.gamesHandler.updatePlayerInfo(socket, roomId, game);
+    // }
 
     private disconnect(socket: Socket) {
         if (!this.gamesHandler.players.has(socket.id)) return;

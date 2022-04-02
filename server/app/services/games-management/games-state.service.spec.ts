@@ -38,7 +38,15 @@ describe('GamesState Service', () => {
 
     let player1: sinon.SinonStubbedInstance<RealPlayer>;
     let player2: sinon.SinonStubbedInstance<RealPlayer>;
-    let gameInfo: { playerName: string[]; roomId: string; timer: number; socketId: string[]; mode: string; botDifficulty?: string };
+    let gameInfo: {
+        playerName: string[];
+        roomId: string;
+        timer: number;
+        socketId: string[];
+        mode: string;
+        botDifficulty?: string;
+        dictionary: ['string'];
+    };
 
     beforeEach((done) => {
         player1 = sinon.createStubInstance(RealPlayer);
@@ -74,7 +82,15 @@ describe('GamesState Service', () => {
             clientSocket = Client(`http://localhost:${port}`);
             sio.on('connection', (socket) => {
                 serverSocket = socket;
-                gameInfo = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id], mode: 'Classique', botDifficulty: undefined };
+                gameInfo = {
+                    playerName: [],
+                    roomId: ROOM,
+                    timer: 0,
+                    socketId: [serverSocket.id],
+                    mode: 'Classique',
+                    botDifficulty: undefined,
+                    dictionary: ['string'],
+                };
             });
             clientSocket.on('connect', done);
         });
@@ -119,6 +135,7 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: ['string'],
         };
 
         const newPlayer = gamesStateService['setAndGetPlayer'](gameInformation) as Player;
@@ -141,6 +158,7 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID, SECOND_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: ['string'],
         };
 
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
@@ -162,8 +180,13 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: 'Débutant',
+            dictionary: ['string'],
         };
-        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, { timer: gameInformation.timer, roomId: gameInformation.roomId });
+        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
+            timer: gameInformation.timer,
+            roomId: gameInformation.roomId,
+            dictionary: gameInformation.dictionary,
+        });
 
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
 
@@ -183,8 +206,13 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: 'Expert',
+            dictionary: ['string'],
         };
-        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, { timer: gameInformation.timer, roomId: gameInformation.roomId });
+        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
+            timer: gameInformation.timer,
+            roomId: gameInformation.roomId,
+            dictionary: gameInformation.dictionary,
+        });
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
         const newPlayer = gamesStateService['setAndGetPlayer'](gameInformation) as Player;
         expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
@@ -200,6 +228,7 @@ describe('GamesState Service', () => {
             socketId: [serverSocket.id],
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: ['string'],
         };
 
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);

@@ -6,4 +6,5 @@ export interface RoomInformation {
     mode: string;
     timer: number;
     botDifficulty?: string;
+    dictionary: string[];
 }

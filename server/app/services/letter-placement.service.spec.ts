@@ -35,7 +35,7 @@ describe('Letter Placement Service', () => {
 
         gameboard = new Gameboard();
         dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService);
-        placementService = new LetterPlacementService(dictionaryValidation as unknown as DictionaryValidationService);
+        placementService = new LetterPlacementService(['string']);
     });
 
     context('validateCommandCoordinate() tests', () => {

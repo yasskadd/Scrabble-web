@@ -15,6 +15,7 @@ interface GameScrabbleInformation {
     socketId: string[];
     mode: string;
     botDifficulty?: string;
+    dictionary: string[];
 }
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
@@ -24,6 +25,7 @@ const ROOM_INFORMATION: RoomInformation = {
     timer: 0,
     mode: 'classique',
     botDifficulty: undefined,
+    dictionary: ['string'],
 };
 export class SocketClientServiceMock extends ClientSocketService {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -97,7 +99,7 @@ describe('GameConfigurationService', () => {
     });
 
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
-        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique', isMultiplayer: true };
+        const testGameConfiguration = { username: 'Pauline', dictionary: ['francais'], timer: 1, mode: 'classique', isMultiplayer: true };
         const testStatusGame = "En Attente d'un Adversaire ...";
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
@@ -166,7 +168,7 @@ describe('GameConfigurationService', () => {
     it('gameInitialization() should assign a name to the opponent when the method is called with the name of the bot ', () => {
         const testGameConfiguration = {
             username: 'Pauline',
-            dictionary: 'francais',
+            dictionary: ['francais'],
             timer: 1,
             mode: 'classique',
             isMultiplayer: true,
@@ -186,6 +188,7 @@ describe('GameConfigurationService', () => {
             timer: 60,
             mode: 'classique',
             botDifficulty: undefined,
+            dictionary: ['string'],
         };
         service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
@@ -342,6 +345,7 @@ describe('GameConfigurationService', () => {
             socketId: socketIDUserRoom,
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: ROOM_INFORMATION.dictionary,
         };
         service.roomInformation.playerName = ROOM_INFORMATION.playerName;
         service.roomInformation.roomId = ROOM_INFORMATION.roomId;
@@ -378,6 +382,7 @@ describe('GameConfigurationService', () => {
             timer: 60,
             mode: 'classique',
             botDifficulty: undefined,
+            dictionary: ['string'],
         };
         service.roomInformation = roomInformationUpdated;
         expect(service.roomInformation.playerName).toEqual(['Vincent', 'Marcel']);
