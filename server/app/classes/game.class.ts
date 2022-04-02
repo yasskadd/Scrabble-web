@@ -5,6 +5,7 @@ import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 
@@ -14,10 +15,12 @@ export class Game {
     gameboard: Gameboard;
     isGameFinish: boolean;
     isModeSolo: boolean;
+    wordSolver: WordSolverService;
 
     constructor(
         player1: Player,
         player2: Player,
+        dictionary: string[],
         public turn: Turn,
         public letterReserve: LetterReserve,
         private letterPlacement: LetterPlacementService,
@@ -26,6 +29,7 @@ export class Game {
         this.gameboard = new Gameboard();
         this.isGameFinish = false;
         this.isModeSolo = false;
+        this.wordSolver = new WordSolverService(dictionary);
     }
 
     start(player1: Player, player2: Player): void {

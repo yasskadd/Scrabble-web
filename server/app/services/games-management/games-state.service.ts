@@ -124,7 +124,14 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
-        return new Game(players[0], players[1], new Turn(gameInfo.timer), new LetterReserve(), new LetterPlacementService(gameInfo.dictionary));
+        return new Game(
+            players[0],
+            players[1],
+            gameInfo.dictionary,
+            new Turn(gameInfo.timer),
+            new LetterReserve(),
+            new LetterPlacementService(gameInfo.dictionary),
+        );
     }
 
     private changeTurn(roomId: string) {

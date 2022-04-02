@@ -1,3 +1,4 @@
+import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Word } from '@app/classes/word.class';
@@ -43,24 +44,24 @@ export class GamesActionsService {
     private clueCommand(this: this, socket: Socket) {
         const letterString: string[] = [];
         const player = this.gamesHandler.players.get(socket.id) as Player;
-        // this.wordSolver.setGameboard(player.game.gameboard as Gameboard);
+        player.game.wordSolver.setGameboard(player.game.gameboard as Gameboard);
         player.rack.forEach((letter) => {
             letterString.push(letter.value);
         });
-        // const wordToChoose: CommandInfo[] = this.configureClueCommand(this.wordSolver.findAllOptions(letterString));
-        // socket.emit(SocketEvents.ClueCommand, wordToChoose);
+        const wordToChoose: CommandInfo[] = this.configureClueCommand(player.game.wordSolver.findAllOptions(letterString));
+        socket.emit(SocketEvents.ClueCommand, wordToChoose);
     }
 
-    // private configureClueCommand(commandInfoList: CommandInfo[]): CommandInfo[] {
-    //     const wordToChoose: CommandInfo[] = [];
-    //     for (let i = 0; i < 3; i++) {
-    //         if (commandInfoList.length === 0) break;
-    //         const random = Math.floor(Math.random() * commandInfoList.length);
-    //         wordToChoose.push(commandInfoList[random]);
-    //         commandInfoList.splice(random, 1);
-    //     }
-    //     return wordToChoose;
-    // }
+    private configureClueCommand(commandInfoList: CommandInfo[]): CommandInfo[] {
+        const wordToChoose: CommandInfo[] = [];
+        for (let i = 0; i < 3; i++) {
+            if (commandInfoList.length === 0) break;
+            const random = Math.floor(Math.random() * commandInfoList.length);
+            wordToChoose.push(commandInfoList[random]);
+            commandInfoList.splice(random, 1);
+        }
+        return wordToChoose;
+    }
 
     private reserveCommand(this: this, socket: Socket) {
         if (!this.gamesHandler.players.has(socket.id)) return;
