@@ -270,12 +270,24 @@ describe('Word solver service', () => {
 
     context('findWordPartBeforeAnchor() tests', () => {
         it('should call findWordPartBeforeAnchor() and extendWordAfterAnchor() more than once if a word could be found', () => {
-            wordSolverService['rack'] = ['l', 'e', 's'];
+            wordSolverService['rack'] = ['l', 'e', '*'];
             const anchor: Coordinate = { x: 1, y: 1 };
             const limit = 100;
             const spyExtendWordAfterAnchor = Sinon.spy(wordSolverService, 'extendWordAfterAnchor' as keyof WordSolverService);
             wordSolverService['findWordPartBeforeAnchor']('', wordSolverService['trie'].root, anchor, limit);
             expect(spyFindBeforePart.callCount && spyExtendWordAfterAnchor.callCount).to.be.greaterThan(1);
+        });
+    });
+
+    context('rackHasBlankLetter() tests', () => {
+        it('should true if player rack has blank letter', () => {
+            wordSolverService['rack'] = ['l', 'e', 's', '*'];
+            expect(wordSolverService['rackHasBlankLetter']()).to.be.equal(true);
+        });
+
+        it('should false if player rack does not have blank letter', () => {
+            wordSolverService['rack'] = ['l', 'e', 's'];
+            expect(wordSolverService['rackHasBlankLetter']()).to.be.equal(false);
         });
     });
 
