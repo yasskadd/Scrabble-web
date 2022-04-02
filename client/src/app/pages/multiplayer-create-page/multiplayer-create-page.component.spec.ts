@@ -389,7 +389,7 @@ describe('MultiplayerCreatePageComponent', () => {
         const TEST_PLAYER = {
             username: component.playerName,
             timer: 60,
-            dictionary: ['francais'],
+            dictionary: { words: ['francais'] } as Dictionary,
             mode: 'classique',
             isMultiplayer: true,
             opponent: undefined,
@@ -407,7 +407,7 @@ describe('MultiplayerCreatePageComponent', () => {
         const TEST_PLAYER = {
             username: component.playerName,
             timer: 60,
-            dictionary: ['francais'],
+            dictionary: { words: ['francais'] } as Dictionary,
             mode: 'classique',
             isMultiplayer: false,
             opponent: 'robert',

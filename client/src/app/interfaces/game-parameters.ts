@@ -1,6 +1,8 @@
+import { Dictionary } from './dictionary';
+
 export interface GameParameters {
     username: string;
-    dictionary: string[];
+    dictionary: Dictionary;
     timer: number;
     mode: string;
     isMultiplayer: boolean;

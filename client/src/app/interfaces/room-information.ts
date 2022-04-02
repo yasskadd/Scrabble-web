@@ -1,3 +1,5 @@
+import { Dictionary } from './dictionary';
+
 export interface RoomInformation {
     playerName: string[];
     roomId: string;
@@ -6,5 +8,5 @@ export interface RoomInformation {
     mode: string;
     timer: number;
     botDifficulty?: string;
-    dictionary: string[];
+    dictionary: Dictionary;
 }

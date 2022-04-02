@@ -145,7 +145,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
             timer: (this.form.get('timer') as AbstractControl).value,
-            dictionary: this.getDictionary((this.form.get('dictionary') as AbstractControl).value).words,
+            dictionary: this.getDictionary((this.form.get('dictionary') as AbstractControl).value),
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,
             opponent: this.isSoloMode() ? this.botName : undefined,

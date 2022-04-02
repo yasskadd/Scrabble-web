@@ -104,13 +104,13 @@ export class GamesStateService {
                 newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionary: gameInfo.dictionary,
+                    dictionary: gameInfo.dictionary.words,
                 });
             else
                 newPlayer = new ExpertBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionary: gameInfo.dictionary,
+                    dictionary: gameInfo.dictionary.words,
                 });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
@@ -127,10 +127,10 @@ export class GamesStateService {
         return new Game(
             players[0],
             players[1],
-            gameInfo.dictionary,
+            gameInfo.dictionary.words,
             new Turn(gameInfo.timer),
             new LetterReserve(),
-            new LetterPlacementService(gameInfo.dictionary),
+            new LetterPlacementService(gameInfo.dictionary.words),
         );
     }
 
