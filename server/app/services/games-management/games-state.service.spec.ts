@@ -11,6 +11,7 @@ import { Turn } from '@app/classes/turn.class';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -60,10 +61,12 @@ describe('GamesState Service', () => {
         player2.score = 0;
 
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
+        game.wordSolver = sinon.createStubInstance(WordSolverService) as unknown as WordSolverService;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         game.letterReserve = sinon.createStubInstance(LetterReserve) as unknown as LetterReserve;
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
+        game.dictionary = ['string'];
 
         player1.game = game;
 
