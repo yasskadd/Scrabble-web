@@ -8,13 +8,16 @@ import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
+import { Container } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
+import { RackService } from './rack.service';
 
 describe('Letter Placement Service', () => {
     let player: Player;
     let commandInfo: CommandInfo;
     let gameboard: Gameboard;
+    let rackService: RackService;
     let placementService: LetterPlacementService;
     let word: Word;
 
@@ -33,7 +36,8 @@ describe('Letter Placement Service', () => {
         };
 
         gameboard = new Gameboard();
-        placementService = new LetterPlacementService(['string']);
+        rackService = Container.get(RackService);
+        placementService = new LetterPlacementService(['string'], rackService);
         placementService['dictionaryValidationService'] = Sinon.createStubInstance(
             DictionaryValidationService,
         ) as Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
@@ -162,63 +166,6 @@ describe('Letter Placement Service', () => {
         });
     });
 
-    context('areLettersInRack() tests', () => {
-        it('areLettersInRack() should return true if letter is in rack', () => {
-            expect(placementService['areLettersInRack'](['b'], player)).to.equal(true);
-        });
-
-        it('areLettersInRack() should return false if letter is not in rack', () => {
-            expect(placementService['areLettersInRack'](['c'], player)).to.equal(false);
-        });
-
-        it('return a list of 1 letter if only 1 letter is in command and it is present in rack', () => {
-            expect(placementService['findLettersPresentInRack'](['a'], player.rack).length).to.eql(1);
-        });
-
-        it('return empty list if letters are not in the rack', () => {
-            expect(placementService['findLettersPresentInRack'](['c'], player.rack)).to.eql([]);
-        });
-
-        it('return empty list if not every letters match the rack', () => {
-            expect(placementService['findLettersPresentInRack'](['c'], player.rack)).to.eql([]);
-        });
-
-        it('should return false if letters do not match the player rack', () => {
-            expect(placementService['areLettersInRack'](['c', 'a'], player)).to.equal(false);
-        });
-
-        it('should return false if letters do not match the player rack', () => {
-            expect(placementService['areLettersInRack'](['c', '*'], player)).to.equal(false);
-        });
-
-        it('should return false if there is only one letter not matching the player rack', () => {
-            expect(placementService['areLettersInRack'](['a', 'c'], player)).to.equal(false);
-        });
-
-        it('should return false if player rack is empty', () => {
-            player.rack = [];
-            expect(placementService['areLettersInRack'](['a'], player)).to.equal(false);
-        });
-
-        it('should return false if there is 2 times the same letter in letterCoords but only once in player rack', () => {
-            expect(placementService['areLettersInRack'](['a', 'a'], player)).to.equal(false);
-        });
-
-        it('should return true if all letters match exactly the player rack', () => {
-            expect(placementService['areLettersInRack'](['a', 'b'], player)).to.equal(true);
-        });
-
-        it('should return true if all the letterCoords are in the player rack but dont match exactly', () => {
-            expect(placementService['areLettersInRack'](['a'], player)).to.equal(true);
-        });
-    });
-
-    it('should return deep copy of playerRack', () => {
-        const copyRack = placementService['createTempRack'](player);
-        expect(copyRack).to.not.equal(player.rack);
-        expect(copyRack).to.deep.equal(player.rack);
-    });
-
     context('verifyFirstTurn() tests', () => {
         it('should return true if gameboard has no placed letters and letterCoords include middle coordinate', () => {
             word = new Word(
@@ -276,7 +223,7 @@ describe('Letter Placement Service', () => {
         let wordIsPlacedCorrectlyStub: Sinon.SinonStub<unknown[], unknown>;
         beforeEach(() => {
             validateCommandCoordinateStub = Sinon.stub(placementService, 'validateCommandCoordinate' as never);
-            lettersInRackStub = Sinon.stub(placementService, 'areLettersInRack' as never);
+            lettersInRackStub = Sinon.stub(rackService, 'areLettersInRack');
             wordIsPlacedCorrectlyStub = Sinon.stub(placementService, 'wordIsPlacedCorrectly' as never);
         });
 
@@ -428,15 +375,6 @@ describe('Letter Placement Service', () => {
             dictionaryValidationStub.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
             const expected = { hasPassed: true, gameboard, invalidWords: [] };
             expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
-        });
-
-        it('updatePlayerRack should remove * if capital letter is found in commandInfo.letters', () => {
-            player.rack = [
-                { value: 'a', quantity: 1, points: 1 },
-                { value: '*', quantity: 1, points: 0 },
-            ];
-            placementService['updatePlayerRack'](['a', 'L'], player.rack);
-            expect(player.rack.length).to.equal(0);
         });
     });
 });
