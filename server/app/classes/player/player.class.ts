@@ -11,6 +11,7 @@ export class Player {
     room: string;
     game: Game;
     isPlayerOne: boolean;
+    objectives: Objective[];
 
     constructor(name: string) {
         this.rack = [];
