@@ -15,6 +15,7 @@ export class Game {
     gameboard: Gameboard;
     isGameFinish: boolean;
     isModeSolo: boolean;
+    dictionary: string[];
     wordSolver: WordSolverService;
 
     constructor(
@@ -29,6 +30,7 @@ export class Game {
         this.gameboard = new Gameboard();
         this.isGameFinish = false;
         this.isModeSolo = false;
+        this.dictionary = dictionary;
         this.wordSolver = new WordSolverService(dictionary);
     }
 

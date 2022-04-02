@@ -25,7 +25,7 @@ import { GamesActionsService } from './games-actions.service';
 
 const ROOM = '0';
 
-describe.only('GamesActions Service', () => {
+describe('GamesActions Service', () => {
     let gamesActionsService: GamesActionsService;
     let gamesHandlerStub: sinon.SinonStubbedInstance<GamesHandler>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
