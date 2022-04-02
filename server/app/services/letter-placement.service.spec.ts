@@ -16,7 +16,6 @@ describe('Letter Placement Service', () => {
     let commandInfo: CommandInfo;
     let gameboard: Gameboard;
     let placementService: LetterPlacementService;
-    let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService>;
     let word: Word;
 
     beforeEach(() => {
@@ -34,8 +33,10 @@ describe('Letter Placement Service', () => {
         };
 
         gameboard = new Gameboard();
-        dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService);
         placementService = new LetterPlacementService(['string']);
+        placementService['dictionaryValidationService'] = Sinon.createStubInstance(
+            DictionaryValidationService,
+        ) as Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
     });
 
     context('validateCommandCoordinate() tests', () => {
@@ -356,6 +357,7 @@ describe('Letter Placement Service', () => {
     });
 
     context('placeLetters tests', () => {
+        let dictionaryValidationStub: Sinon.SinonStubbedInstance<DictionaryValidationService>;
         beforeEach(() => {
             word = {
                 isValid: true,
@@ -373,10 +375,13 @@ describe('Letter Placement Service', () => {
                     { x: 3, y: 1 },
                 ],
             } as Word;
+            dictionaryValidationStub = placementService[
+                'dictionaryValidationService'
+            ] as unknown as Sinon.SinonStubbedInstance<DictionaryValidationService>;
         });
 
         it('should call validateWord() once', () => {
-            dictionaryValidation.validateWord.returns({
+            dictionaryValidationStub.validateWord.returns({
                 points: 0,
                 invalidWords: [] as Word[],
             });
@@ -386,7 +391,7 @@ describe('Letter Placement Service', () => {
                 letters: ['a', 'l', 'L'],
             };
             placementService.placeLetters(word, commandInfo, player, gameboard);
-            expect(dictionaryValidation.validateWord.calledOnce).to.equal(true);
+            expect(dictionaryValidationStub.validateWord.calledOnce).to.equal(true);
         });
 
         it('should return false and the gameboard if validateWord returns 0', () => {
@@ -403,7 +408,7 @@ describe('Letter Placement Service', () => {
                     } as Word,
                 ] as Word[],
             };
-            dictionaryValidation.validateWord.returns(validateWordReturn);
+            dictionaryValidationStub.validateWord.returns(validateWordReturn);
 
             const expected = { hasPassed: false, gameboard, invalidWords: validateWordReturn.invalidWords };
             expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
@@ -414,13 +419,13 @@ describe('Letter Placement Service', () => {
                 points: 10,
                 invalidWords: [] as Word[],
             };
-            dictionaryValidation.validateWord.returns(validateWordReturn);
+            dictionaryValidationStub.validateWord.returns(validateWordReturn);
             placementService.placeLetters(word, commandInfo, player, gameboard);
             expect(player.score).to.equal(validateWordReturn.points);
         });
 
         it('should return true and gameboard if validateWord() doesnt return 0', () => {
-            dictionaryValidation.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
+            dictionaryValidationStub.validateWord.returns({ points: 10, invalidWords: [] as Word[] });
             const expected = { hasPassed: true, gameboard, invalidWords: [] };
             expect(placementService.placeLetters(word, commandInfo, player, gameboard)).to.eql(expected);
         });

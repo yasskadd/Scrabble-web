@@ -20,9 +20,9 @@ const MIDDLE_Y = 8;
 
 @Service()
 export class LetterPlacementService {
-    private dictionaryService: DictionaryValidationService;
+    private dictionaryValidationService: DictionaryValidationService;
     constructor(dictionary: string[]) {
-        this.dictionaryService = new DictionaryValidationService(dictionary);
+        this.dictionaryValidationService = new DictionaryValidationService(dictionary);
     }
 
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {
@@ -39,7 +39,7 @@ export class LetterPlacementService {
     placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, currentGameboard: Gameboard): PlaceLettersReturn {
         this.placeNewLettersOnBoard(commandInfo, commandWord, currentGameboard);
 
-        const validateWordReturn = this.dictionaryService.validateWord(commandWord, currentGameboard);
+        const validateWordReturn = this.dictionaryValidationService.validateWord(commandWord, currentGameboard);
         if (!validateWordReturn.points) {
             this.removeLettersFromBoard(commandWord, currentGameboard);
             return { hasPassed: false, gameboard: currentGameboard, invalidWords: validateWordReturn.invalidWords };
