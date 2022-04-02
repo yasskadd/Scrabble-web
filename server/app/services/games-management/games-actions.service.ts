@@ -3,6 +3,7 @@ import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
+import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { CommandInfo } from '@common/interfaces/command-info';
@@ -13,12 +14,7 @@ import { GamesHandler } from './games-handler.service';
 const CHAR_ASCII = 96;
 @Service()
 export class GamesActionsService {
-    constructor(
-        private socketManager: SocketManager,
-        // private wordSolver: WordSolverService,
-        // private letterPlacement: LetterPlacementService,
-        private gamesHandler: GamesHandler,
-    ) {}
+    constructor(private socketManager: SocketManager, private gamesHandler: GamesHandler, private rackService: RackService) {}
     initSocketsEvents(): void {
         this.socketManager.on(SocketEvents.Play, (socket, commandInfo: CommandInfo) => {
             this.playGame(socket, commandInfo);
@@ -81,10 +77,10 @@ export class GamesActionsService {
         if (!this.gamesHandler.players.has(socket.id)) return;
         const lettersToExchange = letters.length;
         const player = this.gamesHandler.players.get(socket.id) as RealPlayer;
-        // if (!this.letterPlacement.areLettersInRack(letters, player)) {
-        //     socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne possédez pas toutes les lettres à échanger');
-        //     return;
-        // }
+        if (!this.rackService.areLettersInRack(letters, player)) {
+            socket.emit(SocketEvents.ImpossibleCommandError, 'Vous ne possédez pas toutes les lettres à échanger');
+            return;
+        }
         player.exchangeLetter(letters);
         socket.broadcast.to(player.room).emit(SocketEvents.GameMessage, `!echanger ${lettersToExchange} lettres`);
         this.gamesHandler.updatePlayerInfo(socket, player.room, player.game);

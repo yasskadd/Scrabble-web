@@ -12,7 +12,8 @@ import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
-import { Service } from 'typedi';
+import Container, { Service } from 'typedi';
+import { RackService } from '../rack.service';
 import { GamesHandler } from './games-handler.service';
 
 const MAX_SKIP = 6;
@@ -130,7 +131,7 @@ export class GamesStateService {
             gameInfo.dictionary.words,
             new Turn(gameInfo.timer),
             new LetterReserve(),
-            new LetterPlacementService(gameInfo.dictionary.words),
+            new LetterPlacementService(gameInfo.dictionary.words, Container.get(RackService)),
         );
     }
 

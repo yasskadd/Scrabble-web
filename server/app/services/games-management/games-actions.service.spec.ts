@@ -9,6 +9,7 @@ import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
+import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -29,6 +30,7 @@ describe('GamesActions Service', () => {
     let gamesActionsService: GamesActionsService;
     let gamesHandlerStub: sinon.SinonStubbedInstance<GamesHandler>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
+    let rackServiceStub: sinon.SinonStubbedInstance<RackService>;
     let game: sinon.SinonStubbedInstance<Game> & Game;
 
     let httpServer: Server;
@@ -62,7 +64,8 @@ describe('GamesActions Service', () => {
 
         socketManagerStub = sinon.createStubInstance(SocketManager);
         gamesHandlerStub = sinon.createStubInstance(GamesHandler);
-        gamesActionsService = new GamesActionsService(socketManagerStub as never, gamesHandlerStub as never);
+        rackServiceStub = sinon.createStubInstance(RackService);
+        gamesActionsService = new GamesActionsService(socketManagerStub as never, gamesHandlerStub as never, rackServiceStub as never);
 
         gamesHandlerStub.players = new Map();
         gamesHandlerStub.gamePlayers = new Map();
@@ -249,6 +252,7 @@ describe('GamesActions Service', () => {
 
         gamesHandlerStub['players'].set(serverSocket.id, player);
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1]);
+        rackServiceStub.areLettersInRack.returns(true);
 
         gamesActionsService['exchange'](serverSocket, ['c']);
         expect(gamesHandlerStub.updatePlayerInfo.called).to.be.equal(true);
@@ -409,7 +413,7 @@ describe('GamesActions Service', () => {
             secondSocket.close();
         });
 
-        it('exchange() should emit the exchanged letters to the other player when an exchange occurs', (done) => {
+        it('exchange() should emit the exchanged letters to the other player when an exchange occurs', () => {
             const LETTER = { value: 'LaStructureDuServeur' } as Letter;
 
             const player = sinon.createStubInstance(RealPlayer);
@@ -424,7 +428,6 @@ describe('GamesActions Service', () => {
             });
             clientSocket.on(SocketEvents.GameMessage, (message) => {
                 expect(message).to.be.equal('!echanger 0 lettres');
-                done();
             });
 
             gamesHandlerStub['players'].set(serverSocket.id, player);
