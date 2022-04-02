@@ -1,7 +1,7 @@
-import { Game } from '@app/classes/game';
+import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Word } from '@app/classes/word.class';
-import { CommandInfo } from '@app/interfaces/command-info';
+import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as sinon from 'sinon';

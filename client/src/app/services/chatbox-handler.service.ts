@@ -60,7 +60,7 @@ export class ChatboxHandlerService {
 
     private configureBaseSocketFeatures(): void {
         this.clientSocket.on(SocketEvents.GameMessage, (broadcastMessage: string) => {
-            this.messages.push({ type: 'opponent-user', data: `${this.gameConfiguration.roomInformation.playerName[1]} : ${broadcastMessage}` });
+            this.messages.push({ type: 'opponent-user', data: `${this.gameClient.secondPlayer.name} : ${broadcastMessage}` });
         });
 
         this.clientSocket.on(SocketEvents.ImpossibleCommandError, (error: string) => {
@@ -128,7 +128,9 @@ export class ChatboxHandlerService {
     }
 
     private addDisconnect(): void {
-        this.messages.push({ type: 'system-message', data: `${this.gameConfiguration.roomInformation.playerName[1]} a quitté le jeu` });
+        this.messages.push({ type: 'system-message', data: `${this.gameClient.secondPlayer.name} a quitté le jeu` });
+        if (!this.gameClient.isGameFinish)
+            this.messages.push({ type: 'system-message', data: "------L'adversaire à été remplacé par un joueur virtuel Débutant------" });
     }
 
     private isCommand(userInput: string): boolean {
@@ -136,8 +138,37 @@ export class ChatboxHandlerService {
     }
 
     private validCommand(userCommand: string): boolean {
+        if (this.isHelpCommand(userCommand)) return true;
         if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) return this.validCommandSyntax(userCommand);
         this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
+        return false;
+    }
+
+    private isHelpCommand(userCommand: string): boolean {
+        const validReserveCommand = '^!aide$';
+        const validReserveCommandRegex = new RegExp(validReserveCommand);
+        if (validReserveCommandRegex.test(userCommand)) {
+            this.messages.push({ type: 'system-message', data: 'VOICI LES COMMANDES VALIDE' });
+            this.messages.push({ type: 'system-message', data: '!passer  : Faire passer son tour' });
+            this.messages.push({ type: 'system-message', data: '!réserve : Affiche toutes les lettres disponible dans la réserve' });
+            this.messages.push({
+                type: 'system-message',
+                data: "!indice  : Envoie jusqu'à 3 possibilités de placement possible sur la planche de jeu",
+            });
+            this.messages.push({
+                type: 'system-message',
+                data:
+                    '!echanger <lettre>:  Échanger les lettres de notre chevalet (celles-ci doivent être écritent en minuscule ou' +
+                    '* pour les lettres blanches (ex: !echanger e*a)',
+            });
+            this.messages.push({
+                type: 'system-message',
+                data:
+                    '!placer <ligne><colonne>[(h|v)] <lettres>:  Placer un mot en utilisant les lettres de notre chevalet' +
+                    '(Mettre la lettre en majuscule lorsque nous utilisons une lettre blanche) (ex: !placer g9h adanT)',
+            });
+            return true;
+        }
         return false;
     }
 

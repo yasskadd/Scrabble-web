@@ -2,6 +2,9 @@ import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Gameboard } from './gameboard.class';
 
+const SEVEN_LETTERS = 7;
+const SEVEN_LETTER_BONUS = 50;
+
 export class Word {
     isValid: boolean;
     isHorizontal: boolean | undefined;
@@ -45,6 +48,7 @@ export class Word {
     calculateWordPoints(placedWord: Word, gameboard: Gameboard): number {
         this.addLetterPoints(placedWord, gameboard);
         this.addWordMultiplierPoints(placedWord, gameboard);
+        if (this.newLetterCoords.length === SEVEN_LETTERS) this.points += SEVEN_LETTER_BONUS;
         return this.points;
     }
 

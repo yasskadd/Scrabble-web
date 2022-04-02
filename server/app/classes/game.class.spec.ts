@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-len*/
 /* eslint-disable dot-notation*/
-import { Game } from '@app/classes/game';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { Game } from '@app/classes/game.class';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Player } from '@app/classes/player/player.class';
-import { Turn } from '@app/classes/turn';
+import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { ErrorType, LetterPlacementService } from '@app/services/letter-placement.service';
 import { CommandInfo } from '@common/interfaces/command-info';
