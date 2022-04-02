@@ -1,11 +1,21 @@
+body {
+    height: 100%;
+    width: 100%;
+    background-color: rgb(174, 192, 174);
+
+    justify-content: center;
+}
+
 .justified {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
 
-body > * {
-    width: 70%;
-    height: 80%;
+.mat-tab-group {
+    background-color: rgb(225, 232, 248);
+    justify-content: flex-start;
+    border-radius: 5px;
+    width: 50%;
+    height: 70%;
+    padding: 20px;
 }

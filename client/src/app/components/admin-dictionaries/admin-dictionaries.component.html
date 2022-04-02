@@ -4,8 +4,8 @@
 <mat-selection-list [multiple]="false">
     <mat-list-option *ngFor="let dictionary of dictionaries" [value]="dictionary">
         <div class="justified">
-            <div>{{ dictionary.title }}</div>
-            <div>{{ dictionary.description }}</div>
+            <div style="flex: 1">{{ dictionary.title }}</div>
+            <div style="flex: 3">{{ dictionary.description }}</div>
             <button mat-raised-button>Modifier</button>
             <button mat-raised-button>Supprimer</button>
         </div>

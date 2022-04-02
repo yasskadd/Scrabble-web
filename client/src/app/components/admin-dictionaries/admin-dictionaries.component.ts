@@ -16,7 +16,7 @@ const defaultDict: Dictionary = {
     styleUrls: ['./admin-dictionaries.component.scss'],
 })
 export class AdminDictionariesComponent implements OnInit {
-    dictionaries: Dictionary[] = [defaultDict];
+    dictionaries: Dictionary[] = [defaultDict, defaultDict, defaultDict, defaultDict];
     constructor() {}
 
     ngOnInit(): void {}
