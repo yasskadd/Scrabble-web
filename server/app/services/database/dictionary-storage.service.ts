@@ -7,22 +7,22 @@ export class DictionaryStorageService {
     constructor(private database: DatabaseService) {}
 
     async getAllDictionary(): Promise<Document[]> {
-        return await this.database.fetchDocuments({});
+        return await this.database.dictionaries.fetchDocuments({});
     }
 
     async addDictionary(dictionary: Document) {
         if (await this.dictionaryIsInDb(dictionary.title)) return;
-        await this.database.addDocument(dictionary);
+        await this.database.dictionaries.addDocument(dictionary);
     }
 
     async removeDictionary(dictionary: Document) {
         if (!(await this.dictionaryIsInDb(dictionary.title))) return;
-        await this.database.removeDocument(dictionary);
+        await this.database.dictionaries.removeDocument(dictionary);
     }
 
     async dictionaryIsInDb(title: string): Promise<boolean> {
         // eslint-disable-next-line object-shorthand
-        const document = await this.database.fetchDocuments({ title: title }, { projection: { title: 1 } });
+        const document = await this.database.dictionaries.fetchDocuments({ title: title }, { projection: { title: 1 } });
         return document.length ? true : false;
     }
 
