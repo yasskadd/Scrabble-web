@@ -6,8 +6,8 @@
         <div class="justified">
             <div style="flex: 1">{{ dictionary.title }}</div>
             <div style="flex: 3">{{ dictionary.description }}</div>
-            <button mat-raised-button>Modifier</button>
-            <button mat-raised-button>Supprimer</button>
+            <button mat-raised-button (click)="openModifyDictionaryDialog(dictionary)">Modifier</button>
+            <button mat-raised-button (click)="deleteDictionary(dictionary)">Supprimer</button>
         </div>
     </mat-list-option>
 </mat-selection-list>

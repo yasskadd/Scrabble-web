@@ -20,4 +20,12 @@ export class AdminDictionariesComponent implements OnInit {
     constructor() {}
 
     ngOnInit(): void {}
+
+    deleteDictionary(dictionaryToDelete: Dictionary) {
+        const index = this.dictionaries.findIndex((dictionaryInList) => dictionaryInList === dictionaryToDelete);
+        this.dictionaries.splice(index, 1);
+        // TODO: send delete to server
+    }
+
+    openModifyDictionaryDialog(dictionaryToModify: Dictionary) {}
 }
