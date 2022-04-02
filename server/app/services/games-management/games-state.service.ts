@@ -9,11 +9,11 @@ import { Turn } from '@app/classes/turn.class';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
-import Container, { Service } from 'typedi';
-import { RackService } from '../rack.service';
+import { Container, Service } from 'typedi';
 import { GamesHandler } from './games-handler.service';
 
 const MAX_SKIP = 6;
