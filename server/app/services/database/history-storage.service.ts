@@ -22,21 +22,26 @@ const MINIMUM_TWO_UNITS = 10;
 @Service()
 export class HistoryStorageService {
     constructor(private databaseService: DatabaseService, private gamesState: GamesStateService, private gamesHandler: GamesHandler) {
-        this.gamesState.gameEnded.subscribe();
+        this.gamesState.gameEnded.subscribe((room) => {
+            const gameInfo = this.formatGameInfo(room);
+            this.addToHistory(gameInfo);
+        });
     }
 
-    // handleEndGame() {}
-
-    // addToHistory() {}
+    async addToHistory(gameInfo: GameInfo) {
+        await this.databaseService.histories.addDocument(gameInfo);
+    }
 
     getHistory(): GameInfo[] {
         const games = this.databaseService.histories.fetchDocuments({}) as unknown as GameInfo[];
         return games;
     }
 
-    // clearHistory() {}
+    async clearHistory() {
+        await this.databaseService.histories.resetCollection();
+    }
 
-    formatGameInfo(room: string): GameInfo {
+    private formatGameInfo(room: string): GameInfo {
         const players = this.gamesHandler.gamePlayers.get(room);
         if (players === undefined) return {} as GameInfo;
         const endTime = new Date();
