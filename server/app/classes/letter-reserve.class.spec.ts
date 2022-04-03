@@ -1,4 +1,4 @@
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import * as letterTypes from '@app/constants/letter-reserve';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';

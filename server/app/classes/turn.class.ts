@@ -10,7 +10,7 @@ export class Turn {
     endTurn: ReplaySubject<string | undefined>;
     countdown: ReplaySubject<number | undefined>;
     skipCounter: number;
-    private time: number;
+    time: number;
     private timeOut: unknown;
 
     constructor(time: number) {

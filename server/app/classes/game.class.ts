@@ -1,7 +1,7 @@
 import { Gameboard } from '@app/classes/gameboard.class';
-import { LetterReserve } from '@app/classes/letter-reserve';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Player } from '@app/classes/player/player.class';
-import { Turn } from '@app/classes/turn';
+import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
@@ -14,6 +14,7 @@ const MAX_QUANTITY = 7;
 export class Game {
     gameboard: Gameboard;
     isGameFinish: boolean;
+    isModeSolo: boolean;
 
     constructor(
         player1: Player,
@@ -25,6 +26,7 @@ export class Game {
         this.start(player1, player2);
         this.gameboard = new Gameboard();
         this.isGameFinish = false;
+        this.isModeSolo = false;
     }
 
     start(player1: Player, player2: Player): void {

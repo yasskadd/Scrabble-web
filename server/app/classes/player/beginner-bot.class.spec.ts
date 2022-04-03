@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
-import { Game } from '@app/classes/game';
-import { LetterReserve } from '@app/classes/letter-reserve';
-import { Turn } from '@app/classes/turn';
+import { Game } from '@app/classes/game.class';
+import { LetterReserve } from '@app/classes/letter-reserve.class';
+import { Turn } from '@app/classes/turn.class';
 import { BotInformation } from '@app/interfaces/bot-information';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
