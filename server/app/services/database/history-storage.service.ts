@@ -1,5 +1,6 @@
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { GamesStateService } from '@app/services/games-management/games-state.service';
+import { Document } from 'mongodb';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 
@@ -32,9 +33,9 @@ export class HistoryStorageService {
         await this.databaseService.histories.addDocument(gameInfo);
     }
 
-    getHistory(): GameInfo[] {
-        const games = this.databaseService.histories.fetchDocuments({}) as unknown as GameInfo[];
-        return games;
+    async getHistory(): Promise<Document[]> {
+        const history = await this.databaseService.histories.fetchDocuments({});
+        return history;
     }
 
     async clearHistory() {
@@ -54,16 +55,17 @@ export class HistoryStorageService {
             firstPlayerName: players[0].name,
             firstPlayerScore: players[0].score,
             secondPlayerName: players[1].name,
-            secondPlayerScore: players[0].score,
+            secondPlayerScore: players[1].score,
         } as GameInfo;
     }
 
     private computeTimeLength(date1: Date, date2: Date): string {
         const milliseconds = Math.abs(date2.getTime() - date1.getTime());
-        const seconds = (milliseconds / SECOND_IN_MILLISECOND) % SECOND_MINUTE_HOUR_MAX_VALUE;
-        const minutes = (milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE)) % SECOND_MINUTE_HOUR_MAX_VALUE;
-        const hours =
-            (milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE * SECOND_MINUTE_HOUR_MAX_VALUE)) % SECOND_MINUTE_HOUR_MAX_VALUE;
+        const seconds = Math.floor((milliseconds / SECOND_IN_MILLISECOND) % SECOND_MINUTE_HOUR_MAX_VALUE);
+        const minutes = Math.floor((milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE)) % SECOND_MINUTE_HOUR_MAX_VALUE);
+        const hours = Math.floor(
+            (milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE * SECOND_MINUTE_HOUR_MAX_VALUE)) % SECOND_MINUTE_HOUR_MAX_VALUE,
+        );
         return (
             (hours < MINIMUM_TWO_UNITS ? '0' + hours : hours) +
             ':' +
