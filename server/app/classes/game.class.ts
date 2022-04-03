@@ -13,7 +13,10 @@ const MAX_QUANTITY = 7;
 
 export class Game {
     gameboard: Gameboard;
+    gameMode: string;
+    beginningTime: Date;
     isGameFinish: boolean;
+    isGameAbandoned: boolean;
     isModeSolo: boolean;
 
     constructor(
@@ -24,9 +27,13 @@ export class Game {
         @Inject() private letterPlacement: LetterPlacementService,
     ) {
         this.start(player1, player2);
+        this.beginningTime = new Date();
         this.gameboard = new Gameboard();
         this.isGameFinish = false;
         this.isModeSolo = false;
+        this.isGameAbandoned = false;
+        // TODO: A changer
+        this.gameMode = 'Classique';
     }
 
     start(player1: Player, player2: Player): void {
@@ -78,6 +85,7 @@ export class Game {
 
     abandon(): void {
         this.end();
+        this.isGameAbandoned = true;
     }
 
     private giveNewLetterToRack(player: Player, numberOfLetterPlaced: number, placeLettersReturn: PlaceLettersReturn) {
