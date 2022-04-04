@@ -14,12 +14,17 @@ export class ObjectivesHandler {
         this.players = [player1, player2];
         this.setMapObjectives();
         this.attributeObjectives(player1, player2);
+        console.log(player1.objectives);
+        console.log(player2.objectives);
     }
 
     verifyWordRelatedObjectives(allWordsFormed: Word[], player: Player): void {
         player.objectives.forEach((objective) => {
             const objectiveVerificationFunction = this.objectivesMap.get(objective) as CallableFunction;
-            if (objectiveVerificationFunction(allWordsFormed) && objective.type === 'Word') this.completeObjective(player, objective);
+            if (objectiveVerificationFunction(allWordsFormed) && objective.type === 'Word') {
+                console.log(`Objective completed: ${objective}`);
+                this.completeObjective(player, objective);
+            }
         });
     }
 

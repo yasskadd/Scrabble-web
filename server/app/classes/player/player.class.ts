@@ -18,6 +18,7 @@ export class Player {
         this.rack = [];
         this.score = 0;
         this.name = name;
+        this.objectives = [];
     }
 
     getInformation(): PlayerInformation {
