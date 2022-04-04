@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogBoxModifyDictionaryComponent } from '../dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
+import { DialogBoxAddDictionaryComponent } from '@app/components/dialog-box-add-dictionary/dialog-box-add-dictionary.component';
+import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 
 interface Dictionary {
     title: string;
@@ -19,7 +20,7 @@ const defaultDict: Dictionary = {
 })
 export class AdminDictionariesComponent {
     dictionaries: Dictionary[] = [defaultDict, defaultDict, defaultDict, defaultDict];
-    constructor(private modifyDictionaryDialog: MatDialog) {}
+    constructor(private modifyDictionaryDialog: MatDialog, private addDictionaryDialog: MatDialog) {}
 
     deleteDictionary(dictionaryToDelete: Dictionary) {
         const index = this.dictionaries.findIndex((dictionaryInList) => dictionaryInList === dictionaryToDelete);
@@ -27,9 +28,17 @@ export class AdminDictionariesComponent {
         // TODO: send delete to server
     }
 
+    openAddDictionaryDialog() {
+        this.addDictionaryDialog.open(DialogBoxAddDictionaryComponent, {
+            width: '50%',
+            disableClose: true,
+        });
+    }
+
     openModifyDictionaryDialog(dictionaryToModify: Dictionary) {
         this.modifyDictionaryDialog.open(DialogBoxModifyDictionaryComponent, {
-            width: '500px',
+            width: '50%',
+            data: dictionaryToModify,
             disableClose: true,
         });
     }

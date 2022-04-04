@@ -1,8 +1,17 @@
+<h1>Modifier le dictionnaire <mat-icon matSuffix>mode_edit</mat-icon></h1>
+
 <form class="modify-dictionary-form">
-    <mat-form-field class="example-full-width" appearance="fill">
+    <mat-form-field id="title" class="example-full-width" appearance="fill">
         <mat-label>titre</mat-label>
-        <span matPrefix>+1 &nbsp;</span>
-        <input type="tel" matInput placeholder="555-555-1234" />
-        <mat-icon matSuffix>mode_edit</mat-icon>
+        <input type="text" matInput [ngModel]="title" (ngModelChange)="onTitleChange($event)" />
+    </mat-form-field>
+    <mat-form-field id="description" class="example-full-width" appearance="fill">
+        <mat-label>description</mat-label>
+        <input type="text" matInput [ngModel]="description" (ngModelChange)="onDescriptionChange($event)" />
     </mat-form-field>
 </form>
+
+<div id="buttons">
+    <button mat-raised-button (click)="closeDialog()">Annuler</button>
+    <button mat-raised-button>Modifier</button>
+</div>
