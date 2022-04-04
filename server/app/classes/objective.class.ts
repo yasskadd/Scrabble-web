@@ -1,5 +1,6 @@
-export class Objective {
+export interface Objective {
     name: string;
     isPublic: boolean;
     points: number;
+    pointsMultiplier?: number;
 }
