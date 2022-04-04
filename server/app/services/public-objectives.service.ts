@@ -1,23 +1,31 @@
+import { Objective } from '@app/classes/objective.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
+import * as ObjectivesInfo from '@app/constants/objectives';
 
 const MINIMUM_LETTERS_ONE_VOWEL = 5;
 const MINIMUM_LETTERS_10 = 10;
 
 export class ObjectivesHandler {
     players: [Player, Player];
+    objectivesMap: Map<Objective, CallableFunction> = new Map();
 
     constructor(player1: Player, player2: Player) {
         this.players = [player1, player2];
     }
 
-    handleObjectives(player: Player) {
-        // TODO: Add a subscriber to player turn
-    }
-
     completePublicObjective() {}
 
     completePrivateObjective() {}
+
+    setMapObjectives() {
+        this.objectivesMap.set(ObjectivesInfo.oneVowelWord, this.isWordWithOneVowel as CallableFunction);
+        this.objectivesMap.set(ObjectivesInfo.palindromicWord, this.isPalindromicWord as CallableFunction);
+        this.objectivesMap.set(ObjectivesInfo.alphabeticalWord, this.isWordAlphabetical as CallableFunction);
+        this.objectivesMap.set(ObjectivesInfo.moreThan10Letters, this.isWordMoreThan10Letters as CallableFunction);
+        this.objectivesMap.set(ObjectivesInfo.threeWordsFormed, this.isThreeWordsFormed as CallableFunction);
+        this.objectivesMap.set(ObjectivesInfo.twoSameWords, this.isSameWordTwoTimes as CallableFunction);
+    }
 
     isWordWithOneVowel(word: Word) {
         if (word.stringFormat.length < MINIMUM_LETTERS_ONE_VOWEL) return false;
