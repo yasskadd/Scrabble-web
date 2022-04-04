@@ -26,7 +26,6 @@ export class HttpHandlerService {
             .pipe(catchError(this.handleError<HighScores[]>('getLOG2990cHighScore', [])));
     }
 
-    // TODO : add tests
     getHistory(): Observable<GameHistoryInfo[]> {
         return this.http.get<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
     }
