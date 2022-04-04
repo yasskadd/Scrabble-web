@@ -19,7 +19,7 @@ export class ObjectivesHandler {
     verifyWordRelatedObjectives(allWordsFormed: Word[], player: Player): void {
         player.objectives.forEach((objective) => {
             const objectiveVerificationFunction = this.objectivesMap.get(objective) as CallableFunction;
-            if (objectiveVerificationFunction(allWordsFormed) && objective.type === 'Word') this.addObjectivePoints(player, objective);
+            if (objectiveVerificationFunction(allWordsFormed) && objective.type === 'Word') this.completeObjective(player, objective);
         });
     }
 
@@ -85,5 +85,15 @@ export class ObjectivesHandler {
     private addObjectivePoints(player: Player, objective: Objective): void {
         player.score += objective.points;
         player.score *= objective.pointsMultiplier;
+    }
+
+    private completeObjective(player: Player, objective: Objective): void {
+        if (objective.isPublic) {
+            const firstPlayerObjectives: Objective[] = this.players[0].objectives;
+            const secondPlayerObjectives: Objective[] = this.players[1].objectives;
+            firstPlayerObjectives.splice(firstPlayerObjectives.indexOf(objective), 1);
+            secondPlayerObjectives.splice(secondPlayerObjectives.indexOf(objective), 1);
+        } else player.objectives.splice(player.objectives.indexOf(objective), 1);
+        this.addObjectivePoints(player, objective);
     }
 }

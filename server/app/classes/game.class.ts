@@ -5,7 +5,7 @@ import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { ObjectivesHandler } from '@app/services/public-objectives.service';
+import { ObjectivesHandler } from '@app/services/objectives-handler';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
