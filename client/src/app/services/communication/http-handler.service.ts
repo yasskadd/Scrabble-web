@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { Observable, of } from 'rxjs';
@@ -32,6 +33,26 @@ export class HttpHandlerService {
 
     addDictionary(dictionary: Dictionary): Observable<void> {
         return this.http.post<void>(`${this.baseUrl}/dictionary/upload`, dictionary).pipe(catchError(this.handleError<void>('addDictionary')));
+    }
+
+    getBeginnerBots(): Observable<Bot[]> {
+        return this.http.get<Bot[]>(`${this.baseUrl}/virtualPlayer/beginner`).pipe(catchError(this.handleError<Bot[]>('getBotsBeginner', [])));
+    }
+
+    getExpertBots(): Observable<Bot[]> {
+        return this.http.get<Bot[]>(`${this.baseUrl}/virtualPlayer/expert`).pipe(catchError(this.handleError<Bot[]>('getBotsExpert', [])));
+    }
+
+    addBot(bot: Bot): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/bot/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
+    }
+
+    resetBot(): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/bot/remove`).pipe(catchError(this.handleError<void>('resetBot')));
+    }
+
+    deleteBot(bot: Bot): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/bot/delete`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
