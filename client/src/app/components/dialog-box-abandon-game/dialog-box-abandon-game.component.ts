@@ -3,11 +3,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { GameClientService } from '@app/services/game-client.service';
 @Component({
-    selector: 'app-abandon-game-dialog-box',
-    templateUrl: './abandon-game-dialog-box.component.html',
-    styleUrls: ['./abandon-game-dialog-box.component.scss'],
+    selector: 'app-dialog-box-abandon-game',
+    templateUrl: './dialog-box-abandon-game.component.html',
+    styleUrls: ['./dialog-box-abandon-game.component.scss'],
 })
-export class AbandonGameDialogBoxComponent {
+export class DialogBoxAbandonGameComponent {
     constructor(private gameclient: GameClientService, private router: Router, private snackBar: MatSnackBar) {}
 
     abandonGame() {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogBoxGameTypeComponent } from '@app/components/dialog-box-game-type/dialog-box.component';
-import { HighScoresComponent } from '@app/components/high-scores/high-scores.component';
+import { DialogBoxGameTypeComponent } from '@app/components/dialog-box-game-type/dialog-box-game-type.component';
+import { DialogBoxHighScoresComponent } from '@app/components/dialog-box-high-scores/dialog-box-high-scores.component';
 
 @Component({
     selector: 'app-main-page',
@@ -22,7 +22,7 @@ export class MainPageComponent {
     }
 
     openHighScoreDialog(): void {
-        this.highScore.open(HighScoresComponent, {
+        this.highScore.open(DialogBoxHighScoresComponent, {
             width: this.dialogWidthHighScore,
             disableClose: true,
         });

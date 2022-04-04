@@ -6,11 +6,11 @@ import { HttpHandlerService } from '@app/services/communication/http-handler.ser
 const TIMEOUT = 3000;
 
 @Component({
-    selector: 'app-high-scores',
-    templateUrl: './high-scores.component.html',
-    styleUrls: ['./high-scores.component.scss'],
+    selector: 'app-dialog-box-high-scores',
+    templateUrl: './dialog-box-high-scores.component.html',
+    styleUrls: ['./dialog-box-high-scores.component.scss'],
 })
-export class HighScoresComponent implements OnInit {
+export class DialogBoxHighScoresComponent implements OnInit {
     highScoreClassic: HighScores[] | undefined;
     highScoreLOG29990: HighScores[] | undefined;
     constructor(private readonly httpHandler: HttpHandlerService, private snackBar: MatSnackBar) {}

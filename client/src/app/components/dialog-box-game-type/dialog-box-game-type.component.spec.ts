@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
-import { DialogBoxGameTypeComponent } from './dialog-box.component';
+import { DialogBoxGameTypeComponent } from './dialog-box-game-type.component';
 
 @Component({
     template: '',

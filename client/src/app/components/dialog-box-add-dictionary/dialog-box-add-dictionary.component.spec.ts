@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DialogBoxAddDictionaryComponent } from './add-dictionary-dialog-box.component';
+import { DialogBoxAddDictionaryComponent } from './dialog-box-add-dictionary.component';
 
 describe('DialogBoxAddDictionaryComponent', () => {
     let component: DialogBoxAddDictionaryComponent;

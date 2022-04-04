@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogBoxModifyDictionaryComponent } from '../dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 
 interface Dictionary {
     title: string;
@@ -15,11 +17,9 @@ const defaultDict: Dictionary = {
     templateUrl: './admin-dictionaries.component.html',
     styleUrls: ['./admin-dictionaries.component.scss'],
 })
-export class AdminDictionariesComponent implements OnInit {
+export class AdminDictionariesComponent {
     dictionaries: Dictionary[] = [defaultDict, defaultDict, defaultDict, defaultDict];
-    constructor() {}
-
-    ngOnInit(): void {}
+    constructor(private modifyDictionaryDialog: MatDialog) {}
 
     deleteDictionary(dictionaryToDelete: Dictionary) {
         const index = this.dictionaries.findIndex((dictionaryInList) => dictionaryInList === dictionaryToDelete);
@@ -27,5 +27,10 @@ export class AdminDictionariesComponent implements OnInit {
         // TODO: send delete to server
     }
 
-    openModifyDictionaryDialog(dictionaryToModify: Dictionary) {}
+    openModifyDictionaryDialog(dictionaryToModify: Dictionary) {
+        this.modifyDictionaryDialog.open(DialogBoxModifyDictionaryComponent, {
+            width: '500px',
+            disableClose: true,
+        });
+    }
 }
