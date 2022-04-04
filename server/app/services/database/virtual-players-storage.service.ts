@@ -59,7 +59,8 @@ export class VirtualPlayersStorageService {
                     };
                 })(),
             );
-
+        }
+        for (let i = 0; i < constants.BOT_EXPERT_NAME_LIST[i].length; i++) {
             await this.database.scores.addDocument(
                 (() => {
                     return () => {
