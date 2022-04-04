@@ -19,7 +19,7 @@ export class ObjectivesHandler {
     verifyObjectives(allWordsFormed: Word[], player: Player): void {
         player.objectives.forEach((objective) => {
             const objectiveVerificationFunction = this.objectivesMap.get(objective) as CallableFunction;
-            if (objectiveVerificationFunction(allWordsFormed)) this.addObjectivePoints(player, objective);
+            if (objectiveVerificationFunction(allWordsFormed) && objective.type === 'Word') this.addObjectivePoints(player, objective);
         });
     }
 
