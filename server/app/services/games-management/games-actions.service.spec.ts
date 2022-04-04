@@ -9,7 +9,7 @@ import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -30,8 +30,7 @@ describe('GamesActions Service', () => {
     let gamesActionsService: GamesActionsService;
     let gamesHandlerStub: sinon.SinonStubbedInstance<GamesHandler>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
-    let wordSolverStub: sinon.SinonStubbedInstance<WordSolverService>;
-    let letterPlacementStub: sinon.SinonStubbedInstance<LetterPlacementService>;
+    let rackServiceStub: sinon.SinonStubbedInstance<RackService>;
     let game: sinon.SinonStubbedInstance<Game> & Game;
 
     let httpServer: Server;
@@ -55,6 +54,7 @@ describe('GamesActions Service', () => {
         player2.score = 0;
 
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
+        game.wordSolver = sinon.createStubInstance(WordSolverService) as sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         game.letterReserve = sinon.createStubInstance(LetterReserve) as unknown as LetterReserve;
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
@@ -63,15 +63,9 @@ describe('GamesActions Service', () => {
         player1.game = game;
 
         socketManagerStub = sinon.createStubInstance(SocketManager);
-        wordSolverStub = sinon.createStubInstance(WordSolverService);
         gamesHandlerStub = sinon.createStubInstance(GamesHandler);
-        letterPlacementStub = sinon.createStubInstance(LetterPlacementService);
-        gamesActionsService = new GamesActionsService(
-            socketManagerStub as never,
-            wordSolverStub as never,
-            letterPlacementStub as never,
-            gamesHandlerStub as never,
-        );
+        rackServiceStub = sinon.createStubInstance(RackService);
+        gamesActionsService = new GamesActionsService(socketManagerStub as never, gamesHandlerStub as never, rackServiceStub as never);
 
         gamesHandlerStub.players = new Map();
         gamesHandlerStub.gamePlayers = new Map();
@@ -124,8 +118,8 @@ describe('GamesActions Service', () => {
         gamesHandlerStub['players'].set(serverSocket.id, player1);
 
         gamesActionsService['clueCommand'](serverSocket);
-        expect(wordSolverStub.setGameboard.called).to.equal(true);
-        expect(wordSolverStub.findAllOptions.called).to.equal(true);
+        expect((game.wordSolver as unknown as sinon.SinonStubbedInstance<WordSolverService>).setGameboard.called).equal(true);
+        expect((game.wordSolver as unknown as sinon.SinonStubbedInstance<WordSolverService>).findAllOptions.called).to.equal(true);
         expect(configureClueCommandSpy.called).to.equal(true);
     });
     it('configureClueCommand() should return an array with the one placement possible when there is only one available ', (done) => {
@@ -230,12 +224,11 @@ describe('GamesActions Service', () => {
         expect(socketManagerStub.emitRoom.calledWithExactly(player1.room, SocketEvents.Play, player1.getInformation(), gameStub.turn.activePlayer));
     });
 
-    it('exchange() should emit a message when a command error occurs', (done) => {
+    it('exchange() should emit a message when a command error occurs', () => {
         const gameStub = sinon.createStubInstance(Game);
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         clientSocket.on(SocketEvents.ImpossibleCommandError, (message) => {
             expect(message).to.be.equal('Vous ne possédez pas toutes les lettres à échanger');
-            done();
         });
         gamesHandlerStub['players'].set(serverSocket.id, player1);
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
@@ -256,9 +249,10 @@ describe('GamesActions Service', () => {
         const gameStub = sinon.createStubInstance(Game);
         gameStub.turn = { activePlayer: '' } as unknown as Turn;
         player.game = gameStub as unknown as Game;
-        letterPlacementStub.areLettersInRack.returns(true);
+
         gamesHandlerStub['players'].set(serverSocket.id, player);
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1]);
+        rackServiceStub.areLettersInRack.returns(true);
 
         gamesActionsService['exchange'](serverSocket, ['c']);
         expect(gamesHandlerStub.updatePlayerInfo.called).to.be.equal(true);
@@ -419,7 +413,7 @@ describe('GamesActions Service', () => {
             secondSocket.close();
         });
 
-        it('exchange() should emit the exchanged letters to the other player when an exchange occurs', (done) => {
+        it('exchange() should emit the exchanged letters to the other player when an exchange occurs', () => {
             const LETTER = { value: 'LaStructureDuServeur' } as Letter;
 
             const player = sinon.createStubInstance(RealPlayer);
@@ -434,9 +428,8 @@ describe('GamesActions Service', () => {
             });
             clientSocket.on(SocketEvents.GameMessage, (message) => {
                 expect(message).to.be.equal('!echanger 0 lettres');
-                done();
             });
-            letterPlacementStub.areLettersInRack.returns(true);
+
             gamesHandlerStub['players'].set(serverSocket.id, player);
             gamesHandlerStub['gamePlayers'].set(player.room, [player]);
 

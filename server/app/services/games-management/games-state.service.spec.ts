@@ -8,9 +8,11 @@ import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -38,7 +40,15 @@ describe('GamesState Service', () => {
 
     let player1: sinon.SinonStubbedInstance<RealPlayer>;
     let player2: sinon.SinonStubbedInstance<RealPlayer>;
-    let gameInfo: { playerName: string[]; roomId: string; timer: number; socketId: string[]; mode: string; botDifficulty?: string };
+    let gameInfo: {
+        playerName: string[];
+        roomId: string;
+        timer: number;
+        socketId: string[];
+        mode: string;
+        botDifficulty?: string;
+        dictionary: Dictionary;
+    };
 
     beforeEach((done) => {
         player1 = sinon.createStubInstance(RealPlayer);
@@ -52,10 +62,12 @@ describe('GamesState Service', () => {
         player2.score = 0;
 
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
+        game.wordSolver = sinon.createStubInstance(WordSolverService) as unknown as WordSolverService;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         game.letterReserve = sinon.createStubInstance(LetterReserve) as unknown as LetterReserve;
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
+        game.dictionary = ['string'];
 
         player1.game = game;
 
@@ -74,7 +86,15 @@ describe('GamesState Service', () => {
             clientSocket = Client(`http://localhost:${port}`);
             sio.on('connection', (socket) => {
                 serverSocket = socket;
-                gameInfo = { playerName: [], roomId: ROOM, timer: 0, socketId: [serverSocket.id], mode: 'Classique', botDifficulty: undefined };
+                gameInfo = {
+                    playerName: [],
+                    roomId: ROOM,
+                    timer: 0,
+                    socketId: [serverSocket.id],
+                    mode: 'Classique',
+                    botDifficulty: undefined,
+                    dictionary: { words: ['string'] } as Dictionary,
+                };
             });
             clientSocket.on('connect', done);
         });
@@ -119,6 +139,7 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: { words: ['string'] } as Dictionary,
         };
 
         const newPlayer = gamesStateService['setAndGetPlayer'](gameInformation) as Player;
@@ -141,6 +162,7 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID, SECOND_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: { words: ['string'] } as Dictionary,
         };
 
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
@@ -162,8 +184,13 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: 'Débutant',
+            dictionary: { words: ['string'] } as Dictionary,
         };
-        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, { timer: gameInformation.timer, roomId: gameInformation.roomId });
+        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
+            timer: gameInformation.timer,
+            roomId: gameInformation.roomId,
+            dictionary: gameInformation.dictionary.words,
+        });
 
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
 
@@ -183,8 +210,13 @@ describe('GamesState Service', () => {
             socketId: [FIRST_PLAYER_SOCKET_ID],
             mode: 'Classique',
             botDifficulty: 'Expert',
+            dictionary: { words: ['string'] } as Dictionary,
         };
-        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, { timer: gameInformation.timer, roomId: gameInformation.roomId });
+        const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
+            timer: gameInformation.timer,
+            roomId: gameInformation.roomId,
+            dictionary: gameInformation.dictionary.words,
+        });
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
         const newPlayer = gamesStateService['setAndGetPlayer'](gameInformation) as Player;
         expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
@@ -200,6 +232,7 @@ describe('GamesState Service', () => {
             socketId: [serverSocket.id],
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: { words: ['string'] } as Dictionary,
         };
 
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);

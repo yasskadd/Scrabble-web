@@ -14,12 +14,12 @@ describe('Word solver service', () => {
     let spyFindBeforePart: Sinon.SinonSpy;
 
     before(() => {
-        dictionaryValidationService = new DictionaryValidationService();
+        dictionaryValidationService = new DictionaryValidationService(['string', 'avion', 'peur', 'eau', 'le']);
         dictionaryValidationService.createTrieDictionary();
     });
 
     beforeEach(() => {
-        wordSolverService = new WordSolverService(dictionaryValidationService);
+        wordSolverService = new WordSolverService(['string', 'avion', 'peur', 'eau', 'le']);
         gameboard = new Gameboard();
         wordSolverService['gameboard'] = gameboard;
         spyFindBeforePart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);
@@ -259,23 +259,35 @@ describe('Word solver service', () => {
 
     it('should find all options', () => {
         const rack: string[] = ['*'];
-        gameboard.placeLetter({ x: 1, y: 12 }, 'z');
-        gameboard.placeLetter({ x: 2, y: 1 }, 'l');
-        gameboard.placeLetter({ x: 7, y: 10 }, 'a');
-        gameboard.placeLetter({ x: 7, y: 8 }, 'j');
-        gameboard.placeLetter({ x: 8, y: 8 }, 'e');
+        gameboard.placeLetter({ x: 1, y: 1 }, 's');
+        gameboard.placeLetter({ x: 2, y: 1 }, 't');
+        gameboard.placeLetter({ x: 3, y: 1 }, 'r');
+        gameboard.placeLetter({ x: 4, y: 1 }, 'i');
+        gameboard.placeLetter({ x: 5, y: 1 }, 'n');
         wordSolverService.findAllOptions(rack);
-        expect(wordSolverService.commandInfoScore(wordSolverService['commandInfoList']).size).to.be.greaterThan(1);
+        expect(wordSolverService.commandInfoScore(wordSolverService['commandInfoList']).size).to.be.greaterThan(0);
     });
 
     context('findWordPartBeforeAnchor() tests', () => {
         it('should call findWordPartBeforeAnchor() and extendWordAfterAnchor() more than once if a word could be found', () => {
-            wordSolverService['rack'] = ['l', 'e', 's'];
+            wordSolverService['rack'] = ['l', 'e', '*'];
             const anchor: Coordinate = { x: 1, y: 1 };
             const limit = 100;
             const spyExtendWordAfterAnchor = Sinon.spy(wordSolverService, 'extendWordAfterAnchor' as keyof WordSolverService);
             wordSolverService['findWordPartBeforeAnchor']('', wordSolverService['trie'].root, anchor, limit);
             expect(spyFindBeforePart.callCount && spyExtendWordAfterAnchor.callCount).to.be.greaterThan(1);
+        });
+    });
+
+    context('rackHasBlankLetter() tests', () => {
+        it('should true if player rack has blank letter', () => {
+            wordSolverService['rack'] = ['l', 'e', 's', '*'];
+            expect(wordSolverService['rackHasBlankLetter']()).to.be.equal(true);
+        });
+
+        it('should false if player rack does not have blank letter', () => {
+            wordSolverService['rack'] = ['l', 'e', 's'];
+            expect(wordSolverService['rackHasBlankLetter']()).to.be.equal(false);
         });
     });
 

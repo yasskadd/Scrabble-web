@@ -6,7 +6,7 @@ import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
 import * as constants from '@common/constants/board-info';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
-import { Inject, Service } from 'typedi';
+import { Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 const ALPHABET_LETTERS = 'abcdefghijklmnopqrstuvwxyz';
 const MAX_LETTERS_LIMIT = 7;
@@ -20,8 +20,10 @@ export class WordSolverService {
     private commandInfoList: CommandInfo[] = new Array();
     private rack: string[];
     private anchors: Coordinate[];
+    private dictionaryService: DictionaryValidationService;
 
-    constructor(@Inject() private dictionaryService: DictionaryValidationService) {
+    constructor(dictionary: string[]) {
+        this.dictionaryService = new DictionaryValidationService(dictionary);
         this.trie = this.dictionaryService.trie;
     }
 
