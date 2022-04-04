@@ -29,7 +29,7 @@ describe('Game tests', () => {
         turn = createStubInstance(Turn) as SinonStubbedInstance<Turn> & Turn;
         letterReserve = createStubInstance(LetterReserve) as SinonStubbedInstance<LetterReserve> & LetterReserve;
         letterPlacementService = createStubInstance(LetterPlacementService) as SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
-        game = new Game(player1, player2, turn, letterReserve, letterPlacementService);
+        game = new Game(player1, player2, turn, letterReserve, letterPlacementService, true);
     });
 
     it('creating new game should call generateLetter of letterReserve two times', () => {
@@ -179,7 +179,7 @@ describe('Game tests', () => {
 
         it('giveNewLetterToRack() should call generateLetter of letterReserve with the quantity of letter that equals the quantity of letter placed', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
-            game = new Game(player1, player2, turn, letterReserve, letterPlacementService);
+            game = new Game(player1, player2, turn, letterReserve, letterPlacementService, true);
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterReserve.isEmpty.returns(false);

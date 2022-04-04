@@ -1,4 +1,5 @@
 import { Game } from '@app/classes/game.class';
+import { Objective } from '@app/classes/objective.class';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
 

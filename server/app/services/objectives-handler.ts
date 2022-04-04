@@ -31,10 +31,10 @@ export class ObjectivesHandler {
         publicObjective2.isPublic = true;
         const privateObjective1 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1)[0];
         privateObjective1.isPublic = false;
-        const privateObjectivE2 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1)[0];
-        privateObjectivE2.isPublic = false;
+        const privateObjective2 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1)[0];
+        privateObjective2.isPublic = false;
         player1.objectives.push(publicObjective1, publicObjective2, privateObjective1);
-        player2.objectives.push(publicObjective1, publicObjective2, privateObjectivE2);
+        player2.objectives.push(publicObjective1, publicObjective2, privateObjective2);
     }
 
     private isWordWithOneVowel(words: Word[]): boolean {
