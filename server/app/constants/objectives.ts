@@ -6,3 +6,4 @@ export const alphabeticalWord: Objective = { name: 'AlphabeticalWord', points: 2
 export const moreThan10Letters: Objective = { name: 'MoreThan10Letters', points: 20, pointsMultiplier: 1 } as Objective;
 export const threeWordsFormed: Objective = { name: 'ThreeWordsFormed', points: 0, pointsMultiplier: 2 } as Objective;
 export const twoSameWords: Objective = { name: 'TwoSameWords', points: 20, pointsMultiplier: 1 } as Objective;
+export const objectivesList: Objective[] = [oneVowelWord, palindromicWord, alphabeticalWord, moreThan10Letters, threeWordsFormed, twoSameWords];

@@ -18,13 +18,23 @@ export class ObjectivesHandler {
 
     completePrivateObjective() {}
 
+    attributeObjectives(player1: Player, player2: Player) {
+        // Set public and private objectives
+        const publicObjective1 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1);
+        const publicObjective2 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1);
+        const privateObjective1 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1);
+        const privateObjectivE2 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1);
+        player1.objectives.push(publicObjective1, publicObjective2, privateObjective1);
+        player2.objectives.push(publicObjective1, publicObjective2, privateObjectivE2);
+    }
+
     setMapObjectives() {
-        this.objectivesMap.set(ObjectivesInfo.oneVowelWord, this.isWordWithOneVowel as CallableFunction);
-        this.objectivesMap.set(ObjectivesInfo.palindromicWord, this.isPalindromicWord as CallableFunction);
-        this.objectivesMap.set(ObjectivesInfo.alphabeticalWord, this.isWordAlphabetical as CallableFunction);
-        this.objectivesMap.set(ObjectivesInfo.moreThan10Letters, this.isWordMoreThan10Letters as CallableFunction);
-        this.objectivesMap.set(ObjectivesInfo.threeWordsFormed, this.isThreeWordsFormed as CallableFunction);
-        this.objectivesMap.set(ObjectivesInfo.twoSameWords, this.isSameWordTwoTimes as CallableFunction);
+        this.objectivesMap.set(ObjectivesInfo.oneVowelWord, this.isWordWithOneVowel);
+        this.objectivesMap.set(ObjectivesInfo.palindromicWord, this.isPalindromicWord);
+        this.objectivesMap.set(ObjectivesInfo.alphabeticalWord, this.isWordAlphabetical);
+        this.objectivesMap.set(ObjectivesInfo.moreThan10Letters, this.isWordMoreThan10Letters);
+        this.objectivesMap.set(ObjectivesInfo.threeWordsFormed, this.isThreeWordsFormed);
+        this.objectivesMap.set(ObjectivesInfo.twoSameWords, this.isSameWordTwoTimes);
     }
 
     isWordWithOneVowel(word: Word) {
