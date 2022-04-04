@@ -12,17 +12,18 @@ export class GamesHistoryComponent implements OnInit {
     constructor(private readonly httpHandler: HttpHandlerService) {}
 
     ngOnInit(): void {
-        this.getHistory();
+        this.gamesHistory = [];
+        this.updateHistory();
     }
 
     deleteHistory() {
         this.httpHandler
             .deleteHistory()
             .toPromise()
-            .then(() => this.getHistory());
+            .then(() => this.updateHistory());
     }
 
-    getHistory() {
+    updateHistory() {
         this.httpHandler.getHistory().subscribe((games) => (this.gamesHistory = games));
     }
 }
