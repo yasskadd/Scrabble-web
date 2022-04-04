@@ -16,7 +16,7 @@ export class ObjectivesHandler {
         this.attributeObjectives(player1, player2);
     }
 
-    verifyObjectives(allWordsFormed: Word[], player: Player): void {
+    verifyWordRelatedObjectives(allWordsFormed: Word[], player: Player): void {
         player.objectives.forEach((objective) => {
             const objectiveVerificationFunction = this.objectivesMap.get(objective) as CallableFunction;
             if (objectiveVerificationFunction(allWordsFormed) && objective.type === 'Word') this.addObjectivePoints(player, objective);
@@ -37,40 +37,40 @@ export class ObjectivesHandler {
         player2.objectives.push(publicObjective1, publicObjective2, privateObjectivE2);
     }
 
-    private isWordWithOneVowel(word: Word): boolean {
-        if (word.stringFormat.length < MINIMUM_LETTERS_ONE_VOWEL) return false;
+    private isWordWithOneVowel(words: Word[]): boolean {
+        if (words[0].stringFormat.length < MINIMUM_LETTERS_ONE_VOWEL) return false;
         const vowels = ['a', 'e', 'i', 'o', 'u'];
         let vowelCount = 0;
-        const wordArray = word.stringFormat.toLowerCase().split('');
+        const wordArray = words[0].stringFormat.toLowerCase().split('');
         wordArray.forEach((letter: string) => {
             if (vowels.includes(letter)) vowelCount++;
         });
         return vowelCount === 1;
     }
 
-    private isPalindromicWord(word: Word): boolean {
-        if (word.stringFormat.length < 1) return false;
-        const wordArray = word.stringFormat.split('');
+    private isPalindromicWord(words: Word[]): boolean {
+        if (words[0].stringFormat.length < 1) return false;
+        const wordArray = words[0].stringFormat.split('');
         return wordArray === wordArray.reverse();
     }
 
-    private isWordAlphabetical(word: Word): boolean {
-        return word.stringFormat === word.stringFormat.split('').sort().join('');
+    private isWordAlphabetical(words: Word[]): boolean {
+        return words[0].stringFormat === words[0].stringFormat.split('').sort().join('');
     }
 
-    private isWordMoreThan10Letters(word: Word): boolean {
-        return word.stringFormat.length > MINIMUM_LETTERS_10;
+    private isWordMoreThan10Letters(words: Word[]): boolean {
+        return words[0].stringFormat.length > MINIMUM_LETTERS_10;
     }
 
-    private isThreeWordsFormed(allWords: Word[]): boolean {
-        return allWords.length > 2;
+    private isThreeWordsFormed(words: Word[]): boolean {
+        return words.length > 2;
     }
 
-    private isSameWordTwoTimes(allWords: Word[]): boolean {
-        allWords.forEach((word: Word) => {
+    private isSameWordTwoTimes(words: Word[]): boolean {
+        words.forEach((word: Word) => {
             word.stringFormat.toLowerCase();
         });
-        return allWords.length !== new Set(allWords).size;
+        return words.length !== new Set(words).size;
     }
 
     private setMapObjectives(): void {

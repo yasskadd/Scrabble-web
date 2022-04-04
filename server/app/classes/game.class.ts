@@ -5,6 +5,7 @@ import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { ObjectivesHandler } from '@app/services/public-objectives.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
@@ -15,6 +16,7 @@ export class Game {
     gameboard: Gameboard;
     isGameFinish: boolean;
     isModeSolo: boolean;
+    objectivesHandler: ObjectivesHandler;
 
     constructor(
         player1: Player,
@@ -22,11 +24,13 @@ export class Game {
         public turn: Turn,
         public letterReserve: LetterReserve,
         @Inject() private letterPlacement: LetterPlacementService,
+        public isMode2990: boolean,
     ) {
         this.start(player1, player2);
         this.gameboard = new Gameboard();
         this.isGameFinish = false;
         this.isModeSolo = false;
+        if (isMode2990) this.objectivesHandler = new ObjectivesHandler(player1, player2);
     }
 
     start(player1: Player, player2: Player): void {

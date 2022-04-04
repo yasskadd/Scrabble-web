@@ -35,7 +35,6 @@ export class LetterPlacementService {
 
     placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, currentGameboard: Gameboard): PlaceLettersReturn {
         this.placeNewLettersOnBoard(commandInfo, commandWord, currentGameboard);
-
         const validateWordReturn = this.dictionaryService.validateWord(commandWord, currentGameboard);
         if (!validateWordReturn.points) {
             this.removeLettersFromBoard(commandWord, currentGameboard);
@@ -44,7 +43,6 @@ export class LetterPlacementService {
 
         this.updatePlayerScore(validateWordReturn.points, commandWord, player);
         this.updatePlayerRack(commandInfo.letters, player.rack);
-
         return { hasPassed: true, gameboard: currentGameboard, invalidWords: [] as Word[] };
     }
 
