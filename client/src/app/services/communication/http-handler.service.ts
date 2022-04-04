@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HighScores } from '@app/interfaces/high-score-parameters';
+import { GameHistoryInfo } from '@common/interfaces/game-history-info';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -23,6 +24,15 @@ export class HttpHandlerService {
         return this.http
             .get<HighScores[]>(`${this.baseUrl}/highScore/log2990`)
             .pipe(catchError(this.handleError<HighScores[]>('getLOG2990cHighScore', [])));
+    }
+
+    // TODO : add tests
+    getHistory(): Observable<GameHistoryInfo[]> {
+        return this.http.get<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
+    }
+
+    deleteHistory(): Observable<GameHistoryInfo[]> {
+        return this.http.delete<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
