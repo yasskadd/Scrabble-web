@@ -6,7 +6,7 @@ import { Service } from 'typedi';
 const HTTP_STATUS_CREATED = StatusCodes.CREATED;
 
 @Service()
-export class DictionaryController {
+export class VirtualPlayerController {
     router: Router;
 
     constructor(private readonly virtualPlayerStorage: VirtualPlayersStorageService) {

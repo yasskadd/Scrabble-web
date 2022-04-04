@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as constants from '@app/constants/game';
+import { Bot } from '@app/interfaces/bot';
+import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 
 export enum VirtualPlayer {
     Beginner = 'beginner',
@@ -10,17 +12,14 @@ export enum VirtualPlayer {
     providedIn: 'root',
 })
 export class VirtualPlayersService {
-    beginnerBotNames: string[];
+    beginnerBotNames: Bot[];
     expertBotNames: string[];
     botType: VirtualPlayer;
-    constructor() {
-        this.beginnerBotNames = constants.BOT_BEGINNER_NAME_LIST;
-        this.expertBotNames = constants.BOT_EXPERT_NAME_LIST;
-    }
+    constructor(private readonly httpHandler: HttpHandlerService) {}
 
     addBotName(newName: string, type: VirtualPlayer) {
         if (type === VirtualPlayer.Beginner) {
-            this.beginnerBotNames.push(newName); // check if already in any list
+            //   this.beginnerBotNames.push(newName);
         } else {
             this.expertBotNames.push(newName);
         }
@@ -28,7 +27,7 @@ export class VirtualPlayersService {
 
     deleteBotName(toRemove: string, type: VirtualPlayer) {
         if (type === VirtualPlayer.Beginner) {
-            this.beginnerBotNames.splice(this.beginnerBotNames.indexOf(toRemove), 1);
+            //  this.beginnerBotNames.splice(this.beginnerBotNames.indexOf(toRemove), 1);
         } else {
             this.expertBotNames.splice(this.expertBotNames.indexOf(toRemove), 1);
         }
@@ -37,5 +36,12 @@ export class VirtualPlayersService {
     resetBotNames() {
         this.beginnerBotNames.splice(0, this.beginnerBotNames.length);
         this.expertBotNames.splice(0, this.expertBotNames.length);
+    }
+
+    getBotNames() {
+        this.httpHandler.getBeginnerBots().subscribe((beginnerBot) => {
+            this.beginnerBotNames = beginnerBot;
+        });
+        this.expertBotNames = constants.BOT_EXPERT_NAME_LIST;
     }
 }

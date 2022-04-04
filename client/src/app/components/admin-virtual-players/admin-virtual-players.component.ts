@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Bot } from '@app/interfaces/bot';
 import { VirtualPlayer, VirtualPlayersService } from '@app/services/virtual-players.service';
 
 @Component({
@@ -19,11 +20,14 @@ export class AdminVirtualPlayersComponent {
         return this.virtualPlayerService.expertBotNames;
     }
 
-    get beginnerBots(): string[] {
+    get beginnerBots(): Bot[] {
+        if (this.virtualPlayerService.beginnerBotNames === undefined) this.virtualPlayerService.getBotNames();
         return this.virtualPlayerService.beginnerBotNames;
     }
     isUniqueName(name: string) {
-        return !this.virtualPlayerService.expertBotNames.includes(name) && !this.virtualPlayerService.beginnerBotNames.includes(name);
+        // return !this.virtualPlayerService.expertBotNames.includes(name) && !this.virtualPlayerService.beginnerBotNames.includes(name);
+        console.log(name);
+        return true;
     }
 
     addExpertName() {
@@ -39,11 +43,12 @@ export class AdminVirtualPlayersComponent {
     }
 
     addName() {
-        if (this.playerType === VirtualPlayer.Beginner) {
-            this.virtualPlayerService.addBotName(this.beginnerInput, this.playerType);
-        }
-        if (this.playerType === VirtualPlayer.Expert) {
-            this.virtualPlayerService.addBotName(this.expertInput, this.playerType);
-        }
+        // if (this.playerType === VirtualPlayer.Beginner) {
+        //     this.virtualPlayerService.addBotName(this.beginnerInput, this.playerType);
+        // }
+        // if (this.playerType === VirtualPlayer.Expert) {
+        //     this.virtualPlayerService.addBotName(this.expertInput, this.playerType);
+        // }
+        console.log('helloooo');
     }
 }

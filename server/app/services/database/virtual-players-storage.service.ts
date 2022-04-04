@@ -49,19 +49,19 @@ export class VirtualPlayersStorageService {
     }
 
     private async populateDb() {
-        const currentTopScores = await this.database.scores.fetchDocuments({});
-        if (currentTopScores.length !== 0) return;
+        const currentBot = await this.database.virtualNames.fetchDocuments({});
+        if (currentBot.length !== 0) return;
+
         for (let i = 0; i < constants.BOT_BEGINNER_NAME_LIST[i].length; i++) {
-            await this.database.scores.addDocument(
+            await this.database.virtualNames.addDocument(
                 (() => {
                     return () => {
                         return { username: constants.BOT_BEGINNER_NAME_LIST[i], difficulty: 'debutant' };
                     };
                 })(),
             );
-        }
-        for (let i = 0; i < constants.BOT_EXPERT_NAME_LIST[i].length; i++) {
-            await this.database.scores.addDocument(
+
+            await this.database.virtualNames.addDocument(
                 (() => {
                     return () => {
                         return { username: constants.BOT_EXPERT_NAME_LIST[i], difficulty: 'Expert' };

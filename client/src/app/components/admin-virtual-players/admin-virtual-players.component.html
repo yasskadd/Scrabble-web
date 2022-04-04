@@ -3,9 +3,9 @@
     <div class="child1">
         <mat-label>Joueurs virtuels débutants</mat-label>
         <mat-selection-list id="expertList" #beginnerNames [multiple]="false">
-            <mat-list-option *ngFor="let name of beginnerBots" [value]="name">
+            <mat-list-option *ngFor="let bot of beginnerBots" [value]="bot.username">
                 <div class="justified">
-                    <div>{{ name }}</div>
+                    <div>{{ bot.username }}</div>
                     <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
                     <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
                 </div>

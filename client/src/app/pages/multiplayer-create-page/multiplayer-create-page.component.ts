@@ -165,9 +165,10 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     createBotName(): void {
+        if (this.virtualPlayers.beginnerBotNames === undefined) this.virtualPlayers.getBotNames();
         this.botName =
             (this.form.get('difficultyBot') as AbstractControl).value === 'Débutant'
-                ? this.virtualPlayers.beginnerBotNames[Math.floor(Math.random() * this.virtualPlayers.beginnerBotNames.length)]
+                ? this.virtualPlayers.beginnerBotNames[Math.floor(Math.random() * this.virtualPlayers.beginnerBotNames.length)].username
                 : this.virtualPlayers.expertBotNames[Math.floor(Math.random() * this.virtualPlayers.expertBotNames.length)];
     }
 
