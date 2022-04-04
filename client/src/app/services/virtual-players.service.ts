@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as constants from '@app/constants/game';
 
-const enum VirtualPlayer {
+export enum VirtualPlayer {
     Beginner = 'beginner',
     Expert = 'expert',
 }
@@ -20,7 +20,7 @@ export class VirtualPlayersService {
 
     addBotName(newName: string, type: VirtualPlayer) {
         if (type === VirtualPlayer.Beginner) {
-            this.beginnerBotNames.push(newName);
+            this.beginnerBotNames.push(newName); // check if already in any list
         } else {
             this.expertBotNames.push(newName);
         }
@@ -32,5 +32,10 @@ export class VirtualPlayersService {
         } else {
             this.expertBotNames.splice(this.expertBotNames.indexOf(toRemove), 1);
         }
+    }
+
+    resetBotNames() {
+        this.beginnerBotNames.splice(0, this.beginnerBotNames.length);
+        this.expertBotNames.splice(0, this.expertBotNames.length);
     }
 }

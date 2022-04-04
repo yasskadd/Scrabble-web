@@ -1,13 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { VirtualPlayersService } from '@app/services/virtual-players.service';
+import { Component } from '@angular/core';
+import { VirtualPlayer, VirtualPlayersService } from '@app/services/virtual-players.service';
 
 @Component({
     selector: 'app-admin-virtual-players',
     templateUrl: './admin-virtual-players.component.html',
     styleUrls: ['./admin-virtual-players.component.scss'],
 })
-export class AdminVirtualPlayersComponent implements OnInit {
-    constructor(public virtualPlayerService: VirtualPlayersService) {}
+export class AdminVirtualPlayersComponent {
+    expertInput: string;
+    beginnerInput: string;
+    playerType: VirtualPlayer;
+    constructor(public virtualPlayerService: VirtualPlayersService) {
+        this.expertInput = '';
+        this.beginnerInput = '';
+    }
 
     get expertBots(): string[] {
         return this.virtualPlayerService.expertBotNames;
@@ -16,10 +22,28 @@ export class AdminVirtualPlayersComponent implements OnInit {
     get beginnerBots(): string[] {
         return this.virtualPlayerService.beginnerBotNames;
     }
+    isUniqueName(name: string) {
+        return !this.virtualPlayerService.expertBotNames.includes(name) && !this.virtualPlayerService.beginnerBotNames.includes(name);
+    }
 
-    ngOnInit(): void {}
+    addExpertName() {
+        if (this.isUniqueName(this.expertInput)) {
+            this.virtualPlayerService.addBotName(this.expertInput, VirtualPlayer.Expert);
+        }
+    }
+
+    addBeginnerName() {
+        if (this.isUniqueName(this.beginnerInput)) {
+            this.virtualPlayerService.addBotName(this.beginnerInput, VirtualPlayer.Beginner);
+        }
+    }
 
     addName() {
-        // this.virtualPlayerService.addBotName('random', 'beginner');
+        if (this.playerType === VirtualPlayer.Beginner) {
+            this.virtualPlayerService.addBotName(this.beginnerInput, this.playerType);
+        }
+        if (this.playerType === VirtualPlayer.Expert) {
+            this.virtualPlayerService.addBotName(this.expertInput, this.playerType);
+        }
     }
 }
