@@ -51,16 +51,8 @@ export class HistoryStorageService {
     private computeTimeLength(date1: Date, date2: Date): string {
         const milliseconds = Math.abs(date2.getTime() - date1.getTime());
         const seconds = Math.floor((milliseconds / SECOND_IN_MILLISECOND) % SECOND_MINUTE_HOUR_MAX_VALUE);
-        const minutes = Math.floor((milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE)) % SECOND_MINUTE_HOUR_MAX_VALUE);
-        const hours = Math.floor(
-            (milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE * SECOND_MINUTE_HOUR_MAX_VALUE)) % SECOND_MINUTE_HOUR_MAX_VALUE,
-        );
-        return (
-            (hours < MINIMUM_TWO_UNITS ? '0' + hours : hours) +
-            ':' +
-            (minutes < MINIMUM_TWO_UNITS ? '0' + minutes : minutes) +
-            ':' +
-            (seconds < MINIMUM_TWO_UNITS ? '0' + seconds : seconds)
-        );
+        const minutes = Math.floor(milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE));
+
+        return (minutes < MINIMUM_TWO_UNITS ? '0' + minutes : minutes) + ':' + (seconds < MINIMUM_TWO_UNITS ? '0' + seconds : seconds);
     }
 }
