@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogBoxNewGameComponent } from '@app/components/dialog-box-new-game-component/dialog-box-new-game.component';
+import * as constants from '@app/constants/game';
 import { Bot } from '@app/interfaces/bot';
 import { VirtualPlayer, VirtualPlayersService } from '@app/services/virtual-players.service';
 
@@ -11,7 +14,8 @@ export class AdminVirtualPlayersComponent {
     expertInput: string;
     beginnerInput: string;
     playerType: VirtualPlayer;
-    constructor(public virtualPlayerService: VirtualPlayersService) {
+    private readonly dialogWidth: string = '500px';
+    constructor(public virtualPlayerService: VirtualPlayersService, public dialog: MatDialog) {
         this.expertInput = '';
         this.beginnerInput = '';
     }
@@ -43,13 +47,33 @@ export class AdminVirtualPlayersComponent {
         this.beginnerInput = '';
     }
 
-    addName() {
-        // if (this.playerType === VirtualPlayer.Beginner) {
-        //     this.virtualPlayerService.addBotName(this.beginnerInput, this.playerType);
-        // }
-        // if (this.playerType === VirtualPlayer.Expert) {
-        //     this.virtualPlayerService.addBotName(this.expertInput, this.playerType);
-        // }
-        console.log('helloooo');
+    openReplaceNameDialog(currentName: string, difficulty: string) {
+        const dialogRef = this.dialog.open(DialogBoxNewGameComponent, {
+            width: this.dialogWidth,
+            data: { currentName, newName: currentName },
+        });
+
+        dialogRef.afterClosed().subscribe((result) => {
+            if (result === undefined) return;
+            this.replaceBotName(currentName, result, difficulty);
+        });
+    }
+
+    replaceBotName(currentName: string, newName: string, difficulty: string) {
+        if (constants.BOT_BEGINNER_NAME_LIST.includes(currentName) || constants.BOT_EXPERT_NAME_LIST.includes(currentName)) return;
+        if (this.isUniqueName(newName)) this.virtualPlayerService.replaceBotName({ currentName, newName, difficulty });
+    }
+
+    deleteBot(username: string, difficulty: string) {
+        if (constants.BOT_BEGINNER_NAME_LIST.includes(username) || constants.BOT_EXPERT_NAME_LIST.includes(username)) return;
+        this.virtualPlayerService.deleteBotName(username, difficulty);
+    }
+
+    resetBot() {
+        this.virtualPlayerService.resetBotNames();
+    }
+
+    updateBotList() {
+        this.virtualPlayerService.getBotNames();
     }
 }

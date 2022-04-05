@@ -1,4 +1,8 @@
 <div class="Parent">
+    <div class="action-buttons">
+        <button mat-raised-button color="warn" (click)="resetBot()">Reinitialiser <mat-icon>delete</mat-icon></button>
+    </div>
+
     <!-- <button mat-raised-button (click)="addName()">Ajouter un joueur débutant</button> -->
     <div class="child1">
         <mat-label>Joueurs virtuels débutants</mat-label>
@@ -6,8 +10,10 @@
             <mat-list-option *ngFor="let bot of beginnerBots" [value]="bot.username">
                 <div class="justified">
                     <div>{{ bot.username }}</div>
-                    <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
-                    <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)">
+                        <mat-icon> border_color</mat-icon>
+                    </button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)"><mat-icon>delete</mat-icon></button>
                 </div>
             </mat-list-option>
         </mat-selection-list>
@@ -34,8 +40,10 @@
             <mat-list-option *ngFor="let bot of expertBots" [value]="bot.username">
                 <div class="justified">
                     <div>{{ bot.username }}</div>
-                    <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
-                    <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)">
+                        <mat-icon> border_color</mat-icon>
+                    </button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)"><mat-icon>delete</mat-icon></button>
                 </div>
             </mat-list-option>
         </mat-selection-list>

@@ -7,6 +7,8 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
+type BotNameInfo = { currentName: string; newName: string; difficulty: string };
+
 @Injectable({
     providedIn: 'root',
 })
@@ -47,12 +49,16 @@ export class HttpHandlerService {
         return this.http.post<void>(`${this.baseUrl}/virtualPlayer/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
     }
 
+    replaceBot(bot: BotNameInfo): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/replace`, bot).pipe(catchError(this.handleError<void>('replaceBot')));
+    }
+
     resetBot(): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/virtualPlayer/remove`).pipe(catchError(this.handleError<void>('resetBot')));
+        return this.http.delete<void>(`${this.baseUrl}/virtualPlayer/reset`).pipe(catchError(this.handleError<void>('resetBot')));
     }
 
     deleteBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/delete`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
+        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/remove`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

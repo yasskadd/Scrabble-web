@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Bot } from '@app/interfaces/bot';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 
+type BotNameInfo = { currentName: string; newName: string; difficulty: string };
+
 export enum VirtualPlayer {
     Beginner = 'beginner',
     Expert = 'expert',
@@ -23,13 +25,23 @@ export class VirtualPlayersService {
             .then(() => this.getBotNames());
     }
 
-    deleteBotName(toRemove: string, type: VirtualPlayer) {
-        this.httpHandler.deleteBot({ username: toRemove, difficulty: type === VirtualPlayer.Beginner ? 'debutant' : 'Expert' }).subscribe();
+    deleteBotName(toRemove: string, difficulty: string) {
+        this.httpHandler
+            .deleteBot({ username: toRemove, difficulty })
+            .toPromise()
+            .then(() => this.getBotNames());
     }
 
     resetBotNames() {
         this.httpHandler
             .resetBot()
+            .toPromise()
+            .then(() => this.getBotNames());
+    }
+
+    replaceBotName(nameBotToReplace: BotNameInfo) {
+        this.httpHandler
+            .replaceBot(nameBotToReplace)
             .toPromise()
             .then(() => this.getBotNames());
     }

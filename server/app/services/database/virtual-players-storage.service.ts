@@ -3,7 +3,7 @@ import { Document } from 'mongodb';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 
-type BotNameInfo = { currentName: string; newName: string; difficulty: number };
+type BotNameInfo = { currentName: string; newName: string; difficulty: string };
 
 @Service()
 export class VirtualPlayersStorageService {
@@ -15,6 +15,7 @@ export class VirtualPlayersStorageService {
         const currentExpertBot = await this.database.virtualNames.fetchDocuments({ difficulty: 'Expert' });
         return currentExpertBot;
     }
+
     async getBeginnerBot(): Promise<Document[]> {
         await this.populateDb();
         const currentBeginnerBot = await this.database.virtualNames.fetchDocuments({ difficulty: 'debutant' });
@@ -31,9 +32,7 @@ export class VirtualPlayersStorageService {
     }
 
     async addBot(bot: Document) {
-        console.log('la');
         if (await this.botIsInDb(bot.username)) return;
-        console.log('pas la');
         await this.database.virtualNames.addDocument(bot);
     }
 
@@ -57,7 +56,6 @@ export class VirtualPlayersStorageService {
         if (currentBot.length !== 0) return;
         for (let i = 0; i < constants.BOT_BEGINNER_NAME_LIST.length; i++) {
             await this.database.virtualNames.addDocument({ username: constants.BOT_BEGINNER_NAME_LIST[i], difficulty: 'debutant' });
-
             await this.database.virtualNames.addDocument({ username: constants.BOT_EXPERT_NAME_LIST[i], difficulty: 'Expert' });
         }
     }
