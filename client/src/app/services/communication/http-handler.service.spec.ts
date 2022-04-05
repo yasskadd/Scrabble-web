@@ -49,8 +49,8 @@ describe('HttpHandlerService', () => {
                 firstPlayerScore: 20,
                 secondPlayerScore: 0,
                 abandoned: true,
-                beginningTime: '41st millenium',
-                endTime: 'To infinite and beyond',
+                beginningTime: new Date(),
+                endTime: new Date(),
                 duration: 'Too big',
             },
         ];

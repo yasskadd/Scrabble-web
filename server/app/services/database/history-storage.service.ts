@@ -38,8 +38,8 @@ export class HistoryStorageService {
         return {
             mode: players[0].game.gameMode,
             abandoned: players[0].game.isGameAbandoned,
-            beginningTime: players[0].game.beginningTime.toLocaleString('fr-FR'),
-            endTime: endTime.toLocaleString('fr-FR'),
+            beginningTime: players[0].game.beginningTime,
+            endTime,
             duration: this.computeDuration(players[0].game.beginningTime, endTime),
             firstPlayerName: players[0].name,
             firstPlayerScore: players[0].score,

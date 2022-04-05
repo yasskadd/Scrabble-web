@@ -6,14 +6,14 @@
     <mat-expansion-panel *ngFor="let gameHistory of gamesHistory">
         <mat-expansion-panel-header>
             <mat-panel-title>
-                <div>[{{ gameHistory.beginningTime }}]</div>
+                <div>[{{ gameHistory.beginningTime | date: 'MM/dd/yyyy, h:mm a' }}]</div>
                 <div>{{ gameHistory.firstPlayerName }} VS {{ gameHistory.secondPlayerName }}</div>
                 <div><mat-panel-description *ngIf="gameHistory.abandoned">Partie Abandonnée </mat-panel-description></div>
             </mat-panel-title>
         </mat-expansion-panel-header>
         <p>Mode : {{ gameHistory.mode }}</p>
-        <p>Debut du jeu : {{ gameHistory.beginningTime }}</p>
-        <p>Fin du jeu : {{ gameHistory.endTime }}</p>
+        <p>Debut du jeu (MM/dd/yyyy) : {{ gameHistory.beginningTime | date: 'MM/dd/yyyy, h:mm a' }}</p>
+        <p>Fin du jeu (MM/dd/yyyy) : {{ gameHistory.endTime | date: 'MM/dd/yyyy, h:mm a' }}</p>
         <p>Durée (Minutes:Secondes) : {{ gameHistory.duration }}</p>
         <p>Joueur : {{ gameHistory.firstPlayerName }}</p>
         <p>Score : {{ gameHistory.firstPlayerScore }}</p>

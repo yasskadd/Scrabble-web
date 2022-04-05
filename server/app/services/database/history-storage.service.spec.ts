@@ -19,8 +19,8 @@ const GAME_INFO = {
     firstPlayerScore: 20,
     secondPlayerScore: 0,
     abandoned: true,
-    beginningTime: '41st millenium',
-    endTime: 'To infinite and beyond',
+    beginningTime: new Date('January 0, 2000 03:25:00'),
+    endTime: new Date('January 1, 2000 03:25:00'),
     duration: 'Too big',
 };
 
@@ -39,7 +39,7 @@ const GAMES_HISTORY = [
     GAME_INFO,
 ];
 
-describe('scoreStorage Service', () => {
+describe('historyStorage Service', () => {
     let databaseServiceStub: Sinon.SinonStubbedInstance<DatabaseService>;
     let gamesStateStub: Sinon.SinonStubbedInstance<GamesStateService>;
     let gamesHandlerStub: Sinon.SinonStubbedInstance<GamesHandler>;
@@ -96,9 +96,11 @@ describe('scoreStorage Service', () => {
         gamesHandlerStub.gamePlayers = new Map();
         const ROOM = '0';
         const game = Sinon.createStubInstance(Game);
+        const DATE1 = new Date('January 1, 2044 00:00:00');
+        const DATE2 = new Date('January 1, 2044 00:00:01');
 
         game.isGameAbandoned = false;
-        game.beginningTime = new Date('January 1, 2044 00:00:00');
+        game.beginningTime = DATE1;
         game.gameMode = 'SNK';
         const firstPlayer = Sinon.createStubInstance(Player);
         const secondPlayer = Sinon.createStubInstance(Player);
@@ -120,8 +122,8 @@ describe('scoreStorage Service', () => {
             firstPlayerScore: 1000,
             secondPlayerScore: 100,
             abandoned: false,
-            beginningTime: '01/01/2044 à 00:00:00',
-            endTime: '01/01/2044 à 00:00:01',
+            beginningTime: DATE1,
+            endTime: DATE2,
             duration: 'infinite',
         };
         gamesHandlerStub.gamePlayers.set(ROOM, players);
@@ -129,8 +131,7 @@ describe('scoreStorage Service', () => {
         const computeDurationStub = Sinon.stub(historyStorageService, 'computeDuration' as never);
         computeDurationStub.returns('infinite');
 
-        const currentDate = new Date('January 1, 2044 00:00:01');
-        const clock = Sinon.useFakeTimers(currentDate);
+        const clock = Sinon.useFakeTimers(DATE2);
 
         const gameInfo = historyStorageService['formatGameInfo'](ROOM);
         expect(gameInfo).to.deep.equal(EXPECTED_VALUE);
