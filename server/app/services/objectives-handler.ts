@@ -40,20 +40,29 @@ export class ObjectivesHandler {
     }
 
     private isWordWithOneVowel(words: Word[]): boolean {
-        if (words[0].stringFormat.length < MINIMUM_LETTERS_ONE_VOWEL) return false;
-        const vowels = ['a', 'e', 'i', 'o', 'u'];
-        let vowelCount = 0;
-        const wordArray = words[0].stringFormat.toLowerCase().split('');
-        wordArray.forEach((letter: string) => {
-            if (vowels.includes(letter)) vowelCount++;
-        });
-        return vowelCount === 1;
+        let isWordWithOneVowel = false;
+        const vowels = ['a', 'e', 'i', 'o', 'u', 'y'];
+        for (const word of words) {
+            let vowelCount = 0;
+            const wordArray = word.stringFormat.toLowerCase().split('');
+            wordArray.forEach((letter: string) => {
+                if (vowels.includes(letter)) {
+                    vowelCount++;
+                    ObjectivesInfo.oneVowelWord.points = word.points * 2;
+                }
+            });
+            if (vowelCount === 1 && word.stringFormat.length > MINIMUM_LETTERS_ONE_VOWEL) isWordWithOneVowel = true;
+        }
+        return isWordWithOneVowel;
     }
 
     private isPalindromicWord(words: Word[]): boolean {
-        if (words[0].stringFormat.length < 1) return false;
-        const wordArray = words[0].stringFormat.split('');
-        return wordArray.join('') === [...wordArray].reverse().join('');
+        let isPalindromicWord = false;
+        for (const word of words) {
+            const reverseWord: string = word.stringFormat.toLowerCase().split('').reverse().join('');
+            if (word.stringFormat.toLowerCase() === reverseWord && word.stringFormat.length > 2) isPalindromicWord = true;
+        }
+        return isPalindromicWord;
     }
 
     private isWordAlphabetical(words: Word[]): boolean {
@@ -95,7 +104,6 @@ export class ObjectivesHandler {
 
     private addObjectivePoints(player: Player, objective: Objective): void {
         player.score += objective.points;
-        player.score *= objective.pointsMultiplier;
     }
 
     private completeObjective(player: Player, objective: Objective): void {

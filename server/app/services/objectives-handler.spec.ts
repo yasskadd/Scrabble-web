@@ -88,4 +88,46 @@ describe.only('Objectives Handler Tests', () => {
             expect(objectivesHandler['isWordAlphabetical'](words)).to.be.equal(false);
         });
     });
+
+    context('isPalindromicWord() Tests', () => {
+        it('should return true if there is one palindromic word in the list', () => {
+            const palindromicWord = {} as Word;
+            palindromicWord.stringFormat = 'laval';
+            const words: Word[] = [wordStub1, palindromicWord, wordStub3];
+            expect(objectivesHandler['isPalindromicWord'](words)).to.be.equal(true);
+        });
+
+        it('should return false if there is not palindromic word in the list', () => {
+            const words: Word[] = [wordStub1, wordStub2, wordStub3];
+            expect(objectivesHandler['isPalindromicWord'](words)).to.be.equal(false);
+        });
+
+        it('should return true if there is a palindromic word with uppercase letters', () => {
+            const palindromicWord = {} as Word;
+            palindromicWord.stringFormat = 'LAval';
+            const words: Word[] = [palindromicWord, wordStub2, wordStub3];
+            expect(objectivesHandler['isPalindromicWord'](words)).to.be.equal(true);
+        });
+    });
+
+    context('isWordWithOneVowel() Tests', () => {
+        it('should return true if there is one word with one vowel in the list of words', () => {
+            const wordWithOneVowel = {} as Word;
+            wordWithOneVowel.stringFormat = 'fsdgil';
+            const words: Word[] = [wordStub1, wordWithOneVowel, wordStub3];
+            expect(objectivesHandler['isWordWithOneVowel'](words)).to.be.equal(true);
+        });
+
+        it('should return false if there is no word with only one vowels', () => {
+            const words: Word[] = [wordStub1, wordStub2, wordStub3];
+            expect(objectivesHandler['isWordWithOneVowel'](words)).to.be.equal(false);
+        });
+
+        it('should return true if the only vowel in the word is uppercase', () => {
+            const wordWithOneVowel = {} as Word;
+            wordWithOneVowel.stringFormat = 'sphYnx';
+            const words: Word[] = [wordStub1, wordWithOneVowel, wordStub3];
+            expect(objectivesHandler['isWordWithOneVowel'](words)).to.be.equal(true);
+        });
+    });
 });
