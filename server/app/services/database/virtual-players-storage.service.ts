@@ -45,6 +45,7 @@ export class VirtualPlayersStorageService {
         if (!(await this.botIsInDb(bot.username))) return;
         await this.database.virtualNames.removeDocument(bot);
     }
+
     async botIsInDb(username: string): Promise<boolean> {
         // eslint-disable-next-line object-shorthand
         const document = await this.database.virtualNames.fetchDocuments({ username: username }, { projection: { username: 1 } });

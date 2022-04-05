@@ -28,13 +28,13 @@ export class VirtualPlayerController {
 
         this.router.post('/upload', async (req: Request, res: Response) => {
             const bot = req.body;
-            this.virtualPlayerStorage.addBot(bot);
+            await this.virtualPlayerStorage.addBot(bot);
             res.sendStatus(HTTP_STATUS_CREATED);
         });
 
         this.router.post('/replace', async (req: Request, res: Response) => {
             const bot = req.body;
-            this.virtualPlayerStorage.replaceBotName(bot);
+            await this.virtualPlayerStorage.replaceBotName(bot);
             res.sendStatus(HTTP_STATUS_CREATED);
         });
 

@@ -16,7 +16,7 @@ export class AdminVirtualPlayersComponent {
     playerType: VirtualPlayer;
     private readonly dialogWidth: string = '500px';
     constructor(public virtualPlayerService: VirtualPlayersService, public dialog: MatDialog) {
-        this.virtualPlayerService.getBotNames();
+        this.updateBotList();
         this.expertInput = '';
         this.beginnerInput = '';
     }
@@ -35,6 +35,7 @@ export class AdminVirtualPlayersComponent {
     }
 
     addExpertName() {
+        this.updateBotList();
         if (this.isUniqueName(this.expertInput)) {
             this.virtualPlayerService.addBotName(this.expertInput, VirtualPlayer.Expert);
         }
@@ -42,6 +43,7 @@ export class AdminVirtualPlayersComponent {
     }
 
     addBeginnerName() {
+        this.updateBotList();
         if (this.isUniqueName(this.beginnerInput)) {
             this.virtualPlayerService.addBotName(this.beginnerInput, VirtualPlayer.Beginner);
         }
@@ -61,11 +63,13 @@ export class AdminVirtualPlayersComponent {
     }
 
     replaceBotName(currentName: string, newName: string, difficulty: string) {
+        this.updateBotList();
         if (this.isNameDefault(currentName)) return;
         if (this.isUniqueName(newName)) this.virtualPlayerService.replaceBotName({ currentName, newName, difficulty });
     }
 
     deleteBot(username: string, difficulty: string) {
+        this.updateBotList();
         if (this.isNameDefault(username)) return;
         this.virtualPlayerService.deleteBotName(username, difficulty);
     }
@@ -76,6 +80,7 @@ export class AdminVirtualPlayersComponent {
     }
 
     resetBot() {
+        if (this.beginnerBots.length <= 3) return;
         this.virtualPlayerService.resetBotNames();
     }
 
