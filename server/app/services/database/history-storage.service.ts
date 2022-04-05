@@ -18,10 +18,6 @@ export class HistoryStorageService {
         });
     }
 
-    async addToHistory(gameInfo: GameHistoryInfo) {
-        await this.databaseService.histories.addDocument(gameInfo);
-    }
-
     async getHistory(): Promise<Document[]> {
         const history = await (await this.databaseService.histories.fetchDocuments({})).reverse();
         return history;
@@ -29,6 +25,10 @@ export class HistoryStorageService {
 
     async clearHistory() {
         await this.databaseService.histories.resetCollection();
+    }
+
+    private async addToHistory(gameInfo: GameHistoryInfo) {
+        await this.databaseService.histories.addDocument(gameInfo);
     }
 
     private formatGameInfo(room: string): GameHistoryInfo {

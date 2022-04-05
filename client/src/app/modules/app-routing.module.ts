@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { GamesHistoryComponent } from '@app/components/games-history/games-history.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { MainPageComponent } from '@app/pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from '@app/pages/multiplayer-create-page/multiplayer-create-page.component';
@@ -15,8 +14,6 @@ const routes: Routes = [
     { path: 'multijoueur/rejoindre/:id', component: MultiplayerJoinPageComponent },
     { path: 'multijoueur/creer/:id', component: MultiplayerCreatePageComponent },
     { path: 'multijoueur/salleAttente/:id', component: WaitingOpponentPageComponent },
-    // TODO : Remove hist
-    { path: 'hist', component: GamesHistoryComponent },
     { path: '**', redirectTo: '/home' },
 ];
 
