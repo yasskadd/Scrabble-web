@@ -16,6 +16,7 @@ export class AdminVirtualPlayersComponent {
     playerType: VirtualPlayer;
     private readonly dialogWidth: string = '500px';
     constructor(public virtualPlayerService: VirtualPlayersService, public dialog: MatDialog) {
+        this.virtualPlayerService.getBotNames();
         this.expertInput = '';
         this.beginnerInput = '';
     }
