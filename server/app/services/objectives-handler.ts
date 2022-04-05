@@ -7,13 +7,13 @@ const MINIMUM_LETTERS_ONE_VOWEL = 5;
 const MINIMUM_LETTERS_10 = 10;
 
 export class ObjectivesHandler {
-    players: [Player, Player];
-    objectivesMap: Map<Objective, CallableFunction> = new Map();
+    private players: [Player, Player];
+    private objectivesMap: Map<Objective, CallableFunction> = new Map();
 
     constructor(player1: Player, player2: Player) {
         this.players = [player1, player2];
         this.setMapObjectives();
-        // this.attributeObjectives(player1, player2);
+        this.attributeObjectives(player1, player2);
     }
 
     verifyWordRelatedObjectives(allWordsFormed: Word[], player: Player): void {
@@ -27,13 +27,14 @@ export class ObjectivesHandler {
 
     attributeObjectives(player1: Player, player2: Player): void {
         // Set public and private objectives
-        const publicObjective1 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1)[0];
+        const objectivesListCopy: Objective[] = [...ObjectivesInfo.objectivesList];
+        const publicObjective1 = objectivesListCopy.splice(Math.floor(Math.random() * objectivesListCopy.length), 1)[0];
         publicObjective1.isPublic = true;
-        const publicObjective2 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1)[0];
+        const publicObjective2 = objectivesListCopy.splice(Math.floor(Math.random() * objectivesListCopy.length), 1)[0];
         publicObjective2.isPublic = true;
-        const privateObjective1 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1)[0];
+        const privateObjective1 = objectivesListCopy.splice(Math.floor(Math.random() * objectivesListCopy.length), 1)[0];
         privateObjective1.isPublic = false;
-        const privateObjective2 = ObjectivesInfo.objectivesList.splice(Math.floor(Math.random() * ObjectivesInfo.objectivesList.length), 1)[0];
+        const privateObjective2 = objectivesListCopy.splice(Math.floor(Math.random() * objectivesListCopy.length), 1)[0];
         privateObjective2.isPublic = false;
         player1.objectives.push(publicObjective1, publicObjective2, privateObjective1);
         player2.objectives.push(publicObjective1, publicObjective2, privateObjective2);
@@ -46,12 +47,12 @@ export class ObjectivesHandler {
             let vowelCount = 0;
             const wordArray = word.stringFormat.toLowerCase().split('');
             wordArray.forEach((letter: string) => {
-                if (vowels.includes(letter)) {
-                    vowelCount++;
-                    ObjectivesInfo.oneVowelWord.points = word.points * 2;
-                }
+                if (vowels.includes(letter)) vowelCount++;
             });
-            if (vowelCount === 1 && word.stringFormat.length > MINIMUM_LETTERS_ONE_VOWEL) isWordWithOneVowel = true;
+            if (vowelCount === 1 && word.stringFormat.length > MINIMUM_LETTERS_ONE_VOWEL) {
+                isWordWithOneVowel = true;
+                ObjectivesInfo.oneVowelWord.points = word.points * 2;
+            }
         }
         return isWordWithOneVowel;
     }
@@ -82,7 +83,13 @@ export class ObjectivesHandler {
     }
 
     private isThreeWordsFormed(words: Word[]): boolean {
-        return words.length > 2;
+        if (words.length > 2) {
+            const roundPoints = words.reduce((a, c) => {
+                return a + c.points;
+            }, 0);
+            ObjectivesInfo.threeWordsFormed.points = roundPoints * 2;
+            return true;
+        } else return false;
     }
 
     private isSameWordTwoTimes(words: Word[]): boolean {
