@@ -24,8 +24,8 @@ export class AdminVirtualPlayersComponent {
         return this.virtualPlayerService.beginnerBotNames;
     }
     isUniqueName(name: string) {
-        // return !this.virtualPlayerService.expertBotNames.includes(name) && !this.virtualPlayerService.beginnerBotNames.includes(name);
-        console.log(name);
+        if (this.virtualPlayerService.expertBotNames.some((bot) => bot.username.toLowerCase() === name.toLowerCase())) return false;
+        if (this.virtualPlayerService.beginnerBotNames.some((bot) => bot.username.toLowerCase() === name.toLowerCase())) return false;
         return true;
     }
 
@@ -33,12 +33,14 @@ export class AdminVirtualPlayersComponent {
         if (this.isUniqueName(this.expertInput)) {
             this.virtualPlayerService.addBotName(this.expertInput, VirtualPlayer.Expert);
         }
+        this.expertInput = '';
     }
 
     addBeginnerName() {
         if (this.isUniqueName(this.beginnerInput)) {
             this.virtualPlayerService.addBotName(this.beginnerInput, VirtualPlayer.Beginner);
         }
+        this.beginnerInput = '';
     }
 
     addName() {
