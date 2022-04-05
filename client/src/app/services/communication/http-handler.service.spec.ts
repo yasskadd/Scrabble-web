@@ -50,7 +50,7 @@ describe('HttpHandlerService', () => {
                 abandoned: true,
                 beginningTime: '41st millenium',
                 endTime: 'To infinite and beyond',
-                length: 'Too big',
+                duration: 'Too big',
             },
         ];
 

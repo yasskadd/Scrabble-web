@@ -3,7 +3,7 @@ export interface GameHistoryInfo {
     abandoned: boolean;
     beginningTime: string;
     endTime: string;
-    length: string;
+    duration: string;
     firstPlayerName: string;
     firstPlayerScore: number;
     secondPlayerName: string;

@@ -6,7 +6,7 @@ import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
 
 const SECOND_IN_MILLISECOND = 1000;
-const SECOND_MINUTE_HOUR_MAX_VALUE = 60;
+const SECOND_AND_MINUTE_MAX_VALUE = 60;
 const MINIMUM_TWO_UNITS = 10;
 
 @Service()
@@ -40,7 +40,7 @@ export class HistoryStorageService {
             abandoned: players[0].game.isGameAbandoned,
             beginningTime: players[0].game.beginningTime.toLocaleString('fr-FR'),
             endTime: endTime.toLocaleString('fr-FR'),
-            length: this.computeTimeLength(players[0].game.beginningTime, endTime),
+            duration: this.computeDuration(players[0].game.beginningTime, endTime),
             firstPlayerName: players[0].name,
             firstPlayerScore: players[0].score,
             secondPlayerName: players[1].name,
@@ -48,10 +48,10 @@ export class HistoryStorageService {
         } as GameHistoryInfo;
     }
 
-    private computeTimeLength(date1: Date, date2: Date): string {
+    private computeDuration(date1: Date, date2: Date): string {
         const milliseconds = Math.abs(date2.getTime() - date1.getTime());
-        const seconds = Math.floor((milliseconds / SECOND_IN_MILLISECOND) % SECOND_MINUTE_HOUR_MAX_VALUE);
-        const minutes = Math.floor(milliseconds / (SECOND_IN_MILLISECOND * SECOND_MINUTE_HOUR_MAX_VALUE));
+        const seconds = Math.floor((milliseconds / SECOND_IN_MILLISECOND) % SECOND_AND_MINUTE_MAX_VALUE);
+        const minutes = Math.floor(milliseconds / (SECOND_IN_MILLISECOND * SECOND_AND_MINUTE_MAX_VALUE));
 
         return (minutes < MINIMUM_TWO_UNITS ? '0' + minutes : minutes) + ':' + (seconds < MINIMUM_TWO_UNITS ? '0' + seconds : seconds);
     }
