@@ -13,7 +13,7 @@ export class ObjectivesHandler {
     constructor(player1: Player, player2: Player) {
         this.players = [player1, player2];
         this.setMapObjectives();
-        this.attributeObjectives(player1, player2);
+        // this.attributeObjectives(player1, player2);
     }
 
     verifyWordRelatedObjectives(allWordsFormed: Word[], player: Player): void {
@@ -57,11 +57,19 @@ export class ObjectivesHandler {
     }
 
     private isWordAlphabetical(words: Word[]): boolean {
-        return words[0].stringFormat === words[0].stringFormat.split('').sort().join('');
+        let isAlphabetical = false;
+        words.forEach((word) => {
+            if (word.stringFormat.toLowerCase() === word.stringFormat.toLowerCase().split('').sort().join('')) isAlphabetical = true;
+        });
+        return isAlphabetical;
     }
 
     private isWordMoreThan10Letters(words: Word[]): boolean {
-        return words[0].stringFormat.length > MINIMUM_LETTERS_10;
+        let isMoreThan10 = false;
+        words.forEach((word) => {
+            if (word.stringFormat.length > MINIMUM_LETTERS_10) isMoreThan10 = true;
+        });
+        return isMoreThan10;
     }
 
     private isThreeWordsFormed(words: Word[]): boolean {
@@ -69,10 +77,11 @@ export class ObjectivesHandler {
     }
 
     private isSameWordTwoTimes(words: Word[]): boolean {
+        const wordStringList: string[] = [];
         words.forEach((word: Word) => {
-            word.stringFormat.toLowerCase();
+            wordStringList.push(word.stringFormat.toLowerCase());
         });
-        return words.length !== new Set(words).size;
+        return words.length !== new Set(wordStringList).size;
     }
 
     private setMapObjectives(): void {
