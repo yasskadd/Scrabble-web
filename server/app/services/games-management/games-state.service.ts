@@ -12,6 +12,7 @@ import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
+import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { GamesHandler } from './games-handler.service';
@@ -21,7 +22,10 @@ const SECOND = 1000;
 
 @Service()
 export class GamesStateService {
-    constructor(private socketManager: SocketManager, private gamesHandler: GamesHandler, private readonly scoreStorage: ScoreStorageService) {}
+    gameEnded: Subject<string>;
+    constructor(private socketManager: SocketManager, private gamesHandler: GamesHandler, private readonly scoreStorage: ScoreStorageService) {
+        this.gameEnded = new Subject();
+    }
 
     initSocketsEvents(): void {
         this.socketManager.on(SocketEvents.CreateScrabbleGame, (socket, gameInfo: GameScrabbleInformation) => this.createGame(socket, gameInfo));
@@ -162,6 +166,7 @@ export class GamesStateService {
             return;
         }
         player.game.abandon();
+        this.gameEnded.next(player.room);
     }
 
     private switchToSolo(socket: Socket, playerToReplace: Player) {
@@ -217,6 +222,7 @@ export class GamesStateService {
     private endGame(socketId: string) {
         const player = this.gamesHandler.players.get(socketId) as Player;
         if (this.gamesHandler.gamePlayers.get(player.room) !== undefined && !player.game.isGameFinish) {
+            this.gameEnded.next(player.room);
             player.game.isGameFinish = true;
             this.socketManager.emitRoom(player.room, SocketEvents.GameEnd);
         }
