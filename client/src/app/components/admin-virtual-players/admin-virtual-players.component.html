@@ -10,10 +10,12 @@
             <mat-list-option *ngFor="let bot of beginnerBots" [value]="bot.username">
                 <div class="justified">
                     <div>{{ bot.username }}</div>
-                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)">
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
                         <mat-icon> border_color</mat-icon>
                     </button>
-                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)"><mat-icon>delete</mat-icon></button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </div>
             </mat-list-option>
         </mat-selection-list>
@@ -40,10 +42,12 @@
             <mat-list-option *ngFor="let bot of expertBots" [value]="bot.username">
                 <div class="justified">
                     <div>{{ bot.username }}</div>
-                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)">
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
                         <mat-icon> border_color</mat-icon>
                     </button>
-                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)"><mat-icon>delete</mat-icon></button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </div>
             </mat-list-option>
         </mat-selection-list>

@@ -60,13 +60,18 @@ export class AdminVirtualPlayersComponent {
     }
 
     replaceBotName(currentName: string, newName: string, difficulty: string) {
-        if (constants.BOT_BEGINNER_NAME_LIST.includes(currentName) || constants.BOT_EXPERT_NAME_LIST.includes(currentName)) return;
+        if (this.isNameDefault(currentName)) return;
         if (this.isUniqueName(newName)) this.virtualPlayerService.replaceBotName({ currentName, newName, difficulty });
     }
 
     deleteBot(username: string, difficulty: string) {
-        if (constants.BOT_BEGINNER_NAME_LIST.includes(username) || constants.BOT_EXPERT_NAME_LIST.includes(username)) return;
+        if (this.isNameDefault(username)) return;
         this.virtualPlayerService.deleteBotName(username, difficulty);
+    }
+
+    isNameDefault(username: string): boolean {
+        if (constants.BOT_BEGINNER_NAME_LIST.includes(username) || constants.BOT_EXPERT_NAME_LIST.includes(username)) return true;
+        return false;
     }
 
     resetBot() {
