@@ -1,6 +1,5 @@
 /* eslint-disable dot-notation*/
 import { DatabaseCollection } from '@app/classes/database-collection.class';
-import { Bot } from '@app/classes/player/bot.class';
 import * as constants from '@common/constants/bots';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
@@ -129,7 +128,7 @@ describe('virtualPlayerStorage Service', () => {
         botIsInDbSpy.resolves(false);
         await virtualPlayersStorage.addBot({});
         expect((databaseServiceStub.virtualNames as unknown as CollectionStub).addDocument.called).to.equal(true);
-        expect((databaseServiceStub.virtualNames as unknown as CollectionStub).addDocument.calledWith({} as Bot)).to.equal(true);
+        expect((databaseServiceStub.virtualNames as unknown as CollectionStub).addDocument.calledWith({})).to.equal(true);
     });
 
     it('addBot() should not call addDocument of DatabaseService if the bot to add is already in the database', async () => {
