@@ -1,13 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DialogBoxNewGameComponent } from './dialog-box-new-game.component';
+
+const DATA_PLAYER_NAME = 'vincent';
 
 describe('DialogBoxNewGameComponent', () => {
     let component: DialogBoxNewGameComponent;
     let fixture: ComponentFixture<DialogBoxNewGameComponent>;
 
+    const dialogMock = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        close: () => {},
+    };
+
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [MatDialogModule],
             declarations: [DialogBoxNewGameComponent],
+            providers: [
+                { provide: MAT_DIALOG_DATA, useValue: DATA_PLAYER_NAME },
+                { provide: MatDialogRef, useValue: dialogMock },
+            ],
         }).compileComponents();
     });
 
@@ -19,5 +32,12 @@ describe('DialogBoxNewGameComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('dialog should be closed after onYesClick()', () => {
+        // eslint-disable-next-line dot-notation
+        const spy = spyOn(component['dialogRef'], 'close').and.callThrough();
+        component.onNoClick();
+        expect(spy).toHaveBeenCalled();
     });
 });
