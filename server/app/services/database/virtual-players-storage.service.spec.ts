@@ -56,7 +56,7 @@ const BOT_BEGINNER_LIST = [
         difficulty: 'debutant',
     },
 ];
-describe.only('scoreStorage Service', () => {
+describe('virtualPlayerStorage Service', () => {
     let databaseServiceStub: Sinon.SinonStubbedInstance<DatabaseService>;
     let virtualPlayersStorage: VirtualPlayersStorageService;
 

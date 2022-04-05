@@ -32,13 +32,13 @@ export class VirtualPlayerController {
             res.sendStatus(HTTP_STATUS_CREATED);
         });
 
-        this.router.post('/replace', async (req: Request, res: Response) => {
+        this.router.put('/replace', async (req: Request, res: Response) => {
             const bot = req.body;
             await this.virtualPlayerStorage.replaceBotName(bot);
             res.sendStatus(HTTP_STATUS_CREATED);
         });
 
-        this.router.post('/remove', async (req: Request, res: Response) => {
+        this.router.patch('/remove', async (req: Request, res: Response) => {
             const NO_CONTENT = 204;
             const bot = req.body;
             await this.virtualPlayerStorage.removeBot(bot);

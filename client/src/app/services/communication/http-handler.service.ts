@@ -50,7 +50,7 @@ export class HttpHandlerService {
     }
 
     replaceBot(bot: BotNameInfo): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/replace`, bot).pipe(catchError(this.handleError<void>('replaceBot')));
+        return this.http.put<void>(`${this.baseUrl}/virtualPlayer/replace`, bot).pipe(catchError(this.handleError<void>('replaceBot')));
     }
 
     resetBot(): Observable<void> {
@@ -58,7 +58,7 @@ export class HttpHandlerService {
     }
 
     deleteBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/remove`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
+        return this.http.patch<void>(`${this.baseUrl}/virtualPlayer/remove`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
