@@ -44,15 +44,15 @@ export class HttpHandlerService {
     }
 
     addBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/bot/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
+        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
     }
 
     resetBot(): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/bot/remove`).pipe(catchError(this.handleError<void>('resetBot')));
+        return this.http.delete<void>(`${this.baseUrl}/virtualPlayer/remove`).pipe(catchError(this.handleError<void>('resetBot')));
     }
 
     deleteBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/bot/delete`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
+        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/delete`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

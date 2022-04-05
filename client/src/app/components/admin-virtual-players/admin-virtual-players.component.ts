@@ -16,12 +16,11 @@ export class AdminVirtualPlayersComponent {
         this.beginnerInput = '';
     }
 
-    get expertBots(): string[] {
+    get expertBots(): Bot[] {
         return this.virtualPlayerService.expertBotNames;
     }
 
     get beginnerBots(): Bot[] {
-        if (this.virtualPlayerService.beginnerBotNames === undefined) this.virtualPlayerService.getBotNames();
         return this.virtualPlayerService.beginnerBotNames;
     }
     isUniqueName(name: string) {

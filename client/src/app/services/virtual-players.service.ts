@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as constants from '@app/constants/game';
 import { Bot } from '@app/interfaces/bot';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 
@@ -13,35 +12,34 @@ export enum VirtualPlayer {
 })
 export class VirtualPlayersService {
     beginnerBotNames: Bot[];
-    expertBotNames: string[];
+    expertBotNames: Bot[];
     botType: VirtualPlayer;
     constructor(private readonly httpHandler: HttpHandlerService) {}
 
     addBotName(newName: string, type: VirtualPlayer) {
-        if (type === VirtualPlayer.Beginner) {
-            //   this.beginnerBotNames.push(newName);
-        } else {
-            this.expertBotNames.push(newName);
-        }
+        this.httpHandler
+            .addBot({ username: newName, difficulty: type === VirtualPlayer.Beginner ? 'debutant' : 'Expert' })
+            .toPromise()
+            .then(() => this.getBotNames());
     }
 
     deleteBotName(toRemove: string, type: VirtualPlayer) {
-        if (type === VirtualPlayer.Beginner) {
-            //  this.beginnerBotNames.splice(this.beginnerBotNames.indexOf(toRemove), 1);
-        } else {
-            this.expertBotNames.splice(this.expertBotNames.indexOf(toRemove), 1);
-        }
+        this.httpHandler.deleteBot({ username: toRemove, difficulty: type === VirtualPlayer.Beginner ? 'debutant' : 'Expert' }).subscribe();
     }
 
     resetBotNames() {
-        this.beginnerBotNames.splice(0, this.beginnerBotNames.length);
-        this.expertBotNames.splice(0, this.expertBotNames.length);
+        this.httpHandler
+            .resetBot()
+            .toPromise()
+            .then(() => this.getBotNames());
     }
 
     getBotNames() {
         this.httpHandler.getBeginnerBots().subscribe((beginnerBot) => {
             this.beginnerBotNames = beginnerBot;
         });
-        this.expertBotNames = constants.BOT_EXPERT_NAME_LIST;
+        this.httpHandler.getExpertBots().subscribe((expertBot) => {
+            this.expertBotNames = expertBot;
+        });
     }
 }

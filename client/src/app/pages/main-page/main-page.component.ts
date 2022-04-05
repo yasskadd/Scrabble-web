@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxGameTypeComponent } from '@app/components/dialog-box-game-type/dialog-box-game-type.component';
 import { DialogBoxHighScoresComponent } from '@app/components/dialog-box-high-scores/dialog-box-high-scores.component';
+import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 @Component({
     selector: 'app-main-page',
@@ -12,7 +13,9 @@ export class MainPageComponent {
     readonly title: string = "Bienvenue au jeu Scrabble de l'équipe 107";
     private readonly dialogWidth: string = '500px';
     private readonly dialogWidthHighScore: string = '500px';
-    constructor(private dialog: MatDialog, private highScore: MatDialog) {}
+    constructor(private dialog: MatDialog, private highScore: MatDialog, public virtualPlayers: VirtualPlayersService) {
+        this.virtualPlayers.getBotNames();
+    }
 
     openDialog(gameModeValue: string): void {
         this.dialog.open(DialogBoxGameTypeComponent, {

@@ -133,7 +133,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
     }
 
-    giveNameToBot(): void {
+    async giveNameToBot(): Promise<void> {
         if (this.isSoloMode()) {
             this.createBotName();
         }
@@ -164,12 +164,11 @@ export class MultiplayerCreatePageComponent implements OnInit {
         return false;
     }
 
-    createBotName(): void {
-        if (this.virtualPlayers.beginnerBotNames === undefined) this.virtualPlayers.getBotNames();
+    async createBotName(): Promise<void> {
         this.botName =
             (this.form.get('difficultyBot') as AbstractControl).value === 'Débutant'
                 ? this.virtualPlayers.beginnerBotNames[Math.floor(Math.random() * this.virtualPlayers.beginnerBotNames.length)].username
-                : this.virtualPlayers.expertBotNames[Math.floor(Math.random() * this.virtualPlayers.expertBotNames.length)];
+                : this.virtualPlayers.expertBotNames[Math.floor(Math.random() * this.virtualPlayers.expertBotNames.length)].username;
     }
 
     private resetInput(): void {
