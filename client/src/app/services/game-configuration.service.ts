@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoomClient } from '@app/interfaces/game-room-client';
 import { RoomInformation } from '@app/interfaces/room-information';
@@ -22,7 +23,16 @@ export class GameConfigurationService {
 
     constructor(private clientSocket: ClientSocketService) {
         this.availableRooms = [];
-        this.roomInformation = { playerName: [], roomId: '', timer: 0, isCreator: false, statusGame: '', mode: '', botDifficulty: undefined };
+        this.roomInformation = {
+            playerName: [],
+            roomId: '',
+            timer: 0,
+            isCreator: false,
+            statusGame: '',
+            mode: '',
+            botDifficulty: undefined,
+            dictionary: {} as Dictionary,
+        };
         this.clientSocket.establishConnection();
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
         this.isGameStarted = new ReplaySubject<boolean>(1);
@@ -107,6 +117,7 @@ export class GameConfigurationService {
         }
         this.clientSocket.send(SocketEvents.CreateGame, parameters);
         this.roomInformation.timer = parameters.timer;
+        this.roomInformation.dictionary = parameters.dictionary;
         this.roomInformation.playerName[0] = parameters.username;
         this.roomInformation.isCreator = true;
         this.roomInformation.mode = parameters.mode;
@@ -165,6 +176,7 @@ export class GameConfigurationService {
                 playerName: this.roomInformation.playerName,
                 roomId: this.roomInformation.roomId,
                 timer: this.roomInformation.timer,
+                dictionary: this.roomInformation.dictionary,
                 socketId: socketIDUserRoom,
                 mode: this.roomInformation.mode,
                 botDifficulty: this.roomInformation.botDifficulty,

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation*/
+import { Dictionary } from '@app/interfaces/dictionary';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoom } from '@app/interfaces/game-room';
 import { GameSessions } from '@app/services/client-utilities/game-sessions.service';
@@ -41,7 +42,7 @@ const GAME_ROOM_2_PLAYER: GameRoom = {
 };
 const GAME_PARAMETERS: GameParameters = {
     username: 'Vincent',
-    dictionary: 'Francais',
+    dictionary: { title: 'Francais' } as Dictionary,
     timer: 1,
     mode: 'classique',
     isMultiplayer: true,
@@ -49,7 +50,7 @@ const GAME_PARAMETERS: GameParameters = {
 
 const GAME_PARAMETERS_SOLO: GameParameters = {
     username: 'Vincent',
-    dictionary: 'Francais',
+    dictionary: { title: 'Francais' } as Dictionary,
     timer: 1,
     mode: 'classique',
     isMultiplayer: false,

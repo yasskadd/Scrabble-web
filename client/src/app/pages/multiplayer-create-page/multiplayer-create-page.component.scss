@@ -66,3 +66,26 @@ body {
 ::ng-deep .mat-form-field-underline {
     display: none;
 }
+
+#info {
+    display: inline;
+    background-color: black;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 5px;
+    position: absolute;
+    z-index: 10;
+    top: 325px;
+    left: 70%;
+    color: white;
+    visibility: hidden;
+}
+
+#info p {
+    margin: 0;
+}
+
+#info p:first-child {
+    border-bottom: solid white;
+    margin-bottom: 8px;
+}

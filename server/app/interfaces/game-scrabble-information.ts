@@ -1,3 +1,5 @@
+import { Dictionary } from './dictionary';
+
 export interface GameScrabbleInformation {
     playerName: string[];
     roomId: string;
@@ -5,4 +7,5 @@ export interface GameScrabbleInformation {
     socketId: string[];
     mode: string;
     botDifficulty?: string;
+    dictionary: Dictionary;
 }

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
 import { Observable, of } from 'rxjs';
@@ -32,6 +33,14 @@ export class HttpHandlerService {
 
     deleteHistory(): Observable<GameHistoryInfo[]> {
         return this.http.delete<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
+    }
+
+    getDictionaries(): Observable<Dictionary[]> {
+        return this.http.get<Dictionary[]>(`${this.baseUrl}/dictionary`).pipe(catchError(this.handleError<Dictionary[]>('getDictionaries', [])));
+    }
+
+    addDictionary(dictionary: Dictionary): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/dictionary/upload`, dictionary).pipe(catchError(this.handleError<void>('addDictionary')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

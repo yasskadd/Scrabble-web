@@ -5,9 +5,9 @@ import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
-import { Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
@@ -18,13 +18,16 @@ export class Game {
     isGameFinish: boolean;
     isGameAbandoned: boolean;
     isModeSolo: boolean;
+    dictionary: string[];
+    wordSolver: WordSolverService;
 
     constructor(
         player1: Player,
         player2: Player,
+        dictionary: string[],
         public turn: Turn,
         public letterReserve: LetterReserve,
-        @Inject() private letterPlacement: LetterPlacementService,
+        private letterPlacement: LetterPlacementService,
     ) {
         this.start(player1, player2);
         this.beginningTime = new Date();
@@ -34,6 +37,8 @@ export class Game {
         this.isGameAbandoned = false;
         // TODO: A changer
         this.gameMode = 'Classique';
+        this.dictionary = dictionary;
+        this.wordSolver = new WordSolverService(dictionary);
     }
 
     start(player1: Player, player2: Player): void {

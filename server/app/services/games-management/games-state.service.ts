@@ -9,6 +9,7 @@ import { Turn } from '@app/classes/turn.class';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Subject } from 'rxjs';
@@ -105,8 +106,17 @@ export class GamesStateService {
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
             if (gameInfo.botDifficulty === 'Débutant')
-                newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
-            else newPlayer = new ExpertBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+                newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
+                    timer: gameInfo.timer,
+                    roomId: gameInfo.roomId,
+                    dictionary: gameInfo.dictionary.words,
+                });
+            else
+                newPlayer = new ExpertBot(false, gameInfo.playerName[player], {
+                    timer: gameInfo.timer,
+                    roomId: gameInfo.roomId,
+                    dictionary: gameInfo.dictionary.words,
+                });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
             newPlayer.room = gameInfo.roomId;
@@ -119,7 +129,14 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
-        return new Game(players[0], players[1], new Turn(gameInfo.timer), new LetterReserve(), Container.get(LetterPlacementService));
+        return new Game(
+            players[0],
+            players[1],
+            gameInfo.dictionary.words,
+            new Turn(gameInfo.timer),
+            new LetterReserve(),
+            new LetterPlacementService(gameInfo.dictionary.words, Container.get(RackService)),
+        );
     }
 
     private changeTurn(roomId: string) {
@@ -156,7 +173,11 @@ export class GamesStateService {
         const info = playerToReplace.getInformation();
         const playerInRoom = this.gamesHandler.gamePlayers.get(playerToReplace.room);
         if (playerInRoom === undefined) return;
-        const botPlayer = new BeginnerBot(false, 'Maurice', { timer: playerToReplace.game.turn.time, roomId: playerToReplace.room });
+        const botPlayer = new BeginnerBot(false, 'Maurice', {
+            timer: playerToReplace.game.turn.time,
+            roomId: playerToReplace.room,
+            dictionary: playerToReplace.game.dictionary,
+        });
         botPlayer.score = info.score;
         botPlayer.rack = info.rack;
 
