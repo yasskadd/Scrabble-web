@@ -477,11 +477,11 @@ describe('ChatboxHandlerService', () => {
         expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, TEST_MESSAGE_OBJECT);
     });
 
-    it('resetMessage should reset the array of message', () => {
+    it('resetMessage should keep only the welcome message', () => {
         service.messages = [{ type: 'system-message', data: 'Fin de la partie : lettres restantes' }];
         expect(service.messages.length).toEqual(1);
         service.resetMessage();
-        expect(service.messages.length).toEqual(0);
+        expect(service.messages.length).toEqual(2);
     });
 
     it('configureBaseSocketFeatures() should add the listeners to the socket', () => {
