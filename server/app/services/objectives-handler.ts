@@ -5,6 +5,7 @@ import * as ObjectivesInfo from '@app/constants/objectives';
 
 const MINIMUM_LETTERS_ONE_VOWEL = 5;
 const MINIMUM_LETTERS_10 = 10;
+const MINIMUM_LETTERS_4 = 4;
 
 export class ObjectivesHandler {
     private players: [Player, Player];
@@ -16,13 +17,21 @@ export class ObjectivesHandler {
         this.attributeObjectives(player1, player2);
     }
 
-    verifyWordRelatedObjectives(allWordsFormed: Word[], player: Player): void {
+    verifyObjectives(player: Player, allWordsFormed: Word[], numberOfLettersPlaced: number) {
         player.objectives.forEach((objective) => {
-            const objectiveVerificationFunction = this.objectivesMap.get(objective) as CallableFunction;
-            if (objectiveVerificationFunction(allWordsFormed) && objective.type === 'Word') {
-                this.completeObjective(player, objective);
-            }
+            if (objective.type === 'Word') this.verifyWordObjectives(objective, allWordsFormed, player);
+            else if (objective.type === 'Turn') this.verifyTurnObjectives(objective, numberOfLettersPlaced, player);
         });
+    }
+
+    verifyWordObjectives(objective: Objective, allWordsFormed: Word[], player: Player): void {
+        const objectiveVerificationFunction = this.objectivesMap.get(objective) as CallableFunction;
+        if (objectiveVerificationFunction(allWordsFormed)) this.completeObjective(player, objective);
+    }
+
+    verifyTurnObjectives(objective: Objective, numberOfLettersPlaced: number, player: Player): void {
+        const objectiveVerificationFunction = this.objectivesMap.get(objective) as CallableFunction;
+        if (objectiveVerificationFunction(numberOfLettersPlaced, player)) this.completeObjective(player, objective);
     }
 
     attributeObjectives(player1: Player, player2: Player): void {
@@ -38,6 +47,15 @@ export class ObjectivesHandler {
         privateObjective2.isPublic = false;
         player1.objectives.push(publicObjective1, publicObjective2, privateObjective1);
         player2.objectives.push(publicObjective1, publicObjective2, privateObjective2);
+    }
+
+    private are5LettersPlacedTwice(numberOfLettersPlaced: number, player: Player) {
+        if (player.fiveLettersPlacedCount === 1 && numberOfLettersPlaced > MINIMUM_LETTERS_4) {
+            player.fiveLettersPlacedCount = 0;
+            return true;
+        }
+        if (numberOfLettersPlaced > MINIMUM_LETTERS_4) player.fiveLettersPlacedCount++;
+        return false;
     }
 
     private isWordWithOneVowel(words: Word[]): boolean {
@@ -107,6 +125,7 @@ export class ObjectivesHandler {
         this.objectivesMap.set(ObjectivesInfo.moreThan10Letters, this.isWordMoreThan10Letters);
         this.objectivesMap.set(ObjectivesInfo.threeWordsFormed, this.isThreeWordsFormed);
         this.objectivesMap.set(ObjectivesInfo.twoSameWords, this.isSameWordTwoTimes);
+        this.objectivesMap.set(ObjectivesInfo.fiveLettersPlacedTwice, this.are5LettersPlacedTwice);
     }
 
     private addObjectivePoints(player: Player, objective: Objective): void {

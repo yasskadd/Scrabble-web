@@ -16,9 +16,9 @@ describe.only('Objectives Handler Tests', () => {
     let wordStub2: Word;
     let wordStub3: Word;
     let mathRandomStub: Sinon.SinonStub;
+    let spyCompleteObjectives: Sinon.SinonSpy;
 
     beforeEach(() => {
-        mathRandomStub = Sinon.stub(Math, 'random');
         player1 = new Player('Rick');
         player2 = new Player('Morty');
         objectivesHandler = new ObjectivesHandler(player1, player2);
@@ -28,6 +28,8 @@ describe.only('Objectives Handler Tests', () => {
         wordStub2.stringFormat = 'pomme';
         wordStub3 = {} as Word;
         wordStub3.stringFormat = 'raisin';
+        mathRandomStub = Sinon.stub(Math, 'random');
+        spyCompleteObjectives = Sinon.spy(objectivesHandler, 'completeObjective' as keyof ObjectivesHandler);
     });
 
     afterEach(() => {
@@ -158,10 +160,32 @@ describe.only('Objectives Handler Tests', () => {
         });
     });
 
+    context('are5LettersPlacedTwice() Tests', () => {
+        it('should return false if there is less than 5 letters placed and fiveLettersPlacedCount is set to 0', () => {
+            player1.fiveLettersPlacedCount = 0;
+            expect(objectivesHandler['are5LettersPlacedTwice'](4, player1)).to.be.equal(false);
+        });
+
+        it('should return false if there is less than 5 letters placed and fiveLettersPlacedCount is set to 1', () => {
+            player1.fiveLettersPlacedCount = 1;
+            expect(objectivesHandler['are5LettersPlacedTwice'](4, player1)).to.be.equal(false);
+        });
+
+        it('should return false if there is more than 5 letters placed and fiveLettersPlacedCount is set to 0', () => {
+            player1.fiveLettersPlacedCount = 0;
+            expect(objectivesHandler['are5LettersPlacedTwice'](10, player1)).to.be.equal(false);
+        });
+
+        it('should return true if there is more than 10 letters placed and fiveLettersPlacedCount is set to 1', () => {
+            player1.fiveLettersPlacedCount = 1;
+            expect(objectivesHandler['are5LettersPlacedTwice'](10, player1)).to.be.equal(true);
+        });
+    });
+
     it('setMapObjectives() should correctly set objectives to map with the corresponding function', () => {
         objectivesHandler['objectivesMap'].clear();
         objectivesHandler['setMapObjectives']();
-        expect(objectivesHandler['objectivesMap'].size).to.be.equal(6);
+        expect(objectivesHandler['objectivesMap'].size).to.be.equal(7);
     });
 
     it('addObjectivePoints() should correctly set points to player', () => {
@@ -233,21 +257,63 @@ describe.only('Objectives Handler Tests', () => {
         });
     });
 
-    context('verifyWordRelatedObjectives() Tests', () => {
-        let spyCompleteObjectives: Sinon.SinonSpy;
+    context('verifyWordObjectives() Tests', () => {
         beforeEach(() => {
             player1.objectives = [];
             player2.objectives = [];
-            spyCompleteObjectives = Sinon.spy(objectivesHandler, 'completeObjective' as keyof ObjectivesHandler);
         });
-        it('should call completeObjective 1 time if player formed palindromic word', () => {
+        it('should call completeObjective() 1 time if player formed palindromic word', () => {
             const palindromicWord = {} as Word;
             palindromicWord.stringFormat = 'laval';
             const words: Word[] = [wordStub1, wordStub2, palindromicWord];
-            mathRandomStub.returns(0);
-            objectivesHandler.attributeObjectives(player1, player2);
-            objectivesHandler.verifyWordRelatedObjectives(words, player1);
+            objectivesHandler.verifyWordObjectives(ObjectivesInfo.palindromicWord, words, player1);
             expect(spyCompleteObjectives.calledOnceWith(player1, ObjectivesInfo.palindromicWord)).to.be.equal(true);
+        });
+
+        it('should not call completeObjective() if there is no palindromic word in list', () => {
+            const words: Word[] = [wordStub1];
+            objectivesHandler.verifyWordObjectives(ObjectivesInfo.palindromicWord, words, player1);
+            expect(spyCompleteObjectives.called).to.be.equal(false);
+        });
+    });
+
+    context('verifyTurnObjectives() Tests', () => {
+        it('should call completeObjective() 1 time if player has placed 5 letters twice in a row', () => {
+            player1.fiveLettersPlacedCount = 1;
+            const numberOfPlacedLetters = 5;
+            objectivesHandler.verifyTurnObjectives(ObjectivesInfo.fiveLettersPlacedTwice, numberOfPlacedLetters, player1);
+            expect(spyCompleteObjectives.calledOnceWith(player1, ObjectivesInfo.fiveLettersPlacedTwice)).to.be.equal(true);
+        });
+
+        it('should not call completeObjective() if player did not place 5 letters twice in a row', () => {
+            player1.fiveLettersPlacedCount = 0;
+            const numberOfPlacedLetters = 5;
+            objectivesHandler.verifyTurnObjectives(ObjectivesInfo.fiveLettersPlacedTwice, numberOfPlacedLetters, player1);
+            expect(spyCompleteObjectives.called).to.be.equal(false);
+        });
+    });
+
+    context('verifyObjectives() Tests', () => {
+        let spyWordRelatedObjective: Sinon.SinonSpy;
+        let spyTurnRelatedObjective: Sinon.SinonSpy;
+        beforeEach(() => {
+            spyWordRelatedObjective = Sinon.spy(objectivesHandler, 'verifyWordObjectives');
+            spyTurnRelatedObjective = Sinon.spy(objectivesHandler, 'verifyTurnObjectives');
+        });
+
+        it('should call verify word objectives 2 times and turn objectives 1 time if player has them', () => {
+            const words: Word[] = [wordStub1, wordStub2, wordStub3];
+            player1.objectives = [ObjectivesInfo.palindromicWord, ObjectivesInfo.oneVowelWord, ObjectivesInfo.fiveLettersPlacedTwice];
+            objectivesHandler.verifyObjectives(player1, words, 10);
+            expect(spyWordRelatedObjective.callCount).to.be.equal(2);
+            expect(spyTurnRelatedObjective.callCount).to.be.equal(1);
+        });
+
+        it('should not call verifyWordObjectives() and verifyTurnObjectives() if player does not have any of them', () => {
+            const words: Word[] = [wordStub1, wordStub2, wordStub3];
+            player1.objectives = [];
+            objectivesHandler.verifyObjectives(player1, words, 10);
+            expect(spyWordRelatedObjective.callCount && spyTurnRelatedObjective).to.be.equal(0);
         });
     });
 });

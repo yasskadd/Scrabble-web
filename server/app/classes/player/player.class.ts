@@ -13,12 +13,14 @@ export class Player {
     game: Game;
     isPlayerOne: boolean;
     objectives: Objective[];
+    fiveLettersPlacedCount: number;
 
     constructor(name: string) {
         this.rack = [];
         this.score = 0;
         this.name = name;
         this.objectives = [];
+        this.fiveLettersPlacedCount = 0;
     }
 
     getInformation(): PlayerInformation {

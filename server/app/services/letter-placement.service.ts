@@ -38,7 +38,7 @@ export class LetterPlacementService {
             this.removeLettersFromBoard(commandWord, currentGameboard);
             return { hasPassed: false, gameboard: currentGameboard, invalidWords: validateWordReturn.invalidWords };
         }
-        player.game.objectivesHandler.verifyWordRelatedObjectives(Word.findAdjacentWords(commandWord, currentGameboard), player);
+        player.game.objectivesHandler.verifyObjectives(player, Word.findAdjacentWords(commandWord, currentGameboard), commandInfo.letters.length);
         this.updatePlayerScore(validateWordReturn.points, commandWord, player);
         this.updatePlayerRack(commandInfo.letters, player.rack);
         return { hasPassed: true, gameboard: currentGameboard, invalidWords: [] as Word[] };
