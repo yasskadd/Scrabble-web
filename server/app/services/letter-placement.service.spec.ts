@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
+import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
@@ -10,8 +11,9 @@ import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
+import { ObjectivesHandler } from './objectives-handler';
 
-describe('Letter Placement Service', () => {
+describe.only('Letter Placement Service', () => {
     let player: Player;
     let commandInfo: CommandInfo;
     let gameboard: Gameboard;
@@ -27,6 +29,9 @@ describe('Letter Placement Service', () => {
         ];
         player.score = 0;
         player.room = 'testRoom';
+        player.game = Sinon.createStubInstance(Game) as Game & Sinon.SinonStubbedInstance<Game>;
+        player.game.objectivesHandler = Sinon.createStubInstance(ObjectivesHandler) as ObjectivesHandler &
+            Sinon.SinonStubbedInstance<ObjectivesHandler>;
         commandInfo = {
             firstCoordinate: { x: 1, y: 1 },
             isHorizontal: true,

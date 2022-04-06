@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { ObjectivesHandler } from './objectives-handler';
 
-describe.only('Objectives Handler Tests', () => {
+describe('Objectives Handler Tests', () => {
     let objectivesHandler: ObjectivesHandler;
     let player1: Player;
     let player2: Player;
