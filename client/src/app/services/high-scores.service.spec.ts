@@ -1,6 +1,10 @@
+import { HttpClientModule } from '@angular/common/http';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
+import { of } from 'rxjs';
 import { HighScoresService } from './high-scores.service';
 
 const TIMEOUT = 3001;
@@ -11,19 +15,32 @@ describe('HighScoresService', () => {
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
     let matSnackBar: MatSnackBar;
 
+    const mockMatSnackBar = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        open: () => {},
+    };
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getClassicHighScore', 'getLOG2990HighScore', 'resetHighScores']);
+        httpHandlerSpy.getClassicHighScore.and.returnValue(
+            of([{ _id: '932487fds', username: 'Vincent', type: 'Classique', score: 40, position: '1' }]),
+        );
+        httpHandlerSpy.getLOG2990HighScore.and.returnValue(
+            of([{ _id: '3256987sfdg', username: 'Vincent', type: 'LOG2990', score: 90, position: '4' }]),
+        );
+        TestBed.configureTestingModule({
+            imports: [HttpClientModule, MatCardModule, MatIconModule],
+            providers: [
+                { provide: HttpHandlerService, useValue: httpHandlerSpy },
+                { provide: MatSnackBar, useValue: mockMatSnackBar },
+            ],
+        });
         service = TestBed.inject(HighScoresService);
+        matSnackBar = TestBed.inject(MatSnackBar);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
-
-    // const mockMatSnackBar = {
-    //     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    //     open: () => {},
-    // };
 
     it('should call getClassicHighScore when calling getMessagesFromServer', () => {
         service.getHighScores();
