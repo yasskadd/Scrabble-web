@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import * as constants from '@app/constants/game';
+import { Bot } from '@app/interfaces/bot';
+import { HttpHandlerService } from '@app/services/communication/http-handler.service';
+
+type BotNameInfo = { currentName: string; newName: string; difficulty: string };
 
 export enum VirtualPlayer {
     Beginner = 'beginner',
@@ -10,32 +13,45 @@ export enum VirtualPlayer {
     providedIn: 'root',
 })
 export class VirtualPlayersService {
-    beginnerBotNames: string[];
-    expertBotNames: string[];
+    beginnerBotNames: Bot[];
+    expertBotNames: Bot[];
     botType: VirtualPlayer;
-    constructor() {
-        this.beginnerBotNames = constants.BOT_BEGINNER_NAME_LIST;
-        this.expertBotNames = constants.BOT_EXPERT_NAME_LIST;
-    }
+    constructor(private readonly httpHandler: HttpHandlerService) {}
 
     addBotName(newName: string, type: VirtualPlayer) {
-        if (type === VirtualPlayer.Beginner) {
-            this.beginnerBotNames.push(newName); // check if already in any list
-        } else {
-            this.expertBotNames.push(newName);
-        }
+        this.httpHandler
+            .addBot({ username: newName, difficulty: type === VirtualPlayer.Beginner ? 'debutant' : 'Expert' })
+            .toPromise()
+            .then(() => this.getBotNames());
     }
 
-    deleteBotName(toRemove: string, type: VirtualPlayer) {
-        if (type === VirtualPlayer.Beginner) {
-            this.beginnerBotNames.splice(this.beginnerBotNames.indexOf(toRemove), 1);
-        } else {
-            this.expertBotNames.splice(this.expertBotNames.indexOf(toRemove), 1);
-        }
+    deleteBotName(toRemove: string, difficulty: string) {
+        this.httpHandler
+            .deleteBot({ username: toRemove, difficulty })
+            .toPromise()
+            .then(() => this.getBotNames());
     }
 
     resetBotNames() {
-        this.beginnerBotNames.splice(0, this.beginnerBotNames.length);
-        this.expertBotNames.splice(0, this.expertBotNames.length);
+        this.httpHandler
+            .resetBot()
+            .toPromise()
+            .then(() => this.getBotNames());
+    }
+
+    replaceBotName(nameBotToReplace: BotNameInfo) {
+        this.httpHandler
+            .replaceBot(nameBotToReplace)
+            .toPromise()
+            .then(() => this.getBotNames());
+    }
+
+    getBotNames() {
+        this.httpHandler.getBeginnerBots().subscribe((beginnerBot) => {
+            this.beginnerBotNames = beginnerBot;
+        });
+        this.httpHandler.getExpertBots().subscribe((expertBot) => {
+            this.expertBotNames = expertBot;
+        });
     }
 }

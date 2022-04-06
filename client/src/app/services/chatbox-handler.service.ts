@@ -32,7 +32,7 @@ export class ChatboxHandlerService {
         private gameClient: GameClientService,
         private commandHandler: CommandHandlerService,
     ) {
-        this.messages = [];
+        this.addWelcomeMessages();
         this.configureBaseSocketFeatures();
         this.listenToObserver();
     }
@@ -55,7 +55,7 @@ export class ChatboxHandlerService {
     }
 
     resetMessage(): void {
-        this.messages = [];
+        this.addWelcomeMessages();
     }
 
     private configureBaseSocketFeatures(): void {
@@ -91,6 +91,16 @@ export class ChatboxHandlerService {
                 this.sendMessage('!passer');
             }
         });
+    }
+
+    private addWelcomeMessages() {
+        this.messages = [
+            { type: 'system-message', data: 'Bienvenue dans votre partie de Scrabble' },
+            {
+                type: 'system-message',
+                data: 'La commande !aide est mise a votre disposition afin de faciliter votre compréhension du jeu',
+            },
+        ];
     }
 
     private isMessageACommand(userInput: string): void {

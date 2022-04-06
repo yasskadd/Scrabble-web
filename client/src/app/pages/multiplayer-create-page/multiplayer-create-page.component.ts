@@ -8,6 +8,7 @@ import { GameConfigurationService } from '@app/services/game-configuration.servi
 import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
+const TIMEOUT_REQUEST = 500;
 const defaultDictionary: Dictionary = { title: 'Francais', description: 'Description de base', words: [] };
 const enum TimeOptions {
     ThirtySecond = 30,
@@ -71,6 +72,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.virtualPlayers.getBotNames();
         this.gameConfiguration.resetRoomInformation();
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({
@@ -79,9 +81,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
             dictionary: ['Francais', Validators.required],
         });
         (this.form.get('difficultyBot') as AbstractControl).valueChanges.subscribe(() => {
-            this.giveNameToBot();
+            this.updateBotList();
         });
-        this.giveNameToBot();
+        this.updateBotList();
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
     }
 
@@ -167,8 +169,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
     createBotName(): void {
         this.botName =
             (this.form.get('difficultyBot') as AbstractControl).value === 'Débutant'
-                ? this.virtualPlayers.beginnerBotNames[Math.floor(Math.random() * this.virtualPlayers.beginnerBotNames.length)]
-                : this.virtualPlayers.expertBotNames[Math.floor(Math.random() * this.virtualPlayers.expertBotNames.length)];
+                ? this.virtualPlayers.beginnerBotNames[Math.floor(Math.random() * this.virtualPlayers.beginnerBotNames.length)].username
+                : this.virtualPlayers.expertBotNames[Math.floor(Math.random() * this.virtualPlayers.expertBotNames.length)].username;
     }
 
     private resetInput(): void {
@@ -184,5 +186,12 @@ export class MultiplayerCreatePageComponent implements OnInit {
     private getDictionary(title: string): Dictionary {
         if (this.selectedFile !== null) return this.selectedFile;
         return this.dictionaryList.find((dictionary) => dictionary.title === title) as Dictionary;
+    }
+
+    private updateBotList(): void {
+        this.virtualPlayers.getBotNames();
+        setTimeout(() => {
+            this.giveNameToBot();
+        }, TIMEOUT_REQUEST);
     }
 }
