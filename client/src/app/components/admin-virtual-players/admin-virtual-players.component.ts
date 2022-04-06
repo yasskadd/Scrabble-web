@@ -29,8 +29,8 @@ export class AdminVirtualPlayersComponent {
         return this.virtualPlayerService.beginnerBotNames;
     }
     isUniqueName(name: string) {
-        if (this.virtualPlayerService.expertBotNames.some((bot) => bot.username.toLowerCase() === name.toLowerCase())) return false;
-        if (this.virtualPlayerService.beginnerBotNames.some((bot) => bot.username.toLowerCase() === name.toLowerCase())) return false;
+        if (this.virtualPlayerService.expertBotNames.some((bot) => bot.username.toLowerCase() === name.toString().toLowerCase())) return false;
+        if (this.virtualPlayerService.beginnerBotNames.some((bot) => bot.username.toLowerCase() === name.toString().toLowerCase())) return false;
         return true;
     }
 
@@ -57,12 +57,12 @@ export class AdminVirtualPlayersComponent {
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-            if (result === undefined) return;
             this.replaceBotName(currentName, result, difficulty);
         });
     }
 
     replaceBotName(currentName: string, newName: string, difficulty: string) {
+        if (newName === '') return;
         this.updateBotList();
         if (this.isNameDefault(currentName)) return;
         if (this.isUniqueName(newName)) this.virtualPlayerService.replaceBotName({ currentName, newName, difficulty });
@@ -80,6 +80,7 @@ export class AdminVirtualPlayersComponent {
     }
 
     resetBot() {
+        console.log(this.beginnerBots.length);
         if (this.beginnerBots.length <= 3) return;
         this.virtualPlayerService.resetBotNames();
     }
