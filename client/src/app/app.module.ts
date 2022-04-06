@@ -27,6 +27,7 @@ import { DialogBoxGameTypeComponent } from './components/dialog-box-game-type/di
 import { DialogBoxHighScoresComponent } from './components/dialog-box-high-scores/dialog-box-high-scores.component';
 import { DialogBoxModifyDictionaryComponent } from './components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { DialogBoxNewGameComponent } from './components/dialog-box-new-game-component/dialog-box-new-game.component';
+import { GamesHistoryComponent } from './components/games-history/games-history.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
@@ -34,7 +35,6 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
-
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -63,6 +63,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         DialogBoxAddDictionaryComponent,
         DialogBoxModifyDictionaryComponent,
         DialogBoxNewGameComponent,
+        GamesHistoryComponent,
     ],
     imports: [
         CommonModule,

@@ -1,6 +1,11 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 import { of } from 'rxjs';
 import { AdminVirtualPlayersComponent } from './admin-virtual-players.component';
@@ -74,6 +79,7 @@ describe('AdminVirtualPlayersComponent', () => {
         );
 
         await TestBed.configureTestingModule({
+            imports: [MatIconModule, MatFormFieldModule, MatInputModule, BrowserAnimationsModule, FormsModule],
             declarations: [AdminVirtualPlayersComponent],
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
