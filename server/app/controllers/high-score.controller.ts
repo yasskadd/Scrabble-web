@@ -25,7 +25,7 @@ export class HighScoreController {
 
         this.router.delete('/reset', async (req: Request, res: Response) => {
             const NO_CONTENT = 204;
-            await this.scoreStorage.resetScores();
+            await this.scoreStorage.resetHighScores();
             res.sendStatus(NO_CONTENT);
         });
     }

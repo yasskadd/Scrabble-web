@@ -37,7 +37,7 @@ export class ScoreStorageService {
         return currentTopScores;
     }
 
-    async resetScores() {
+    async resetHighScores() {
         await this.database.scores.resetCollection();
         await this.populateDb();
     }
