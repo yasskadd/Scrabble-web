@@ -318,4 +318,30 @@ describe.only('Objectives Handler Tests', () => {
             expect(spyWordRelatedObjective.callCount && spyTurnRelatedObjective).to.be.equal(0);
         });
     });
+
+    context('verifyClueCommandEndGame() Tests', () => {
+        it('should give 45 points to player 1 if he never used clue command and not to player 2 if both players have the objective', () => {
+            player1.score = 0;
+            player2.score = 0;
+            player1.clueCommandUseCount = 0;
+            player2.clueCommandUseCount = 10;
+            player1.objectives.push(ObjectivesInfo.clueCommandNeverUsed);
+            player2.objectives.push(ObjectivesInfo.clueCommandNeverUsed);
+            objectivesHandler.verifyClueCommandEndGame(objectivesHandler.players);
+            expect(player1.score).to.be.equal(45);
+            expect(player2.score).to.be.equal(0);
+        });
+
+        it('should not give 45 points to players if they never used clue command but dont have the objective', () => {
+            player1.score = 0;
+            player2.score = 0;
+            player1.clueCommandUseCount = 0;
+            player2.clueCommandUseCount = 0;
+            player1.objectives = [];
+            player2.objectives = [];
+            objectivesHandler.verifyClueCommandEndGame(objectivesHandler.players);
+            expect(player1.score).to.be.equal(0);
+            expect(player2.score).to.be.equal(0);
+        });
+    });
 });

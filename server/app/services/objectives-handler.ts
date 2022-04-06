@@ -51,7 +51,7 @@ export class ObjectivesHandler {
 
     verifyClueCommandEndGame(players: Player[]): void {
         players.forEach((player) => {
-            if (player.clueCommandUseCount === 0) {
+            if (player.clueCommandUseCount === 0 && player.objectives.includes(ObjectivesInfo.clueCommandNeverUsed)) {
                 player.score += ObjectivesInfo.clueCommandNeverUsed.points;
             }
         });
