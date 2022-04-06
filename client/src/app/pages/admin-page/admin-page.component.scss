@@ -2,13 +2,12 @@ body {
     height: 100%;
     width: 100%;
     background-color: rgb(174, 192, 174);
-
     justify-content: center;
+    align-items: center;
 }
 
 .justified {
     display: flex;
-    align-items: center;
 }
 
 .mat-tab-group {

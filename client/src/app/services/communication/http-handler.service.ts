@@ -3,9 +3,12 @@ import { Injectable } from '@angular/core';
 import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HighScores } from '@app/interfaces/high-score-parameters';
+import { GameHistoryInfo } from '@common/interfaces/game-history-info';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+
+type BotNameInfo = { currentName: string; newName: string; difficulty: string };
 
 @Injectable({
     providedIn: 'root',
@@ -27,6 +30,14 @@ export class HttpHandlerService {
             .pipe(catchError(this.handleError<HighScores[]>('getLOG2990cHighScore', [])));
     }
 
+    getHistory(): Observable<GameHistoryInfo[]> {
+        return this.http.get<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
+    }
+
+    deleteHistory(): Observable<GameHistoryInfo[]> {
+        return this.http.delete<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
+    }
+
     getDictionaries(): Observable<Dictionary[]> {
         return this.http.get<Dictionary[]>(`${this.baseUrl}/dictionary`).pipe(catchError(this.handleError<Dictionary[]>('getDictionaries', [])));
     }
@@ -44,15 +55,19 @@ export class HttpHandlerService {
     }
 
     addBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/bot/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
+        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
+    }
+
+    replaceBot(bot: BotNameInfo): Observable<void> {
+        return this.http.put<void>(`${this.baseUrl}/virtualPlayer/replace`, bot).pipe(catchError(this.handleError<void>('replaceBot')));
     }
 
     resetBot(): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/bot/remove`).pipe(catchError(this.handleError<void>('resetBot')));
+        return this.http.delete<void>(`${this.baseUrl}/virtualPlayer/reset`).pipe(catchError(this.handleError<void>('resetBot')));
     }
 
     deleteBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/bot/delete`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
+        return this.http.patch<void>(`${this.baseUrl}/virtualPlayer/remove`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
     }
 
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {

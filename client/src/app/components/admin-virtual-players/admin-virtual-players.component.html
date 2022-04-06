@@ -1,17 +1,25 @@
+<div class="action-buttons">
+    <button mat-raised-button color="basic" (click)="updateBotList()">Rafraîchir <mat-icon>refresh</mat-icon></button>
+    <button mat-raised-button color="warn" (click)="resetBot()">Reinitialiser <mat-icon>delete</mat-icon></button>
+</div>
+
 <div class="Parent">
     <!-- <button mat-raised-button (click)="addName()">Ajouter un joueur débutant</button> -->
     <div class="child1">
         <mat-label>Joueurs virtuels débutants</mat-label>
         <mat-selection-list id="expertList" #beginnerNames [multiple]="false">
-            <mat-list-option *ngFor="let name of beginnerBots" [value]="name">
+            <mat-list-option *ngFor="let bot of beginnerBots" [value]="bot.username">
                 <div class="justified">
-                    <div>{{ name }}</div>
-                    <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
-                    <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    <div>{{ bot.username }}</div>
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon> border_color</mat-icon>
+                    </button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </div>
             </mat-list-option>
         </mat-selection-list>
-        <p>Joueur débutant selectionné: {{ beginnerNames.selectedOptions.selected[0]?.value }}</p>
         <!-- <button mat-raised-button (click)="addName()">Ajouter un joueur débutant</button> -->
         <mat-form-field class="example-form-field">
             <input
@@ -31,15 +39,18 @@
     <div class="child2">
         <mat-label>Joueurs virtuels experts</mat-label>
         <mat-selection-list id="expertList" #expertNames [multiple]="false">
-            <mat-list-option *ngFor="let name of expertBots" [value]="name">
+            <mat-list-option *ngFor="let bot of expertBots" [value]="bot.username">
                 <div class="justified">
-                    <div>{{ name }}</div>
-                    <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
-                    <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    <div>{{ bot.username }}</div>
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon> border_color</mat-icon>
+                    </button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
                 </div>
             </mat-list-option>
         </mat-selection-list>
-        <p>Joueur expert selectionné: {{ expertNames.selectedOptions.selected[0]?.value }}</p>
         <!-- <button mat-raised-button (click)="addName()">Ajouter un joueur expert</button> -->
         <mat-form-field class="example-form-field">
             <input
