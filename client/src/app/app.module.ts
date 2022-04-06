@@ -20,6 +20,7 @@ import { AppComponent } from '@app/pages/app/app.component';
 import { GamePageComponent } from '@app/pages/game-page/game-page.component';
 import { AdminDictionariesComponent } from './components/admin-dictionaries/admin-dictionaries.component';
 import { AdminGameHistoryComponent } from './components/admin-game-history/admin-game-history.component';
+import { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';
 import { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxAbandonGameComponent } from './components/dialog-box-abandon-game/dialog-box-abandon-game.component';
@@ -36,7 +37,6 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
-import { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';
 
 /**
  * Main module that is used in main.ts.

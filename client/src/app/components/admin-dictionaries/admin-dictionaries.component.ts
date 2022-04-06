@@ -2,15 +2,12 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxAddDictionaryComponent } from '@app/components/dialog-box-add-dictionary/dialog-box-add-dictionary.component';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
-
-interface Dictionary {
-    title: string;
-    description: string;
-}
+import { Dictionary } from '@app/interfaces/dictionary';
 
 const defaultDict: Dictionary = {
     title: 'default',
     description: 'Default Dictionary',
+    words: [],
 };
 
 @Component({
@@ -26,6 +23,7 @@ export class AdminDictionariesComponent {
         this.dictionaries.splice(index, 1);
         // TODO: send delete to server
     }
+
     openAddDictionaryDialog() {
         this.addDictionaryDialog.open(DialogBoxAddDictionaryComponent, {
             width: '50%',
