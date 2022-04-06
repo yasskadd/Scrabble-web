@@ -310,8 +310,10 @@ describe.only('Objectives Handler Tests', () => {
         });
 
         it('should not call verifyWordObjectives() and verifyTurnObjectives() if player does not have any of them', () => {
+            const objectiveStub = {} as Objective;
+            objectiveStub.type = 'otherType';
             const words: Word[] = [wordStub1, wordStub2, wordStub3];
-            player1.objectives = [];
+            player1.objectives = [objectiveStub];
             objectivesHandler.verifyObjectives(player1, words, 10);
             expect(spyWordRelatedObjective.callCount && spyTurnRelatedObjective).to.be.equal(0);
         });

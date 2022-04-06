@@ -14,6 +14,7 @@ export class Player {
     isPlayerOne: boolean;
     objectives: Objective[];
     fiveLettersPlacedCount: number;
+    clueCommandUseCount: number;
 
     constructor(name: string) {
         this.rack = [];
@@ -21,6 +22,7 @@ export class Player {
         this.name = name;
         this.objectives = [];
         this.fiveLettersPlacedCount = 0;
+        this.clueCommandUseCount = 0;
     }
 
     getInformation(): PlayerInformation {
