@@ -7,11 +7,11 @@ const SEVEN_LETTER_BONUS = 50;
 
 export class Word {
     isValid: boolean;
-    isHorizontal: boolean | undefined;
     stringFormat: string = '';
-    points: number;
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
+    private points: number;
+    private isHorizontal: boolean | undefined;
 
     constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
         this.isValid = true;

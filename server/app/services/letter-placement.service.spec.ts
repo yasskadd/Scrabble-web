@@ -321,7 +321,7 @@ describe('Letter Placement Service', () => {
                     { x: 2, y: 1 },
                     { x: 3, y: 1 },
                 ],
-            } as Word;
+            } as unknown as Word;
             dictionaryValidationStub = placementService[
                 'dictionaryValidationService'
             ] as unknown as Sinon.SinonStubbedInstance<DictionaryValidationService>;
@@ -352,7 +352,7 @@ describe('Letter Placement Service', () => {
                         points: 0,
                         newLetterCoords: [{ x: 1, y: 1 }],
                         wordCoords: [{ x: 1, y: 1 }],
-                    } as Word,
+                    } as unknown as Word,
                 ] as Word[],
             };
             dictionaryValidationStub.validateWord.returns(validateWordReturn);

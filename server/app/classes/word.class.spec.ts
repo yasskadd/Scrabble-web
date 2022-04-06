@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+/* eslint-disable dot-notation*/
 import { CommandInfo } from '@common/interfaces/command-info';
 import { expect } from 'chai';
 import { Gameboard } from './gameboard.class';
@@ -26,7 +27,8 @@ describe('Word', () => {
             });
 
             it('setAttributes should build word with string abc', () => expect(word.stringFormat).to.eql('abc'));
-            it('setAttributes should build word with isHorizontal as true', () => expect(word.isHorizontal).to.be.true);
+            // eslint-disable-next-line dot-notation
+            it('setAttributes should build word with isHorizontal as true', () => expect(word['isHorizontal']).to.be.true);
             it('setAttributes should build word with correct newLetterCoords', () =>
                 expect(word.newLetterCoords).to.eql([
                     { x: 1, y: 1 },
@@ -54,7 +56,7 @@ describe('Word', () => {
             });
 
             it('setAttributes should build word with string abc', () => expect(word.stringFormat).to.eql('abc'));
-            it('setAttributes should build word with isHorizontal as true', () => expect(word.isHorizontal).to.be.false);
+            it('setAttributes should build word with isHorizontal as true', () => expect(word['isHorizontal']).to.be.false);
             it('setAttributes should build word with correct newLetterCoords', () =>
                 expect(word.newLetterCoords).to.eql([
                     { x: 1, y: 1 },
@@ -83,7 +85,7 @@ describe('Word', () => {
             });
 
             it('setAttributes should build word with string abc', () => expect(word.stringFormat).to.eql('abc'));
-            it('setAttributes should build word with isHorizontal as true', () => expect(word.isHorizontal).to.be.true);
+            it('setAttributes should build word with isHorizontal as true', () => expect(word['isHorizontal']).to.be.true);
             it('setAttributes should build word with correct newLetterCoords', () =>
                 expect(word.newLetterCoords).to.eql([
                     { x: 1, y: 1 },
@@ -113,7 +115,7 @@ describe('Word', () => {
             });
 
             it('setAttributes should build word with string abc', () => expect(word.stringFormat).to.eql('aabbcc'));
-            it('setAttributes should build word with isHorizontal as true', () => expect(word.isHorizontal).to.be.true);
+            it('setAttributes should build word with isHorizontal as true', () => expect(word['isHorizontal']).to.be.true);
             it('setAttributes should build word with correct newLetterCoords', () =>
                 expect(word.newLetterCoords).to.eql([
                     { x: 2, y: 1 },
@@ -147,7 +149,7 @@ describe('Word', () => {
             });
 
             it('setAttributes should build word with string abc', () => expect(word.stringFormat).to.eql('aabbcc'));
-            it('setAttributes should build word with isHorizontal as true', () => expect(word.isHorizontal).to.be.false);
+            it('setAttributes should build word with isHorizontal as true', () => expect(word['isHorizontal']).to.be.false);
             it('setAttributes should build word with correct newLetterCoords', () =>
                 expect(word.newLetterCoords).to.eql([
                     { x: 1, y: 3 },
@@ -179,7 +181,7 @@ describe('Word', () => {
             gameboard.placeLetter({ x: 9, y: 8 }, 'i');
             word = new Word(commandInfo, gameboard);
 
-            expect(word.isHorizontal).to.equal(true);
+            expect(word['isHorizontal']).to.equal(true);
         });
 
         it('setIsHorizontal() should set isHorizontal to true if one letter is left from letter you want to place', () => {
@@ -192,7 +194,7 @@ describe('Word', () => {
             gameboard.placeLetter({ x: 8, y: 8 }, 's');
             word = new Word(commandInfo, gameboard);
 
-            expect(word.isHorizontal).to.eql(true);
+            expect(word['isHorizontal']).to.eql(true);
         });
 
         it('setIsHorizontal() should set isHorizontal to false if one letter is up from letter you want to place', () => {
@@ -205,7 +207,7 @@ describe('Word', () => {
             gameboard.placeLetter({ x: 8, y: 8 }, 's');
             word = new Word(commandInfo, gameboard);
 
-            expect(word.isHorizontal).to.equal(false);
+            expect(word['isHorizontal']).to.equal(false);
         });
 
         it('setIsHorizontal() should set isHorizontal to false if one letter is down from letter you want to place', () => {
@@ -218,7 +220,7 @@ describe('Word', () => {
             gameboard.placeLetter({ x: 8, y: 8 }, 'i');
             word = new Word(commandInfo, gameboard);
 
-            expect(word.isHorizontal).to.equal(false);
+            expect(word['isHorizontal']).to.equal(false);
         });
 
         it('setIsHorizontal() should set isValid to false if no letters are next to the one you want to place', () => {
@@ -229,7 +231,7 @@ describe('Word', () => {
             };
             word = new Word(commandInfo, gameboard);
 
-            expect(word.isHorizontal).to.equal(undefined);
+            expect(word['isHorizontal']).to.equal(undefined);
             expect(word.isValid).to.equal(false);
         });
     });
