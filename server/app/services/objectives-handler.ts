@@ -1,7 +1,7 @@
-import { Objective } from '@app/classes/objective.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
-import * as ObjectivesInfo from '@app/constants/objectives';
+import * as ObjectivesInfo from '@app/constants/objectives-description';
+import { Objective } from '@app/interfaces/objective';
 
 const MINIMUM_LETTERS_ONE_VOWEL = 5;
 const MINIMUM_LETTERS_10 = 10;
