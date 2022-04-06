@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
@@ -114,6 +115,78 @@ describe('HttpHandlerService', () => {
         expect(req.request.method).toBe('POST');
         // actually send the request
         req.flush(sentMessage);
+    });
+
+    it('should return expected BeginnerBot list (HttpClient called once)', () => {
+        const expectedMessage: Bot[] = [{ username: 'Vincent', difficulty: 'debutant' }];
+
+        // check the content of the mocked call
+        service.getBeginnerBots().subscribe((response: Bot[]) => {
+            expect(response).toEqual(expectedMessage);
+        }, fail);
+
+        const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/beginner`);
+        expect(req.request.method).toBe('GET');
+        // actually send the request
+        req.flush(expectedMessage);
+    });
+
+    it('should return expected ExpertBot list (HttpClient called once)', () => {
+        const expectedMessage: Bot[] = [{ username: 'Vincent', difficulty: 'Expert' }];
+
+        // check the content of the mocked call
+        service.getExpertBots().subscribe((response: Bot[]) => {
+            expect(response).toEqual(expectedMessage);
+        }, fail);
+
+        const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/expert`);
+        expect(req.request.method).toBe('GET');
+        // actually send the request
+        req.flush(expectedMessage);
+    });
+
+    it('should not return any message when sending a POST request (HttpClient called once)', () => {
+        const sentMessage: Bot = { username: 'Vincent', difficulty: 'Expert' };
+        // subscribe to the mocked call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
+        service.addBot(sentMessage).subscribe(() => {}, fail);
+        const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/upload`);
+        expect(req.request.method).toBe('POST');
+        // actually send the request
+        req.flush(sentMessage);
+    });
+
+    it('should not return any message when sending a Put request (HttpClient called once)', () => {
+        const sentMessage = { currentName: 'Vincent', newName: 'Laure', difficulty: 'Expert' };
+        // subscribe to the mocked call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
+        service.replaceBot(sentMessage).subscribe(() => {}, fail);
+        const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/replace`);
+        expect(req.request.method).toBe('PUT');
+        // actually send the request
+        req.flush(sentMessage);
+    });
+
+    it('should not return any message when sending a patch request (HttpClient called once)', () => {
+        const sentMessage: Bot = { username: 'Vincent', difficulty: 'Expert' };
+        // subscribe to the mocked call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
+        service.deleteBot(sentMessage).subscribe(() => {}, fail);
+        const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/remove`);
+        expect(req.request.method).toBe('PATCH');
+        // actually send the request
+        req.flush(sentMessage);
+    });
+
+    it('should reset botName list (HttpClient called once)', () => {
+        // check the content of the mocked call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        service.resetBot().subscribe(() => {}, fail);
+
+        const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/reset`);
+        expect(req.request.method).toBe('DELETE');
+        // actually send the request
+        req.flush({}, { status: 204, statusText: 'NO CONTENT' });
     });
 
     it('should handle http error safely', () => {

@@ -5,13 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { of } from 'rxjs';
-import { HighScoresComponent } from './high-scores.component';
+import { DialogBoxHighScoresComponent } from './dialog-box-high-scores.component';
 const TIMEOUT = 3001;
 const TEST_ERROR = "Impossible de reçevoir l'information du serveur";
 
-describe('HighScoresComponent', () => {
-    let component: HighScoresComponent;
-    let fixture: ComponentFixture<HighScoresComponent>;
+describe('DialogBoxHighScoresComponent', () => {
+    let component: DialogBoxHighScoresComponent;
+    let fixture: ComponentFixture<DialogBoxHighScoresComponent>;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
     let matSnackBar: MatSnackBar;
     const mockMatSnackBar = {
@@ -29,7 +29,7 @@ describe('HighScoresComponent', () => {
         );
         await TestBed.configureTestingModule({
             imports: [HttpClientModule, MatCardModule, MatIconModule],
-            declarations: [HighScoresComponent],
+            declarations: [DialogBoxHighScoresComponent],
             providers: [
                 { provide: HttpHandlerService, useValue: httpHandlerSpy },
                 { provide: MatSnackBar, useValue: mockMatSnackBar },
@@ -38,7 +38,7 @@ describe('HighScoresComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(HighScoresComponent);
+        fixture = TestBed.createComponent(DialogBoxHighScoresComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
         matSnackBar = TestBed.inject(MatSnackBar);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as constants from '@app/board-view';
+import * as constants from '@app/constants/board-view';
 import * as multipliers from '@common/constants/board-multiplier-coords';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';

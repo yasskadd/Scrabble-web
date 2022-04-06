@@ -6,7 +6,9 @@ import { HttpHandlerService } from '@app/services/communication/http-handler.ser
 import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
+import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
+const TIMEOUT_REQUEST = 500;
 const defaultDictionary: Dictionary = { title: 'Francais', description: 'Description de base', words: [] };
 const enum TimeOptions {
     ThirtySecond = 30,
@@ -20,9 +22,6 @@ const enum TimeOptions {
     FourMinuteAndThirty = 270,
     FiveMinute = 300,
 }
-const BOT_EXPERT_NAME_LIST = ['ScrabbleMaster', 'Spike Spiegel', 'XXDarkLegendXX'];
-
-const BOT_BEGINNER_NAME_LIST = ['paul', 'marc', 'robert'];
 
 @Component({
     selector: 'app-multiplayer-create-page',
@@ -55,6 +54,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     selectedFile: Dictionary | null;
 
     constructor(
+        public virtualPlayers: VirtualPlayersService,
         public gameConfiguration: GameConfigurationService,
         public timer: TimerService,
         private router: Router,
@@ -72,6 +72,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.virtualPlayers.getBotNames();
         this.gameConfiguration.resetRoomInformation();
         const defaultTimer = this.timerList.find((timerOption) => timerOption === TimeOptions.OneMinute);
         this.form = this.fb.group({
@@ -80,9 +81,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
             dictionary: ['Francais', Validators.required],
         });
         (this.form.get('difficultyBot') as AbstractControl).valueChanges.subscribe(() => {
-            this.giveNameToBot();
+            this.updateBotList();
         });
-        this.giveNameToBot();
+        this.updateBotList();
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
     }
 
@@ -166,11 +167,10 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     createBotName(): void {
-        if ((this.form.get('difficultyBot') as AbstractControl).value === 'Débutant') {
-            this.botName = BOT_BEGINNER_NAME_LIST[Math.floor(Math.random() * BOT_BEGINNER_NAME_LIST.length)];
-            return;
-        }
-        this.botName = BOT_EXPERT_NAME_LIST[Math.floor(Math.random() * BOT_EXPERT_NAME_LIST.length)];
+        this.botName =
+            (this.form.get('difficultyBot') as AbstractControl).value === 'Débutant'
+                ? this.virtualPlayers.beginnerBotNames[Math.floor(Math.random() * this.virtualPlayers.beginnerBotNames.length)].username
+                : this.virtualPlayers.expertBotNames[Math.floor(Math.random() * this.virtualPlayers.expertBotNames.length)].username;
     }
 
     private resetInput(): void {
@@ -178,19 +178,20 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     private validateName(): void {
-        if ((this.form.get('difficultyBot') as AbstractControl).value === 'Débutant') {
-            while (this.playerName.toLowerCase() === this.botName) {
-                this.botName = BOT_BEGINNER_NAME_LIST[Math.floor(Math.random() * BOT_BEGINNER_NAME_LIST.length)];
-            }
-            return;
-        }
         while (this.playerName.toLowerCase() === this.botName) {
-            this.botName = BOT_EXPERT_NAME_LIST[Math.floor(Math.random() * BOT_EXPERT_NAME_LIST.length)];
+            this.createBotName();
         }
     }
 
     private getDictionary(title: string): Dictionary {
         if (this.selectedFile !== null) return this.selectedFile;
         return this.dictionaryList.find((dictionary) => dictionary.title === title) as Dictionary;
+    }
+
+    private updateBotList(): void {
+        this.virtualPlayers.getBotNames();
+        setTimeout(() => {
+            this.giveNameToBot();
+        }, TIMEOUT_REQUEST);
     }
 }

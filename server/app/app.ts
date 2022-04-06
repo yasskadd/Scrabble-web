@@ -10,6 +10,7 @@ import * as swaggerUi from 'swagger-ui-express';
 import { Service } from 'typedi';
 import { DictionaryController } from './controllers/dictionary.controller';
 import { HistoryController } from './controllers/history.controller';
+import { VirtualPlayerController } from './controllers/virtual-players.controller';
 
 @Service()
 export class Application {
@@ -19,6 +20,7 @@ export class Application {
 
     constructor(
         private readonly highScoreController: HighScoreController,
+        private readonly virtualPlayerController: VirtualPlayerController,
         private readonly historyController: HistoryController,
         private readonly dictionaryController: DictionaryController,
     ) {
@@ -45,6 +47,7 @@ export class Application {
         this.app.use('/highScore', this.highScoreController.router);
         this.app.use('/history', this.historyController.router);
         this.app.use('/dictionary', this.dictionaryController.router);
+        this.app.use('/virtualPlayer', this.virtualPlayerController.router);
         this.app.use('/', (req, res) => {
             res.redirect('/docs');
         });

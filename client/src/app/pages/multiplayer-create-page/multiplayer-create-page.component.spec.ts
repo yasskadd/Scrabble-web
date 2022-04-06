@@ -21,6 +21,7 @@ import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
+import { VirtualPlayersService } from '@app/services/virtual-players.service';
 import { of } from 'rxjs';
 import { MultiplayerCreatePageComponent } from './multiplayer-create-page.component';
 
@@ -28,6 +29,52 @@ import { MultiplayerCreatePageComponent } from './multiplayer-create-page.compon
     template: '',
 })
 export class StubComponent {}
+
+const BOT_EXPERT_LIST = [
+    {
+        username: 'Paul',
+        difficulty: 'Expert',
+    },
+    {
+        username: 'MARC',
+        difficulty: 'Expert',
+    },
+    {
+        username: 'Luc',
+        difficulty: 'Expert',
+    },
+    {
+        username: 'Jean',
+        difficulty: 'Expert',
+    },
+    {
+        username: 'Charles',
+        difficulty: 'Expert',
+    },
+];
+
+const BOT_BEGINNER_LIST = [
+    {
+        username: 'Paul',
+        difficulty: 'debutant',
+    },
+    {
+        username: 'MARC',
+        difficulty: 'debutant',
+    },
+    {
+        username: 'Luc',
+        difficulty: 'debutant',
+    },
+    {
+        username: 'Jean',
+        difficulty: 'debutant',
+    },
+    {
+        username: 'Jules',
+        difficulty: 'debutant',
+    },
+];
 
 const MULTIPLAYER_WAITING_ROOM_ROUTE = 'multijoueur/salleAttente/classique';
 const SOLO_MODE = 'solo/classique';
@@ -44,6 +91,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
     let dictionaryVerificationSpy: jasmine.SpyObj<DictionaryVerificationService>;
+    let virtualPlayersServiceSpy: jasmine.SpyObj<VirtualPlayersService>;
     let renderer2: Renderer2;
     let setStyleSpy: unknown;
 
@@ -64,6 +112,12 @@ describe('MultiplayerCreatePageComponent', () => {
         httpHandlerSpy.addDictionary.and.returnValue(of({} as unknown as void));
 
         dictionaryVerificationSpy = jasmine.createSpyObj('DictionaryVerificationService', ['globalVerification']);
+
+        virtualPlayersServiceSpy = jasmine.createSpyObj('VirtualPlayersService', ['getBotNames'], {
+            beginnerBotNames: BOT_BEGINNER_LIST,
+            expertBotNames: BOT_EXPERT_LIST,
+        });
+
         await TestBed.configureTestingModule({
             imports: [
                 HttpClientModule,
@@ -103,6 +157,7 @@ describe('MultiplayerCreatePageComponent', () => {
                 { provide: Renderer2 },
                 { provide: HttpHandlerService, useValue: httpHandlerSpy },
                 { provide: DictionaryVerificationService, useValue: dictionaryVerificationSpy },
+                { provide: VirtualPlayersService, useValue: virtualPlayersServiceSpy },
             ],
         }).compileComponents();
     });

@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
-import { AbandonGameDialogBoxComponent } from './abandon-game-dialog-box.component';
+import { DialogBoxAbandonGameComponent } from './dialog-box-abandon-game.component';
 const MULTIPLAYER_HOME_PAGE = 'home';
 
 @Component({
@@ -15,15 +15,15 @@ const MULTIPLAYER_HOME_PAGE = 'home';
 export class StubComponent {}
 describe('AbandonGameDialogBoxComponent', () => {
     let router: Router;
-    let component: AbandonGameDialogBoxComponent;
-    let fixture: ComponentFixture<AbandonGameDialogBoxComponent>;
+    let component: DialogBoxAbandonGameComponent;
+    let fixture: ComponentFixture<DialogBoxAbandonGameComponent>;
     let matSnackBar: MatSnackBar;
     let gameClientServiceSpy: jasmine.SpyObj<GameClientService>;
 
     beforeEach(async () => {
         gameClientServiceSpy = jasmine.createSpyObj('GameClientService', ['abandonGame']);
         await TestBed.configureTestingModule({
-            declarations: [AbandonGameDialogBoxComponent],
+            declarations: [DialogBoxAbandonGameComponent],
             imports: [
                 MatSnackBarModule,
                 MatIconModule,
@@ -35,7 +35,7 @@ describe('AbandonGameDialogBoxComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(AbandonGameDialogBoxComponent);
+        fixture = TestBed.createComponent(DialogBoxAbandonGameComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
         router = TestBed.inject(Router);
