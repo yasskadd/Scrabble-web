@@ -8,7 +8,7 @@ const MINIMUM_LETTERS_10 = 10;
 const MINIMUM_LETTERS_4 = 4;
 
 export class ObjectivesHandler {
-    private players: [Player, Player];
+    players: [Player, Player];
     private objectivesMap: Map<Objective, CallableFunction> = new Map();
 
     constructor(player1: Player, player2: Player) {
@@ -47,6 +47,14 @@ export class ObjectivesHandler {
         privateObjective2.isPublic = false;
         player1.objectives.push(publicObjective1, publicObjective2, privateObjective1);
         player2.objectives.push(publicObjective1, publicObjective2, privateObjective2);
+    }
+
+    verifyClueCommandEndGame(players: Player[]): void {
+        players.forEach((player) => {
+            if (player.clueCommandUseCount === 0) {
+                player.score += ObjectivesInfo.clueCommandNeverUsed.points;
+            }
+        });
     }
 
     private are5LettersPlacedTwice(numberOfLettersPlaced: number, player: Player) {

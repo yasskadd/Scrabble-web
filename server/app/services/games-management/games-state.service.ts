@@ -69,7 +69,10 @@ export class GamesStateService {
         game.turn.endTurn.subscribe(() => {
             this.endGameScore(gameInfo.roomId);
             this.changeTurn(gameInfo.roomId);
-            if (game.turn.activePlayer === undefined) this.userConnected(gameInfo.socketId, gameInfo.roomId);
+            if (game.turn.activePlayer === undefined) {
+                game.objectivesHandler.verifyClueCommandEndGame(game.objectivesHandler.players);
+                this.userConnected(gameInfo.socketId, gameInfo.roomId);
+            }
         });
 
         game.turn.countdown.subscribe((timer: number) => {
