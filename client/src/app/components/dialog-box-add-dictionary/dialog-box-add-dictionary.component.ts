@@ -32,6 +32,7 @@ export class DialogBoxAddDictionaryComponent implements OnInit {
     closeDialog() {
         this.dialogRef.close();
     }
+
     private _filter(value: string): string[] {
         const filterValue = value.toLowerCase();
 
