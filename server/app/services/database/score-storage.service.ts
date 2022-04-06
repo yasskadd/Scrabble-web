@@ -37,6 +37,11 @@ export class ScoreStorageService {
         return currentTopScores;
     }
 
+    async resetScores() {
+        await this.database.scores.resetCollection();
+        await this.populateDb();
+    }
+
     private async populateDb() {
         const currentTopScores = await this.database.scores.fetchDocuments({});
         if (currentTopScores.length !== 0) return;

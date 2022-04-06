@@ -22,5 +22,11 @@ export class HighScoreController {
             const highScore = await this.scoreStorage.getLOG2990TopScores();
             res.json(highScore);
         });
+
+        this.router.delete('/reset', async (req: Request, res: Response) => {
+            const NO_CONTENT = 204;
+            await this.scoreStorage.resetScores();
+            res.sendStatus(NO_CONTENT);
+        });
     }
 }

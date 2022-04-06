@@ -70,6 +70,10 @@ export class HttpHandlerService {
         return this.http.patch<void>(`${this.baseUrl}/virtualPlayer/remove`, bot).pipe(catchError(this.handleError<void>('deleteBot')));
     }
 
+    resetHighScores(): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/highScores/reset`).pipe(catchError(this.handleError<void>('resetHighScores')));
+    }
+
     private handleError<T>(request: string, result?: T): (error: Error) => Observable<T> {
         return () => of(result as T);
     }
