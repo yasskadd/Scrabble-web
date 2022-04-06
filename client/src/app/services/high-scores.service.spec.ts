@@ -48,6 +48,11 @@ describe('HighScoresService', () => {
         expect(httpHandlerSpy.getLOG2990HighScore).toHaveBeenCalled();
     });
 
+    it('should call httpHandlers resetHighScores when calling resetHighScores from service', () => {
+        service.resetHighScores();
+        expect(httpHandlerSpy.resetHighScores).toHaveBeenCalled();
+    });
+
     it('getHighScores should not call openSnackbar if we receive data from the server after 3 seconds', fakeAsync(() => {
         const spy = spyOn(service, 'openSnackBar');
         service.getHighScores();
