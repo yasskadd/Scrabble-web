@@ -6,8 +6,10 @@
             <mat-list-option *ngFor="let name of beginnerBots" [value]="name">
                 <div class="justified">
                     <div>{{ name }}</div>
-                    <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
-                    <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    <div>
+                        <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
+                        <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    </div>
                 </div>
             </mat-list-option>
         </mat-selection-list>
@@ -34,8 +36,10 @@
             <mat-list-option *ngFor="let name of expertBots" [value]="name">
                 <div class="justified">
                     <div>{{ name }}</div>
-                    <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
-                    <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    <div>
+                        <button mat-raised-button (click)="addName()"><mat-icon> border_color</mat-icon></button>
+                        <button mat-raised-button (click)="addName()"><mat-icon>delete</mat-icon></button>
+                    </div>
                 </div>
             </mat-list-option>
         </mat-selection-list>
