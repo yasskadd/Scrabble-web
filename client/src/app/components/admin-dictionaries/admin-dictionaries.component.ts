@@ -3,6 +3,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxAddDictionaryComponent } from '@app/components/dialog-box-add-dictionary/dialog-box-add-dictionary.component';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryService } from '@app/services/dictionary.service';
+
+// TODO : make dictionary import service
 
 const defaultDict: Dictionary = {
     title: 'default',
@@ -17,11 +20,15 @@ const defaultDict: Dictionary = {
 })
 export class AdminDictionariesComponent {
     dictionaries: Dictionary[] = [defaultDict, defaultDict, defaultDict, defaultDict];
-    constructor(private modifyDictionaryDialog: MatDialog, private addDictionaryDialog: MatDialog) {}
+
+    constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog, private addDictionaryDialog: MatDialog) {
+        this.updateDictionaryList();
+    }
+
     deleteDictionary(dictionaryToDelete: Dictionary) {
         const index = this.dictionaries.findIndex((dictionaryInList) => dictionaryInList === dictionaryToDelete);
         this.dictionaries.splice(index, 1);
-        // TODO: send delete to server
+        this.dictionaryService.deleteDictionary(dictionaryToDelete);
     }
 
     openAddDictionaryDialog() {
@@ -36,5 +43,13 @@ export class AdminDictionariesComponent {
             data: dictionaryToModify,
             disableClose: true,
         });
+    }
+
+    resetDictionaries() {
+        this.dictionaries = [defaultDict];
+    }
+
+    updateDictionaryList() {
+        this.dictionaryService.getDictionaries();
     }
 }
