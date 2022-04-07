@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
@@ -35,6 +36,8 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
+import { AdminHighScoresComponent } from './components/admin-high-scores/admin-high-scores.component';
+
 /**
  * Main module that is used in main.ts.
  * All automatically generated components will appear in this module.
@@ -62,6 +65,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         AdminGameHistoryComponent,
         DialogBoxAddDictionaryComponent,
         DialogBoxModifyDictionaryComponent,
+        AdminHighScoresComponent,
         DialogBoxNewGameComponent,
         GamesHistoryComponent,
     ],
@@ -82,6 +86,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         FormsModule,
         HttpClientModule,
         MatSliderModule,
+        MatAutocompleteModule,
     ],
     providers: [],
     bootstrap: [AppComponent],
