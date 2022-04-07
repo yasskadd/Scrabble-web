@@ -73,7 +73,7 @@ describe('GameConfigurationService', () => {
     });
 
     it('updateAvailableRooms() should update and add the games available for a player to join', () => {
-        const roomTest = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: { title: 'francais' } as Dictionary, timer: 1, mode: 'classique' }];
+        const roomTest = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' }];
         service.roomInformation.mode = 'classique';
         expect(service.availableRooms.length).toEqual(0);
         // eslint-disable-next-line dot-notation
@@ -343,6 +343,17 @@ describe('GameConfigurationService', () => {
         expect(spyOnSocket).toHaveBeenCalled();
     });
 
+    it('gameCreatedConfirmationEvent should not emit an event to the server when we create a multiplayer game', () => {
+        // eslint-disable-next-line dot-notation
+        const spyOnSocket = spyOn(service['clientSocket'], 'send');
+        const playerNames = ['Marc'];
+        service.roomInformation.playerName = playerNames;
+
+        // eslint-disable-next-line dot-notation
+        service['gameCreatedConfirmationEvent']('12fhsiv');
+        expect(spyOnSocket).not.toHaveBeenCalled();
+    });
+
     it('should handle createScrabbleGame event if you are the creator of the game ', () => {
         const socketIDUserRoom = ['346574gdvb', 'dsfhg56ter'];
         const gameScrabbleInformation: GameScrabbleInformation = {
@@ -350,14 +361,14 @@ describe('GameConfigurationService', () => {
             roomId: ROOM_INFORMATION.roomId,
             timer: ROOM_INFORMATION.timer,
             socketId: socketIDUserRoom,
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: undefined,
             dictionary: ROOM_INFORMATION.dictionary,
         };
         service.roomInformation.playerName = ROOM_INFORMATION.playerName;
         service.roomInformation.roomId = ROOM_INFORMATION.roomId;
         service.roomInformation.timer = ROOM_INFORMATION.timer;
-        service.roomInformation.mode = 'Classique';
+        service.roomInformation.mode = 'classique';
         service.roomInformation.botDifficulty = undefined;
         service.roomInformation.isCreator = true;
         // eslint-disable-next-line dot-notation
@@ -409,8 +420,8 @@ describe('GameConfigurationService', () => {
         // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocket'], 'send');
         const testRoom = [
-            { id: '1', users: ['Vincent', 'Marcel'], dictionary: { title: 'francais' } as Dictionary, timer: 1, mode: 'classique' },
-            { id: '2', users: ['Poulin', 'George'], dictionary: { title: 'francais' } as Dictionary, timer: 1, mode: 'classique' },
+            { id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' },
+            { id: '2', users: ['Poulin', 'George'], dictionary: 'francais', timer: 1, mode: 'classique' },
         ];
         service.availableRooms = testRoom;
         service.joinRandomRoom(playerName);

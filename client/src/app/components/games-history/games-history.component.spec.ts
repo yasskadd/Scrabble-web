@@ -10,7 +10,7 @@ import { GamesHistoryComponent } from './games-history.component';
 const DUMMY_GAME_INFO = {
     firstPlayerName: 'Vincent',
     secondPlayerName: 'Maidenless',
-    mode: 'Classique',
+    mode: 'classique',
     firstPlayerScore: 20,
     secondPlayerScore: 0,
     abandoned: true,

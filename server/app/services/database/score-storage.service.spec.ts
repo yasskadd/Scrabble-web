@@ -28,31 +28,31 @@ const TOP_SCORES = [
 const TOP_SCORES_CLASSIC = [
     {
         username: 'Paul',
-        type: 'Classique',
+        type: 'classique',
         score: 0,
         position: 1,
     },
     {
         username: 'MARC',
-        type: 'Classique',
+        type: 'classique',
         score: 20,
         position: 2,
     },
     {
         username: 'Luc',
-        type: 'Classique',
+        type: 'classique',
         score: 30,
         position: 3,
     },
     {
         username: 'Jean',
-        type: 'Classique',
+        type: 'classique',
         score: 600,
         position: 4,
     },
     {
         username: 'Jules',
-        type: 'Classique',
+        type: 'classique',
         score: 500000000,
         position: 5,
     },
@@ -110,7 +110,7 @@ describe('scoreStorage Service', () => {
             expect(
                 (databaseServiceStub.scores as unknown as CollectionStub).addDocument.withArgs({
                     username: 'Tarnished',
-                    type: 'Classique',
+                    type: 'classique',
                     score: 0,
                     position: i,
                 }).callCount,
@@ -138,7 +138,7 @@ describe('scoreStorage Service', () => {
         const POSITION = 3;
         const scoreInfo = {
             username: 'Arararagi',
-            type: 'Classique',
+            type: 'classique',
             score: 50,
         };
         Sinon.stub(scoreStorageService, 'populateDb' as never);
@@ -154,7 +154,7 @@ describe('scoreStorage Service', () => {
         const POSITION = 3;
         const scoreInfo = {
             username: 'Arararagi',
-            type: 'Classique',
+            type: 'classique',
             score: 50,
         };
         Sinon.stub(scoreStorageService, 'populateDb' as never);
@@ -166,7 +166,7 @@ describe('scoreStorage Service', () => {
 
         expect(
             (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.withArgs(
-                { position: POSITION },
+                { position: POSITION, type: scoreInfo.type },
                 { ...scoreInfo, position: POSITION },
             ).callCount,
         ).to.be.equal(1);
@@ -176,11 +176,11 @@ describe('scoreStorage Service', () => {
         const POSITION = 3;
         const scoreInfo = {
             username: 'Paul',
-            type: 'Classique',
+            type: 'classique',
             score: 30,
         };
         const infoPlayer = {
-            type: 'Classique',
+            type: 'classique',
             score: 30,
         };
         Sinon.stub(scoreStorageService, 'populateDb' as never);
@@ -191,7 +191,7 @@ describe('scoreStorage Service', () => {
         await scoreStorageService['addPlayerToSameScore'](scoreInfo, POSITION, TOP_SCORES_CLASSIC[2]);
         expect(
             (databaseServiceStub.scores as unknown as CollectionStub).replaceDocument.withArgs(
-                { position: POSITION },
+                { position: POSITION, type: scoreInfo.type },
                 { ...infoPlayer, username: TOP_SCORES_CLASSIC[2].username + ' - ' + scoreInfo.username, position: POSITION },
             ).callCount,
         ).to.be.equal(1);
@@ -201,7 +201,7 @@ describe('scoreStorage Service', () => {
         const POSITION = 3;
         const scoreInfo = {
             username: 'Vincent',
-            type: 'Classique',
+            type: 'classique',
             score: 30,
         };
         Sinon.stub(scoreStorageService, 'populateDb' as never);
@@ -231,7 +231,7 @@ describe('scoreStorage Service', () => {
         const POSITION = 3;
         const scoreInfo = {
             username: 'Luc',
-            type: 'Classique',
+            type: 'classique',
             score: 30,
         };
         Sinon.stub(scoreStorageService, 'populateDb' as never);

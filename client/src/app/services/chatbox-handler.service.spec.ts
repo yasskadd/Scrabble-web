@@ -119,7 +119,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it("validSyntax() should validate the syntax of the 'passer' command", () => {
-        const VALID_SYNTAX = '!passer ';
+        const VALID_SYNTAX = '!passer';
         // eslint-disable-next-line dot-notation
         expect(service['validSyntax'](VALID_SYNTAX)).toBeTruthy();
     });
@@ -133,6 +133,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it("validCommandParameters() should validate the command parameters of the 'aide' command", () => {
+        gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS = '!aide';
 
         // Reason : testing a private method
@@ -161,6 +162,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it("validCommandParameters() should validate the command parameters of the 'passer' command", () => {
+        gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS = '!passer';
 
         // Reason : testing a private method
@@ -169,6 +171,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it("validCommandParameters() should validate the command parameters of the 'placer' command", () => {
+        gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND = '!placer a5v acd';
 
         // Reason : testing a private method
@@ -177,6 +180,7 @@ describe('ChatboxHandlerService', () => {
     });
 
     it("validCommandParameters() should validate the command parameters of the 'échanger' command", () => {
+        gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS_1 = '!échanger avd';
         const VALID_COMMAND_PARAMS_2 = '!echanger avd';
 
