@@ -11,6 +11,7 @@ import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
+import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
@@ -31,6 +32,7 @@ describe('GamesState Service', () => {
     let gamesHandlerStub: sinon.SinonStubbedInstance<GamesHandler>;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
     let scoreStorageStub: sinon.SinonStubbedInstance<ScoreStorageService>;
+    let virtualPlayersStorageStub: sinon.SinonStubbedInstance<VirtualPlayersStorageService>;
     let game: sinon.SinonStubbedInstance<Game> & Game;
 
     let httpServer: Server;
@@ -78,7 +80,13 @@ describe('GamesState Service', () => {
         socketManagerStub = sinon.createStubInstance(SocketManager);
         scoreStorageStub = sinon.createStubInstance(ScoreStorageService);
         gamesHandlerStub = sinon.createStubInstance(GamesHandler);
-        gamesStateService = new GamesStateService(socketManagerStub as never, gamesHandlerStub as never, scoreStorageStub as never);
+        virtualPlayersStorageStub = sinon.createStubInstance(VirtualPlayersStorageService);
+        gamesStateService = new GamesStateService(
+            socketManagerStub as never,
+            gamesHandlerStub as never,
+            scoreStorageStub as never,
+            virtualPlayersStorageStub as never,
+        );
 
         gamesHandlerStub.players = new Map();
         gamesHandlerStub.gamePlayers = new Map();
@@ -289,8 +297,9 @@ describe('GamesState Service', () => {
         expect(socketManagerStub.emitRoom.calledWith(ROOM, SocketEvents.GameEnd)).to.not.be.equal(true);
     });
 
-    it('switchToSolo() should call updateNewBot when we replace a player with a bot', () => {
-        const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+    it('switchToSolo() should call generateBotName when we replace a player with a bot', () => {
+        // const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+        const generateBotNameStub = sinon.stub(gamesStateService, 'generateBotName' as never);
         const socketId = ['asdjcvknxcv', '534876tgsdfj'];
 
         gamesHandlerStub['players'].set(serverSocket.id, player1);
@@ -307,17 +316,18 @@ describe('GamesState Service', () => {
 
         gamesStateService['switchToSolo'](serverSocket, player1);
 
-        expect(updateNewBotStub.called).to.equal(true);
+        expect(generateBotNameStub.called).to.equal(true);
+        //   expect(updateNewBotStub.called).to.equal(true);
     });
 
-    it('switchToSolo() should call updateNewBot when we replace a player with a bot', () => {
-        const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+    it('switchToSolo() should call generateBotName when we replace a player with a bot', () => {
+        // const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+        const generateBotNameStub = sinon.stub(gamesStateService, 'generateBotName' as never);
         const socketId = ['asdjcvknxcv', '534876tgsdfj'];
         player1.game.turn.activePlayer = 'Bob';
         gamesHandlerStub['players'].set(serverSocket.id, player1);
         gamesHandlerStub['players'].set(socketId[1], player2);
         gamesHandlerStub['gamePlayers'].set(player1.room, [player2, player1]);
-
         player1.getInformation.returns({
             name: 'vincent',
             score: player1.score,
@@ -327,12 +337,13 @@ describe('GamesState Service', () => {
         });
 
         gamesStateService['switchToSolo'](serverSocket, player1);
-
-        expect(updateNewBotStub.called).to.equal(true);
+        expect(generateBotNameStub.called).to.equal(true);
+        //   expect(updateNewBotStub.called).to.equal(true);
     });
 
     it('switchToSolo() should  not call updateNewBot when there is no player in the room', () => {
-        const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+        //  const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
+        const generateBotNameStub = sinon.stub(gamesStateService, 'generateBotName' as never);
         const socketId = ['asdjcvknxcv', '534876tgsdfj'];
 
         gamesHandlerStub['players'].set(serverSocket.id, player1);
@@ -347,8 +358,8 @@ describe('GamesState Service', () => {
         });
 
         gamesStateService['switchToSolo'](serverSocket, player1);
-
-        expect(updateNewBotStub.called).to.equal(false);
+        expect(generateBotNameStub.called).to.equal(false);
+        //  expect(updateNewBotStub.called).to.equal(false);
     });
 
     it('disconnect() should call this.waitBeforeDisconnect() when the game is not already finish', () => {
@@ -420,6 +431,33 @@ describe('GamesState Service', () => {
         clock.tick(timeOut5Seconds);
         expect(abandonGameStub.called).to.be.equal(true);
         done();
+    });
+
+    it('generateBotName() should call scoreStorage.getBeginnerBot', () => {
+        const player = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+
+        gamesStateService['generateBotName'](player.name);
+        expect(virtualPlayersStorageStub.getBeginnerBot.called).to.equal(true);
+    });
+
+    it('generateBotName() should return a name for the bot', async () => {
+        const player = { name: 'Vincent', room: ROOM, score: 40 } as Player;
+        virtualPlayersStorageStub.getBeginnerBot.resolves([
+            {
+                username: 'Paul',
+                difficulty: 'debutant',
+            },
+            {
+                username: 'Vincent',
+                difficulty: 'debutant',
+            },
+            {
+                username: 'Luc',
+                difficulty: 'debutant',
+            },
+        ]);
+        const result = await gamesStateService['generateBotName'](player.name);
+        expect(result).to.not.equal('Vincent');
     });
 
     it('sendHighScore() should call scoreStorage.addTopScore', () => {
@@ -584,7 +622,12 @@ describe('GamesState Service', () => {
         let userConnectedStub: sinon.SinonStub<unknown[], unknown>;
 
         beforeEach(() => {
-            gamesStateService = new GamesStateService(socketManagerStub as never, gamesHandlerStub as never, scoreStorageStub as never);
+            gamesStateService = new GamesStateService(
+                socketManagerStub as never,
+                gamesHandlerStub as never,
+                scoreStorageStub as never,
+                virtualPlayersStorageStub as never,
+            );
 
             createNewGameStub = sinon.stub(gamesStateService, 'createNewGame' as never);
             gameInfo.socketId = [serverSocket.id];
