@@ -27,6 +27,8 @@ describe('HighScoresService', () => {
         httpHandlerSpy.getLOG2990HighScore.and.returnValue(
             of([{ _id: '3256987sfdg', username: 'Vincent', type: 'LOG2990', score: 90, position: '4' }]),
         );
+
+        httpHandlerSpy.resetHighScores.and.returnValue(of());
         TestBed.configureTestingModule({
             imports: [HttpClientModule, MatCardModule, MatIconModule],
             providers: [
