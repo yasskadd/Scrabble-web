@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
 import { Player } from '@app/classes/player/player.class';
@@ -6,6 +7,7 @@ import * as ObjectivesInfo from '@app/constants/objectives-description';
 import { Objective } from '@app/interfaces/objective';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
+import { Game } from './game.class';
 import { ObjectivesHandler } from './objectives-handler.class';
 
 describe('Objectives Handler Tests', () => {
@@ -19,8 +21,12 @@ describe('Objectives Handler Tests', () => {
     let spyCompleteObjectives: Sinon.SinonSpy;
 
     beforeEach(() => {
+        const gameStub = Sinon.createStubInstance(Game) as Game & Sinon.SinonStubbedInstance<Game>;
+        gameStub.isMode2990 = true;
         player1 = new Player('Rick');
+        player1.game = gameStub;
         player2 = new Player('Morty');
+        player2.game = gameStub;
         objectivesHandler = new ObjectivesHandler(player1, player2);
         wordStub1 = {} as Word;
         wordStub1.stringFormat = 'banane';
