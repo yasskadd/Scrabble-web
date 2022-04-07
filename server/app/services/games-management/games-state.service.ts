@@ -76,11 +76,13 @@ export class GamesStateService {
         (players[1] as RealPlayer).setGame(game, false);
     }
 
-    private gameSubscriptions(gameInfo: GameScrabbleInformation, game: Game) {
-        game.turn.endTurn.subscribe(() => {
+    private async gameSubscriptions(gameInfo: GameScrabbleInformation, game: Game) {
+        game.turn.endTurn.subscribe(async () => {
             this.endGameScore(gameInfo.roomId);
             this.changeTurn(gameInfo.roomId);
-            if (game.turn.activePlayer === undefined) this.userConnected(gameInfo.socketId, gameInfo.roomId);
+            if (game.turn.activePlayer === undefined) {
+                this.userConnected(gameInfo.socketId, gameInfo.roomId);
+            }
         });
 
         game.turn.countdown.subscribe((timer: number) => {
@@ -90,20 +92,20 @@ export class GamesStateService {
 
     private endGameScore(roomID: string) {
         const players = this.gamesHandler.gamePlayers.get(roomID) as Player[];
+        const game = players[0].game;
         if (players[0].game.turn.skipCounter === MAX_SKIP) {
             players.forEach((player) => {
                 player.deductPoints();
             });
+            game.objectivesHandler.verifyClueCommandEndGame(players);
             return;
         }
-        if (players[0].rackIsEmpty()) {
-            players[0].addPoints(players[1].rack);
-            players[1].deductPoints();
-            return;
-        }
-        if (players[1].rackIsEmpty()) {
-            players[1].addPoints(players[0].rack);
-            players[0].deductPoints();
+        if (players[0].rackIsEmpty() || players[1].rackIsEmpty()) {
+            const winnerPlayer = players[0].rackIsEmpty() ? players[0] : players[1];
+            const loserPlayer = players[0].rackIsEmpty() ? players[1] : players[0];
+            winnerPlayer.addPoints(loserPlayer.rack);
+            loserPlayer.deductPoints();
+            game.objectivesHandler.verifyClueCommandEndGame(players);
         }
     }
 
@@ -141,6 +143,7 @@ export class GamesStateService {
             gameInfo.dictionary.words,
             new Turn(gameInfo.timer),
             new LetterReserve(),
+            true,
             new LetterPlacementService(gameInfo.dictionary.words, Container.get(RackService)),
         );
     }

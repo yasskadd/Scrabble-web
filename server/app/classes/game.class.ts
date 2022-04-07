@@ -1,5 +1,6 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
+import { ObjectivesHandler } from '@app/classes/objectives-handler.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
@@ -18,6 +19,7 @@ export class Game {
     isGameFinish: boolean;
     isGameAbandoned: boolean;
     isModeSolo: boolean;
+    objectivesHandler: ObjectivesHandler;
     dictionary: string[];
     wordSolver: WordSolverService;
 
@@ -27,6 +29,7 @@ export class Game {
         dictionary: string[],
         public turn: Turn,
         public letterReserve: LetterReserve,
+        public isMode2990: boolean,
         private letterPlacement: LetterPlacementService,
     ) {
         this.start(player1, player2);
@@ -34,6 +37,7 @@ export class Game {
         this.gameboard = new Gameboard();
         this.isGameFinish = false;
         this.isModeSolo = false;
+        if (isMode2990) this.objectivesHandler = new ObjectivesHandler(player1, player2);
         this.isGameAbandoned = false;
         // TODO: A changer
         this.gameMode = 'Classique';
@@ -103,8 +107,9 @@ export class Game {
     }
 
     private endOfGameVerification(player: Player) {
-        if (player.rackIsEmpty() && this.letterReserve.isEmpty()) this.end();
-        else {
+        if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
+            this.end();
+        } else {
             this.turn.resetSkipCounter();
             this.turn.end();
         }
