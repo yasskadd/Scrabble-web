@@ -213,6 +213,19 @@ describe('scoreStorage Service', () => {
         expect(addPlayerToSameScoreStub.called).to.equal(true);
     });
 
+    it('resetHighScores() should call populateDb ', async () => {
+        const populateDbStub = Sinon.stub(scoreStorageService, 'populateDb' as never);
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        await scoreStorageService['resetHighScores']();
+        expect(populateDbStub.called).to.equal(true);
+    });
+
+    it('resetHighScores() should call resetCollection() in database ', async () => {
+        (databaseServiceStub.scores as unknown as CollectionStub).fetchDocuments.resolves(TOP_SCORES_CLASSIC);
+        await scoreStorageService['resetHighScores']();
+        expect((databaseServiceStub.scores as unknown as CollectionStub).resetCollection.called).to.equal(true);
+    });
+
     it('addTopScores() should not add the name of the player if he did already in the leaderboard at this position ', async () => {
         const addPlayerToSameScoreStub = Sinon.stub(scoreStorageService, 'addPlayerToSameScore' as never);
         const POSITION = 3;

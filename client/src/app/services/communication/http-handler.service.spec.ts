@@ -78,6 +78,17 @@ describe('HttpHandlerService', () => {
         req.flush({}, { status: 204, statusText: 'NO CONTENT' });
     });
 
+    it('should delete high scores list (HttpClient called once)', () => {
+        // check the content of the mocked call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        service.resetHighScores().subscribe(() => {}, fail);
+
+        const req = httpMock.expectOne(`${baseUrl}/highScore/reset`);
+        expect(req.request.method).toBe('DELETE');
+        // actually send the request
+        req.flush({}, { status: 204, statusText: 'NO CONTENT' });
+    });
+
     it('should return expected highScoreLOG2990 list (HttpClient called once)', () => {
         const expectedMessage: HighScores[] = [{ _id: '245isfdhhsdf', username: 'Vincent', type: 'LOG2990', score: 50, position: '1' }];
 

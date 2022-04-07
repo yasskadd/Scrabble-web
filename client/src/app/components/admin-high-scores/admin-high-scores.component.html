@@ -1,1 +1,39 @@
-<p>admin-high-scores works!</p>
+<div class="action-buttons">
+    <button mat-raised-button color="warn" (click)="resetHighScores()">Reinitialiser <mat-icon>delete</mat-icon></button>
+</div>
+
+<div>
+    <mat-card class="highScoreTableClassic">
+        <table>
+            <thead class="tableContainer">
+                <tr>
+                    <th>Scores</th>
+                    <th>Joueurs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let highScore of highScoreClassic">
+                    <td>{{ highScore.score }}</td>
+                    <td>{{ highScore.username }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </mat-card>
+
+    <mat-card class="highScoreTableLOG2990">
+        <table>
+            <thead class="tableContainer">
+                <tr>
+                    <th>Scores</th>
+                    <th>Joueurs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let highScore of highScoreLOG29990">
+                    <td>{{ highScore.score }}</td>
+                    <td>{{ highScore.username }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </mat-card>
+</div>

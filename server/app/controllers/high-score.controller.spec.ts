@@ -48,4 +48,13 @@ describe('HighScoreController', () => {
                 expect(response.body).to.deep.equal(lOG2990TopScores);
             });
     });
+
+    it('should return that the high scores have been deleted', async () => {
+        const NO_CONTENT_CODE = 204;
+        return supertest(expressApp)
+            .delete('/highScore/reset')
+            .then((response) => {
+                expect(response.statusCode).to.deep.equal(NO_CONTENT_CODE);
+            });
+    });
 });

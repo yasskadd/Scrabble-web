@@ -30,6 +30,10 @@ export class HttpHandlerService {
             .pipe(catchError(this.handleError<HighScores[]>('getLOG2990cHighScore', [])));
     }
 
+    resetHighScores(): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/highScore/reset`).pipe(catchError(this.handleError<void>('resetHighScores')));
+    }
+
     getHistory(): Observable<GameHistoryInfo[]> {
         return this.http.get<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
     }
