@@ -103,7 +103,7 @@ describe('GamesState Service', () => {
                     roomId: ROOM,
                     timer: 0,
                     socketId: [serverSocket.id],
-                    mode: 'Classique',
+                    mode: 'classique',
                     botDifficulty: undefined,
                     dictionary: { words: ['string'] } as Dictionary,
                 };
@@ -149,7 +149,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: undefined,
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -172,7 +172,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID, SECOND_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: undefined,
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -194,7 +194,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: 'Débutant',
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -220,7 +220,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: 'Expert',
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -242,7 +242,7 @@ describe('GamesState Service', () => {
             roomId: '1',
             timer: TIMER,
             socketId: [serverSocket.id],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: undefined,
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -461,8 +461,10 @@ describe('GamesState Service', () => {
     });
 
     it('sendHighScore() should call scoreStorage.addTopScore', () => {
+        const gameStub = sinon.createStubInstance(Game);
         const player = { name: 'Vincent', room: ROOM, score: 40 } as Player;
-
+        player.game = gameStub as unknown as Game;
+        player.game.gameMode = 'classique';
         gamesHandlerStub['players'].set(serverSocket.id, player);
 
         gamesStateService['sendHighScore'](serverSocket.id);

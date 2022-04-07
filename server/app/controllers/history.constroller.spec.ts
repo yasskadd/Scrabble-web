@@ -10,7 +10,7 @@ describe('HistoryController', () => {
         {
             firstPlayerName: 'Vincent',
             secondPlayerName: 'Maidenless',
-            mode: 'Classique',
+            mode: 'classique',
             firstPlayerScore: 20,
             secondPlayerScore: 0,
             abandoned: true,

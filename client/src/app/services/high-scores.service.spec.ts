@@ -22,7 +22,7 @@ describe('HighScoresService', () => {
     beforeEach(() => {
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getClassicHighScore', 'getLOG2990HighScore', 'resetHighScores']);
         httpHandlerSpy.getClassicHighScore.and.returnValue(
-            of([{ _id: '932487fds', username: 'Vincent', type: 'Classique', score: 40, position: '1' }]),
+            of([{ _id: '932487fds', username: 'Vincent', type: 'classique', score: 40, position: '1' }]),
         );
         httpHandlerSpy.getLOG2990HighScore.and.returnValue(
             of([{ _id: '3256987sfdg', username: 'Vincent', type: 'LOG2990', score: 90, position: '4' }]),

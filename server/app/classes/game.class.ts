@@ -39,8 +39,7 @@ export class Game {
         this.isModeSolo = false;
         if (isMode2990) this.objectivesHandler = new ObjectivesHandler(player1, player2);
         this.isGameAbandoned = false;
-        // TODO: A changer
-        this.gameMode = 'Classique';
+        this.gameMode = '';
         this.dictionary = dictionary;
         this.wordSolver = new WordSolverService(dictionary);
     }
