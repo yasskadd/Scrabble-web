@@ -41,9 +41,6 @@ export class Game {
     }
 
     end(): void {
-        this.objectivesHandler.verifyClueCommandEndGame(this.objectivesHandler.players);
-        console.log(this.objectivesHandler.players[0].score);
-        console.log(this.objectivesHandler.players[1].score);
         this.turn.end(true);
     }
 
@@ -97,8 +94,9 @@ export class Game {
     }
 
     private endOfGameVerification(player: Player) {
-        if (player.rackIsEmpty() && this.letterReserve.isEmpty()) this.end();
-        else {
+        if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
+            this.end();
+        } else {
             this.turn.resetSkipCounter();
             this.turn.end();
         }
