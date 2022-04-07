@@ -4,6 +4,7 @@
 import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
+import { ObjectivesHandler } from '@app/classes/objectives-handler.class';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
@@ -50,12 +51,15 @@ describe('GamesState Service', () => {
         player2.rack = [{ value: 'c', quantity: 2, points: 1 }];
         player1.score = 0;
         player2.score = 0;
+        player1.objectives = [];
+        player2.objectives = [];
 
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         game.letterReserve = sinon.createStubInstance(LetterReserve) as unknown as LetterReserve;
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
+        game.objectivesHandler = sinon.createStubInstance(ObjectivesHandler) as ObjectivesHandler & sinon.SinonStubbedInstance<ObjectivesHandler>;
 
         player1.game = game;
 

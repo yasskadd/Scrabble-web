@@ -1,11 +1,11 @@
 import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
+import { ObjectivesHandler } from '@app/classes/objectives-handler.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { ObjectivesHandler } from '@app/services/objectives-handler';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { Inject } from 'typedi';
@@ -41,6 +41,9 @@ export class Game {
     }
 
     end(): void {
+        this.objectivesHandler.verifyClueCommandEndGame(this.objectivesHandler.players);
+        console.log(this.objectivesHandler.players[0].score);
+        console.log(this.objectivesHandler.players[1].score);
         this.turn.end(true);
     }
 

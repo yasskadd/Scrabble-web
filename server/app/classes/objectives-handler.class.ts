@@ -47,9 +47,13 @@ export class ObjectivesHandler {
         privateObjective2.isPublic = false;
         player1.objectives.push(publicObjective1, publicObjective2, privateObjective1);
         player2.objectives.push(publicObjective1, publicObjective2, privateObjective2);
+        console.log(player1.name);
+        console.log(player1.objectives);
+        console.log(player2.objectives);
     }
 
-    verifyClueCommandEndGame(players: Player[]): void {
+    verifyClueCommandEndGame(players: Player[]) {
+        if (!this.players[0].game.isMode2990) return;
         players.forEach((player) => {
             if (player.clueCommandUseCount === 0 && player.objectives.includes(ObjectivesInfo.clueCommandNeverUsed)) {
                 player.score += ObjectivesInfo.clueCommandNeverUsed.points;

@@ -6,7 +6,7 @@ import * as ObjectivesInfo from '@app/constants/objectives-description';
 import { Objective } from '@app/interfaces/objective';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
-import { ObjectivesHandler } from './objectives-handler';
+import { ObjectivesHandler } from './objectives-handler.class';
 
 describe('Objectives Handler Tests', () => {
     let objectivesHandler: ObjectivesHandler;

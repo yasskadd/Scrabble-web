@@ -65,12 +65,11 @@ export class GamesStateService {
         (players[1] as RealPlayer).setGame(game, false);
     }
 
-    private gameSubscriptions(gameInfo: GameScrabbleInformation, game: Game) {
-        game.turn.endTurn.subscribe(() => {
+    private async gameSubscriptions(gameInfo: GameScrabbleInformation, game: Game) {
+        game.turn.endTurn.subscribe(async () => {
             this.endGameScore(gameInfo.roomId);
             this.changeTurn(gameInfo.roomId);
             if (game.turn.activePlayer === undefined) {
-                game.objectivesHandler.verifyClueCommandEndGame(game.objectivesHandler.players);
                 this.userConnected(gameInfo.socketId, gameInfo.roomId);
             }
         });

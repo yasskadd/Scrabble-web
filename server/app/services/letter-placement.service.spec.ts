@@ -4,6 +4,7 @@
 /* eslint-disable dot-notation */
 import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
+import { ObjectivesHandler } from '@app/classes/objectives-handler.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import { CommandInfo } from '@common/interfaces/command-info';
@@ -11,9 +12,8 @@ import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { LetterPlacementService } from './letter-placement.service';
-import { ObjectivesHandler } from './objectives-handler';
 
-describe.only('Letter Placement Service', () => {
+describe('Letter Placement Service', () => {
     let player: Player;
     let commandInfo: CommandInfo;
     let gameboard: Gameboard;
