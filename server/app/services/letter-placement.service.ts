@@ -32,7 +32,6 @@ export class LetterPlacementService {
         const commandWord = new Word(commandInfo, gameboard);
         if (!commandWord.isValid) return [{} as Word, ErrorType.InvalidWordBuild];
         if (!this.wordIsPlacedCorrectly(commandWord.wordCoords, gameboard)) return [{} as Word, ErrorType.InvalidFirstWordPlacement];
-
         return [commandWord, null];
     }
 
@@ -44,7 +43,7 @@ export class LetterPlacementService {
             this.removeLettersFromBoard(commandWord, currentGameboard);
             return { hasPassed: false, gameboard: currentGameboard, invalidWords: validateWordReturn.invalidWords };
         }
-
+        player.game.objectivesHandler.verifyObjectives(player, Word.findAdjacentWords(commandWord, currentGameboard), commandInfo.letters.length);
         this.updatePlayerScore(validateWordReturn.points, commandWord, player);
         this.rackService.updatePlayerRack(commandInfo.letters, player.rack);
 
