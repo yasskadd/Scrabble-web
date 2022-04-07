@@ -89,7 +89,7 @@ export class GamesStateService {
             game.objectivesHandler.verifyClueCommandEndGame(players);
             return;
         }
-        if (players[0].rackIsEmpty() || players[1].rackIsEmpty) {
+        if (players[0].rackIsEmpty() || players[1].rackIsEmpty()) {
             const winnerPlayer = players[0].rackIsEmpty() ? players[0] : players[1];
             const loserPlayer = players[0].rackIsEmpty() ? players[1] : players[1];
             winnerPlayer.addPoints(loserPlayer.rack);
