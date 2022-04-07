@@ -343,6 +343,17 @@ describe('GameConfigurationService', () => {
         expect(spyOnSocket).toHaveBeenCalled();
     });
 
+    it('gameCreatedConfirmationEvent should not emit an event to the server when we create a multiplayer game', () => {
+        // eslint-disable-next-line dot-notation
+        const spyOnSocket = spyOn(service['clientSocket'], 'send');
+        const playerNames = ['Marc'];
+        service.roomInformation.playerName = playerNames;
+
+        // eslint-disable-next-line dot-notation
+        service['gameCreatedConfirmationEvent']('12fhsiv');
+        expect(spyOnSocket).not.toHaveBeenCalled();
+    });
+
     it('should handle createScrabbleGame event if you are the creator of the game ', () => {
         const socketIDUserRoom = ['346574gdvb', 'dsfhg56ter'];
         const gameScrabbleInformation: GameScrabbleInformation = {
