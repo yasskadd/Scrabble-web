@@ -91,7 +91,7 @@ export class GamesStateService {
         }
         if (players[0].rackIsEmpty() || players[1].rackIsEmpty()) {
             const winnerPlayer = players[0].rackIsEmpty() ? players[0] : players[1];
-            const loserPlayer = players[0].rackIsEmpty() ? players[1] : players[1];
+            const loserPlayer = players[0].rackIsEmpty() ? players[1] : players[0];
             winnerPlayer.addPoints(loserPlayer.rack);
             loserPlayer.deductPoints();
             game.objectivesHandler.verifyClueCommandEndGame(players);
