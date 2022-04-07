@@ -4,11 +4,10 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { expect } from 'chai';
-import * as fs from 'fs';
 import * as Sinon from 'sinon';
 import { DictionaryValidationService } from './dictionary-validation.service';
 
-const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
+const jsonDictionary = ['bonjour', 'chevalier'];
 
 describe('Dictionary Validation Service', () => {
     let dictionaryValidationService: DictionaryValidationService;
@@ -20,7 +19,7 @@ describe('Dictionary Validation Service', () => {
     let invalidWord2: Word;
 
     before(() => {
-        dictionaryValidationService = new DictionaryValidationService();
+        dictionaryValidationService = new DictionaryValidationService(jsonDictionary);
     });
     beforeEach(() => {
         gameboard = new Gameboard();
@@ -40,7 +39,7 @@ describe('Dictionary Validation Service', () => {
 
     it('constructor() should add dictionary words to Set object and Set length should equal json words list', () => {
         expect(dictionaryValidationService.dictionary).to.not.eql(null);
-        expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonDictionary.words.length);
+        expect(dictionaryValidationService.dictionary).to.have.lengthOf(jsonDictionary.length);
     });
 
     it('checkWordInDictionary() should set word isValid attribute to false if they dont exist', () => {
@@ -109,7 +108,7 @@ describe('Dictionary Validation Service', () => {
     context('Trie Dictionary tests', () => {
         let trie: LetterTree;
         before(() => {
-            dictionaryValidationService = new DictionaryValidationService();
+            dictionaryValidationService = new DictionaryValidationService([]);
             dictionaryValidationService['createTrieDictionary']();
             trie = dictionaryValidationService.trie;
         });

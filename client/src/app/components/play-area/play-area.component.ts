@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
-import * as constants from '@app/board-view';
+import * as constants from '@app/constants/board-view';
 import { Vec2 } from '@app/interfaces/vec2';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';

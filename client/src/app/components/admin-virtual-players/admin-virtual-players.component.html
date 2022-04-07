@@ -1,0 +1,69 @@
+<div class="Parent">
+    <div class="action-buttons">
+        <button mat-raised-button color="basic" (click)="updateBotList()">Rafraîchir <mat-icon>refresh</mat-icon></button>
+        <button mat-raised-button color="warn" (click)="resetBot()">Reinitialiser <mat-icon>delete</mat-icon></button>
+    </div>
+
+    <!-- <button mat-raised-button (click)="addName()">Ajouter un joueur débutant</button> -->
+    <div class="child1">
+        <mat-label>Joueurs virtuels débutants</mat-label>
+        <mat-selection-list id="expertList" #beginnerNames [multiple]="false">
+            <mat-list-option *ngFor="let bot of beginnerBots" [value]="bot.username">
+                <div class="justified">
+                    <div>{{ bot.username }}</div>
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon> border_color</mat-icon>
+                    </button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </mat-list-option>
+        </mat-selection-list>
+        <!-- <button mat-raised-button (click)="addName()">Ajouter un joueur débutant</button> -->
+        <mat-form-field class="example-form-field">
+            <input
+                matInput
+                type="text"
+                appearance="outline"
+                placeholder="Ajouter un joueur virtuel débutant"
+                (keydown.enter)="addBeginnerName()"
+                [(ngModel)]="beginnerInput"
+            />
+            <button mat-button *ngIf="beginnerInput" matSuffix mat-icon-button aria-label="Clear" (click)="beginnerInput = ''">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+
+    <div class="child2">
+        <mat-label>Joueurs virtuels experts</mat-label>
+        <mat-selection-list id="expertList" #expertNames [multiple]="false">
+            <mat-list-option *ngFor="let bot of expertBots" [value]="bot.username">
+                <div class="justified">
+                    <div>{{ bot.username }}</div>
+                    <button mat-raised-button (click)="openReplaceNameDialog(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon> border_color</mat-icon>
+                    </button>
+                    <button mat-raised-button (click)="deleteBot(bot.username, bot.difficulty)" *ngIf="!isNameDefault(bot.username)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </mat-list-option>
+        </mat-selection-list>
+        <!-- <button mat-raised-button (click)="addName()">Ajouter un joueur expert</button> -->
+        <mat-form-field class="example-form-field">
+            <input
+                matInput
+                type="text"
+                appearance="outline"
+                placeholder="Ajouter un joueur virtuel expert"
+                (keydown.enter)="addExpertName()"
+                [(ngModel)]="expertInput"
+            />
+            <button mat-button *ngIf="beginnerInput" matSuffix mat-icon-button aria-label="Clear" (click)="expertInput = ''">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+</div>

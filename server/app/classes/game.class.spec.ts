@@ -16,6 +16,7 @@ import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
 describe('Game tests', () => {
     let player1: Player;
     let player2: Player;
+    let dictionary: string[];
     let turn: SinonStubbedInstance<Turn> & Turn;
     let letterReserve: SinonStubbedInstance<LetterReserve> & LetterReserve;
     let letterPlacementService: SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
@@ -26,10 +27,11 @@ describe('Game tests', () => {
         player1.name = 'OriginalName1';
         player2 = new Player('player2');
         player2.name = 'OriginalName2';
+        dictionary = ['string'];
         turn = createStubInstance(Turn) as SinonStubbedInstance<Turn> & Turn;
         letterReserve = createStubInstance(LetterReserve) as SinonStubbedInstance<LetterReserve> & LetterReserve;
         letterPlacementService = createStubInstance(LetterPlacementService) as SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
-        game = new Game(player1, player2, turn, letterReserve, letterPlacementService, true);
+        game = new Game(player1, player2, dictionary, turn, letterReserve, true, letterPlacementService);
     });
 
     it('creating new game should call generateLetter of letterReserve two times', () => {
@@ -179,7 +181,7 @@ describe('Game tests', () => {
 
         it('giveNewLetterToRack() should call generateLetter of letterReserve with the quantity of letter that equals the quantity of letter placed', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
-            game = new Game(player1, player2, turn, letterReserve, letterPlacementService, true);
+            game = new Game(player1, player2, dictionary, turn, letterReserve, true, letterPlacementService);
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterReserve.isEmpty.returns(false);

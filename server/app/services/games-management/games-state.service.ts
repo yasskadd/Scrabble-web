@@ -9,8 +9,10 @@ import { Turn } from '@app/classes/turn.class';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
+import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 import { GamesHandler } from './games-handler.service';
@@ -20,7 +22,10 @@ const SECOND = 1000;
 
 @Service()
 export class GamesStateService {
-    constructor(private socketManager: SocketManager, private gamesHandler: GamesHandler, private readonly scoreStorage: ScoreStorageService) {}
+    gameEnded: Subject<string>;
+    constructor(private socketManager: SocketManager, private gamesHandler: GamesHandler, private readonly scoreStorage: ScoreStorageService) {
+        this.gameEnded = new Subject();
+    }
 
     initSocketsEvents(): void {
         this.socketManager.on(SocketEvents.CreateScrabbleGame, (socket, gameInfo: GameScrabbleInformation) => this.createGame(socket, gameInfo));
@@ -103,8 +108,17 @@ export class GamesStateService {
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
             if (gameInfo.botDifficulty === 'Débutant')
-                newPlayer = new BeginnerBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
-            else newPlayer = new ExpertBot(false, gameInfo.playerName[player], { timer: gameInfo.timer, roomId: gameInfo.roomId });
+                newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
+                    timer: gameInfo.timer,
+                    roomId: gameInfo.roomId,
+                    dictionary: gameInfo.dictionary.words,
+                });
+            else
+                newPlayer = new ExpertBot(false, gameInfo.playerName[player], {
+                    timer: gameInfo.timer,
+                    roomId: gameInfo.roomId,
+                    dictionary: gameInfo.dictionary.words,
+                });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
             newPlayer.room = gameInfo.roomId;
@@ -117,7 +131,15 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
-        return new Game(players[0], players[1], new Turn(gameInfo.timer), new LetterReserve(), Container.get(LetterPlacementService), true);
+        return new Game(
+            players[0],
+            players[1],
+            gameInfo.dictionary.words,
+            new Turn(gameInfo.timer),
+            new LetterReserve(),
+            true,
+            new LetterPlacementService(gameInfo.dictionary.words, Container.get(RackService)),
+        );
     }
 
     private changeTurn(roomId: string) {
@@ -147,13 +169,18 @@ export class GamesStateService {
             return;
         }
         player.game.abandon();
+        this.gameEnded.next(player.room);
     }
 
     private switchToSolo(socket: Socket, playerToReplace: Player) {
         const info = playerToReplace.getInformation();
         const playerInRoom = this.gamesHandler.gamePlayers.get(playerToReplace.room);
         if (playerInRoom === undefined) return;
-        const botPlayer = new BeginnerBot(false, 'Maurice', { timer: playerToReplace.game.turn.time, roomId: playerToReplace.room });
+        const botPlayer = new BeginnerBot(false, 'Maurice', {
+            timer: playerToReplace.game.turn.time,
+            roomId: playerToReplace.room,
+            dictionary: playerToReplace.game.dictionary,
+        });
         botPlayer.score = info.score;
         botPlayer.rack = info.rack;
 
@@ -198,6 +225,7 @@ export class GamesStateService {
     private endGame(socketId: string) {
         const player = this.gamesHandler.players.get(socketId) as Player;
         if (this.gamesHandler.gamePlayers.get(player.room) !== undefined && !player.game.isGameFinish) {
+            this.gameEnded.next(player.room);
             player.game.isGameFinish = true;
             this.socketManager.emitRoom(player.room, SocketEvents.GameEnd);
         }

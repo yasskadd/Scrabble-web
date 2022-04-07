@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { RoomInformation } from '@app/interfaces/room-information';
 import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
@@ -15,6 +16,7 @@ interface GameScrabbleInformation {
     socketId: string[];
     mode: string;
     botDifficulty?: string;
+    dictionary: Dictionary;
 }
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
@@ -24,6 +26,7 @@ const ROOM_INFORMATION: RoomInformation = {
     timer: 0,
     mode: 'classique',
     botDifficulty: undefined,
+    dictionary: { words: ['string'] } as Dictionary,
 };
 export class SocketClientServiceMock extends ClientSocketService {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -70,7 +73,7 @@ describe('GameConfigurationService', () => {
     });
 
     it('updateAvailableRooms() should update and add the games available for a player to join', () => {
-        const roomTest = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' }];
+        const roomTest = [{ id: '1', users: ['Vincent', 'Marcel'], dictionary: { title: 'francais' } as Dictionary, timer: 1, mode: 'classique' }];
         service.roomInformation.mode = 'classique';
         expect(service.availableRooms.length).toEqual(0);
         // eslint-disable-next-line dot-notation
@@ -97,7 +100,13 @@ describe('GameConfigurationService', () => {
     });
 
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
-        const testGameConfiguration = { username: 'Pauline', dictionary: 'francais', timer: 1, mode: 'classique', isMultiplayer: true };
+        const testGameConfiguration = {
+            username: 'Pauline',
+            dictionary: { words: ['string'] } as Dictionary,
+            timer: 1,
+            mode: 'classique',
+            isMultiplayer: true,
+        };
         const testStatusGame = "En Attente d'un Adversaire ...";
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
@@ -166,7 +175,7 @@ describe('GameConfigurationService', () => {
     it('gameInitialization() should assign a name to the opponent when the method is called with the name of the bot ', () => {
         const testGameConfiguration = {
             username: 'Pauline',
-            dictionary: 'francais',
+            dictionary: { words: ['string'] } as Dictionary,
             timer: 1,
             mode: 'classique',
             isMultiplayer: true,
@@ -186,6 +195,7 @@ describe('GameConfigurationService', () => {
             timer: 60,
             mode: 'classique',
             botDifficulty: undefined,
+            dictionary: { words: ['string'] } as Dictionary,
         };
         service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
@@ -342,6 +352,7 @@ describe('GameConfigurationService', () => {
             socketId: socketIDUserRoom,
             mode: 'Classique',
             botDifficulty: undefined,
+            dictionary: ROOM_INFORMATION.dictionary,
         };
         service.roomInformation.playerName = ROOM_INFORMATION.playerName;
         service.roomInformation.roomId = ROOM_INFORMATION.roomId;
@@ -378,6 +389,7 @@ describe('GameConfigurationService', () => {
             timer: 60,
             mode: 'classique',
             botDifficulty: undefined,
+            dictionary: { words: ['string'] } as Dictionary,
         };
         service.roomInformation = roomInformationUpdated;
         expect(service.roomInformation.playerName).toEqual(['Vincent', 'Marcel']);
@@ -397,8 +409,8 @@ describe('GameConfigurationService', () => {
         // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocket'], 'send');
         const testRoom = [
-            { id: '1', users: ['Vincent', 'Marcel'], dictionary: 'francais', timer: 1, mode: 'classique' },
-            { id: '2', users: ['Poulin', 'George'], dictionary: 'francais', timer: 1, mode: 'classique' },
+            { id: '1', users: ['Vincent', 'Marcel'], dictionary: { title: 'francais' } as Dictionary, timer: 1, mode: 'classique' },
+            { id: '2', users: ['Poulin', 'George'], dictionary: { title: 'francais' } as Dictionary, timer: 1, mode: 'classique' },
         ];
         service.availableRooms = testRoom;
         service.joinRandomRoom(playerName);

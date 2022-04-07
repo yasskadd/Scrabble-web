@@ -6,31 +6,43 @@ import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
-import { Inject } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
 export class Game {
     gameboard: Gameboard;
+    gameMode: string;
+    beginningTime: Date;
     isGameFinish: boolean;
+    isGameAbandoned: boolean;
     isModeSolo: boolean;
     objectivesHandler: ObjectivesHandler;
+    dictionary: string[];
+    wordSolver: WordSolverService;
 
     constructor(
         player1: Player,
         player2: Player,
+        dictionary: string[],
         public turn: Turn,
         public letterReserve: LetterReserve,
-        @Inject() private letterPlacement: LetterPlacementService,
         public isMode2990: boolean,
+        private letterPlacement: LetterPlacementService,
     ) {
         this.start(player1, player2);
+        this.beginningTime = new Date();
         this.gameboard = new Gameboard();
         this.isGameFinish = false;
         this.isModeSolo = false;
         if (isMode2990) this.objectivesHandler = new ObjectivesHandler(player1, player2);
+        this.isGameAbandoned = false;
+        // TODO: A changer
+        this.gameMode = 'Classique';
+        this.dictionary = dictionary;
+        this.wordSolver = new WordSolverService(dictionary);
     }
 
     start(player1: Player, player2: Player): void {
@@ -82,6 +94,7 @@ export class Game {
 
     abandon(): void {
         this.end();
+        this.isGameAbandoned = true;
     }
 
     private giveNewLetterToRack(player: Player, numberOfLetterPlaced: number, placeLettersReturn: PlaceLettersReturn) {

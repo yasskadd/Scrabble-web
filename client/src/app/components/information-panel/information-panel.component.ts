@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
 import { Router } from '@angular/router';
-import { AbandonGameDialogBoxComponent } from '@app/components/abandon-game-dialog-box/abandon-game-dialog-box.component';
+import { DialogBoxAbandonGameComponent } from '@app/components/dialog-box-abandon-game/dialog-box-abandon-game.component';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
@@ -37,7 +37,7 @@ export class InformationPanelComponent {
     }
 
     abandonGame(): void {
-        this.dialog.open(AbandonGameDialogBoxComponent, {
+        this.dialog.open(DialogBoxAbandonGameComponent, {
             width: this.dialogWidth,
             panelClass: 'abandonDialogComponent',
             disableClose: true,
