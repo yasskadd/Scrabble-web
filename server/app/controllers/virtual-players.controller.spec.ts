@@ -115,12 +115,4 @@ describe('VirtualPlayersController', () => {
                 expect(response.status).to.deep.equal(HTTP_STATUS_NO_CONTENT);
             });
     });
-
-    it('should return status 204 on virtualPlayer reset', async () => {
-        return supertest(expressApp)
-            .delete('/virtualPlayer/reset')
-            .then((response) => {
-                expect(response.status).to.deep.equal(HTTP_STATUS_NO_CONTENT);
-            });
-    });
 });
