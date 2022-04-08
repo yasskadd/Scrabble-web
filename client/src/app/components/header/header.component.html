@@ -1,6 +1,11 @@
-<div id="home" (click)="redirectHome()">
-    <div *ngFor="let letter of scrabbleTitle">{{ letter }}</div>
-</div>
+<div id="container" class="sticky">
+    <div id="home" (click)="redirectHome()">
+        <div *ngFor="let letter of homePage">{{ letter }}</div>
+    </div>
 
-<mat-card-title class="header-item">{{ title }}</mat-card-title>
-<img src="https://bit.ly/3m206ss" width="400" height="80" alt="Logo Scrabble" />
+    <img src="https://bit.ly/3m206ss" width="300" height="60" alt="Logo Scrabble" />
+
+    <div id="admin" (click)="redirectAdmin()">
+        <div *ngFor="let letter of adminPage">{{ letter }}</div>
+    </div>
+</div>

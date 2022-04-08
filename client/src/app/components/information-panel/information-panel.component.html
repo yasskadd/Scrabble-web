@@ -1,5 +1,5 @@
 <h1 mat-dialog-title id="panel-title">
-    <img src="https://bit.ly/3m206ss" width="300" height="60" alt="Logo Scrabble" />
+    <img src="https://bit.ly/3m206ss" width="300" height="60" alt="Logo Scrabble" (click)="abandonGame()" />
 </h1>
 
 <section class="player" [ngClass]="{ active: this.gameClientService.playerOneTurn }" id="player-1">

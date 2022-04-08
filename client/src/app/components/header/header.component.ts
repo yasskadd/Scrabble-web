@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -6,14 +6,15 @@ import { Router } from '@angular/router';
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
-    readonly title: string = "Bienvenue au jeu Scrabble de l'équipe 107";
-    readonly scrabbleTitle: string[] = ['A', 'C', 'C', 'E', 'U', 'I', 'L'];
+export class HeaderComponent {
+    readonly homePage: string[] = ['A', 'C', 'C', 'U', 'E', 'I', 'L'];
+    readonly adminPage: string[] = ['A', 'D', 'M', 'I', 'N'];
     constructor(private router: Router) {}
-
-    ngOnInit(): void {}
 
     redirectHome() {
         this.router.navigate(['/home']);
+    }
+    redirectAdmin() {
+        this.router.navigate(['/admin']);
     }
 }
