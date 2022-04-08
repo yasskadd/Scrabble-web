@@ -451,4 +451,24 @@ describe('GameClientService', () => {
         // eslint-disable-next-line dot-notation
         expect(service['updateRack'](NEW_RACK_3 as Letter[])).toEqual(NEW_RACK_3 as Letter[]);
     });
+
+    it(" should reset a game's information", () => {
+        service.timer = 10;
+        service.gameboard = [{} as LetterTileInterface];
+        service.playerOne = { name: 'Bojji', score: 10, rack: [{} as Letter], objective: [] };
+        service.secondPlayer = { name: 'Kage', score: -50, rack: [{} as Letter], objective: [] };
+        service.playerOneTurn = true;
+        service.letterReserveLength = 0;
+        service.isGameFinish = true;
+        service.winningMessage = 'Believe in me that believes in you';
+        service.resetGameInformation();
+        expect(service.timer).toEqual(0);
+        expect(service.gameboard).toEqual([]);
+        expect(service.playerOne).toEqual({ name: '', score: 0, rack: [], objective: undefined });
+        expect(service.secondPlayer).toEqual({ name: '', score: 0, rack: [], objective: undefined });
+        expect(service.playerOneTurn).toEqual(false);
+        expect(service.letterReserveLength).toEqual(0);
+        expect(service.isGameFinish).toEqual(false);
+        expect(service.winningMessage).toEqual('');
+    });
 });
