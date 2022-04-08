@@ -29,6 +29,7 @@ import { DialogBoxGameTypeComponent } from './components/dialog-box-game-type/di
 import { DialogBoxHighScoresComponent } from './components/dialog-box-high-scores/dialog-box-high-scores.component';
 import { DialogBoxModifyDictionaryComponent } from './components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { DialogBoxNewGameComponent } from './components/dialog-box-new-game-component/dialog-box-new-game.component';
+import { HeaderComponent } from './components/header/header.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
@@ -66,6 +67,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         DialogBoxModifyDictionaryComponent,
         AdminHighScoresComponent,
         DialogBoxNewGameComponent,
+        HeaderComponent,
     ],
     imports: [
         CommonModule,
