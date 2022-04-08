@@ -40,6 +40,7 @@ export class GamesActionsService {
     private clueCommand(this: this, socket: Socket) {
         const letterString: string[] = [];
         const player = this.gamesHandler.players.get(socket.id) as Player;
+        player.clueCommandUseCount++;
         player.game.wordSolver.setGameboard(player.game.gameboard as Gameboard);
         player.rack.forEach((letter) => {
             letterString.push(letter.value);
