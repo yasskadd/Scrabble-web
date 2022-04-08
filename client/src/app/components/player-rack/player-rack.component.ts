@@ -121,9 +121,7 @@ export class PlayerRackComponent implements OnInit {
 
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        if (this.lettersToManipulate.includes(letter)) {
-            this.lettersToManipulate = [];
-        }
+        this.lettersToManipulate = [];
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
@@ -132,11 +130,9 @@ export class PlayerRackComponent implements OnInit {
     }
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        if (!this.lettersToExchange.includes(letter)) {
-            this.cancel();
-            this.currentSelection = letter;
-            this.lettersToManipulate.push(letter);
-        }
+        this.cancel();
+        this.currentSelection = letter;
+        this.lettersToManipulate.push(letter);
     }
 
     exchange() {
