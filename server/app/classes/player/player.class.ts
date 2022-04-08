@@ -1,7 +1,7 @@
 import { Game } from '@app/classes/game.class';
-import { Objective } from '@app/interfaces/objective';
 import { LetterTile } from '@common/classes/letter-tile.class';
 import { Letter } from '@common/interfaces/letter';
+import { Objective } from '@common/interfaces/objective';
 
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTile[] };
 

@@ -1,7 +1,9 @@
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import * as ObjectivesInfo from '@app/constants/objectives-description';
-import { Objective } from '@app/interfaces/objective';
+import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { Objective } from '@common/interfaces/objective';
+import { Container } from 'typedi';
 
 const MINIMUM_LETTERS_ONE_VOWEL = 5;
 const MINIMUM_LETTERS_10 = 10;
@@ -9,6 +11,7 @@ const MINIMUM_LETTERS_4 = 4;
 
 export class ObjectivesHandler {
     players: [Player, Player];
+    protected socketManager: SocketManager = Container.get(SocketManager);
     private objectivesMap: Map<Objective, CallableFunction> = new Map();
 
     constructor(player1: Player, player2: Player) {
@@ -54,6 +57,7 @@ export class ObjectivesHandler {
         players.forEach((player) => {
             if (player.clueCommandUseCount === 0 && player.objectives.includes(ObjectivesInfo.clueCommandNeverUsed)) {
                 player.score += ObjectivesInfo.clueCommandNeverUsed.points;
+                this.socketManager.emitRoom(player.room, 'CompletedObjective', ObjectivesInfo.clueCommandNeverUsed);
             }
         });
     }
@@ -150,5 +154,6 @@ export class ObjectivesHandler {
             secondPlayerObjectives.splice(secondPlayerObjectives.indexOf(objective), 1);
         } else player.objectives.splice(player.objectives.indexOf(objective), 1);
         this.addObjectivePoints(player, objective);
+        this.socketManager.emitRoom(player.room, 'CompletedObjective', objective);
     }
 }

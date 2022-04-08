@@ -269,6 +269,13 @@ describe('GamesState Service', () => {
         expect(gameTest !== undefined).to.eql(true);
     });
 
+    it('sendObjectivesToClient() should emit the objective to the client', () => {
+        player1.game.isMode2990 = true;
+
+        gamesStateService['sendObjectivesToClient'](player1, player2);
+        expect(socketManagerStub.emitRoom.called).to.equal(true);
+    });
+
     it("changeTurn() should send the game's information when called and the active player isn't undefined", () => {
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
         gamesStateService['changeTurn']('1');
@@ -686,6 +693,15 @@ describe('GamesState Service', () => {
 
             gamesStateService['createGame'](serverSocket, gameInfo);
             expect(setAndGetPlayerStub.called).to.equal(true);
+            done();
+        });
+
+        it('CreateGame() should call sendObjectivesToClient()', (done) => {
+            const sendObjectivesToClientStub = sinon.stub(gamesStateService, 'sendObjectivesToClient' as never);
+            gameInfo.socketId[1] = '3249adf8243';
+
+            gamesStateService['createGame'](serverSocket, gameInfo);
+            expect(sendObjectivesToClientStub.called).to.equal(true);
             done();
         });
 
