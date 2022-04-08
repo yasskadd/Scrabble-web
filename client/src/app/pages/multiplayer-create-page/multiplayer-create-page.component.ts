@@ -162,7 +162,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     isSoloMode() {
-        if (this.router.url === '/solo/classique') return true;
+        if (this.router.url === `/solo/${this.gameMode}`) return true;
         return false;
     }
 

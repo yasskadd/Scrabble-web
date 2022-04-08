@@ -63,9 +63,21 @@ export class GamesStateService {
             activePlayer: game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
+        this.sendObjectivesToClient(playerOne, playerTwo);
+    }
+
+    private sendObjectivesToClient(playerOne: Player, playerTwo: Player) {
+        if (!playerOne.game.isMode2990) return;
+
+        this.socketManager.emitRoom(playerOne.room, 'InitObjective', {
+            objectives1: playerOne.objectives,
+            objectives2: playerTwo.objectives,
+            playerName: playerOne.name,
+        });
     }
 
     private initializePlayers(players: Player[], game: Game, socketId: string[]) {
+        game.gameMode = game.isMode2990 ? 'LOG2990' : 'classique';
         (players[0] as RealPlayer).setGame(game, true);
         if (socketId.length === 1) {
             (players[1] as Bot).setGame(game);
@@ -97,7 +109,7 @@ export class GamesStateService {
             players.forEach((player) => {
                 player.deductPoints();
             });
-            game.objectivesHandler.verifyClueCommandEndGame(players);
+            if (players[0].game.isMode2990) game.objectivesHandler.verifyClueCommandEndGame(players);
             return;
         }
         if (players[0].rackIsEmpty() || players[1].rackIsEmpty()) {
@@ -105,7 +117,7 @@ export class GamesStateService {
             const loserPlayer = players[0].rackIsEmpty() ? players[1] : players[0];
             winnerPlayer.addPoints(loserPlayer.rack);
             loserPlayer.deductPoints();
-            game.objectivesHandler.verifyClueCommandEndGame(players);
+            if (players[0].game.isMode2990) game.objectivesHandler.verifyClueCommandEndGame(players);
         }
     }
 
@@ -143,7 +155,7 @@ export class GamesStateService {
             gameInfo.dictionary.words,
             new Turn(gameInfo.timer),
             new LetterReserve(),
-            true,
+            gameInfo.mode === 'classique' ? false : true,
             new LetterPlacementService(gameInfo.dictionary.words, Container.get(RackService)),
         );
     }
@@ -249,7 +261,7 @@ export class GamesStateService {
 
     private async sendHighScore(socketId: string) {
         const player = this.gamesHandler.players.get(socketId) as Player;
-        await this.scoreStorage.addTopScores({ username: player.name, type: 'Classique', score: player.score });
+        await this.scoreStorage.addTopScores({ username: player.name, type: player.game.gameMode, score: player.score });
     }
 
     private async userConnected(socketId: string[], roomId: string) {

@@ -3,4 +3,5 @@ export interface Objective {
     isPublic: boolean;
     points: number;
     type: string;
+    complete?: boolean;
 }

@@ -148,10 +148,8 @@ export class ChatboxHandlerService {
     }
 
     private validCommand(userCommand: string): boolean {
-        if (this.isHelpCommand(userCommand)) return true;
-        if (this.gameClient.playerOneTurn || this.isReserveCommand(userCommand)) return this.validCommandSyntax(userCommand);
-        this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
-        return false;
+        if (this.isHelpCommand(userCommand) || this.isReserveCommand(userCommand)) return true;
+        return this.validCommandSyntax(userCommand);
     }
 
     private isHelpCommand(userCommand: string): boolean {
@@ -196,8 +194,14 @@ export class ChatboxHandlerService {
     }
 
     private isCommandExchangePossible(userCommand: string): boolean {
-        if (this.exchangePossible(userCommand)) return true;
+        if (this.exchangePossible(userCommand)) return this.isPlayerTurn();
         this.addMessage(this.configureImpossibleToExchangeMessage());
+        return false;
+    }
+
+    private isPlayerTurn() {
+        if (this.gameClient.playerOneTurn) return true;
+        this.messages.push({ type: 'system-message', data: "Ce n'est pas votre tour" });
         return false;
     }
 

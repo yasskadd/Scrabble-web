@@ -33,7 +33,7 @@ export class ScoreStorageService {
     }
     async getClassicTopScores(): Promise<Document[]> {
         await this.populateDb();
-        const currentTopScores = await this.database.scores.fetchDocuments({ type: 'Classique' });
+        const currentTopScores = await this.database.scores.fetchDocuments({ type: 'classique' });
         return currentTopScores;
     }
 
@@ -48,7 +48,7 @@ export class ScoreStorageService {
         const dummyClassicScoreInfo = (() => {
             let i = 1;
             return () => {
-                return { username: 'Tarnished', type: 'Classique', score: 0, position: i++ };
+                return { username: 'Tarnished', type: 'classique', score: 0, position: i++ };
             };
         })();
         const dummyLOG2990ScoreInfo = (() => {
@@ -65,7 +65,7 @@ export class ScoreStorageService {
 
     private async addPlayerToSameScore(scoreInfo: ScoreInfo, scorePlace: number, currentElement: Document) {
         await this.database.scores.replaceDocument(
-            { position: scorePlace },
+            { position: scorePlace, type: scoreInfo.type },
             {
                 position: scorePlace,
                 username: currentElement.username + ' - ' + scoreInfo.username,
@@ -79,13 +79,13 @@ export class ScoreStorageService {
         currentTopScores.forEach((value) => {
             if (value.position >= scorePlace && value.position !== ScoreStorageService.lastElement) {
                 this.database.scores.replaceDocument(
-                    { position: value.position + 1 },
+                    { position: value.position + 1, type: value.type },
                     { position: value.position + 1, username: value.username, type: value.type, score: value.score },
                 );
             }
         });
         this.database.scores.replaceDocument(
-            { position: scorePlace },
+            { position: scorePlace, type: scoreInfo.type },
             { position: scorePlace, username: scoreInfo.username, type: scoreInfo.type, score: scoreInfo.score },
         );
     }

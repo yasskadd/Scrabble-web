@@ -172,7 +172,7 @@ export class GameConfigurationService {
 
     private gameAboutToStartEvent(socketIDUserRoom: string[]): void {
         if (this.roomInformation.isCreator) {
-            this.clientSocket.send('createScrabbleGame', {
+            this.clientSocket.send(SocketEvents.CreateScrabbleGame, {
                 playerName: this.roomInformation.playerName,
                 roomId: this.roomInformation.roomId,
                 timer: this.roomInformation.timer,
