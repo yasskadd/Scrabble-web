@@ -114,7 +114,6 @@ export class GameClientService {
         if (this.playerOne.objective === undefined || this.secondPlayer.objective === undefined) return;
         const indexPlayerOne = this.playerOne.objective.findIndex((element) => element.name === objective.name);
         const indexSecondPlayer = this.secondPlayer.objective.findIndex((element) => element.name === objective.name);
-
         if (indexPlayerOne !== constants.INVALID_INDEX) this.playerOne.objective[indexPlayerOne].complete = true;
         if (indexSecondPlayer !== constants.INVALID_INDEX) this.secondPlayer.objective[indexSecondPlayer].complete = true;
     }
