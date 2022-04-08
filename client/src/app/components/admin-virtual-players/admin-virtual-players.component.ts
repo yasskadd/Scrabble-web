@@ -80,7 +80,7 @@ export class AdminVirtualPlayersComponent {
     }
 
     resetBot() {
-        if (this.beginnerBots.length <= 3) return;
+        if (this.beginnerBots.length <= 3 && this.expertBots.length <= 3) return;
         this.virtualPlayerService.resetBotNames();
     }
 

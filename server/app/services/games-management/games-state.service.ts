@@ -63,6 +63,13 @@ export class GamesStateService {
             activePlayer: game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
+        if (!playerOne.game.isMode2990) return;
+
+        this.socketManager.emitRoom(playerOne.room, 'InitObjective', {
+            objectifs1: playerOne.objectives,
+            objectifs2: playerTwo.objectives,
+            playerName: playerOne.name,
+        });
     }
 
     private initializePlayers(players: Player[], game: Game, socketId: string[]) {
