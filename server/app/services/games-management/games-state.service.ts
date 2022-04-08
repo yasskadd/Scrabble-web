@@ -63,6 +63,10 @@ export class GamesStateService {
             activePlayer: game.turn.activePlayer,
         });
         this.socketManager.emitRoom(gameInfo.roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
+        this.sendObjectivesToClient(playerOne, playerTwo);
+    }
+
+    private sendObjectivesToClient(playerOne: Player, playerTwo: Player) {
         if (!playerOne.game.isMode2990) return;
 
         this.socketManager.emitRoom(playerOne.room, 'InitObjective', {
