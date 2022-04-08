@@ -1,1 +1,6 @@
-<p>header works!</p>
+<div id="home" (click)="redirectHome()">
+    <div *ngFor="let letter of scrabbleTitle">{{ letter }}</div>
+</div>
+
+<mat-card-title class="header-item">{{ title }}</mat-card-title>
+<img src="https://bit.ly/3m206ss" width="400" height="80" alt="Logo Scrabble" />
