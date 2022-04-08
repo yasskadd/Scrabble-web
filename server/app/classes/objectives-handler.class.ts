@@ -64,7 +64,7 @@ export class ObjectivesHandler {
             return true;
         }
         if (numberOfLettersPlaced > MINIMUM_LETTERS_4) player.fiveLettersPlacedCount++;
-        player.fiveLettersPlacedCount = 0;
+        else player.fiveLettersPlacedCount = 0;
         return false;
     }
 
