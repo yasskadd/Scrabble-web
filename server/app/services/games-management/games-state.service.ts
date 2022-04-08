@@ -66,8 +66,8 @@ export class GamesStateService {
         if (!playerOne.game.isMode2990) return;
 
         this.socketManager.emitRoom(playerOne.room, 'InitObjective', {
-            objectifs1: playerOne.objectives,
-            objectifs2: playerTwo.objectives,
+            objectives1: playerOne.objectives,
+            objectives2: playerTwo.objectives,
             playerName: playerOne.name,
         });
     }

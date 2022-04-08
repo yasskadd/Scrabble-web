@@ -1,8 +1,8 @@
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import * as ObjectivesInfo from '@app/constants/objectives-description';
-import { Objective } from '@app/interfaces/objective';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { Objective } from '@common/interfaces/objective';
 import { Container } from 'typedi';
 
 const MINIMUM_LETTERS_ONE_VOWEL = 5;

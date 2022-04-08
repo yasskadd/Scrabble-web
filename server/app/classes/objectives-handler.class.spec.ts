@@ -4,7 +4,7 @@
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import * as ObjectivesInfo from '@app/constants/objectives-description';
-import { Objective } from '@app/interfaces/objective';
+import { Objective } from '@common/interfaces/objective';
 import { expect } from 'chai';
 import * as Sinon from 'sinon';
 import { Game } from './game.class';

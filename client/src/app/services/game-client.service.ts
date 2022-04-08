@@ -1,19 +1,13 @@
 import { Injectable } from '@angular/core';
+import * as constants from '@common/constants/board-info';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
+import { Objective } from '@common/interfaces/objective';
 import { ReplaySubject, Subject } from 'rxjs';
 import { ClientSocketService } from './communication/client-socket.service';
 
-interface Objective {
-    name: string;
-    isPublic: boolean;
-    points: number;
-    type: string;
-    complete?: boolean;
-}
-
-type InitObjective = { objectifs1: Objective[]; objectifs2: Objective[]; playerName: string };
+type InitObjective = { objectives1: Objective[]; objectives2: Objective[]; playerName: string };
 type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
 type Player = { name: string; score: number; rack: Letter[]; objective?: Objective[] };
@@ -75,11 +69,11 @@ export class GameClientService {
         });
 
         this.clientSocketService.on('CompletedObjective', (objective: Objective) => {
-            this.checkObjective(objective);
+            this.completeObjective(objective);
         });
 
         this.clientSocketService.on('InitObjective', (objective: InitObjective) => {
-            this.setObjectifs(objective);
+            this.setObjectives(objective);
         });
 
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
@@ -116,29 +110,27 @@ export class GameClientService {
         this.winningMessage = '';
     }
 
-    private checkObjective(objective: Objective) {
+    private completeObjective(objective: Objective) {
         if (this.playerOne.objective === undefined || this.secondPlayer.objective === undefined) return;
         const indexPlayerOne = this.playerOne.objective.findIndex((element) => element.name === objective.name);
         const indexSecondPlayer = this.secondPlayer.objective.findIndex((element) => element.name === objective.name);
 
-        if (indexPlayerOne !== -1) this.playerOne.objective[indexPlayerOne].complete = true;
-        if (indexSecondPlayer !== -1) this.secondPlayer.objective[indexSecondPlayer].complete = true;
+        if (indexPlayerOne !== constants.INVALID_INDEX) this.playerOne.objective[indexPlayerOne].complete = true;
+        if (indexSecondPlayer !== constants.INVALID_INDEX) this.secondPlayer.objective[indexSecondPlayer].complete = true;
     }
 
-    private setObjectifs(objective: InitObjective) {
+    private setObjectives(objective: InitObjective) {
         if (objective.playerName === this.playerOne.name) {
-            this.playerOne.objective = objective.objectifs1;
-            this.secondPlayer.objective = objective.objectifs2;
+            this.playerOne.objective = objective.objectives1;
+            this.secondPlayer.objective = objective.objectives2;
             return;
         }
-        this.secondPlayer.objective = objective.objectifs1;
-        this.playerOne.objective = objective.objectifs2;
+        this.secondPlayer.objective = objective.objectives1;
+        this.playerOne.objective = objective.objectives2;
     }
 
     private updateOpponentInformationEvent(player: Player) {
-        this.secondPlayer.name = player.name;
-        this.secondPlayer.score = player.score;
-        this.secondPlayer.rack = player.rack;
+        this.secondPlayer = { ...player, objective: this.secondPlayer.objective };
     }
 
     private timerClientUpdateEvent(newTimer: number) {
@@ -160,8 +152,7 @@ export class GameClientService {
 
     private updatePlayerInformationEvent(player: PlayerInformation) {
         const updatedRack = this.updateRack(player.rack);
-        this.playerOne.name = player.name;
-        this.playerOne.score = player.score;
+        this.playerOne = { ...player, objective: this.playerOne.objective };
         this.playerOne.rack = updatedRack;
         this.updateNewGameboard(player.gameboard);
     }
@@ -213,13 +204,10 @@ export class GameClientService {
         const playerOneIndex = this.playerOne.name === gameInfo.players[0].name ? 0 : 1;
         const secondPlayerIndex = Math.abs(playerOneIndex - 1);
         const updatedRack = this.updateRack(gameInfo.players[playerOneIndex].rack);
-        this.playerOne.name = gameInfo.players[playerOneIndex].name;
-        this.playerOne.score = gameInfo.players[playerOneIndex].score;
+        this.playerOne = { ...gameInfo.players[playerOneIndex], objective: this.playerOne.objective };
         this.playerOne.rack = updatedRack;
 
-        this.secondPlayer.name = gameInfo.players[secondPlayerIndex].name;
-        this.secondPlayer.score = gameInfo.players[secondPlayerIndex].score;
-        this.secondPlayer.rack = gameInfo.players[secondPlayerIndex].rack;
+        this.secondPlayer = { ...gameInfo.players[secondPlayerIndex], objective: this.secondPlayer.objective };
         this.playerOneTurn = gameInfo.activePlayer === this.playerOne.name;
         this.updateGameboard();
     }

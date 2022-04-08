@@ -1,4 +1,4 @@
-import { Objective } from '@app/interfaces/objective';
+import { Objective } from '@common/interfaces/objective';
 
 export const oneVowelWord: Objective = { name: 'OneVowelWord', points: 15, type: 'Word' } as Objective;
 export const palindromicWord: Objective = { name: 'PalindromicWord', points: 0, type: 'Word' } as Objective;
