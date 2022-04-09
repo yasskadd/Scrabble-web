@@ -38,7 +38,7 @@ describe('HeaderComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    fit('should call redirectHome() when home button is clicked', fakeAsync(() => {
+    it('should call redirectHome() when home button is clicked', fakeAsync(() => {
         const homeSpy = spyOn(component, 'redirectHome');
         const button = fixture.debugElement.nativeElement.querySelector('#home');
         button.click();
@@ -46,14 +46,14 @@ describe('HeaderComponent', () => {
         expect(homeSpy).toHaveBeenCalled();
     }));
 
-    fit('redirectHome should navigate to /home', fakeAsync(() => {
+    it('redirectHome should navigate to /home', fakeAsync(() => {
         component.redirectHome();
         tick();
         fixture.detectChanges();
         expect(location.path()).toBe('/home');
     }));
 
-    fit('should call redirectAdmin() when home button is clicked', fakeAsync(() => {
+    it('should call redirectAdmin() when home button is clicked', fakeAsync(() => {
         const adminSpy = spyOn(component, 'redirectAdmin');
         const button = fixture.debugElement.nativeElement.querySelector('#admin');
         button.click();
@@ -61,7 +61,7 @@ describe('HeaderComponent', () => {
         expect(adminSpy).toHaveBeenCalled();
     }));
 
-    fit('redirectAdmin should navigate to /admin', fakeAsync(() => {
+    it('redirectAdmin should navigate to /admin', fakeAsync(() => {
         component.redirectAdmin();
         tick();
         fixture.detectChanges();
