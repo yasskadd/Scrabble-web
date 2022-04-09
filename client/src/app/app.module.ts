@@ -25,12 +25,10 @@ import { AdminHighScoresComponent } from './components/admin-high-scores/admin-h
 import { AdminVirtualPlayersComponent } from './components/admin-virtual-players/admin-virtual-players.component';
 import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxAbandonGameComponent } from './components/dialog-box-abandon-game/dialog-box-abandon-game.component';
-import { DialogBoxAddDictionaryComponent } from './components/dialog-box-add-dictionary/dialog-box-add-dictionary.component';
 import { DialogBoxGameTypeComponent } from './components/dialog-box-game-type/dialog-box-game-type.component';
 import { DialogBoxHighScoresComponent } from './components/dialog-box-high-scores/dialog-box-high-scores.component';
-import { DialogBoxModifyDictionaryComponent } from './components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { DialogBoxNewGameComponent } from './components/dialog-box-new-game-component/dialog-box-new-game.component';
-import { GamesHistoryComponent } from './components/games-history/games-history.component';
+import { HeaderComponent } from './components/header/header.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
@@ -64,11 +62,9 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         AdminDictionariesComponent,
         AdminVirtualPlayersComponent,
         AdminGameHistoryComponent,
-        DialogBoxAddDictionaryComponent,
-        DialogBoxModifyDictionaryComponent,
         AdminHighScoresComponent,
         DialogBoxNewGameComponent,
-        GamesHistoryComponent,
+        HeaderComponent,
     ],
     imports: [
         CommonModule,
