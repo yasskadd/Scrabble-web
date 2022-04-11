@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HighScores } from '@app/interfaces/high-score-parameters';
+import { ModifiedDictionaryInfo } from '@app/interfaces/modified-dictionary-info';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -58,7 +59,7 @@ export class HttpHandlerService {
         return this.http.post<void>(`${this.baseUrl}/dictionary/upload`, dictionary).pipe(catchError(this.handleError<void>('addDictionary')));
     }
 
-    modifyDictionary(dictionary: Dictionary): Observable<void> {
+    modifyDictionary(dictionary: ModifiedDictionaryInfo): Observable<void> {
         return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
     }
 

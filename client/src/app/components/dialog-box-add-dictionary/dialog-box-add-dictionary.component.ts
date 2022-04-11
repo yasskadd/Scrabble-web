@@ -16,18 +16,24 @@ export class DialogBoxAddDictionaryComponent implements OnInit {
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
     dictionaryInput: Dictionary;
     myControl = new FormControl();
-    options: string[] = ['DictionaryOne', 'DictionaryTwo', 'DictionaryThree'];
     filteredOptions: Observable<string[]>;
     form: FormGroup;
     selectedFile: Dictionary | null;
+    options: string[];
 
-    constructor(private dialogRef: MatDialogRef<DialogBoxAddDictionaryComponent>, private dictionaryService: DictionaryService) {}
+    constructor(private dialogRef: MatDialogRef<DialogBoxAddDictionaryComponent>, private dictionaryService: DictionaryService) {
+        this.options = this.leftOverDictionaries.map((dictionary) => dictionary.title);
+    }
 
     ngOnInit() {
         this.filteredOptions = this.myControl.valueChanges.pipe(
             startWith(''),
             map((value) => this.filter(value)),
         );
+    }
+
+    get leftOverDictionaries(): Dictionary[] {
+        return this.dictionaryService.dictionaries;
     }
 
     detectImportFile() {
