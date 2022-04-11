@@ -9,10 +9,22 @@ const descThreeWordsFormed = 'Placer 3 mots ou plus en un seul tour';
 const descTwoSameWords = 'Placer 2 mots pareils collés en un seul tour';
 
 export const oneVowelWord: Objective = { name: 'OneVowelWord', points: 15, type: 'Word', description: descOneVowel } as Objective;
-export const palindromicWord: Objective = { name: 'PalindromicWord', points: 0, type: 'Word', description: descPalindromicWord } as Objective;
+export const palindromicWord: Objective = {
+    name: 'PalindromicWord',
+    points: 0,
+    type: 'Word',
+    description: descPalindromicWord,
+    multiplier: 'x2 pour le mot',
+} as Objective;
 export const alphabeticalWord: Objective = { name: 'AlphabeticalWord', points: 20, type: 'Word', description: descAlphabeticalWord } as Objective;
 export const moreThan10Letters: Objective = { name: 'MoreThan10Letters', points: 20, type: 'Word', description: descMoreThan10Letters } as Objective;
-export const threeWordsFormed: Objective = { name: 'ThreeWordsFormed', points: 0, type: 'Word', description: descThreeWordsFormed } as Objective;
+export const threeWordsFormed: Objective = {
+    name: 'ThreeWordsFormed',
+    points: 0,
+    type: 'Word',
+    description: descThreeWordsFormed,
+    multiplier: 'x2 pour le tour',
+} as Objective;
 export const twoSameWords: Objective = { name: 'TwoSameWords', points: 20, type: 'Word', description: descTwoSameWords } as Objective;
 export const fiveLettersPlacedTwice: Objective = {
     name: 'FiveLettersPlaced',

@@ -19,8 +19,12 @@
             </thead>
             <tbody>
                 <tr *ngFor="let objective of this.gameClientService.playerOne.objective">
-                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">{{ objective.name }}</td>
-                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">{{ objective.points }}</td>
+                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
+                        {{ objective.name }}: {{ objective.description }}
+                    </td>
+                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
+                        {{ objective.points }}: {{ objective.description }}
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -51,7 +55,7 @@
             <tbody>
                 <tr *ngFor="let objective of this.gameClientService.secondPlayer.objective">
                     <td *ngIf="objective.complete !== undefined && objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
-                        {{ objective.name }}
+                        {{ objective.name }} : {{ objective.description }}
                     </td>
                     <td *ngIf="objective.complete !== undefined && objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
                         {{ objective.points }}

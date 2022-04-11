@@ -4,6 +4,6 @@ export interface Objective {
     points: number;
     type: string;
     description: string;
-    multiplier?: number;
+    multiplier?: string;
     complete?: boolean;
 }
