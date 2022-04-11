@@ -18,9 +18,9 @@ export class DictionaryService {
             .then(() => this.getDictionaries());
     }
 
-    resetBotNames() {
+    resetDictionaries() {
         this.httpHandler
-            .resetBot()
+            .resetDictionary()
             .toPromise()
             .then(() => this.getDictionaries());
     }

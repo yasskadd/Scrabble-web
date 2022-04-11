@@ -10,13 +10,16 @@ export class Word {
     stringFormat: string = '';
     newLetterCoords: Coordinate[] = [];
     wordCoords: Coordinate[] = [];
-    private points: number;
+    points: number;
     private isHorizontal: boolean | undefined;
 
     constructor(commandInfo: CommandInfo, gameboard: Gameboard) {
         this.isValid = true;
         this.isHorizontal = commandInfo.isHorizontal;
         this.points = 0;
+        this.stringFormat = '';
+        this.newLetterCoords = [];
+        this.wordCoords = [];
 
         if (commandInfo.isHorizontal === undefined) this.setIsHorizontal(commandInfo.firstCoordinate, gameboard);
 

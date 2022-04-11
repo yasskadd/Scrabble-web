@@ -62,6 +62,10 @@ export class HttpHandlerService {
         return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, bot).pipe(catchError(this.handleError<void>('modifyDictionary')));
     }
 
+    resetDictionary(): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/dictionary/reset`).pipe(catchError(this.handleError<void>('resetDictionary')));
+    }
+
     getBeginnerBots(): Observable<Bot[]> {
         return this.http.get<Bot[]>(`${this.baseUrl}/virtualPlayer/beginner`).pipe(catchError(this.handleError<Bot[]>('getBotsBeginner', [])));
     }
