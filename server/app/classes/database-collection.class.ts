@@ -33,6 +33,8 @@ export class DatabaseCollection {
     }
 
     async removeDocument(parameters: Filter<Document>) {
+        console.log('database remove entered');
+        console.log(parameters);
         await this.connect();
         await this.collection.deleteOne(parameters);
     }

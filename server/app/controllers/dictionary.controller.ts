@@ -22,9 +22,11 @@ export class DictionaryController {
             res.json(dictionaries);
         });
 
-        this.router.get('/remove', async (req: Request, res: Response) => {
-            const dictionaries = await this.dictionaryStorage.removeDictionary(req.body);
-            res.json(dictionaries);
+        this.router.patch('/delete', async (req: Request, res: Response) => {
+            const dictionaryTitle = req.body;
+            console.log(dictionaryTitle);
+            await this.dictionaryStorage.deleteDictionary(dictionaryTitle);
+            res.sendStatus(NO_CONTENT);
         });
 
         this.router.get('/modify', async (req: Request, res: Response) => {

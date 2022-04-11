@@ -16,15 +16,17 @@ export class DictionaryStorageService {
         await this.database.dictionaries.addDocument(dictionary);
     }
 
-    async removeDictionary(dictionary: Document) {
-        if (!(await this.dictionaryIsInDb(dictionary.title))) return;
-        await this.database.dictionaries.removeDocument(dictionary);
+    async deleteDictionary(dictionary: Document) {
+        console.log('dictionary storage delete entered');
+        const dictionaryIsInDb: boolean = await this.dictionaryIsInDb(dictionary.title);
+        if (!dictionaryIsInDb) return;
+        await this.database.dictionaries.removeDocument({ title: dictionary.title });
     }
 
     async modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
-        if (!(await this.dictionaryIsInDb(dictionaryInfo.oldTitle))) return;
+        if (!(await this.dictionaryIsInDb(dictionaryInfo.title))) return;
         await this.database.dictionaries.updateDocument(
-            { title: dictionaryInfo.oldTitle },
+            { title: dictionaryInfo.title },
             { $set: { title: dictionaryInfo.newTitle, description: dictionaryInfo.newDescription } },
         );
     }

@@ -53,12 +53,21 @@ export class HttpHandlerService {
             .pipe(catchError(this.handleError<Dictionary[]>('getDictionaries', [])));
     }
 
-    deleteDictionary(dictionary: Dictionary): Observable<void> {
-        return this.http.patch<void>(`${this.baseUrl}/dictionary/remove`, dictionary).pipe(catchError(this.handleError<void>('removeDictionary')));
+    deleteDictionary(dictionaryTitle: string): Observable<void> {
+        console.log('hhtp delete dictionary entered');
+        return this.http
+            .patch<void>(`${this.baseUrl}/dictionary/delete`, { title: dictionaryTitle })
+            .pipe(catchError(this.handleError<void>('deleteDictionary')));
     }
 
     addDictionary(dictionary: Dictionary): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/dictionary/upload`, dictionary).pipe(catchError(this.handleError<void>('addDictionary')));
+        return this.http
+            .post<void>(`${this.baseUrl}/dictionary/upload`, {
+                title: dictionary.title,
+                description: dictionary.description,
+                words: dictionary.words,
+            })
+            .pipe(catchError(this.handleError<void>('addDictionary')));
     }
 
     modifyDictionary(dictionary: ModifiedDictionaryInfo): Observable<void> {

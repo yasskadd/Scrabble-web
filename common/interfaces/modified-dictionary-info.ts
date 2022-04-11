@@ -1,5 +1,5 @@
 export interface ModifiedDictionaryInfo {
-    oldTitle: string;
+    title: string;
     newTitle: string;
     newDescription: string;
 }

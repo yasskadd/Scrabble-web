@@ -29,6 +29,7 @@ export class AdminDictionariesComponent {
 
     deleteDictionary(dictionaryToDelete: Dictionary) {
         this.updateDictionaryList();
+        console.log('admin dictionary component delete entered');
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
     }
 
@@ -40,7 +41,7 @@ export class AdminDictionariesComponent {
     }
 
     openModifyDictionaryDialog(dictionaryToModify: Dictionary) {
-        const oldTitle = dictionaryToModify.title;
+        const title = dictionaryToModify.title;
         const dialogRef = this.modifyDictionaryDialog.open(DialogBoxModifyDictionaryComponent, {
             width: '50%',
             data: dictionaryToModify,
@@ -48,7 +49,7 @@ export class AdminDictionariesComponent {
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-            this.modifyDictionary({ oldTitle, newTitle: result.title, newDescription: result.description });
+            this.modifyDictionary({ title, newTitle: result.title, newDescription: result.description });
         });
     }
 
@@ -57,7 +58,7 @@ export class AdminDictionariesComponent {
     }
 
     modifyDictionary(modifiedDictionaryInfo: ModifiedDictionaryInfo) {
-        if (modifiedDictionaryInfo.oldTitle === '' || modifiedDictionaryInfo.newDescription === '') return;
+        if (modifiedDictionaryInfo.title === '' || modifiedDictionaryInfo.newDescription === '') return;
 
         this.dictionaryService.getDictionaries();
         if (this.isUniqueTitle(modifiedDictionaryInfo.newTitle)) this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);

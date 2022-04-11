@@ -39,6 +39,7 @@ export class VirtualPlayerController {
         });
 
         this.router.patch('/remove', async (req: Request, res: Response) => {
+            console.log('admin server entered');
             const NO_CONTENT = 204;
             const bot = req.body;
             await this.virtualPlayerStorage.removeBot(bot);
