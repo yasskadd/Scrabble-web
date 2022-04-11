@@ -10,13 +10,13 @@ import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-informati
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
 import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
-import { LetterPlacementService } from '../letter-placement.service';
-import { WordSolverService } from '../word-solver.service';
 import { GamesHandler } from './games-handler.service';
 
 const MAX_SKIP = 6;

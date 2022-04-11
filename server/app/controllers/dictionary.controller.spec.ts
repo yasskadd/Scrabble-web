@@ -13,6 +13,12 @@ const DICTIONARIES = [
     { title: 'Troisieme dicitonnaire', description: 'Un dictionnaire', words: ['string'] },
 ];
 
+const DICTIONARIES_INFO = [
+    { title: 'Premier dicitonnaire', description: 'Un dictionnaire' },
+    { title: 'Deuxieme dicitonnaire', description: 'Un dictionnaire' },
+    { title: 'Troisieme dicitonnaire', description: 'Un dictionnaire' },
+];
+
 describe('DictionaryController', () => {
     let dictionaryStorage: SinonStubbedInstance<DictionaryStorageService>;
     let expressApp: Express.Application;
@@ -31,6 +37,15 @@ describe('DictionaryController', () => {
             .get('/dictionary')
             .then((response) => {
                 expect(response.body).to.deep.equal(DICTIONARIES);
+            });
+    });
+
+    it('should return array with title and description only of the dictionaries', async () => {
+        dictionaryStorage.getAllDictionaryInfo.resolves(DICTIONARIES_INFO);
+        return supertest(expressApp)
+            .get('/dictionary/info')
+            .then((response) => {
+                expect(response.body).to.deep.equal(DICTIONARIES_INFO);
             });
     });
 

@@ -6,6 +6,7 @@ import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
+import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -19,10 +20,16 @@ import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 
 const ROOM = '0';
+const DICTIONARIES = [
+    { title: 'Premier dictonnaire', description: 'Un dictionnaire', words: ['string'] },
+    { title: 'Deuxième dictonnaire', description: 'Un dictionnaire', words: ['string'] },
+    { title: 'Troisième dictonnaire', description: 'Un dictionnaire', words: ['string'] },
+];
 
 describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
+    let dictionaryStorageStub: sinon.SinonStubbedInstance<DictionaryStorageService>;
 
     let httpServer: Server;
     let clientSocket: Socket;
@@ -35,6 +42,7 @@ describe('GamesHandler Service', () => {
     beforeEach((done) => {
         socketManagerStub = sinon.createStubInstance(SocketManager);
         socketManagerStub.emitRoom.callsFake(() => {});
+        dictionaryStorageStub = sinon.createStubInstance(DictionaryStorageService);
 
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
@@ -42,7 +50,7 @@ describe('GamesHandler Service', () => {
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
 
-        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager);
+        gamesHandler = new GamesHandler(socketManagerStub as unknown as SocketManager, dictionaryStorageStub as unknown as DictionaryStorageService);
 
         httpServer = createServer();
         sio = new ioServer(httpServer);
@@ -167,5 +175,26 @@ describe('GamesHandler Service', () => {
             gamesHandler['updatePlayerInfo'](serverSocket, playerOne.room, playerOne.game);
             expect(socketManagerStub.emitRoom.called).to.not.be.equal(true);
         });
+
+        it("updatePlayerInfo() shouldn't do anything if the players are undefined", () => {
+            gamesHandler['players'].set(serverSocket.id, playerOne);
+
+            gamesHandler['gamePlayers'].set(playerOne.room, undefined as unknown as Player[]);
+
+            gamesHandler['updatePlayerInfo'](serverSocket, playerOne.room, playerOne.game);
+            expect(socketManagerStub.emitRoom.called).to.not.be.equal(true);
+        });
+    });
+
+    it('setDictionaries() should call getAllDictionary of DictionaryStorage', async () => {
+        dictionaryStorageStub.getAllDictionary.resolves(DICTIONARIES);
+        await gamesHandler.setDictionaries();
+        expect(dictionaryStorageStub.getAllDictionary.called).to.equal(true);
+    });
+
+    it('setDictionaries() should set dictionaries attribute', async () => {
+        dictionaryStorageStub.getAllDictionary.resolves(DICTIONARIES);
+        await gamesHandler.setDictionaries();
+        expect(gamesHandler['dictionaries'].size).to.be.greaterThan(0);
     });
 });

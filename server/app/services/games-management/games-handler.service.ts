@@ -47,7 +47,7 @@ export class GamesHandler {
         this.socketManager.emitRoom(roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
     }
 
-    async setAndUpdateDictionaries() {
+    async setDictionaries() {
         const dictionaries = await this.dictionaryStorage.getAllDictionary();
         const tempDictionariesMap: Map<string, Behavior> = new Map();
         dictionaries.forEach((dictionary) => {

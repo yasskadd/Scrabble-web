@@ -44,7 +44,7 @@ export class Server {
 
         try {
             await this.databaseService.connect();
-            await this.gameHandler.setAndUpdateDictionaries();
+            await this.gameHandler.setDictionaries();
         } catch {
             process.exit(1);
         }

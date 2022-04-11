@@ -36,7 +36,7 @@ describe('Game tests', () => {
         dictionaryValidation = createStubInstance(DictionaryValidationService) as SinonStubbedInstance<DictionaryValidationService> &
             DictionaryValidationService;
         wordSolver = createStubInstance(WordSolverService) as SinonStubbedInstance<WordSolverService> & WordSolverService;
-        game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation);
+        game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation, letterPlacementService, wordSolver);
         game['dictionaryValidationService'] = dictionaryValidation;
         game['letterPlacement'] = letterPlacementService;
         game['wordSolver'] = wordSolver;
@@ -188,7 +188,7 @@ describe('Game tests', () => {
 
         it('giveNewLetterToRack() should call generateLetter of letterReserve with the quantity of letter that equals the quantity of letter placed', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
-            game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation);
+            game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation, letterPlacementService, wordSolver);
             turn.validating.returns(true);
             letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
             letterReserve.isEmpty.returns(false);
