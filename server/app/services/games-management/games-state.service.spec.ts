@@ -103,7 +103,7 @@ describe('GamesState Service', () => {
                     roomId: ROOM,
                     timer: 0,
                     socketId: [serverSocket.id],
-                    mode: 'Classique',
+                    mode: 'classique',
                     botDifficulty: undefined,
                     dictionary: { words: ['string'] } as Dictionary,
                 };
@@ -149,7 +149,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: undefined,
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -172,7 +172,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID, SECOND_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: undefined,
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -194,7 +194,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: 'Débutant',
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -220,7 +220,7 @@ describe('GamesState Service', () => {
             roomId: ROOM,
             timer: 0,
             socketId: [FIRST_PLAYER_SOCKET_ID],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: 'Expert',
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -234,7 +234,7 @@ describe('GamesState Service', () => {
         expect(newPlayer).to.be.eql(EXPECTED_NEW_PLAYER as Player);
     });
 
-    it('createNewGame() should return a new game created', () => {
+    it('createNewGame() should return a new game created in classique mode', () => {
         sinon.stub(Turn);
         const TIMER = 60;
         const params = {
@@ -242,7 +242,7 @@ describe('GamesState Service', () => {
             roomId: '1',
             timer: TIMER,
             socketId: [serverSocket.id],
-            mode: 'Classique',
+            mode: 'classique',
             botDifficulty: undefined,
             dictionary: { words: ['string'] } as Dictionary,
         };
@@ -250,6 +250,30 @@ describe('GamesState Service', () => {
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
         const gameTest = gamesStateService['createNewGame'](params);
         expect(gameTest !== undefined).to.eql(true);
+    });
+
+    it('createNewGame() should return a new game created in LOG2990 mode', () => {
+        const TIMER = 60;
+        const params = {
+            playerName: [player1.name, player2.name],
+            roomId: '1',
+            timer: TIMER,
+            socketId: [serverSocket.id],
+            mode: 'LOG2990',
+            botDifficulty: undefined,
+            dictionary: { words: ['string'] } as Dictionary,
+        };
+
+        gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
+        const gameTest = gamesStateService['createNewGame'](params);
+        expect(gameTest !== undefined).to.eql(true);
+    });
+
+    it('sendObjectivesToClient() should emit the objective to the client', () => {
+        player1.game.isMode2990 = true;
+
+        gamesStateService['sendObjectivesToClient'](player1, player2);
+        expect(socketManagerStub.emitRoom.called).to.equal(true);
     });
 
     it("changeTurn() should send the game's information when called and the active player isn't undefined", () => {
@@ -461,8 +485,10 @@ describe('GamesState Service', () => {
     });
 
     it('sendHighScore() should call scoreStorage.addTopScore', () => {
+        const gameStub = sinon.createStubInstance(Game);
         const player = { name: 'Vincent', room: ROOM, score: 40 } as Player;
-
+        player.game = gameStub as unknown as Game;
+        player.game.gameMode = 'classique';
         gamesHandlerStub['players'].set(serverSocket.id, player);
 
         gamesStateService['sendHighScore'](serverSocket.id);
@@ -529,7 +555,17 @@ describe('GamesState Service', () => {
             player1.game = game;
             player2.game = game;
         });
-        it('endGameScore() should call deductPoints() of each player in a game if there is 6 consecutive skips', () => {
+        it('endGameScore() should call deductPoints() of each player in a game if there is 6 consecutive skips in the classic mode', () => {
+            player1.game.isMode2990 = false;
+            player1.game.turn.skipCounter = 6;
+            gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
+
+            gamesStateService['endGameScore'](player1.room);
+            expect(player1.deductPoints.called).to.equal(true);
+        });
+
+        it('endGameScore() should call deductPoints() of each player in a game if there is 6 consecutive skips in the LOG2990 mode ', () => {
+            player1.game.isMode2990 = true;
             player1.game.turn.skipCounter = 6;
             gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
 
@@ -541,6 +577,7 @@ describe('GamesState Service', () => {
                 'if his rack is empty and call deductPoints() for the other player',
             () => {
                 player1.rackIsEmpty.returns(true);
+                player1.game.isMode2990 = true;
                 player1.game.turn.skipCounter = 0;
                 gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
 
@@ -659,6 +696,15 @@ describe('GamesState Service', () => {
             done();
         });
 
+        it('CreateGame() should call sendObjectivesToClient()', (done) => {
+            const sendObjectivesToClientStub = sinon.stub(gamesStateService, 'sendObjectivesToClient' as never);
+            gameInfo.socketId[1] = '3249adf8243';
+
+            gamesStateService['createGame'](serverSocket, gameInfo);
+            expect(sendObjectivesToClientStub.called).to.equal(true);
+            done();
+        });
+
         it('CreateGame() should call initializePlayers()', (done) => {
             const initializePlayersStub = sinon.stub(gamesStateService, 'initializePlayers' as never);
             gameInfo.socketId[1] = '3249adf8243';
@@ -677,6 +723,7 @@ describe('GamesState Service', () => {
         });
 
         it('initializePlayers() should call the setGame and the start function of the player when you are playing against a bot', (done) => {
+            botPlayer.game.isMode2990 = true;
             gamesStateService['initializePlayers']([realPlayer, botPlayer], botPlayer.game, [serverSocket.id]);
 
             expect(realPlayer.setGame.called).to.equal(true);

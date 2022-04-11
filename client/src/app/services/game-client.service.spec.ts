@@ -5,13 +5,36 @@ import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulat
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { LetterTileInterface } from '@common/interfaces/letter-tile-interface';
+import { Objective } from '@common/interfaces/objective';
 import { Socket } from 'socket.io-client';
 import { ClientSocketService } from './communication/client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
-type Player = { name: string; score: number; rack: Letter[]; room: string };
+
+type InitObjective = { objectives1: Objective[]; objectives2: Objective[]; playerName: string };
+type Player = { name: string; score: number; rack: Letter[]; room: string; objective?: Objective[] };
 type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
+
+const OBJECTIVE_TWO: Objective = {
+    name: 'NoClue',
+    isPublic: true,
+    points: 20,
+    type: 'Word',
+};
+
+const OBJECTIVE: Objective = {
+    name: 'TwoLetterWord',
+    isPublic: true,
+    points: 20,
+    type: 'Word',
+};
+
+const INIT_OBJECTIVE: InitObjective = {
+    objectives1: [OBJECTIVE],
+    objectives2: [OBJECTIVE],
+    playerName: 'vincent',
+};
 
 const TIMEOUT = 15;
 const PLAYER_ONE: Player = {
@@ -109,7 +132,28 @@ describe('GameClientService', () => {
     it('should update the player information', () => {
         service.playerOne = { rack: [] as Letter[] } as Player;
         socketEmulator.peerSideEmit(SocketEvents.UpdatePlayerInformation, PLAYER_ONE);
-        expect(service.playerOne).toEqual(PLAYER_ONE);
+        expect(service.playerOne.name).toEqual(PLAYER_ONE.name);
+        expect(service.playerOne.rack).toEqual(PLAYER_ONE.rack);
+        expect(service.playerOne.score).toEqual(PLAYER_ONE.score);
+    });
+
+    it('should call updateOpponentInformationEvent', () => {
+        const spy = spyOn(service, 'updateOpponentInformationEvent' as never);
+        service.playerOne = PLAYER_ONE;
+        socketEmulator.peerSideEmit(SocketEvents.UpdateOpponentInformation, PLAYER_TWO);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call completeObjective', () => {
+        const spy = spyOn(service, 'completeObjective' as never);
+        socketEmulator.peerSideEmit('CompletedObjective', OBJECTIVE);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should call setObjectives', () => {
+        const spy = spyOn(service, 'setObjectives' as never);
+        socketEmulator.peerSideEmit('InitObjective', INIT_OBJECTIVE);
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should call updateOpponentInformationEvent', () => {
@@ -123,7 +167,9 @@ describe('GameClientService', () => {
         service.playerOne = PLAYER_ONE;
         // eslint-disable-next-line dot-notation
         service['updateOpponentInformationEvent'](PLAYER_TWO);
-        expect(service.secondPlayer).toEqual(PLAYER_TWO);
+        expect(service.secondPlayer.name).toEqual(PLAYER_TWO.name);
+        expect(service.secondPlayer.rack).toEqual(PLAYER_TWO.rack);
+        expect(service.secondPlayer.score).toEqual(PLAYER_TWO.score);
     });
 
     it('the playerOneTurn should be false when ViewUpdate is called and it is not their turn to play', () => {
@@ -161,8 +207,8 @@ describe('GameClientService', () => {
         // eslint-disable-next-line dot-notation
         service['skipEvent'](GAME_INFO);
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
-        expect(service.playerOne).toEqual(GAME_INFO.players[0]);
-        expect(service.secondPlayer).toEqual(GAME_INFO.players[1]);
+        expect(service.playerOne.name).toEqual(GAME_INFO.players[0].name);
+        expect(service.secondPlayer.name).toEqual(GAME_INFO.players[1].name);
         expect(service.playerOneTurn).toBeFalsy();
         expect(spy).toHaveBeenCalled();
     });
@@ -214,6 +260,55 @@ describe('GameClientService', () => {
         // eslint-disable-next-line dot-notation
         service['timerClientUpdateEvent'](TIME);
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('completeObjective should set to complete the objective send to client', () => {
+        service.playerOne.name = 'vincent';
+        service.secondPlayer.name = 'Chris';
+        service.playerOne.objective = [OBJECTIVE_TWO];
+        service.secondPlayer.objective = [OBJECTIVE];
+        service.playerOne.objective[0].complete = false;
+        // eslint-disable-next-line dot-notation
+        service['completeObjective'](OBJECTIVE_TWO);
+        expect(service.playerOne.objective[0].complete).toEqual(true);
+    });
+
+    it('completeObjective should set to complete the objective send to client to the second player', () => {
+        service.playerOne.objective = [OBJECTIVE];
+        service.secondPlayer.objective = [OBJECTIVE_TWO];
+        service.secondPlayer.objective[0].complete = false;
+        // eslint-disable-next-line dot-notation
+        service['completeObjective'](OBJECTIVE_TWO);
+        expect(service.secondPlayer.objective[0].complete).toEqual(true);
+    });
+
+    it('completeObjective should not set to complete if the objective are undefined', () => {
+        service.playerOne.name = 'vincent';
+        service.secondPlayer.name = 'Chris';
+        expect(service.playerOne.objective).toEqual(undefined);
+        // eslint-disable-next-line dot-notation
+        service['completeObjective'](OBJECTIVE);
+        expect(service.playerOne.objective).toEqual(undefined);
+    });
+
+    it('setObjectives should set the objective of the player who created the game', () => {
+        service.playerOne.name = 'vincent';
+        service.secondPlayer.name = 'Chris';
+
+        expect(service.playerOne.objective).toEqual(undefined);
+        // eslint-disable-next-line dot-notation
+        service['setObjectives'](INIT_OBJECTIVE);
+        expect(service.playerOne.objective).toEqual([OBJECTIVE]);
+    });
+
+    it('setObjectives should set the objective of the player who joined the game', () => {
+        service.playerOne.name = 'Chris';
+        service.secondPlayer.name = 'vincent';
+
+        expect(service.playerOne.objective).toEqual(undefined);
+        // eslint-disable-next-line dot-notation
+        service['setObjectives'](INIT_OBJECTIVE);
+        expect(service.secondPlayer.objective).toEqual([OBJECTIVE]);
     });
 
     it('isTurnFinish should call isTurnFinish', () => {
@@ -355,5 +450,25 @@ describe('GameClientService', () => {
         service.playerOne.rack = DUMMY_RACK_3 as Letter[];
         // eslint-disable-next-line dot-notation
         expect(service['updateRack'](NEW_RACK_3 as Letter[])).toEqual(NEW_RACK_3 as Letter[]);
+    });
+
+    it(" should reset a game's information", () => {
+        service.timer = 10;
+        service.gameboard = [{} as LetterTileInterface];
+        service.playerOne = { name: 'Bojji', score: 10, rack: [{} as Letter], objective: [] };
+        service.secondPlayer = { name: 'Kage', score: -50, rack: [{} as Letter], objective: [] };
+        service.playerOneTurn = true;
+        service.letterReserveLength = 0;
+        service.isGameFinish = true;
+        service.winningMessage = 'Believe in me that believes in you';
+        service.resetGameInformation();
+        expect(service.timer).toEqual(0);
+        expect(service.gameboard).toEqual([]);
+        expect(service.playerOne).toEqual({ name: '', score: 0, rack: [], objective: undefined });
+        expect(service.secondPlayer).toEqual({ name: '', score: 0, rack: [], objective: undefined });
+        expect(service.playerOneTurn).toEqual(false);
+        expect(service.letterReserveLength).toEqual(0);
+        expect(service.isGameFinish).toEqual(false);
+        expect(service.winningMessage).toEqual('');
     });
 });

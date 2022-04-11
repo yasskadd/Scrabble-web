@@ -1,5 +1,5 @@
 <h1 mat-dialog-title id="panel-title">
-    <img src="https://bit.ly/3m206ss" width="300" height="60" alt="Logo Scrabble" />
+    <img src="https://bit.ly/3m206ss" width="300" height="60" alt="Logo Scrabble" (click)="abandonGame()" />
 </h1>
 
 <section class="player" [ngClass]="{ active: this.gameClientService.playerOneTurn }" id="player-1">
@@ -9,6 +9,21 @@
     </div>
     <div id="playerNumberLettersRack" *ngIf="this.gameClientService.playerOne.rack.length < 7">
         {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet
+    </div>
+    <div id="playerNumberLettersRack" *ngIf="this.gameClientService.playerOne.objective !== undefined">
+        <table>
+            <thead class="tableContainer">
+                <tr>
+                    <th>Mes Objectifs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let objective of this.gameClientService.playerOne.objective">
+                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">{{ objective.name }}</td>
+                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">{{ objective.points }}</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div class="time" id="playerOneTimer" *ngIf="this.gameClientService.playerOneTurn">
         <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
@@ -26,6 +41,26 @@
     <div *ngIf="this.gameClientService.secondPlayer.rack.length < 7">
         {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
     </div>
+    <div id="playerNumberLettersRack" *ngIf="this.gameClientService.secondPlayer.objective !== undefined">
+        <table>
+            <thead class="tableContainer">
+                <tr>
+                    <th>Objectif Privée Complété du deuxième Joueurs</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let objective of this.gameClientService.secondPlayer.objective">
+                    <td *ngIf="objective.complete !== undefined && objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
+                        {{ objective.name }}
+                    </td>
+                    <td *ngIf="objective.complete !== undefined && objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
+                        {{ objective.points }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <div class="time" id="playerTwoTimer" *ngIf="!this.gameClientService.playerOneTurn">
         <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
             this.timer.timerToSecond(this.gameClientService.timer)
@@ -33,6 +68,23 @@
     </div>
     <div class="time" *ngIf="this.gameClientService.playerOneTurn"><mat-icon>timer</mat-icon>-:-</div>
 </section>
+
+<div id="playerNumberLettersRack" *ngIf="this.gameClientService.playerOne.objective !== undefined">
+    <table>
+        <thead class="tableContainer">
+            <tr>
+                <th>Objectifs Public</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let objective of this.gameClientService.playerOne.objective">
+                <td *ngIf="objective.isPublic === true" [ngClass]="{ complete: objective.complete }">{{ objective.name }}</td>
+                <td *ngIf="objective.isPublic === true" [ngClass]="{ complete: objective.complete }">{{ objective.points }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 <div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>
 <p><button id="abandonButton" *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button>abandonner</button></p>
 <p><button id="quitGame" *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button></p>

@@ -367,6 +367,7 @@ describe('Letter Placement Service', () => {
         });
 
         it('should change player score if validateWord() doesnt return 0', () => {
+            player.game.isMode2990 = true;
             const validateWordReturn = {
                 points: 10,
                 invalidWords: [] as Word[],

@@ -1,9 +1,7 @@
-import { Dictionary } from './dictionary';
-
 export interface GameRoomClient {
     id: string;
     users: string[];
-    dictionary: Dictionary;
+    dictionary: string;
     timer: number;
     mode: string;
 }

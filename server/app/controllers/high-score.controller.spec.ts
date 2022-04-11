@@ -7,11 +7,11 @@ import { Container } from 'typedi';
 
 describe('HighScoreController', () => {
     const classicTopScores = [
-        { position: '1', username: 'Vincent', type: 'Classique', score: 200 },
-        { position: '2', username: 'Pierre', type: 'Classique', score: 50 },
-        { position: '3', username: 'Lau', type: 'Classique', score: 30 },
-        { position: '4', username: 'George', type: 'Classique', score: 2 },
-        { position: '5', username: 'Sang', type: 'Classique', score: 0 },
+        { position: '1', username: 'Vincent', type: 'classique', score: 200 },
+        { position: '2', username: 'Pierre', type: 'classique', score: 50 },
+        { position: '3', username: 'Lau', type: 'classique', score: 30 },
+        { position: '4', username: 'George', type: 'classique', score: 2 },
+        { position: '5', username: 'Sang', type: 'classique', score: 0 },
     ];
     const lOG2990TopScores = [
         { position: '1', username: 'Vincent', type: 'LOG2990', score: 200 },
