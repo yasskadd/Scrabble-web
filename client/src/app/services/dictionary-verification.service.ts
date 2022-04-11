@@ -14,6 +14,7 @@ export class DictionaryVerificationService {
     constructor(private readonly httpHandler: HttpHandlerService) {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaries = dictionaries));
     }
+
     globalVerification(dictionary: unknown): string {
         if (!this.isDictionary(dictionary))
             return "Le fichier téléversé n'est pas un dictionnaire. Les champs title, description ou words sont manquant.";
