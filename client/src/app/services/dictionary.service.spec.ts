@@ -12,7 +12,7 @@ describe('VirtualPlayersService', () => {
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', [
             'addDictionary',
             'deleteDictionary',
-            'resetDictionary',
+            'resetDictionaries',
             'modifyDictionary',
             'getDictionaries',
         ]);
@@ -27,41 +27,51 @@ describe('VirtualPlayersService', () => {
                 } as Dictionary,
             ]),
         );
+        httpHandlerSpy.resetDictionaries.and.returnValue(
+            of([
+                {
+                    title: 'Default',
+                    description: 'default dictionary',
+                } as Dictionary,
+            ]),
+        );
+
         TestBed.configureTestingModule({
             providers: [{ provide: HttpHandlerService, useValue: httpHandlerSpy }],
         });
-        service = TestBed.inject(VirtualPlayersService);
+        service = TestBed.inject(DictionaryService);
     });
 
     it('should be created', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should call getDictionarieswhen calling getDictionaryTitle', () => {
-        service.getDictionaryNames();
-        expect(httpHandlerSpy.getBeginnerBots).toHaveBeenCalled();
-        expect(httpHandlerSpy.getExpertBots).toHaveBeenCalled();
+    it('should call httpHandler addDictionary() when calling dictionaryService addDictionary() is called', () => {
+        service.addDictionary({ title: 'test dictionary', description: 'a test dictionary', words: ['Expert', 'yo', 'ma'] });
+        expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
+        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
-    it('should call replaceBot when calling replaceBotName', () => {
-        service.replaceBotName({ currentName: 'Vincent', newName: 'Laure', difficulty: 'Expert' });
-        expect(httpHandlerSpy.replaceBot).toHaveBeenCalled();
+    it('should call httpHandler deleteDictionary() when calling dictionaryService deleteDictionary() is called', () => {
+        service.deleteDictionary({ title: 'test dictionary', description: 'a test dictionary', words: ['Expert', 'yo', 'ma'] });
+        expect(httpHandlerSpy.deleteDictionary).toHaveBeenCalled();
+        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
-    it('should call resetBot when calling resetBotNames', () => {
-        service.resetBotNames();
-        expect(httpHandlerSpy.resetBot).toHaveBeenCalled();
+    it('should call httpHandler modifyDictionary() when calling dictionaryService modifyDictionary() is called', () => {
+        service.modifyDictionary({ oldTitle: 'test dictionary', newTitle: 'test test', newDescription: 'a test dictionary' });
+        expect(httpHandlerSpy.modifyDictionary).toHaveBeenCalled();
+        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
-    it('should call deleteBot when calling deleteBotName', () => {
-        service.deleteBotName('vincent', 'debutant');
-        expect(httpHandlerSpy.deleteBot).toHaveBeenCalled();
+    it('should call httpHandler resetDictionaries() when calling dictionaryService resetDictionaries() is called', () => {
+        service.resetDictionaries();
+        expect(httpHandlerSpy.resetDictionaries).toHaveBeenCalled();
+        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
-    it('should call addBot when calling addBotName', () => {
-        service.addBotName('vincent', VirtualPlayer.Beginner);
-        expect(httpHandlerSpy.addBot).toHaveBeenCalled();
-        service.addBotName('vincent', VirtualPlayer.Expert);
-        expect(httpHandlerSpy.addBot).toHaveBeenCalled();
+    it('should call httpHandler getDictionaries() when calling dictionaryService getDictionaries() is called', () => {
+        service.getDictionaries();
+        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 });

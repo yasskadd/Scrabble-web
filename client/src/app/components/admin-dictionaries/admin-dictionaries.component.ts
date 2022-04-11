@@ -12,6 +12,8 @@ import { DictionaryService } from '@app/services/dictionary.service';
     styleUrls: ['./admin-dictionaries.component.scss'],
 })
 export class AdminDictionariesComponent {
+    availableDictionaries: Dictionary[]; // TODO : have available dictionaries in server!!
+
     constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog, private addDictionaryDialog: MatDialog) {
         this.updateDictionaryList();
     }
@@ -61,8 +63,9 @@ export class AdminDictionariesComponent {
         return dictionary.title === 'Dictionnaire très francais';
     }
 
+    // TODO : return only default dictionary in list
     resetDictionaries() {
-        this.dictionaryService.resetDictionaries();
+        this.availableDictionaries = [this.dictionaries[0]];
     }
 
     updateDictionaryList() {

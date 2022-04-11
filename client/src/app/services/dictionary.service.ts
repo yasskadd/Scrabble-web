@@ -11,28 +11,22 @@ export class DictionaryService {
     constructor(private readonly httpHandler: HttpHandlerService) {}
 
     addDictionary(dictionary: Dictionary) {
-        this.httpHandler
-            .addDictionary(dictionary)
-            .toPromise()
-            .then(() => this.getDictionaries());
+        this.httpHandler.addDictionary(dictionary).subscribe();
+        this.getDictionaries();
     }
 
     deleteDictionary(dictionarytoRemove: Dictionary) {
-        this.httpHandler
-            .deleteDictionary(dictionarytoRemove)
-            .toPromise()
-            .then(() => this.getDictionaries());
-    }
-
-    resetDictionaries() {
-        this.httpHandler
-            .deleteDictionaries()
-            .toPromise()
-            .then(() => this.getDictionaries());
+        this.httpHandler.deleteDictionary(dictionarytoRemove).subscribe();
+        this.getDictionaries();
     }
 
     modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
         this.httpHandler.modifyDictionary(dictionaryInfo).subscribe();
+        this.getDictionaries();
+    }
+
+    resetDictionaries() {
+        this.httpHandler.resetDictionaries().subscribe();
         this.getDictionaries();
     }
 

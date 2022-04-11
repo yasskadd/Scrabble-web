@@ -9,7 +9,7 @@ import { DialogBoxHighScoresComponent } from '@app/components/dialog-box-high-sc
     styleUrls: ['./main-page.component.scss'],
 })
 export class MainPageComponent {
-    readonly title: string = "Bienvenue au jeu Scrabble de l'équipe 107";
+    readonly title: string = "Bienvenue au Scrabble de l'équipe 107!";
     private readonly dialogWidth: string = '500px';
     private readonly dialogWidthHighScore: string = '500px';
     constructor(private dialog: MatDialog, private highScore: MatDialog) {}
