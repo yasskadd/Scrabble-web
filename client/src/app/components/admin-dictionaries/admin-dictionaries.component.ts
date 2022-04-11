@@ -33,11 +33,29 @@ export class AdminDictionariesComponent {
     }
 
     openModifyDictionaryDialog(dictionaryToModify: Dictionary) {
-        this.modifyDictionaryDialog.open(DialogBoxModifyDictionaryComponent, {
+        const dialogRef = this.modifyDictionaryDialog.open(DialogBoxModifyDictionaryComponent, {
             width: '50%',
             data: dictionaryToModify,
             disableClose: true,
         });
+
+        dialogRef.afterClosed().subscribe((result: Dictionary) => {
+            this.modifyDictionary(dictionaryToModify, result);
+        });
+    }
+
+    isUniqueTitle(title: string): boolean {
+        return !this.dictionaryService.dictionaries.some((dictionary) => dictionary.title.toLowerCase() === title.toString().toLowerCase());
+    }
+
+    dictionaryIsUnchanged(currentDictionary: Dictionary, newDictionary: Dictionary) {
+        return newDictionary.title === currentDictionary.title && newDictionary.description === currentDictionary.description;
+    }
+
+    modifyDictionary(currentDictionary: Dictionary, newDictionary: Dictionary) {
+        if (this.dictionaryIsUnchanged(currentDictionary, newDictionary)) return;
+        this.updateDictionaryList();
+        if (this.isUniqueTitle(newDictionary.title)) this.dictionaryService.modifyDictionary(currentDictionary, newDictionary);
     }
 
     isDefault(dictionary: Dictionary) {

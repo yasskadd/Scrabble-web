@@ -3,15 +3,15 @@
 <form class="modify-dictionary-form">
     <mat-form-field id="title" class="example-full-width" appearance="fill">
         <mat-label>titre</mat-label>
-        <input type="text" matInput [ngModel]="title" (ngModelChange)="onTitleChange($event)" />
+        <input matInput type="text" placeholder="Modifier le titre" [value]="title" (keydown.enter)="closeDialog()" />
     </mat-form-field>
     <mat-form-field id="description" class="example-full-width" appearance="fill">
         <mat-label>description</mat-label>
-        <input type="text" matInput [ngModel]="description" (ngModelChange)="onDescriptionChange($event)" />
+        <input type="text" matInput placeholder="Modifier la description" [value]="description" (keydown.enter)="closeDialog()" />
     </mat-form-field>
 </form>
 
 <div id="buttons">
     <button mat-raised-button (click)="closeDialog()">Annuler</button>
-    <button mat-raised-button>Modifier</button>
+    <button mat-raised-button (click)="closeDialog()">Modifier</button>
 </div>

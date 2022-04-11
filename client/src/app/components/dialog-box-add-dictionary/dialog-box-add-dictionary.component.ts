@@ -12,21 +12,21 @@ import { map, startWith } from 'rxjs/operators';
     styleUrls: ['./dialog-box-add-dictionary.component.scss'],
 })
 export class DialogBoxAddDictionaryComponent implements OnInit {
+    @ViewChild('file', { static: false }) file: ElementRef;
+    @ViewChild('fileError', { static: false }) fileError: ElementRef;
     dictionaryInput: Dictionary;
     myControl = new FormControl();
     options: string[] = ['DictionaryOne', 'DictionaryTwo', 'DictionaryThree'];
     filteredOptions: Observable<string[]>;
     form: FormGroup;
     selectedFile: Dictionary | null;
-    @ViewChild('file', { static: false }) file: ElementRef;
-    @ViewChild('fileError', { static: false }) fileError: ElementRef;
 
     constructor(private dialogRef: MatDialogRef<DialogBoxAddDictionaryComponent>, private dictionaryService: DictionaryService) {}
 
     ngOnInit() {
         this.filteredOptions = this.myControl.valueChanges.pipe(
             startWith(''),
-            map((value) => this._filter(value)),
+            map((value) => this.filter(value)),
         );
     }
 
@@ -69,7 +69,7 @@ export class DialogBoxAddDictionaryComponent implements OnInit {
         this.dialogRef.close();
     }
 
-    private _filter(value: string): string[] {
+    private filter(value: string): string[] {
         const filterValue = value.toLowerCase();
 
         return this.options.filter((option) => option.toLowerCase().includes(filterValue));
