@@ -188,6 +188,7 @@ export class GamesStateService {
         }
         player.game.abandon();
         this.gameEnded.next(player.room);
+        this.gamesHandler.gamePlayers.delete(player.room);
     }
 
     private async switchToSolo(socket: Socket, playerToReplace: Player) {
@@ -256,6 +257,7 @@ export class GamesStateService {
             this.gameEnded.next(player.room);
             player.game.isGameFinish = true;
             this.socketManager.emitRoom(player.room, SocketEvents.GameEnd);
+            this.gamesHandler.gamePlayers.delete(player.room);
         }
     }
 
