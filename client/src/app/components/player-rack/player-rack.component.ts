@@ -52,15 +52,19 @@ export class PlayerRackComponent implements OnInit {
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
         if (!this.eRef.nativeElement.contains(event.target)) {
             this.cancel();
+            this.currentSelection = board.INVALID_INDEX;
+            this.previousSelection = board.INVALID_INDEX;
         }
     }
 
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            this.cancel();
-            this.repositionRack();
-            this.selectManipulation();
+            if (this.currentSelection !== board.INVALID_INDEX) {
+                this.cancel();
+                this.repositionRack();
+                this.selectManipulation();
+            }
         });
     }
 
