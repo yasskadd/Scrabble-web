@@ -29,17 +29,13 @@ export class DictionaryStorageService {
         );
     }
 
+    async resetDictionaries() {
+        await this.database.dictionaries.resetCollection();
+    }
+
     async dictionaryIsInDb(title: string): Promise<boolean> {
         // eslint-disable-next-line object-shorthand
         const document = await this.database.dictionaries.fetchDocuments({ title: title }, { projection: { title: 1 } });
         return document.length ? true : false;
     }
-
-    // async populateDb() {
-    //     const inDb = await this.dictionaryIsInDb('Mon dictionnaire');
-    //     if (inDb) return;
-    //     const jsonDictionary = JSON.parse(fs.readFileSync('../common/assets/spanish.json', 'utf8'));
-
-    //     await this.addDictionary(jsonDictionary);
-    // }
 }

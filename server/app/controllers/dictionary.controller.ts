@@ -4,6 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 
 const HTTP_STATUS_CREATED = StatusCodes.CREATED;
+const NO_CONTENT = 204;
 
 @Service()
 export class DictionaryController {
@@ -34,6 +35,11 @@ export class DictionaryController {
         this.router.post('/upload', async (req: Request, res: Response) => {
             this.dictionaryStorage.addDictionary(req.body);
             res.sendStatus(HTTP_STATUS_CREATED);
+        });
+
+        this.router.post('/reset', async (req: Request, res: Response) => {
+            this.dictionaryStorage.resetDictionaries();
+            res.sendStatus(NO_CONTENT);
         });
     }
 }
