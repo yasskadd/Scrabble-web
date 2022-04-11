@@ -87,23 +87,25 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
     }
 
-    uploadDictionary() {
+    async uploadDictionary() {
         if (this.file.nativeElement.files.length !== 0) {
             const selectedFile = this.file.nativeElement.files[0];
             const fileReader = new FileReader();
-            fileReader.readAsText(selectedFile, 'UTF-8');
-            fileReader.onload = () => {
-                const newDictionary = JSON.parse(fileReader.result as string);
-                if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
-                    this.updateImportMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
-                } else {
-                    this.updateImportMessage('Ajout avec succès du nouveau dictionnaire', 'black');
-                    this.selectedFile = newDictionary;
-                    this.httpHandler.addDictionary(newDictionary).subscribe();
-                }
-            };
+            const content = await this.readFile(selectedFile, fileReader);
+            this.fileOnLoad(content);
         } else {
             this.updateImportMessage("Il n'y a aucun fichier séléctioné", 'red');
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    fileOnLoad(newDictionary: Record<string, unknown>): any {
+        if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
+            this.updateImportMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
+        } else {
+            this.updateImportMessage('Ajout avec succès du nouveau dictionnaire', 'black');
+            this.selectedFile = newDictionary as unknown as Dictionary;
+            this.httpHandler.addDictionary(this.selectedFile).subscribe();
         }
     }
 
@@ -193,5 +195,17 @@ export class MultiplayerCreatePageComponent implements OnInit {
         setTimeout(() => {
             this.giveNameToBot();
         }, TIMEOUT_REQUEST);
+    }
+
+    private async readFile(selectedFile: File, fileReader: FileReader): Promise<Record<string, unknown>> {
+        return new Promise((resolve, reject) => {
+            fileReader.readAsText(selectedFile, 'UTF-8');
+            fileReader.onload = () => {
+                resolve(JSON.parse(fileReader.result as string));
+            };
+            fileReader.onerror = () => {
+                reject(Error('File is not a JSON'));
+            };
+        });
     }
 }
