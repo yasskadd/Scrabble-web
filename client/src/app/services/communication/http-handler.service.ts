@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HighScores } from '@app/interfaces/high-score-parameters';
-import { ModifiedDictionaryInfo } from '@app/interfaces/modified-dictionary-info';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -44,7 +44,7 @@ export class HttpHandlerService {
     }
 
     getDictionaries(): Observable<Dictionary[]> {
-        return this.http.get<Dictionary[]>(`${this.baseUrl}/dictionary`).pipe(catchError(this.handleError<Dictionary[]>('getDictionaries', [])));
+        return this.http.get<Dictionary[]>(`${this.baseUrl}/dictionary`).pipe(catchError(this.handleError<Dictionary[]>('getAllDictionaries', [])));
     }
 
     resetDictionaries(): Observable<Dictionary[]> {
@@ -54,7 +54,7 @@ export class HttpHandlerService {
     }
 
     deleteDictionary(dictionary: Dictionary): Observable<void> {
-        return this.http.patch<void>(`${this.baseUrl}/dictionary/remove`, dictionary).pipe(catchError(this.handleError<void>('deleteDictionary')));
+        return this.http.patch<void>(`${this.baseUrl}/dictionary/remove`, dictionary).pipe(catchError(this.handleError<void>('removeDictionary')));
     }
 
     addDictionary(dictionary: Dictionary): Observable<void> {

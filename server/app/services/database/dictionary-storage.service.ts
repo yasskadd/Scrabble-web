@@ -1,3 +1,4 @@
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { Document } from 'mongodb';
 import { Service } from 'typedi';
 import { DatabaseService } from './database.service';
@@ -18,6 +19,14 @@ export class DictionaryStorageService {
     async removeDictionary(dictionary: Document) {
         if (!(await this.dictionaryIsInDb(dictionary.title))) return;
         await this.database.dictionaries.removeDocument(dictionary);
+    }
+
+    async modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
+        if (!(await this.dictionaryIsInDb(dictionaryInfo.oldTitle))) return;
+        await this.database.dictionaries.updateDocument(
+            { title: dictionaryInfo.oldTitle },
+            { $set: { title: dictionaryInfo.newTitle, description: dictionaryInfo.newDescription } },
+        );
     }
 
     async dictionaryIsInDb(title: string): Promise<boolean> {

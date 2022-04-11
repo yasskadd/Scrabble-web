@@ -21,9 +21,18 @@ export class DictionaryController {
             res.json(dictionaries);
         });
 
+        this.router.get('/remove', async (req: Request, res: Response) => {
+            const dictionaries = await this.dictionaryStorage.removeDictionary(req.body);
+            res.json(dictionaries);
+        });
+
+        this.router.get('/modify', async (req: Request, res: Response) => {
+            const dictionaries = await this.dictionaryStorage.modifyDictionary(req.body);
+            res.json(dictionaries);
+        });
+
         this.router.post('/upload', async (req: Request, res: Response) => {
-            const dictionary = req.body;
-            this.dictionaryStorage.addDictionary(dictionary);
+            this.dictionaryStorage.addDictionary(req.body);
             res.sendStatus(HTTP_STATUS_CREATED);
         });
     }

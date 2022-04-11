@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Dictionary } from '@app/interfaces/dictionary';
-import { ModifiedDictionaryInfo } from '@app/interfaces/modified-dictionary-info';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { HttpHandlerService } from './communication/http-handler.service';
 
 @Injectable({

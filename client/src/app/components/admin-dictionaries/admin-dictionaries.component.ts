@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxAddDictionaryComponent } from '@app/components/dialog-box-add-dictionary/dialog-box-add-dictionary.component';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
-import { ModifiedDictionaryInfo } from '@app/interfaces/modified-dictionary-info';
 import { DictionaryService } from '@app/services/dictionary.service';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 
 @Component({
     selector: 'app-admin-dictionaries',
