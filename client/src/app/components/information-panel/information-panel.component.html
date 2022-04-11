@@ -19,11 +19,12 @@
             </thead>
             <tbody>
                 <tr *ngFor="let objective of this.gameClientService.playerOne.objective">
-                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
-                        {{ objective.name }}: {{ objective.description }}
+                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
+                        {{ objective.name }}
                     </td>
-                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
-                        {{ objective.points }}: {{ objective.description }}
+                    <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
+                        <div *ngIf="!objective.multiplier">| pts : {{ objective.points }}</div>
+                        <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }}</div>
                     </td>
                 </tr>
             </tbody>
@@ -54,11 +55,20 @@
             </thead>
             <tbody>
                 <tr *ngFor="let objective of this.gameClientService.secondPlayer.objective">
-                    <td *ngIf="objective.complete !== undefined && objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
+                    <td
+                        *ngIf="objective.complete !== undefined && objective.isPublic !== true"
+                        [ngClass]="{ complete: objective.complete }"
+                        [matTooltip]="objective.description"
+                    >
                         {{ objective.name }} : {{ objective.description }}
                     </td>
-                    <td *ngIf="objective.complete !== undefined && objective.isPublic !== true" [ngClass]="{ complete: objective.complete }">
-                        {{ objective.points }}
+                    <td
+                        *ngIf="objective.complete !== undefined && objective.isPublic !== true"
+                        [ngClass]="{ complete: objective.complete }"
+                        [matTooltip]="objective.description"
+                    >
+                        <div *ngIf="!objective.multiplier">| pts : {{ objective.points }}</div>
+                        <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }}</div>
                     </td>
                 </tr>
             </tbody>
@@ -82,8 +92,13 @@
         </thead>
         <tbody>
             <tr *ngFor="let objective of this.gameClientService.playerOne.objective">
-                <td *ngIf="objective.isPublic === true" [ngClass]="{ complete: objective.complete }">{{ objective.name }}</td>
-                <td *ngIf="objective.isPublic === true" [ngClass]="{ complete: objective.complete }">{{ objective.points }}</td>
+                <td *ngIf="objective.isPublic === true" [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
+                    {{ objective.name }}
+                </td>
+                <td *ngIf="objective.isPublic === true" [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
+                    <div *ngIf="!objective.multiplier">| pts : {{ objective.points }}</div>
+                    <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }}</div>
+                </td>
             </tr>
         </tbody>
     </table>

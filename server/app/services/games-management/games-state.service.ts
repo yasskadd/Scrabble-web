@@ -167,8 +167,6 @@ export class GamesStateService {
             players: players.map((x) => x.getInformation()),
             activePlayer: players[0].game.turn.activePlayer,
         };
-        const used = process.memoryUsage().heapUsed / 1024 / 1024;
-        console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`);
         this.socketManager.emitRoom(roomId, SocketEvents.Skip, gameInfo);
     }
 

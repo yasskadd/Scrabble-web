@@ -21,14 +21,14 @@ const OBJECTIVE_TWO: Objective = {
     isPublic: true,
     points: 20,
     type: 'Word',
-};
+} as Objective;
 
 const OBJECTIVE: Objective = {
     name: 'TwoLetterWord',
     isPublic: true,
     points: 20,
     type: 'Word',
-};
+} as Objective;
 
 const INIT_OBJECTIVE: InitObjective = {
     objectives1: [OBJECTIVE],
