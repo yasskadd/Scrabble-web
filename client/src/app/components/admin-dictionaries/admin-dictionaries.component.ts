@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxAddDictionaryComponent } from '@app/components/dialog-box-add-dictionary/dialog-box-add-dictionary.component';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryInput } from '@app/interfaces/dictionary-input';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 
@@ -12,7 +13,7 @@ import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-i
     styleUrls: ['./admin-dictionaries.component.scss'],
 })
 export class AdminDictionariesComponent {
-    availableDictionaries: Dictionary[]; // TODO : have available dictionaries in server!!
+    dictionaryInput: DictionaryInput;
 
     constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog, private addDictionaryDialog: MatDialog) {
         this.updateDictionaryList();
@@ -22,9 +23,12 @@ export class AdminDictionariesComponent {
         return this.dictionaryService.dictionaries;
     }
 
+    isDefault(dictionary: Dictionary) {
+        return dictionary.title === 'Dictionnaire très francais';
+    }
+
     deleteDictionary(dictionaryToDelete: Dictionary) {
         this.updateDictionaryList();
-        if (dictionaryToDelete.title === 'Dictionnaire très français') return;
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
     }
 
@@ -59,13 +63,9 @@ export class AdminDictionariesComponent {
         if (this.isUniqueTitle(modifiedDictionaryInfo.newTitle)) this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
     }
 
-    isDefault(dictionary: Dictionary) {
-        return dictionary.title === 'Dictionnaire très francais';
-    }
-
     // TODO : return only default dictionary in list
     resetDictionaries() {
-        this.availableDictionaries = [this.dictionaries[0]];
+        this.dictionaryService.resetDictionaries();
     }
 
     updateDictionaryList() {

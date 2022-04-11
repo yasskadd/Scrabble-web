@@ -16,8 +16,10 @@ export class DictionaryService {
     }
 
     deleteDictionary(dictionarytoRemove: Dictionary) {
-        this.httpHandler.deleteDictionary(dictionarytoRemove).subscribe();
-        this.getDictionaries();
+        this.httpHandler
+            .deleteDictionary(dictionarytoRemove)
+            .toPromise()
+            .then(() => this.getDictionaries());
     }
 
     modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
