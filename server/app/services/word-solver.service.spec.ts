@@ -19,7 +19,7 @@ describe('Word solver service', () => {
     });
 
     beforeEach(() => {
-        wordSolverService = new WordSolverService(['string', 'avion', 'peur', 'eau', 'le']);
+        wordSolverService = new WordSolverService(dictionaryValidationService);
         gameboard = new Gameboard();
         wordSolverService['gameboard'] = gameboard;
         spyFindBeforePart = Sinon.spy(wordSolverService, 'findWordPartBeforeAnchor' as keyof WordSolverService);

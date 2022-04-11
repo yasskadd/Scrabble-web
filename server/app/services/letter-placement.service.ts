@@ -8,21 +8,20 @@ import { Service } from 'typedi';
 import { DictionaryValidationService } from './dictionary-validation.service';
 import { RackService } from './rack.service';
 
+const MIDDLE_X = 8;
+const MIDDLE_Y = 8;
+
 export enum ErrorType {
     CommandCoordinateOutOfBounds = 'Placement invalide pour la premiere coordonnée',
     LettersNotInRack = 'Les lettres ne sont pas dans le chavalet',
     InvalidFirstWordPlacement = "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
     InvalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
 }
-
-const MIDDLE_X = 8;
-const MIDDLE_Y = 8;
-
 @Service()
 export class LetterPlacementService {
     private dictionaryValidationService: DictionaryValidationService;
-    constructor(dictionary: string[], private rackService: RackService) {
-        this.dictionaryValidationService = new DictionaryValidationService(dictionary);
+    constructor(dictionaryValidation: DictionaryValidationService, private rackService: RackService) {
+        this.dictionaryValidationService = dictionaryValidation;
     }
 
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {

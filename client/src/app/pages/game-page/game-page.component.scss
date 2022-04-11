@@ -4,6 +4,20 @@ body {
     justify-content: space-between;
 }
 
+.load {
+    background-color: antiquewhite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.load > h1 {
+    font-family: revert;
+}
+
 .justified {
     display: flex;
     flex-direction: column;

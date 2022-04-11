@@ -28,6 +28,7 @@ export class AdminVirtualPlayersComponent {
     get beginnerBots(): Bot[] {
         return this.virtualPlayerService.beginnerBotNames;
     }
+
     isUniqueName(name: string) {
         if (this.virtualPlayerService.expertBotNames.some((bot) => bot.username.toLowerCase() === name.toString().toLowerCase())) return false;
         if (this.virtualPlayerService.beginnerBotNames.some((bot) => bot.username.toLowerCase() === name.toString().toLowerCase())) return false;
@@ -80,7 +81,7 @@ export class AdminVirtualPlayersComponent {
     }
 
     resetBot() {
-        if (this.beginnerBots.length <= 3) return;
+        if (this.beginnerBots.length <= 3 && this.expertBots.length <= 3) return;
         this.virtualPlayerService.resetBotNames();
     }
 

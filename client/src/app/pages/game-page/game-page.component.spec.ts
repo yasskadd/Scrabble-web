@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSliderModule } from '@angular/material/slider';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -15,7 +16,8 @@ import { ChatboxComponent } from '@app/components/chatbox/chatbox.component';
 import { InformationPanelComponent } from '@app/components/information-panel/information-panel.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { PlayerRackComponent } from '@app/components/player-rack/player-rack.component';
-import { of } from 'rxjs';
+import { GameClientService } from '@app/services/game-client.service';
+import { of, Subject } from 'rxjs';
 import { GamePageComponent } from './game-page.component';
 
 @Component({
@@ -33,10 +35,16 @@ export class MatDialogMock {
 describe('GamePageComponent', () => {
     let component: GamePageComponent;
     let fixture: ComponentFixture<GamePageComponent>;
+    let gameServiceSpy: jasmine.SpyObj<GameClientService>;
+    let gameUpdatedStub: Subject<boolean>;
 
     beforeEach(async () => {
+        gameUpdatedStub = new Subject();
+        gameServiceSpy = jasmine.createSpyObj('GameClientService', ['resetGameInformation'], { gameboardUpdated: gameUpdatedStub });
+        gameServiceSpy.gameboardUpdated = gameUpdatedStub;
         await TestBed.configureTestingModule({
             imports: [
+                MatProgressSpinnerModule,
                 MatCardModule,
                 MatIconModule,
                 MatSliderModule,
@@ -50,7 +58,10 @@ describe('GamePageComponent', () => {
             ],
             declarations: [GamePageComponent, PlayAreaComponent, PlayerRackComponent, ChatboxComponent, InformationPanelComponent],
 
-            providers: [{ provide: MatDialog, useClass: MatDialogMock }],
+            providers: [
+                { provide: MatDialog, useClass: MatDialogMock },
+                { provide: GameClientService, useValue: gameServiceSpy },
+            ],
         }).compileComponents();
     });
 
@@ -62,5 +73,10 @@ describe('GamePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should change loading when receiving information on the game', () => {
+        gameUpdatedStub.next(true);
+        expect(component.isLoading).toBeFalsy();
     });
 });
