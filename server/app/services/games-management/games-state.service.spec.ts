@@ -12,7 +12,9 @@ import { Turn } from '@app/classes/turn.class';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -73,7 +75,9 @@ describe('GamesState Service', () => {
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
         game.objectivesHandler = sinon.createStubInstance(ObjectivesHandler) as ObjectivesHandler & sinon.SinonStubbedInstance<ObjectivesHandler>;
-        game.dictionary = ['string'];
+        game.dictionaryValidation = sinon.createStubInstance(DictionaryValidationService) as unknown as DictionaryValidationService;
+        game.letterPlacement = sinon.createStubInstance(LetterPlacementService) as unknown as LetterPlacementService;
+        game.wordSolver = sinon.createStubInstance(WordSolverService) as unknown as WordSolverService;
 
         player1.game = game;
 
@@ -201,7 +205,7 @@ describe('GamesState Service', () => {
         const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
             timer: gameInformation.timer,
             roomId: gameInformation.roomId,
-            dictionary: gameInformation.dictionary.words,
+            dictionaryValidation: new DictionaryValidationService(['string']),
         });
 
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
@@ -227,7 +231,7 @@ describe('GamesState Service', () => {
         const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
             timer: gameInformation.timer,
             roomId: gameInformation.roomId,
-            dictionary: gameInformation.dictionary.words,
+            dictionaryValidation: new DictionaryValidationService(['string']),
         });
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
         const newPlayer = gamesStateService['setAndGetPlayer'](gameInformation) as Player;

@@ -20,6 +20,7 @@ describe('Letter Placement Service', () => {
     let commandInfo: CommandInfo;
     let gameboard: Gameboard;
     let rackService: RackService;
+    let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
     let placementService: LetterPlacementService;
     let word: Word;
 
@@ -42,10 +43,9 @@ describe('Letter Placement Service', () => {
 
         gameboard = new Gameboard();
         rackService = Container.get(RackService);
-        placementService = new LetterPlacementService(['string'], rackService);
-        placementService['dictionaryValidationService'] = Sinon.createStubInstance(
-            DictionaryValidationService,
-        ) as Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
+        dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService) as Sinon.SinonStubbedInstance<DictionaryValidationService> &
+            DictionaryValidationService;
+        placementService = new LetterPlacementService(dictionaryValidation, rackService);
     });
 
     context('validateCommandCoordinate() tests', () => {

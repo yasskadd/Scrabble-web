@@ -4,6 +4,7 @@ import { Game } from '@app/classes/game.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Turn } from '@app/classes/turn.class';
 import { BotInformation } from '@app/interfaces/bot-information';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { CommandInfo } from '@common/interfaces/command-info';
@@ -19,14 +20,21 @@ describe('Bot Tests', () => {
     let botInfo: BotInformation;
     let stubMathRandom: Sinon.SinonStub<[], number>;
     let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService>;
+    let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
 
     beforeEach(() => {
         stubMathRandom = Sinon.stub(Math, 'random');
         gameStub = Sinon.createStubInstance(Game) as Sinon.SinonStubbedInstance<Game> & Game;
         gameStub.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
-        botInfo = { timer: 60, roomId: 'testRoom', dictionary: ['string'] };
-        bot = new Bot(true, 'robot', botInfo);
         wordSolverStub = Sinon.createStubInstance(WordSolverService);
+        dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService) as Sinon.SinonStubbedInstance<DictionaryValidationService> &
+            DictionaryValidationService;
+        botInfo = {
+            timer: 60,
+            roomId: 'testRoom',
+            dictionaryValidation: dictionaryValidation as Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService,
+        };
+        bot = new Bot(true, 'robot', botInfo);
         bot['wordSolver'] = wordSolverStub as never;
         bot.setGame(gameStub);
     });

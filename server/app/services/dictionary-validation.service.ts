@@ -4,8 +4,6 @@ import { Word } from '@app/classes/word.class';
 import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
 import * as fs from 'fs';
 
-// const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
-
 // @Service()
 export class DictionaryValidationService {
     dictionary: Set<string> = new Set();

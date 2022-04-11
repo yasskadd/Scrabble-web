@@ -9,13 +9,12 @@ import { Turn } from '@app/classes/turn.class';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { RackService } from '@app/services/rack.service';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
 import { GamesHandler } from './games-handler.service';
 
 const MAX_SKIP = 6;
@@ -125,17 +124,18 @@ export class GamesStateService {
         const player = this.gamesHandler.players.has(gameInfo.socketId[0]) ? 1 : 0;
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
+            const dictionaryValidation = new DictionaryValidationService(gameInfo.dictionary.words);
             if (gameInfo.botDifficulty === 'Débutant')
                 newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionary: gameInfo.dictionary.words,
+                    dictionaryValidation: dictionaryValidation as DictionaryValidationService,
                 });
             else
                 newPlayer = new ExpertBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionary: gameInfo.dictionary.words,
+                    dictionaryValidation: dictionaryValidation as DictionaryValidationService,
                 });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
@@ -149,14 +149,14 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
+        const dictionaryValidation = new DictionaryValidationService(gameInfo.dictionary.words);
         return new Game(
             players[0],
             players[1],
-            gameInfo.dictionary.words,
             new Turn(gameInfo.timer),
             new LetterReserve(),
             gameInfo.mode === 'classique' ? false : true,
-            new LetterPlacementService(gameInfo.dictionary.words, Container.get(RackService)),
+            dictionaryValidation,
         );
     }
 
@@ -199,7 +199,7 @@ export class GamesStateService {
         const botPlayer = new BeginnerBot(false, botName, {
             timer: playerToReplace.game.turn.time,
             roomId: playerToReplace.room,
-            dictionary: playerToReplace.game.dictionary,
+            dictionaryValidation: playerToReplace.game.dictionaryValidation,
         });
         botPlayer.score = info.score;
         botPlayer.rack = info.rack;

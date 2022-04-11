@@ -22,8 +22,8 @@ export class WordSolverService {
     private anchors: Coordinate[];
     private dictionaryService: DictionaryValidationService;
 
-    constructor(dictionary: string[]) {
-        this.dictionaryService = new DictionaryValidationService(dictionary);
+    constructor(dictionaryValidation: DictionaryValidationService) {
+        this.dictionaryService = dictionaryValidation;
         this.trie = this.dictionaryService.trie;
     }
 
