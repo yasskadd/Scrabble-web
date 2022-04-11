@@ -9,6 +9,10 @@ import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 type BotNameInfo = { currentName: string; newName: string; difficulty: string };
+export interface DictionaryInfo {
+    title: string;
+    description: string;
+}
 
 @Injectable({
     providedIn: 'root',
@@ -42,8 +46,10 @@ export class HttpHandlerService {
         return this.http.delete<GameHistoryInfo[]>(`${this.baseUrl}/history`).pipe(catchError(this.handleError<GameHistoryInfo[]>('getHistory', [])));
     }
 
-    getDictionaries(): Observable<Dictionary[]> {
-        return this.http.get<Dictionary[]>(`${this.baseUrl}/dictionary`).pipe(catchError(this.handleError<Dictionary[]>('getDictionaries', [])));
+    getDictionaries(): Observable<DictionaryInfo[]> {
+        return this.http
+            .get<DictionaryInfo[]>(`${this.baseUrl}/dictionary/info`)
+            .pipe(catchError(this.handleError<DictionaryInfo[]>('getDictionaries', [])));
     }
 
     deleteDictionaries(): Observable<Dictionary[]> {

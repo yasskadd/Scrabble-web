@@ -2,14 +2,15 @@ import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/co
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dictionary } from '@app/interfaces/dictionary';
-import { HttpHandlerService } from '@app/services/communication/http-handler.service';
+import { DictionaryInfo, HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 const TIMEOUT_REQUEST = 500;
-const defaultDictionary: Dictionary = { title: 'Francais', description: 'Description de base', words: [] };
+// const defaultDictionary: Dictionary = { title: 'Francais', description: 'Description de base', words: [] };
+const defaultDictionary: DictionaryInfo = { title: 'Francais', description: 'Description de base' };
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -50,7 +51,8 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FourMinuteAndThirty,
         TimeOptions.FiveMinute,
     ];
-    dictionaryList: Dictionary[];
+    // dictionaryList: Dictionary[];
+    dictionaryList: DictionaryInfo[];
     selectedFile: Dictionary | null;
 
     constructor(
@@ -123,7 +125,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.fileError.nativeElement.style.color = color;
     }
 
-    onMouseOver(dictionary: Dictionary) {
+    onMouseOver(dictionary: DictionaryInfo) {
         this.info.nativeElement.children[0].textContent = dictionary.title;
         this.info.nativeElement.children[1].textContent = dictionary.description;
         this.renderer.setStyle(this.info.nativeElement, 'visibility', 'visible');
@@ -148,7 +150,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.gameConfiguration.gameInitialization({
             username: this.playerName,
             timer: (this.form.get('timer') as AbstractControl).value,
-            dictionary: this.getDictionary((this.form.get('dictionary') as AbstractControl).value),
+            dictionary: this.getDictionary((this.form.get('dictionary') as AbstractControl).value).title,
             mode: this.gameMode,
             isMultiplayer: this.isSoloMode() ? false : true,
             opponent: this.isSoloMode() ? this.botName : undefined,

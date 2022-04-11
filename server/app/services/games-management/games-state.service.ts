@@ -15,6 +15,8 @@ import { SocketEvents } from '@common/constants/socket-events';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
 import { Service } from 'typedi';
+import { LetterPlacementService } from '../letter-placement.service';
+import { WordSolverService } from '../word-solver.service';
 import { GamesHandler } from './games-handler.service';
 
 const MAX_SKIP = 6;
@@ -33,7 +35,10 @@ export class GamesStateService {
     }
 
     initSocketsEvents(): void {
-        this.socketManager.on(SocketEvents.CreateScrabbleGame, (socket, gameInfo: GameScrabbleInformation) => this.createGame(socket, gameInfo));
+        this.socketManager.on(
+            SocketEvents.CreateScrabbleGame,
+            async (socket, gameInfo: GameScrabbleInformation) => await this.createGame(socket, gameInfo),
+        );
 
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
@@ -48,7 +53,9 @@ export class GamesStateService {
         });
     }
 
-    private createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
+    private async createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
+        // await this.gamesHandler.setAndUpdateDictionaries();
+        // console.log(this.gamesHandler.dictionaries.get('Dictionnaire très francais'));
         const playerOne = this.setAndGetPlayer(gameInfo);
         const playerTwo = this.setAndGetPlayer(gameInfo);
         const game = this.createNewGame(gameInfo);
@@ -124,7 +131,7 @@ export class GamesStateService {
         const player = this.gamesHandler.players.has(gameInfo.socketId[0]) ? 1 : 0;
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
-            const dictionaryValidation = new DictionaryValidationService(gameInfo.dictionary.words);
+            const dictionaryValidation = this.gamesHandler.dictionaries.get(gameInfo.dictionary)?.dictionaryValidation;
             if (gameInfo.botDifficulty === 'Débutant')
                 newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
@@ -149,14 +156,16 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
-        const dictionaryValidation = new DictionaryValidationService(gameInfo.dictionary.words);
+        const gameBehavior = this.gamesHandler.dictionaries.get(gameInfo.dictionary);
         return new Game(
             players[0],
             players[1],
             new Turn(gameInfo.timer),
             new LetterReserve(),
             gameInfo.mode === 'classique' ? false : true,
-            dictionaryValidation,
+            gameBehavior?.dictionaryValidation as DictionaryValidationService,
+            gameBehavior?.letterPlacement as LetterPlacementService,
+            gameBehavior?.wordSolver as WordSolverService,
         );
     }
 

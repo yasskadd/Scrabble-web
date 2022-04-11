@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Dictionary } from '@app/interfaces/dictionary';
-import { HttpHandlerService } from './communication/http-handler.service';
+import { DictionaryInfo, HttpHandlerService } from './communication/http-handler.service';
 
 const MAX_TITLE_CHAR = 30;
 const MAX_DESCRIPTION_CHAR = 125;
@@ -9,7 +9,7 @@ const MAX_DESCRIPTION_CHAR = 125;
     providedIn: 'root',
 })
 export class DictionaryVerificationService {
-    dictionaries: Dictionary[];
+    dictionaries: DictionaryInfo[];
 
     constructor(private readonly httpHandler: HttpHandlerService) {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaries = dictionaries));

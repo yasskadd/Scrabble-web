@@ -165,7 +165,7 @@ export class GameSessions {
             users: [parameters.username],
             socketID: [socketId],
             isAvailable: parameters.isMultiplayer ? true : false,
-            dictionary: parameters.dictionary.title,
+            dictionary: parameters.dictionary,
             timer: parameters.timer,
             mode: parameters.mode,
         };

@@ -10,6 +10,10 @@ export class DictionaryStorageService {
         return await this.database.dictionaries.fetchDocuments({});
     }
 
+    async getAllDictionaryInfo(): Promise<Document[]> {
+        return await this.database.dictionaries.fetchDocuments({}, { projection: { title: 1, description: 1 } });
+    }
+
     async addDictionary(dictionary: Document) {
         if (await this.dictionaryIsInDb(dictionary.title)) return;
         await this.database.dictionaries.addDocument(dictionary);

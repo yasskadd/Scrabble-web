@@ -1,18 +1,31 @@
 import { Game } from '@app/classes/game.class';
 import { Player } from '@app/classes/player/player.class';
+import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
-import { Service } from 'typedi';
+import { Container, Service } from 'typedi';
+
+export interface Behavior {
+    dictionaryValidation: DictionaryValidationService;
+    wordSolver: WordSolverService;
+    letterPlacement: LetterPlacementService;
+}
 
 @Service()
 export class GamesHandler {
     players: Map<string, Player>;
     gamePlayers: Map<string, Player[]>;
+    dictionaries: Map<string, Behavior>;
 
-    constructor(private socketManager: SocketManager) {
+    constructor(private socketManager: SocketManager, private dictionaryStorage: DictionaryStorageService) {
         this.players = new Map();
         this.gamePlayers = new Map();
+        this.dictionaries = new Map();
     }
 
     updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
@@ -32,5 +45,22 @@ export class GamesHandler {
         socket.broadcast.to(roomId).emit(SocketEvents.UpdateOpponentInformation, players[playerIndex].getInformation());
 
         this.socketManager.emitRoom(roomId, SocketEvents.LetterReserveUpdated, game.letterReserve.lettersReserve);
+    }
+
+    async setAndUpdateDictionaries() {
+        const dictionaries = await this.dictionaryStorage.getAllDictionary();
+        const tempDictionariesMap: Map<string, Behavior> = new Map();
+        dictionaries.forEach((dictionary) => {
+            const dictionaryValidation = new DictionaryValidationService(dictionary.words);
+            const wordSolver = new WordSolverService(dictionaryValidation);
+            const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+            const behavior = {
+                dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+                wordSolver: wordSolver as WordSolverService,
+                letterPlacement: letterPlacement as LetterPlacementService,
+            };
+            tempDictionariesMap.set(dictionary.title, behavior);
+        });
+        this.dictionaries = tempDictionariesMap;
     }
 }

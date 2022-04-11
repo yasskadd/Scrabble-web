@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Dictionary } from '@app/interfaces/dictionary';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoomClient } from '@app/interfaces/game-room-client';
 import { RoomInformation } from '@app/interfaces/room-information';
@@ -31,7 +30,8 @@ export class GameConfigurationService {
             statusGame: '',
             mode: '',
             botDifficulty: undefined,
-            dictionary: {} as Dictionary,
+            // dictionary: {} as Dictionary,
+            dictionary: '',
         };
         this.clientSocket.establishConnection();
         this.isRoomJoinable = new ReplaySubject<boolean>(1);
