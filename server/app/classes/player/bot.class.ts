@@ -23,7 +23,7 @@ export class Bot extends Player {
         this.isPlayerOne = isPlayerOne;
         this.room = botInfo.roomId;
         this.timer = botInfo.timer;
-        this.wordSolver = new WordSolverService(botInfo.dictionary);
+        this.wordSolver = new WordSolverService(botInfo.dictionaryValidation);
     }
 
     setGame(game: Game): void {

@@ -5,10 +5,13 @@ import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { RackService } from '@app/services/rack.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
+import { Container } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
@@ -20,17 +23,17 @@ export class Game {
     isGameAbandoned: boolean;
     isModeSolo: boolean;
     objectivesHandler: ObjectivesHandler;
-    dictionary: string[];
+    dictionaryValidation: DictionaryValidationService;
     wordSolver: WordSolverService;
+    letterPlacement: LetterPlacementService;
 
     constructor(
         player1: Player,
         player2: Player,
-        dictionary: string[],
         public turn: Turn,
         public letterReserve: LetterReserve,
         public isMode2990: boolean,
-        private letterPlacement: LetterPlacementService,
+        dictionaryValidation: DictionaryValidationService,
     ) {
         this.start(player1, player2);
         this.beginningTime = new Date();
@@ -40,8 +43,9 @@ export class Game {
         if (isMode2990) this.objectivesHandler = new ObjectivesHandler(player1, player2);
         this.isGameAbandoned = false;
         this.gameMode = '';
-        this.dictionary = dictionary;
-        this.wordSolver = new WordSolverService(dictionary);
+        this.dictionaryValidation = dictionaryValidation;
+        this.letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+        this.wordSolver = new WordSolverService(dictionaryValidation);
     }
 
     start(player1: Player, player2: Player): void {

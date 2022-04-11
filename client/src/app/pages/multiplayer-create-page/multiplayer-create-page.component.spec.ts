@@ -176,30 +176,49 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // it('uploadDictionary() should call updateImportMessage if file did not pass globalVerification of DictionaryVerificationService', () => {
-    //     const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-    //     const dT = new DataTransfer();
-    //     dT.items.add(new File([blob], 'test.json'));
-    //     component.file.nativeElement.files = dT.files;
-    //     dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
-    //     component.uploadDictionary();
-    //     expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
-    // });
+    // eslint-disable-next-line max-len
+    it('uploadDictionary() should call fileOnLoad if there is a selected file to upload', async () => {
+        const messageSpy = spyOn(component, 'fileOnLoad');
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
 
-    // it('uploadDictionary() should set selectedFile to file selected if it passed globalVerification of DictionaryVerificationService', () => {
-    //     const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-    //     const dT = new DataTransfer();
-    //     dT.items.add(new File([blob], 'test.json'));
-    //     component.file.nativeElement.files = dT.files;
-    //     dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Passed');
-    //     component.uploadDictionary();
-    //     expect(component.selectedFile).toEqual(DB_DICTIONARY);
-    // });
+        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
+        await component.uploadDictionary();
+        expect(messageSpy).toHaveBeenCalled();
+    });
 
     it('uploadDictionary() should set textContent of fileError with no file selected message if there is no selected file to upload', () => {
         const messageSpy = spyOn(component, 'updateImportMessage');
         component.uploadDictionary();
         expect(messageSpy).toHaveBeenCalledWith("Il n'y a aucun fichier séléctioné", 'red');
+    });
+
+    // eslint-disable-next-line max-len
+    it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', () => {
+        const messageSpy = spyOn(component, 'updateImportMessage');
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
+        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Passed');
+        component.fileOnLoad({});
+
+        expect(messageSpy).toHaveBeenCalledWith('Ajout avec succès du nouveau dictionnaire', 'black');
+        expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
+    });
+
+    // eslint-disable-next-line max-len
+    it('fileOnLoad() should call updateImportMessage with error message if file selected did not pass globalVerification of DictionaryVerificationService', () => {
+        const messageSpy = spyOn(component, 'updateImportMessage');
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
+        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
+        component.fileOnLoad({});
+        expect(messageSpy).toHaveBeenCalledWith('Did not passed', 'red');
     });
 
     it('clicking on import button should call uploadDictionary()', fakeAsync(() => {
@@ -581,5 +600,22 @@ describe('MultiplayerCreatePageComponent', () => {
     it('getDictionary() should return the dictionary matching param title if there is no import file', () => {
         // eslint-disable-next-line dot-notation
         expect(component['getDictionary'](DB_DICTIONARY.title)).toEqual(DB_DICTIONARY);
+    });
+
+    it('readFile() should return the content of the file', async () => {
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        // eslint-disable-next-line dot-notation
+        const res = await component['readFile'](new File([blob], 'test.json'), new FileReader());
+        expect(res).toEqual(DB_DICTIONARY);
+    });
+
+    it('readFile() should return error message if file cannot be opened ', () => {
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const fileReader = new FileReader();
+        // eslint-disable-next-line dot-notation
+        const res = component['readFile'](new File([blob], 'test.json'), fileReader).then(() => {
+            fileReader.dispatchEvent(new ErrorEvent('error'));
+        });
+        expect(res).not.toEqual(DB_DICTIONARY as unknown as Promise<Record<string, unknown>>);
     });
 });
