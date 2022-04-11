@@ -8,10 +8,14 @@
 <mat-selection-list [multiple]="false">
     <mat-list-option *ngFor="let dictionary of dictionaries" [value]="dictionary">
         <div class="justified">
-            <div style="flex: 1">{{ dictionary.title }}</div>
-            <div style="flex: 3">{{ dictionary.description }}</div>
-            <button mat-raised-button (click)="openModifyDictionaryDialog(dictionary)">Modifier</button>
-            <button mat-raised-button (click)="deleteDictionary(dictionary)">Supprimer</button>
+            <div class="title">{{ dictionary.title }}</div>
+            <div class="description">{{ dictionary.description }}</div>
+            <div class="buttons">
+                <button mat-raised-button (click)="openModifyDictionaryDialog(dictionary)" *ngIf="!isDefault(dictionary)">Modifier</button>
+            </div>
+            <div class="buttons">
+                <button mat-raised-button (click)="deleteDictionary(dictionary)" *ngIf="!isDefault(dictionary)">Supprimer</button>
+            </div>
         </div>
     </mat-list-option>
 </mat-selection-list>

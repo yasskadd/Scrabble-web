@@ -20,8 +20,11 @@ export class AdminDictionariesComponent {
     }
 
     deleteDictionary(dictionaryToDelete: Dictionary) {
+        this.updateDictionaryList();
+        if (dictionaryToDelete.title === 'Dictionnaire très français') return;
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
     }
+
     openAddDictionaryDialog() {
         this.addDictionaryDialog.open(DialogBoxAddDictionaryComponent, {
             width: '50%',
@@ -35,6 +38,10 @@ export class AdminDictionariesComponent {
             data: dictionaryToModify,
             disableClose: true,
         });
+    }
+
+    isDefault(dictionary: Dictionary) {
+        return dictionary.title === 'Dictionnaire très francais';
     }
 
     resetDictionaries() {
