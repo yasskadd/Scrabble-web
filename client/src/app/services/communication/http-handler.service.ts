@@ -62,7 +62,7 @@ export class HttpHandlerService {
     }
 
     modifyDictionary(dictionary: ModifiedDictionaryInfo): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
+        return this.http.put<void>(`${this.baseUrl}/dictionary/modify`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
     }
 
     resetDictionary(): Observable<void> {
