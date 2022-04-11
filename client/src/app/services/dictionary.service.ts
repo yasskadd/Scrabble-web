@@ -25,7 +25,7 @@ export class DictionaryService {
             .then(() => this.getDictionaries());
     }
 
-    modifyDictionary(dictionaryToMod: Dictionary) {
+    modifyDictionary(dictionaryToMod: Dictionary, newDictionaryInfo: Dictionary) {
         this.httpHandler
             .modifyDictionary(dictionaryToMod)
             .toPromise()

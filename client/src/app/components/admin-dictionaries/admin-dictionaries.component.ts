@@ -22,11 +22,6 @@ export class AdminDictionariesComponent {
     deleteDictionary(dictionaryToDelete: Dictionary) {
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
     }
-
-    isUniqueTitle(title: string): boolean {
-        return !this.dictionaryService.dictionaries.some((dictionary) => dictionary.title.toLowerCase() === title.toString().toLowerCase());
-    }
-
     openAddDictionaryDialog() {
         this.addDictionaryDialog.open(DialogBoxAddDictionaryComponent, {
             width: '50%',

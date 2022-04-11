@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryService } from '@app/services/dictionary.service';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
@@ -11,6 +12,7 @@ import { map, startWith } from 'rxjs/operators';
     styleUrls: ['./dialog-box-add-dictionary.component.scss'],
 })
 export class DialogBoxAddDictionaryComponent implements OnInit {
+    dictionaryInput: Dictionary;
     myControl = new FormControl();
     options: string[] = ['DictionaryOne', 'DictionaryTwo', 'DictionaryThree'];
     filteredOptions: Observable<string[]>;
@@ -19,7 +21,7 @@ export class DialogBoxAddDictionaryComponent implements OnInit {
     @ViewChild('file', { static: false }) file: ElementRef;
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
 
-    constructor(private dialogRef: MatDialogRef<DialogBoxAddDictionaryComponent>) {}
+    constructor(private dialogRef: MatDialogRef<DialogBoxAddDictionaryComponent>, private dictionaryService: DictionaryService) {}
 
     ngOnInit() {
         this.filteredOptions = this.myControl.valueChanges.pipe(
@@ -42,10 +44,25 @@ export class DialogBoxAddDictionaryComponent implements OnInit {
         this.fileError.nativeElement.style.color = color;
     }
 
+    isUniqueTitle(title: string): boolean {
+        return !this.dictionaryService.dictionaries.some((dictionary) => dictionary.title.toLowerCase() === title.toString().toLowerCase());
+    }
+
+    resetDictionaryInput() {
+        this.dictionaryInput = {} as Dictionary;
+    }
+
     addDictionary() {
-        // TODO: add dictionary server side
-        // TODO: update dictionary list client side
+        this.updateDictionaryList();
+        if (this.isUniqueTitle(this.dictionaryInput.title)) {
+            this.dictionaryService.addDictionary(this.dictionaryInput);
+        }
+        this.resetDictionaryInput();
         this.closeDialog();
+    }
+
+    updateDictionaryList() {
+        this.dictionaryService.getDictionaries();
     }
 
     closeDialog() {

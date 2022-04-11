@@ -1,10 +1,11 @@
 import { TestBed } from '@angular/core/testing';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { of } from 'rxjs';
-import { VirtualPlayer, VirtualPlayersService } from './virtual-players.service';
+import { DictionaryService } from './dictionary.service';
 
 describe('VirtualPlayersService', () => {
-    let service: VirtualPlayersService;
+    let service: DictionaryService;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
 
     beforeEach(() => {
@@ -23,15 +24,7 @@ describe('VirtualPlayersService', () => {
                 {
                     title: 'Français',
                     description: 'XXX',
-                },
-            ]),
-        );
-        httpHandlerSpy.getDictionaries.and.returnValue(
-            of([
-                {
-                    username: 'MARC',
-                    difficulty: 'Expert',
-                },
+                } as Dictionary,
             ]),
         );
         TestBed.configureTestingModule({
@@ -44,8 +37,8 @@ describe('VirtualPlayersService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('should call getBeginnerBots and getExpertBots when calling getBotNames', () => {
-        service.getBotNames();
+    it('should call getDictionarieswhen calling getDictionaryTitle', () => {
+        service.getDictionaryNames();
         expect(httpHandlerSpy.getBeginnerBots).toHaveBeenCalled();
         expect(httpHandlerSpy.getExpertBots).toHaveBeenCalled();
     });
