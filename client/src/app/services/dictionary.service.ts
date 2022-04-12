@@ -1,4 +1,5 @@
 import { ElementRef, Injectable } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { HttpHandlerService } from './communication/http-handler.service';
@@ -34,6 +35,15 @@ export class DictionaryService {
 
     async getDictionaries(): Promise<Dictionary[]> {
         return this.httpHandler.getDictionaries().toPromise();
+    }
+
+    detectImportFile(file: ElementRef, selectedFile: Dictionary | null, fileError: ElementRef, form: FormGroup) {
+        fileError.nativeElement.textContent = '';
+        if (file.nativeElement.files.length !== 0) form.controls.dictionary.disable();
+        else {
+            selectedFile = null;
+            form.controls.dictionary.enable();
+        }
     }
 
     uploadDictionary(file: ElementRef, selectedFile: Dictionary | null, fileError: ElementRef) {

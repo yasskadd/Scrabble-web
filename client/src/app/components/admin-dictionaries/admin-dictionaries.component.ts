@@ -1,11 +1,10 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
-import { Observable } from 'rxjs';
 
 const DEFAULT_DICTIONARY: Dictionary = {
     title: 'Mon dictionnaire',
@@ -21,15 +20,13 @@ const DEFAULT_DICTIONARY: Dictionary = {
 export class AdminDictionariesComponent {
     @ViewChild('file', { static: false }) file: ElementRef;
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
-    dictionaries: Dictionary[];
-    dictionaryInput: Dictionary;
-    myControl = new FormControl();
-    filteredOptions: Observable<string[]>;
     form: FormGroup;
     selectedFile: Dictionary | null;
-    options: string[];
+    dictionaries: Dictionary[];
+    dictionaryInput: Dictionary;
 
     constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog) {
+        this.selectedFile = null;
         this.updateDictionaryList();
     }
 
@@ -38,7 +35,6 @@ export class AdminDictionariesComponent {
     }
 
     deleteDictionary(dictionaryToDelete: Dictionary) {
-        this.updateDictionaryList();
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
     }
 

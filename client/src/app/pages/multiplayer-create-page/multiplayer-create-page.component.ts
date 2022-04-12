@@ -92,12 +92,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     detectImportFile() {
-        this.fileError.nativeElement.textContent = '';
-        if (this.file.nativeElement.files.length !== 0) this.form.controls.dictionary.disable();
-        else {
-            this.selectedFile = null;
-            this.form.controls.dictionary.enable();
-        }
+        this.dictionaryService.detectImportFile(this.file, this.selectedFile, this.fileError, this.form);
     }
 
     onMouseOver(dictionary: Dictionary) {
