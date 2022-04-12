@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
 import { HttpHandlerService } from './http-handler.service';
@@ -104,14 +105,14 @@ describe('HttpHandlerService', () => {
     });
 
     it('should return expected dictionaries list (HttpClient called once)', () => {
-        const expectedMessage: Dictionary[] = [{ title: 'Mon dictionnaire', description: 'Une description', words: ['string'] }];
+        const expectedMessage: DictionaryInfo[] = [{ title: 'Mon dictionnaire', description: 'Une description' }];
 
         // check the content of the mocked call
-        service.getDictionaries().subscribe((dictionaries: Dictionary[]) => {
+        service.getDictionaries().subscribe((dictionaries: DictionaryInfo[]) => {
             expect(dictionaries).toEqual(expectedMessage);
         }, fail);
 
-        const req = httpMock.expectOne(`${baseUrl}/dictionary`);
+        const req = httpMock.expectOne(`${baseUrl}/dictionary/info`);
         expect(req.request.method).toBe('GET');
         // actually send the request
         req.flush(expectedMessage);

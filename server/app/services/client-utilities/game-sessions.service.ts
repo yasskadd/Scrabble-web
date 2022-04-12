@@ -1,5 +1,6 @@
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoom } from '@app/interfaces/game-room';
+import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Server, Socket } from 'socket.io';
@@ -19,7 +20,7 @@ export class GameSessions {
     idCounter: number;
     private gameRooms: Map<string, GameRoom>;
 
-    constructor(private socketManager: SocketManager) {
+    constructor(private socketManager: SocketManager, private gamesHandler: GamesHandler) {
         this.gameRooms = new Map<string, GameRoom>();
         this.idCounter = 0;
     }
@@ -63,6 +64,14 @@ export class GameSessions {
         this.socketManager.io(SocketEvents.Disconnect, (sio, socket) => {
             this.disconnect(sio, socket);
         });
+
+        this.socketManager.io(SocketEvents.ImportDictionary, async (sio, socket, title: string) => {
+            await this.importDictionary(sio, socket, title);
+        });
+    }
+
+    private async importDictionary(this: this, sio: Server, socket: Socket, title: string) {
+        await this.gamesHandler.updateDictionaries(title);
     }
 
     private joinRoom(this: this, socket: Socket, roomID: string): void {
@@ -165,7 +174,7 @@ export class GameSessions {
             users: [parameters.username],
             socketID: [socketId],
             isAvailable: parameters.isMultiplayer ? true : false,
-            dictionary: parameters.dictionary.title,
+            dictionary: parameters.dictionary,
             timer: parameters.timer,
             mode: parameters.mode,
         };

@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
-import { Dictionary } from '@app/interfaces/dictionary';
 import { RoomInformation } from '@app/interfaces/room-information';
 import { SocketEvents } from '@common/constants/socket-events';
 import { ReplaySubject } from 'rxjs';
@@ -16,7 +15,7 @@ interface GameScrabbleInformation {
     socketId: string[];
     mode: string;
     botDifficulty?: string;
-    dictionary: Dictionary;
+    dictionary: string;
 }
 const ROOM_INFORMATION: RoomInformation = {
     playerName: [],
@@ -26,7 +25,7 @@ const ROOM_INFORMATION: RoomInformation = {
     timer: 0,
     mode: 'classique',
     botDifficulty: undefined,
-    dictionary: { words: ['string'] } as Dictionary,
+    dictionary: 'Mon dictionnaire',
 };
 export class SocketClientServiceMock extends ClientSocketService {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -53,6 +52,14 @@ describe('GameConfigurationService', () => {
 
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('importDictionary() should send a command to the server to import a new dictionary', () => {
+        const title = 'Mon dictionnaire';
+        // eslint-disable-next-line dot-notation
+        const spyOnSocket = spyOn(service['clientSocket'], 'send');
+        service.importDictionary(title);
+        expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.ImportDictionary, title);
     });
 
     it('beginScrabbleGame() send a message to the server with a room id to start the game of this room', () => {
@@ -102,7 +109,7 @@ describe('GameConfigurationService', () => {
     it('gameInitialization() should  send the parameters of the game a player wants to create', () => {
         const testGameConfiguration = {
             username: 'Pauline',
-            dictionary: { words: ['string'] } as Dictionary,
+            dictionary: 'Mon dictionnaire',
             timer: 1,
             mode: 'classique',
             isMultiplayer: true,
@@ -175,7 +182,7 @@ describe('GameConfigurationService', () => {
     it('gameInitialization() should assign a name to the opponent when the method is called with the name of the bot ', () => {
         const testGameConfiguration = {
             username: 'Pauline',
-            dictionary: { words: ['string'] } as Dictionary,
+            dictionary: 'Mon dictionnaire',
             timer: 1,
             mode: 'classique',
             isMultiplayer: true,
@@ -195,7 +202,7 @@ describe('GameConfigurationService', () => {
             timer: 60,
             mode: 'classique',
             botDifficulty: undefined,
-            dictionary: { words: ['string'] } as Dictionary,
+            dictionary: 'Mon dictionnaire',
         };
         service.roomInformation = roomInformationUpdated;
         // eslint-disable-next-line dot-notation
@@ -400,7 +407,7 @@ describe('GameConfigurationService', () => {
             timer: 60,
             mode: 'classique',
             botDifficulty: undefined,
-            dictionary: { words: ['string'] } as Dictionary,
+            dictionary: 'Mon dictionnaire',
         };
         service.roomInformation = roomInformationUpdated;
         expect(service.roomInformation.playerName).toEqual(['Vincent', 'Marcel']);

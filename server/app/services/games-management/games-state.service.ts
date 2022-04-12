@@ -10,7 +10,9 @@ import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-informati
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
 import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
@@ -33,7 +35,10 @@ export class GamesStateService {
     }
 
     initSocketsEvents(): void {
-        this.socketManager.on(SocketEvents.CreateScrabbleGame, (socket, gameInfo: GameScrabbleInformation) => this.createGame(socket, gameInfo));
+        this.socketManager.on(
+            SocketEvents.CreateScrabbleGame,
+            async (socket, gameInfo: GameScrabbleInformation) => await this.createGame(socket, gameInfo),
+        );
 
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
@@ -48,7 +53,7 @@ export class GamesStateService {
         });
     }
 
-    private createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
+    private async createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
         const playerTwo = this.setAndGetPlayer(gameInfo);
         const game = this.createNewGame(gameInfo);
@@ -124,7 +129,7 @@ export class GamesStateService {
         const player = this.gamesHandler.players.has(gameInfo.socketId[0]) ? 1 : 0;
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
-            const dictionaryValidation = new DictionaryValidationService(gameInfo.dictionary.words);
+            const dictionaryValidation = this.gamesHandler.dictionaries.get(gameInfo.dictionary)?.dictionaryValidation;
             if (gameInfo.botDifficulty === 'Débutant')
                 newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
@@ -149,14 +154,16 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
-        const dictionaryValidation = new DictionaryValidationService(gameInfo.dictionary.words);
+        const gameBehavior = this.gamesHandler.dictionaries.get(gameInfo.dictionary);
         return new Game(
             players[0],
             players[1],
             new Turn(gameInfo.timer),
             new LetterReserve(),
             gameInfo.mode === 'classique' ? false : true,
-            dictionaryValidation,
+            gameBehavior?.dictionaryValidation as DictionaryValidationService,
+            gameBehavior?.letterPlacement as LetterPlacementService,
+            gameBehavior?.wordSolver as WordSolverService,
         );
     }
 

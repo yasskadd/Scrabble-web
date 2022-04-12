@@ -21,6 +21,11 @@ export class DictionaryController {
             res.json(dictionaries);
         });
 
+        this.router.get('/info', async (req: Request, res: Response) => {
+            const dictionaries = await this.dictionaryStorage.getAllDictionaryInfo();
+            res.json(dictionaries);
+        });
+
         this.router.post('/upload', async (req: Request, res: Response) => {
             const dictionary = req.body;
             this.dictionaryStorage.addDictionary(dictionary);

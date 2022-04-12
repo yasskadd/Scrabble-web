@@ -81,7 +81,7 @@ const SOLO_MODE = 'solo/classique';
 const CREATE_MULTIPLAYER_GAME = 'multijoueur/creer/classique';
 const RETURN_ROUTE = 'home';
 const GAME_ROUTE = 'game';
-const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire', words: ['string'] };
+const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire' };
 
 describe('MultiplayerCreatePageComponent', () => {
     let component: MultiplayerCreatePageComponent;
@@ -105,6 +105,7 @@ describe('MultiplayerCreatePageComponent', () => {
             'gameInitialization',
             'resetRoomInformation',
             'beginScrabbleGame',
+            'importDictionary',
         ]);
 
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
@@ -190,36 +191,49 @@ describe('MultiplayerCreatePageComponent', () => {
     });
 
     it('uploadDictionary() should set textContent of fileError with no file selected message if there is no selected file to upload', () => {
-        const messageSpy = spyOn(component, 'updateImportMessage');
+        const messageSpy = spyOn(component, 'updateDictionaryMessage');
         component.uploadDictionary();
         expect(messageSpy).toHaveBeenCalledWith("Il n'y a aucun fichier séléctioné", 'red');
     });
 
     // eslint-disable-next-line max-len
-    it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', () => {
-        const messageSpy = spyOn(component, 'updateImportMessage');
+    it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
+        const messageSpy = spyOn(component, 'updateDictionaryMessage');
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();
         dT.items.add(new File([blob], 'test.json'));
         component.file.nativeElement.files = dT.files;
         dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Passed');
         component.fileOnLoad({});
-
+        tick(5000);
         expect(messageSpy).toHaveBeenCalledWith('Ajout avec succès du nouveau dictionnaire', 'black');
         expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
-    });
+    }));
 
     // eslint-disable-next-line max-len
-    it('fileOnLoad() should call updateImportMessage with error message if file selected did not pass globalVerification of DictionaryVerificationService', () => {
-        const messageSpy = spyOn(component, 'updateImportMessage');
+    it('fileOnLoad() should call importDictionary of GameConfigurationService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
+        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Passed');
+        component.fileOnLoad({});
+        tick(5000);
+        expect(gameConfigurationServiceSpy.importDictionary).toHaveBeenCalled();
+    }));
+
+    // eslint-disable-next-line max-len
+    it('fileOnLoad() should call updateImportMessage with error message if file selected did not pass globalVerification of DictionaryVerificationService', fakeAsync(() => {
+        const messageSpy = spyOn(component, 'updateDictionaryMessage');
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();
         dT.items.add(new File([blob], 'test.json'));
         component.file.nativeElement.files = dT.files;
         dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
         component.fileOnLoad({});
+        tick(5000);
         expect(messageSpy).toHaveBeenCalledWith('Did not passed', 'red');
-    });
+    }));
 
     it('clicking on import button should call uploadDictionary()', fakeAsync(() => {
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
@@ -262,7 +276,7 @@ describe('MultiplayerCreatePageComponent', () => {
     it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
         const message = 'Message';
         const color = 'red';
-        component.updateImportMessage(message, color);
+        component.updateDictionaryMessage(message, color);
         expect(component.fileError.nativeElement.textContent).toEqual(message);
         expect(component.fileError.nativeElement.style.color).toEqual(color);
     });
@@ -455,6 +469,8 @@ describe('MultiplayerCreatePageComponent', () => {
     it('createGame should call gameConfiguration.gameInitialization', fakeAsync(() => {
         component.playerName = 'Vincent';
         component.createGame();
+        tick();
+        flush();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
     }));
 
@@ -463,14 +479,16 @@ describe('MultiplayerCreatePageComponent', () => {
         const TEST_PLAYER = {
             username: component.playerName,
             timer: 60,
-            dictionary: { words: ['francais'] } as Dictionary,
+            dictionary: 'Mon dictionnaire',
             mode: 'classique',
             isMultiplayer: true,
             opponent: undefined,
             botDifficulty: undefined,
         };
-        component.selectedFile = { words: ['francais'] } as Dictionary;
+        component.selectedFile = { title: 'Mon dictionnaire', words: ['francais'] } as Dictionary;
         component.createGame();
+        tick();
+        flush();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
     }));
@@ -481,7 +499,7 @@ describe('MultiplayerCreatePageComponent', () => {
         const TEST_PLAYER = {
             username: component.playerName,
             timer: 60,
-            dictionary: { words: ['francais'] } as Dictionary,
+            dictionary: 'Mon dictionnaire',
             mode: 'classique',
             isMultiplayer: false,
             opponent: 'robert',
@@ -490,8 +508,11 @@ describe('MultiplayerCreatePageComponent', () => {
         router.navigateByUrl(SOLO_MODE);
         tick();
         fixture.detectChanges();
-        component.selectedFile = { words: ['francais'] } as Dictionary;
+        component.selectedFile = { title: 'Mon dictionnaire', words: ['francais'] } as Dictionary;
         component.createGame();
+        tick();
+        flush();
+
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalledWith(TEST_PLAYER);
     }));
@@ -499,6 +520,8 @@ describe('MultiplayerCreatePageComponent', () => {
     it('createGame should call navigatePage', fakeAsync(() => {
         const spy = spyOn(component, 'navigatePage');
         component.createGame();
+        tick();
+        flush();
 
         expect(spy).toHaveBeenCalled();
     }));
@@ -509,6 +532,9 @@ describe('MultiplayerCreatePageComponent', () => {
         const spy = spyOn<any>(component, 'resetInput');
 
         component.createGame();
+        tick();
+        flush();
+
         expect(spy).toHaveBeenCalled();
     }));
 
@@ -527,6 +553,9 @@ describe('MultiplayerCreatePageComponent', () => {
         fixture.detectChanges();
         flush();
         component.createGame();
+        tick();
+        flush();
+
         expect(component.form.get('difficultyBot')?.value).toEqual(component.difficultyList[1]);
         expect(spy).toHaveBeenCalled();
     }));
@@ -575,10 +604,31 @@ describe('MultiplayerCreatePageComponent', () => {
         tick();
         fixture.detectChanges();
         component.createGame();
+        tick();
+        flush();
+
         setTimeout(() => {
             expect(gameConfigurationServiceSpy.beginScrabbleGame).not.toHaveBeenCalled();
         }, 150);
         flush();
+    }));
+
+    it('createGame should do nothing if selected dictionary is no longer in the database', fakeAsync(() => {
+        const navigatePageSpy = spyOn(component, 'navigatePage');
+        const validateNameSpy = spyOn(component, 'validateName' as never);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const resetInputSpy = spyOn<any>(component, 'resetInput');
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dictionaryIsInDBStub = spyOn<any>(component, 'dictionaryIsInDB');
+        dictionaryIsInDBStub.and.resolveTo(false);
+        component.createGame();
+        tick();
+        flush();
+        expect(navigatePageSpy).not.toHaveBeenCalled();
+        expect(validateNameSpy).not.toHaveBeenCalled();
+        expect(resetInputSpy).not.toHaveBeenCalled();
+        expect(gameConfigurationServiceSpy.gameInitialization).not.toHaveBeenCalled();
     }));
 
     it('resetInput() should clear the playerName', () => {
@@ -618,4 +668,15 @@ describe('MultiplayerCreatePageComponent', () => {
         });
         expect(res).not.toEqual(DB_DICTIONARY as unknown as Promise<Record<string, unknown>>);
     });
+
+    it('dictionaryIsInDB() should return error message if file is not in database ', fakeAsync(() => {
+        const title = 'test';
+        const updateDictionaryMessageSpy = spyOn(component, 'updateDictionaryMessage');
+        // Testing private method
+        // eslint-disable-next-line dot-notation
+        component['dictionaryIsInDB'](title);
+        tick();
+        flush();
+        expect(updateDictionaryMessageSpy).toHaveBeenCalledWith("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
+    }));
 });

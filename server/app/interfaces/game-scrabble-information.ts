@@ -1,4 +1,4 @@
-import { Dictionary } from './dictionary';
+// import { Dictionary } from './dictionary';
 
 export interface GameScrabbleInformation {
     playerName: string[];
@@ -7,5 +7,6 @@ export interface GameScrabbleInformation {
     socketId: string[];
     mode: string;
     botDifficulty?: string;
-    dictionary: Dictionary;
+    // dictionary: Dictionary;
+    dictionary: string;
 }
