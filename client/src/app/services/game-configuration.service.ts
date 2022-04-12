@@ -75,7 +75,7 @@ export class GameConfigurationService {
     }
 
     importDictionary(title: string): void {
-        this.clientSocket.send('ImportDictionary', title);
+        this.clientSocket.send(SocketEvents.ImportDictionary, title);
     }
 
     setIsGameStartedSubject(): void {

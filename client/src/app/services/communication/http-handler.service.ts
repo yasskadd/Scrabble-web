@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
 import { Observable, of } from 'rxjs';
@@ -9,10 +10,6 @@ import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 type BotNameInfo = { currentName: string; newName: string; difficulty: string };
-export interface DictionaryInfo {
-    title: string;
-    description: string;
-}
 
 @Injectable({
     providedIn: 'root',

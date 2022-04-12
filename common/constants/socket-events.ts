@@ -40,4 +40,5 @@ export enum SocketEvents {
     ReserveCommand = 'reserveCommand',
     AllReserveLetters = 'allReserveLetters',
     ClueCommand = 'clueCommand',
+    ImportDictionary = 'ImportDictionary',
 }
