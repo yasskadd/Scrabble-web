@@ -22,9 +22,13 @@ export class DictionaryController {
             res.json(dictionaries);
         });
 
+        this.router.delete('/', async (req: Request, res: Response) => {
+            this.dictionaryStorage.resetDictionaries();
+            res.sendStatus(NO_CONTENT);
+        });
+
         this.router.patch('/delete', async (req: Request, res: Response) => {
             const dictionaryTitle = req.body;
-            console.log(dictionaryTitle);
             await this.dictionaryStorage.deleteDictionary(dictionaryTitle);
             res.sendStatus(NO_CONTENT);
         });
@@ -37,11 +41,6 @@ export class DictionaryController {
         this.router.post('/upload', async (req: Request, res: Response) => {
             this.dictionaryStorage.addDictionary(req.body);
             res.sendStatus(HTTP_STATUS_CREATED);
-        });
-
-        this.router.post('/reset', async (req: Request, res: Response) => {
-            this.dictionaryStorage.resetDictionaries();
-            res.sendStatus(NO_CONTENT);
         });
     }
 }

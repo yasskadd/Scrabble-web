@@ -2,7 +2,7 @@
 
 <div class="action-buttons">
     <button mat-raised-button color="basic" (click)="updateDictionaryList()">Rafraîchir <mat-icon>refresh</mat-icon></button>
-    <button mat-raised-button color="warn" (click)="resetDictionaries()">Reinitialiser <mat-icon>delete</mat-icon></button>
+    <button mat-raised-button color="warn" (click)="resetDictionaries()">Réinitialiser <mat-icon>delete</mat-icon></button>
 </div>
 
 <mat-selection-list [multiple]="false">
@@ -16,7 +16,15 @@
             <div class="buttons">
                 <button mat-raised-button (click)="deleteDictionary(dictionary)" *ngIf="!isDefault(dictionary)">Supprimer</button>
             </div>
+            <div class="buttons">
+                <button mat-raised-button (click)="downloadJson(dictionary)" *ngIf="!isDefault(dictionary)">
+                    <mat-icon>file_download</mat-icon>
+                </button>
+            </div>
         </div>
     </mat-list-option>
 </mat-selection-list>
-<button mat-raised-button (click)="openAddDictionaryDialog()">Ajouter un dictionaire</button>
+
+<h1>Ajouter un dictionnaire (format .json)</h1>
+<input #file (change)="detectImportFile()" type="file" id="selectFiles" accept=".json" value="Import" /><br />
+<button mat-raised-button>Ajouter le dictionnaire</button>

@@ -7,19 +7,18 @@ import { HttpHandlerService } from './communication/http-handler.service';
     providedIn: 'root',
 })
 export class DictionaryService {
-    dictionaries: Dictionary[];
     constructor(private readonly httpHandler: HttpHandlerService) {}
 
-    addDictionary(dictionary: Dictionary) {
+    async addDictionary(dictionary: Dictionary): Promise<Dictionary[]> {
         this.httpHandler.addDictionary(dictionary).subscribe();
-        this.getDictionaries();
+        return this.getDictionaries();
     }
 
     deleteDictionary(dictionarytoRemove: Dictionary) {
         this.httpHandler
             .deleteDictionary(dictionarytoRemove.title)
             .toPromise()
-            .then(() => this.getDictionaries());
+            .then(async () => this.getDictionaries());
     }
 
     modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
@@ -32,9 +31,7 @@ export class DictionaryService {
         this.getDictionaries();
     }
 
-    getDictionaries() {
-        this.httpHandler.getDictionaries().subscribe((dictionary) => {
-            this.dictionaries = dictionary;
-        });
+    async getDictionaries(): Promise<Dictionary[]> {
+        return this.httpHandler.getDictionaries().toPromise();
     }
 }

@@ -1,11 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogBoxAddDictionaryComponent } from '@app/components/dialog-box-add-dictionary/dialog-box-add-dictionary.component';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
-import { DictionaryInput } from '@app/interfaces/dictionary-input';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
+import { Observable } from 'rxjs';
+
+const DEFAULT_DICTIONARY: Dictionary = {
+    title: 'Mon dictionnaire',
+    description: 'Description de base',
+    words: [],
+};
 
 @Component({
     selector: 'app-admin-dictionaries',
@@ -13,14 +19,18 @@ import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-i
     styleUrls: ['./admin-dictionaries.component.scss'],
 })
 export class AdminDictionariesComponent {
-    dictionaryInput: DictionaryInput;
+    @ViewChild('file', { static: false }) file: ElementRef;
+    @ViewChild('fileError', { static: false }) fileError: ElementRef;
+    dictionaries: Dictionary[];
+    dictionaryInput: Dictionary;
+    myControl = new FormControl();
+    filteredOptions: Observable<string[]>;
+    form: FormGroup;
+    selectedFile: Dictionary | null;
+    options: string[];
 
-    constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog, private addDictionaryDialog: MatDialog) {
+    constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog) {
         this.updateDictionaryList();
-    }
-
-    get dictionaries(): Dictionary[] {
-        return this.dictionaryService.dictionaries;
     }
 
     isDefault(dictionary: Dictionary) {
@@ -29,15 +39,7 @@ export class AdminDictionariesComponent {
 
     deleteDictionary(dictionaryToDelete: Dictionary) {
         this.updateDictionaryList();
-        console.log('admin dictionary component delete entered');
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
-    }
-
-    openAddDictionaryDialog() {
-        this.addDictionaryDialog.open(DialogBoxAddDictionaryComponent, {
-            width: '50%',
-            disableClose: true,
-        });
     }
 
     openModifyDictionaryDialog(dictionaryToModify: Dictionary) {
@@ -54,7 +56,7 @@ export class AdminDictionariesComponent {
     }
 
     isUniqueTitle(title: string): boolean {
-        return !this.dictionaryService.dictionaries.some((dictionary) => dictionary.title.toLowerCase() === title.toString().toLowerCase());
+        return this.dictionaries.some((dictionary) => dictionary.title.toLowerCase() === title.toString().toLowerCase());
     }
 
     modifyDictionary(modifiedDictionaryInfo: ModifiedDictionaryInfo) {
@@ -64,12 +66,52 @@ export class AdminDictionariesComponent {
         if (this.isUniqueTitle(modifiedDictionaryInfo.newTitle)) this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
     }
 
+    downloadJson(dictionary: Dictionary) {
+        this.downloadFile(dictionary);
+    }
+
     // TODO : return only default dictionary in list
     resetDictionaries() {
         this.dictionaryService.resetDictionaries();
+        this.updateDictionaryList();
     }
 
     updateDictionaryList() {
-        this.dictionaryService.getDictionaries();
+        this.dictionaryService.getDictionaries().then((dictionaries) => {
+            this.dictionaries = [DEFAULT_DICTIONARY, ...dictionaries];
+        });
+    }
+
+    detectImportFile() {
+        this.fileError.nativeElement.textContent = '';
+        if (this.file.nativeElement.files.length !== 0) this.form.controls.dictionary.disable();
+        else {
+            this.selectedFile = null;
+            this.form.controls.dictionary.enable();
+        }
+    }
+
+    downloadFile(data: unknown) {
+        const json = JSON.stringify(data);
+        const blob = new Blob([json] as BlobPart[], { type: 'file/json' });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);
+    }
+
+    updateImportMessage(message: string, color: string) {
+        this.fileError.nativeElement.textContent = message;
+        this.fileError.nativeElement.style.color = color;
+    }
+
+    resetDictionaryInput() {
+        this.dictionaryInput = {} as Dictionary;
+    }
+
+    addDictionary() {
+        this.updateDictionaryList();
+        if (this.isUniqueTitle(this.dictionaryInput.title)) {
+            this.dictionaryService.addDictionary(this.dictionaryInput);
+        }
+        this.resetDictionaryInput();
     }
 }
