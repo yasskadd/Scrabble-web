@@ -1,5 +1,6 @@
 import { Game } from '@app/classes/game.class';
 import { Player } from '@app/classes/player/player.class';
+import { Behavior } from '@app/interfaces/behavior';
 import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
 import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
@@ -9,12 +10,6 @@ import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
-
-export interface Behavior {
-    dictionaryValidation: DictionaryValidationService;
-    wordSolver: WordSolverService;
-    letterPlacement: LetterPlacementService;
-}
 
 @Service()
 export class GamesHandler {

@@ -65,7 +65,7 @@ export class GameSessions {
             this.disconnect(sio, socket);
         });
 
-        this.socketManager.io('ImportDictionary', async (sio, socket, title: string) => {
+        this.socketManager.io(SocketEvents.ImportDictionary, async (sio, socket, title: string) => {
             await this.importDictionary(sio, socket, title);
         });
     }

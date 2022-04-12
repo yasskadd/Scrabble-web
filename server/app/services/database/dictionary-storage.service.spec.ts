@@ -20,6 +20,8 @@ const DICTIONARIES_INFO = [
     { title: 'Troisieme dicitonnaire', description: 'Un dictionnaire' },
 ];
 
+const SELECTED_DICTIONARY = [{ title: 'Mon dictionnaire', description: 'Un dictionnaire' }];
+
 describe('dictionaryStorage Service', () => {
     let databaseServiceStub: Sinon.SinonStubbedInstance<DatabaseService>;
     let dictionaryStorageService: DictionaryStorageService;
@@ -43,6 +45,12 @@ describe('dictionaryStorage Service', () => {
         (databaseServiceStub.dictionaries as unknown as CollectionStub).fetchDocuments.resolves(DICTIONARIES_INFO);
         const dictionaries = await dictionaryStorageService.getAllDictionaryInfo();
         expect(dictionaries).to.be.deep.equal(DICTIONARIES_INFO);
+    });
+
+    it('selectDictionaryInfo() should return the dictionary with that match the title passed as param from the database', async () => {
+        (databaseServiceStub.dictionaries as unknown as CollectionStub).fetchDocuments.resolves(SELECTED_DICTIONARY);
+        const dictionary = await dictionaryStorageService.selectDictionaryInfo('Mon dictionnaire');
+        expect(dictionary).to.be.deep.equal(SELECTED_DICTIONARY);
     });
 
     it('addDictionary() should not call addDocument of DatabaseService if dictionary to add is already in the database', async () => {

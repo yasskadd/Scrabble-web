@@ -26,6 +26,8 @@ const DICTIONARIES = [
     { title: 'Troisième dictonnaire', description: 'Un dictionnaire', words: ['string'] },
 ];
 
+const SELECTED_DICTIONARY = [{ title: 'Mon dictionnaire', description: 'Un dictionnaire', words: ['string'] }];
+
 describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
     let socketManagerStub: sinon.SinonStubbedInstance<SocketManager>;
@@ -195,6 +197,20 @@ describe('GamesHandler Service', () => {
     it('setDictionaries() should set dictionaries attribute', async () => {
         dictionaryStorageStub.getAllDictionary.resolves(DICTIONARIES);
         await gamesHandler.setDictionaries();
+        expect(gamesHandler['dictionaries'].size).to.be.greaterThan(0);
+    });
+
+    it('updateDictionaries() should call selectDictionaryInfo of DictionaryStorage', async () => {
+        const title = 'Mon dictionnaire';
+        dictionaryStorageStub.selectDictionaryInfo.resolves(SELECTED_DICTIONARY);
+        await gamesHandler.updateDictionaries(title);
+        expect(dictionaryStorageStub.selectDictionaryInfo.called).to.equal(true);
+    });
+
+    it('updateDictionaries() should add to dictionaries a new dictionary behavior', async () => {
+        const title = 'Mon dictionnaire';
+        dictionaryStorageStub.selectDictionaryInfo.resolves(SELECTED_DICTIONARY);
+        await gamesHandler.updateDictionaries(title);
         expect(gamesHandler['dictionaries'].size).to.be.greaterThan(0);
     });
 });

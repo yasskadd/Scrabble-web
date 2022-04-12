@@ -108,7 +108,7 @@ describe('Dictionary Validation Service', () => {
     context('Trie Dictionary tests', () => {
         let trie: LetterTree;
         before(() => {
-            dictionaryValidationService = new DictionaryValidationService([]);
+            dictionaryValidationService = new DictionaryValidationService(['conforme', 'matrice']);
             dictionaryValidationService['createTrieDictionary']();
             trie = dictionaryValidationService.trie;
         });
