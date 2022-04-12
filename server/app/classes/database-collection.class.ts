@@ -33,19 +33,20 @@ export class DatabaseCollection {
     }
 
     async removeDocument(parameters: Filter<Document>) {
-        console.log('database remove entered');
-        console.log(parameters);
         await this.connect();
         await this.collection.deleteOne(parameters);
     }
 
     async replaceDocument(parameters: Filter<Document>, document: Document) {
         await this.connect();
+        console.log('replaceDocument database entered');
+        console.log(parameters + '    ' + document);
         await this.collection.replaceOne(parameters, document);
     }
 
     async updateDocument(oldParams: Filter<Document>, newParams: Filter<Document>) {
         await this.connect();
+
         await this.collection.updateOne(oldParams, newParams);
     }
 

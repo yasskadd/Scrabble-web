@@ -34,7 +34,7 @@ export class AdminDictionariesComponent {
     }
 
     isDefault(dictionary: Dictionary) {
-        return dictionary.title === 'Dictionnaire très francais';
+        return dictionary.title === 'Mon dictionnaire';
     }
 
     deleteDictionary(dictionaryToDelete: Dictionary) {
@@ -70,7 +70,6 @@ export class AdminDictionariesComponent {
         this.downloadFile(dictionary);
     }
 
-    // TODO : return only default dictionary in list
     resetDictionaries() {
         this.dictionaryService.resetDictionaries();
         this.updateDictionaryList();
@@ -80,6 +79,10 @@ export class AdminDictionariesComponent {
         this.dictionaryService.getDictionaries().then((dictionaries) => {
             this.dictionaries = [DEFAULT_DICTIONARY, ...dictionaries];
         });
+    }
+
+    uploadDictionary() {
+        this.dictionaryService.uploadDictionary(this.file, this.selectedFile, this.fileError);
     }
 
     detectImportFile() {

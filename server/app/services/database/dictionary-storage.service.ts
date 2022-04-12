@@ -17,14 +17,12 @@ export class DictionaryStorageService {
     }
 
     async deleteDictionary(dictionary: Document) {
-        console.log('dictionary storage delete entered');
         const dictionaryIsInDb: boolean = await this.dictionaryIsInDb(dictionary.title);
         if (!dictionaryIsInDb) return;
         await this.database.dictionaries.removeDocument({ title: dictionary.title });
     }
 
-    async modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
-        if (!(await this.dictionaryIsInDb(dictionaryInfo.title))) return;
+    async replaceDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
         await this.database.dictionaries.updateDocument(
             { title: dictionaryInfo.title },
             { $set: { title: dictionaryInfo.newTitle, description: dictionaryInfo.newDescription } },

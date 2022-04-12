@@ -27,4 +27,4 @@
 
 <h1>Ajouter un dictionnaire (format .json)</h1>
 <input #file (change)="detectImportFile()" type="file" id="selectFiles" accept=".json" value="Import" /><br />
-<button mat-raised-button>Ajouter le dictionnaire</button>
+<button mat-button (click)="uploadDictionary()" id="import">Ajouter le dictionnaire</button>

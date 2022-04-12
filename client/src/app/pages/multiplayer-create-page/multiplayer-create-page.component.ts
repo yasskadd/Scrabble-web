@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
-import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
+import { DictionaryService } from '@app/services/dictionary.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
@@ -62,7 +62,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private fb: FormBuilder,
         private readonly httpHandler: HttpHandlerService,
         private renderer: Renderer2,
-        private dictionaryVerification: DictionaryVerificationService,
+        private dictionaryService: DictionaryService,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
@@ -88,23 +88,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     uploadDictionary() {
-        if (this.file.nativeElement.files.length !== 0) {
-            const selectedFile = this.file.nativeElement.files[0];
-            const fileReader = new FileReader();
-            fileReader.readAsText(selectedFile, 'UTF-8');
-            fileReader.onload = () => {
-                const newDictionary = JSON.parse(fileReader.result as string);
-                if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
-                    this.updateImportMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
-                } else {
-                    this.updateImportMessage('Ajout avec succès du nouveau dictionnaire', 'black');
-                    this.selectedFile = newDictionary;
-                    this.httpHandler.addDictionary(newDictionary).subscribe();
-                }
-            };
-        } else {
-            this.updateImportMessage("Il n'y a aucun fichier séléctioné", 'red');
-        }
+        this.dictionaryService.uploadDictionary(this.file, this.selectedFile, this.fileError);
     }
 
     detectImportFile() {
@@ -114,11 +98,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
             this.selectedFile = null;
             this.form.controls.dictionary.enable();
         }
-    }
-
-    updateImportMessage(message: string, color: string) {
-        this.fileError.nativeElement.textContent = message;
-        this.fileError.nativeElement.style.color = color;
     }
 
     onMouseOver(dictionary: Dictionary) {

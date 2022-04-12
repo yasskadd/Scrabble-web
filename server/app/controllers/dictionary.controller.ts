@@ -33,8 +33,8 @@ export class DictionaryController {
             res.sendStatus(NO_CONTENT);
         });
 
-        this.router.get('/modify', async (req: Request, res: Response) => {
-            const dictionaries = await this.dictionaryStorage.modifyDictionary(req.body);
+        this.router.get('/replace', async (req: Request, res: Response) => {
+            const dictionaries = await this.dictionaryStorage.replaceDictionary(req.body);
             res.json(dictionaries);
         });
 
