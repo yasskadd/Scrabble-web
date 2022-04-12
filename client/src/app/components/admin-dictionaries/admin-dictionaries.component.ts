@@ -82,9 +82,10 @@ export class AdminDictionariesComponent {
     }
 
     detectImportFile() {
+        console.log(this.fileError);
+        console.log(this.file);
         this.fileError.nativeElement.textContent = '';
-        if (this.file.nativeElement.files.length !== 0) this.form.controls.dictionary.disable();
-        else {
+        if (this.file.nativeElement.files.length === 0) {
             this.selectedFile = null;
             this.form.controls.dictionary.enable();
         }
@@ -103,11 +104,11 @@ export class AdminDictionariesComponent {
     }
 
     resetDictionaryInput() {
-        this.dictionaryInput = {} as Dictionary;
+        this.dictionaryService.resetDictionaries();
+        this.updateDictionaryList();
     }
 
     addDictionary() {
-        this.updateDictionaryList();
         if (this.isUniqueTitle(this.dictionaryInput.title)) {
             this.dictionaryService.addDictionary(this.dictionaryInput);
         }
