@@ -219,15 +219,16 @@ describe('PlayerRackComponent', () => {
         expect(!component.lettersToExchange.includes(indexLetter)).toBeTruthy();
     });
 
-    it('onLeftClick should not select letter to manipulate if it is already selected for exchange', () => {
-        const indexLetter = 0;
+    it('onLeftClick should select letter to manipulate if it was selected for exchange', () => {
+        const indexLetter = 1;
         const mockClick = new MouseEvent('click');
         const spy = spyOn(component, 'cancel');
         component.onRightClick(mockClick, indexLetter);
+        fixture.detectChanges();
         component.onLeftClick(mockClick, indexLetter);
         fixture.detectChanges();
-        expect(spy).not.toHaveBeenCalled();
-        expect(!component.lettersToExchange.includes(indexLetter)).toBeFalsy();
+        expect(spy).toHaveBeenCalled();
+        expect(component.lettersToManipulate.includes(indexLetter)).toBeTruthy();
     });
 
     it('onRightClick should deselect a letter already selected on right click ', () => {

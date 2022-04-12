@@ -52,15 +52,19 @@ export class PlayerRackComponent implements OnInit {
     clickOutside(event: { target: unknown; preventDefault: () => void }) {
         if (!this.eRef.nativeElement.contains(event.target)) {
             this.cancel();
+            this.currentSelection = board.INVALID_INDEX;
+            this.previousSelection = board.INVALID_INDEX;
         }
     }
 
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            this.cancel();
-            this.repositionRack();
-            this.selectManipulation();
+            if (this.currentSelection !== board.INVALID_INDEX) {
+                this.cancel();
+                this.repositionRack();
+                this.selectManipulation();
+            }
         });
     }
 
@@ -121,9 +125,7 @@ export class PlayerRackComponent implements OnInit {
 
     onRightClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        if (this.lettersToManipulate.includes(letter)) {
-            this.lettersToManipulate = [];
-        }
+        this.lettersToManipulate = [];
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
         } else {
@@ -132,11 +134,9 @@ export class PlayerRackComponent implements OnInit {
     }
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
-        if (!this.lettersToExchange.includes(letter)) {
-            this.cancel();
-            this.currentSelection = letter;
-            this.lettersToManipulate.push(letter);
-        }
+        this.cancel();
+        this.currentSelection = letter;
+        this.lettersToManipulate.push(letter);
     }
 
     exchange() {
