@@ -2,9 +2,6 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
-import * as fs from 'fs';
-
-// const jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8'));
 
 // @Service()
 export class DictionaryValidationService {
@@ -14,8 +11,7 @@ export class DictionaryValidationService {
     jsonDictionary: string[];
 
     constructor(dictionary: string[]) {
-        if (!dictionary.length) this.jsonDictionary = JSON.parse(fs.readFileSync('./assets/dictionary.json', 'utf8')).words;
-        else this.jsonDictionary = dictionary;
+        this.jsonDictionary = dictionary;
         this.jsonDictionary.forEach((word: string) => {
             this.dictionary.add(word);
         });

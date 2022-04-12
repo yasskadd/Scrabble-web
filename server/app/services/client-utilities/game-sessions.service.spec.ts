@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
 /* eslint-disable dot-notation*/
-import { Dictionary } from '@app/interfaces/dictionary';
 import { GameParameters } from '@app/interfaces/game-parameters';
 import { GameRoom } from '@app/interfaces/game-room';
 import { GameSessions } from '@app/services/client-utilities/game-sessions.service';
+import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { assert, expect } from 'chai';
@@ -42,7 +42,7 @@ const GAME_ROOM_2_PLAYER: GameRoom = {
 };
 const GAME_PARAMETERS: GameParameters = {
     username: 'Vincent',
-    dictionary: { title: 'Francais' } as Dictionary,
+    dictionary: 'Francais',
     timer: 1,
     mode: 'classique',
     isMultiplayer: true,
@@ -50,7 +50,7 @@ const GAME_PARAMETERS: GameParameters = {
 
 const GAME_PARAMETERS_SOLO: GameParameters = {
     username: 'Vincent',
-    dictionary: { title: 'Francais' } as Dictionary,
+    dictionary: 'Francais',
     timer: 1,
     mode: 'classique',
     isMultiplayer: false,
@@ -59,6 +59,7 @@ const GAME_PARAMETERS_SOLO: GameParameters = {
 describe('GameSession Service', () => {
     let gameSessions: GameSessions;
     let service: sinon.SinonStubbedInstance<SocketManager>;
+    let gamesHandler: sinon.SinonStubbedInstance<GamesHandler>;
     let httpServer: Server;
     let clientSocket: Socket;
     let serverSocket: ServerSocket;
@@ -66,7 +67,8 @@ describe('GameSession Service', () => {
     let sio: SioSignature;
     beforeEach((done) => {
         service = sinon.createStubInstance(SocketManager);
-        gameSessions = new GameSessions(service as unknown as SocketManager);
+        gamesHandler = sinon.createStubInstance(GamesHandler);
+        gameSessions = new GameSessions(service as unknown as SocketManager, gamesHandler as unknown as GamesHandler);
         httpServer = createServer();
         sio = new ioServer(httpServer);
         httpServer.listen(() => {
@@ -516,6 +518,7 @@ describe('GameSession Service', () => {
         const rejectByOtherPlayerSpy = sinon.stub(gameSessions, 'rejectByOtherPlayer' as never);
         const startScrabbleGameSpy = sinon.stub(gameSessions, 'startScrabbleGame' as never);
         const disconnectSpy = sinon.stub(gameSessions, 'disconnect' as never);
+        const importDictionarySpy = sinon.stub(gameSessions, 'importDictionary' as never);
 
         gameSessions.initSocketEvents();
         service.io.getCall(0).args[1](sio, serverSocket);
@@ -525,6 +528,7 @@ describe('GameSession Service', () => {
         service.io.getCall(4).args[1](sio, serverSocket);
         service.io.getCall(5).args[1](sio, serverSocket);
         service.io.getCall(6).args[1](sio, serverSocket);
+        service.io.getCall(7).args[1](sio, serverSocket);
 
         service.on.getCall(0).args[1](serverSocket);
         service.on.getCall(1).args[1](serverSocket);
@@ -540,6 +544,7 @@ describe('GameSession Service', () => {
         expect(rejectByOtherPlayerSpy.called).to.be.eql(true);
         expect(startScrabbleGameSpy.called).to.be.eql(true);
         expect(disconnectSpy.called).to.be.eql(true);
+        expect(importDictionarySpy.called).to.be.eql(true);
 
         expect(service.io.called).to.equal(true);
         expect(service.on.called).to.equal(true);
@@ -594,6 +599,13 @@ describe('GameSession Service', () => {
 
         const key = gameSessions['getRoomId'](fakeSocket);
         expect(key).to.equal(null);
+        done();
+    });
+
+    it('importDictionary socket should call updateDictionaries of GamesHandler', (done: Mocha.Done) => {
+        const title = 'title';
+        gameSessions['importDictionary'](sio, serverSocket, title);
+        expect(gamesHandler.updateDictionaries.calledOnceWith(title)).to.be.eql(true);
         done();
     });
 

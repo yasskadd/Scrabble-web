@@ -3,5 +3,7 @@ export interface Objective {
     isPublic: boolean;
     points: number;
     type: string;
+    description: string;
+    multiplier?: string;
     complete?: boolean;
 }

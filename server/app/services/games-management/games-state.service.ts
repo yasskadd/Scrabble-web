@@ -9,13 +9,14 @@ import { Turn } from '@app/classes/turn.class';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
-import { Container, Service } from 'typedi';
+import { Service } from 'typedi';
 import { GamesHandler } from './games-handler.service';
 
 const MAX_SKIP = 6;
@@ -34,7 +35,10 @@ export class GamesStateService {
     }
 
     initSocketsEvents(): void {
-        this.socketManager.on(SocketEvents.CreateScrabbleGame, (socket, gameInfo: GameScrabbleInformation) => this.createGame(socket, gameInfo));
+        this.socketManager.on(
+            SocketEvents.CreateScrabbleGame,
+            async (socket, gameInfo: GameScrabbleInformation) => await this.createGame(socket, gameInfo),
+        );
 
         this.socketManager.on(SocketEvents.Disconnect, (socket) => {
             this.disconnect(socket);
@@ -49,7 +53,7 @@ export class GamesStateService {
         });
     }
 
-    private createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
+    private async createGame(this: this, socket: Socket, gameInfo: GameScrabbleInformation) {
         const playerOne = this.setAndGetPlayer(gameInfo);
         const playerTwo = this.setAndGetPlayer(gameInfo);
         const game = this.createNewGame(gameInfo);
@@ -125,17 +129,18 @@ export class GamesStateService {
         const player = this.gamesHandler.players.has(gameInfo.socketId[0]) ? 1 : 0;
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
+            const dictionaryValidation = this.gamesHandler.dictionaries.get(gameInfo.dictionary)?.dictionaryValidation;
             if (gameInfo.botDifficulty === 'Débutant')
                 newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionary: gameInfo.dictionary.words,
+                    dictionaryValidation: dictionaryValidation as DictionaryValidationService,
                 });
             else
                 newPlayer = new ExpertBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionary: gameInfo.dictionary.words,
+                    dictionaryValidation: dictionaryValidation as DictionaryValidationService,
                 });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
@@ -149,14 +154,16 @@ export class GamesStateService {
 
     private createNewGame(gameInfo: GameScrabbleInformation): Game {
         const players = this.gamesHandler.gamePlayers.get(gameInfo.roomId) as Player[];
+        const gameBehavior = this.gamesHandler.dictionaries.get(gameInfo.dictionary);
         return new Game(
             players[0],
             players[1],
-            gameInfo.dictionary.words,
             new Turn(gameInfo.timer),
             new LetterReserve(),
             gameInfo.mode === 'classique' ? false : true,
-            new LetterPlacementService(gameInfo.dictionary.words, Container.get(RackService)),
+            gameBehavior?.dictionaryValidation as DictionaryValidationService,
+            gameBehavior?.letterPlacement as LetterPlacementService,
+            gameBehavior?.wordSolver as WordSolverService,
         );
     }
 
@@ -188,6 +195,7 @@ export class GamesStateService {
         }
         player.game.abandon();
         this.gameEnded.next(player.room);
+        this.gamesHandler.gamePlayers.delete(player.room);
     }
 
     private async switchToSolo(socket: Socket, playerToReplace: Player) {
@@ -199,7 +207,7 @@ export class GamesStateService {
         const botPlayer = new BeginnerBot(false, botName, {
             timer: playerToReplace.game.turn.time,
             roomId: playerToReplace.room,
-            dictionary: playerToReplace.game.dictionary,
+            dictionaryValidation: playerToReplace.game.dictionaryValidation,
         });
         botPlayer.score = info.score;
         botPlayer.rack = info.rack;
@@ -256,6 +264,7 @@ export class GamesStateService {
             this.gameEnded.next(player.room);
             player.game.isGameFinish = true;
             this.socketManager.emitRoom(player.room, SocketEvents.GameEnd);
+            this.gamesHandler.gamePlayers.delete(player.room);
         }
     }
 
