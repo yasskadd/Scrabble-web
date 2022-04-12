@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/co
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
@@ -9,7 +10,8 @@ import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 const TIMEOUT_REQUEST = 500;
-const defaultDictionary: Dictionary = { title: 'Francais', description: 'Description de base', words: [] };
+const TIMEOUT_POST = 5000;
+const TIMEOUT_VERIFICATION = 50;
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -50,7 +52,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FourMinuteAndThirty,
         TimeOptions.FiveMinute,
     ];
-    dictionaryList: Dictionary[];
+    dictionaryList: DictionaryInfo[];
     selectedFile: Dictionary | null;
 
     constructor(
@@ -78,13 +80,13 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.form = this.fb.group({
             timer: [defaultTimer, Validators.required],
             difficultyBot: [this.difficultyList[0], Validators.required],
-            dictionary: ['Francais', Validators.required],
+            dictionary: ['Mon dictionnaire', Validators.required],
         });
         (this.form.get('difficultyBot') as AbstractControl).valueChanges.subscribe(() => {
             this.updateBotList();
         });
         this.updateBotList();
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
+        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
     }
 
     async uploadDictionary() {
@@ -92,20 +94,23 @@ export class MultiplayerCreatePageComponent implements OnInit {
             const selectedFile = this.file.nativeElement.files[0];
             const fileReader = new FileReader();
             const content = await this.readFile(selectedFile, fileReader);
+            this.updateDictionaryMessage('En vérification, veuillez patienter...', 'red');
             this.fileOnLoad(content);
         } else {
-            this.updateImportMessage("Il n'y a aucun fichier séléctioné", 'red');
+            this.updateDictionaryMessage("Il n'y a aucun fichier séléctioné", 'red');
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fileOnLoad(newDictionary: Record<string, unknown>): any {
+    fileOnLoad(newDictionary: Record<string, unknown>) {
         if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
-            this.updateImportMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
+            this.updateDictionaryMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
         } else {
-            this.updateImportMessage('Ajout avec succès du nouveau dictionnaire', 'black');
             this.selectedFile = newDictionary as unknown as Dictionary;
             this.httpHandler.addDictionary(this.selectedFile).subscribe();
+            setTimeout(() => {
+                this.gameConfiguration.importDictionary((this.selectedFile as Dictionary).title);
+                this.updateDictionaryMessage('Ajout avec succès du nouveau dictionnaire', 'black');
+            }, TIMEOUT_POST);
         }
     }
 
@@ -118,12 +123,12 @@ export class MultiplayerCreatePageComponent implements OnInit {
         }
     }
 
-    updateImportMessage(message: string, color: string) {
+    updateDictionaryMessage(message: string, color: string) {
         this.fileError.nativeElement.textContent = message;
         this.fileError.nativeElement.style.color = color;
     }
 
-    onMouseOver(dictionary: Dictionary) {
+    onMouseOver(dictionary: DictionaryInfo) {
         this.info.nativeElement.children[0].textContent = dictionary.title;
         this.info.nativeElement.children[1].textContent = dictionary.description;
         this.renderer.setStyle(this.info.nativeElement, 'visibility', 'visible');
@@ -134,7 +139,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     onOpen() {
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
+        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
     }
 
     giveNameToBot(): void {
@@ -143,19 +148,22 @@ export class MultiplayerCreatePageComponent implements OnInit {
         }
     }
 
-    createGame() {
-        if (this.isSoloMode()) this.validateName();
-        this.gameConfiguration.gameInitialization({
-            username: this.playerName,
-            timer: (this.form.get('timer') as AbstractControl).value,
-            dictionary: this.getDictionary((this.form.get('dictionary') as AbstractControl).value),
-            mode: this.gameMode,
-            isMultiplayer: this.isSoloMode() ? false : true,
-            opponent: this.isSoloMode() ? this.botName : undefined,
-            botDifficulty: this.isSoloMode() ? (this.form.get('difficultyBot') as AbstractControl).value : undefined,
-        });
-        this.resetInput();
-        this.navigatePage();
+    async createGame(): Promise<void> {
+        const dictionaryTitle = this.getDictionary((this.form.get('dictionary') as AbstractControl).value).title;
+        if (await this.dictionaryIsInDB(dictionaryTitle)) {
+            if (this.isSoloMode()) this.validateName();
+            this.gameConfiguration.gameInitialization({
+                username: this.playerName,
+                timer: (this.form.get('timer') as AbstractControl).value,
+                dictionary: dictionaryTitle,
+                mode: this.gameMode,
+                isMultiplayer: this.isSoloMode() ? false : true,
+                opponent: this.isSoloMode() ? this.botName : undefined,
+                botDifficulty: this.isSoloMode() ? (this.form.get('difficultyBot') as AbstractControl).value : undefined,
+            });
+            this.resetInput();
+            this.navigatePage();
+        }
     }
 
     navigatePage() {
@@ -185,9 +193,9 @@ export class MultiplayerCreatePageComponent implements OnInit {
         }
     }
 
-    private getDictionary(title: string): Dictionary {
+    private getDictionary(title: string): DictionaryInfo {
         if (this.selectedFile !== null) return this.selectedFile;
-        return this.dictionaryList.find((dictionary) => dictionary.title === title) as Dictionary;
+        return this.dictionaryList.find((dictionary) => dictionary.title === title) as DictionaryInfo;
     }
 
     private updateBotList(): void {
@@ -206,6 +214,17 @@ export class MultiplayerCreatePageComponent implements OnInit {
             fileReader.onerror = () => {
                 reject(Error('File is not a JSON'));
             };
+        });
+    }
+
+    private async dictionaryIsInDB(title: string): Promise<boolean> {
+        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (this.dictionaryList.some((dictionary) => dictionary.title === title)) resolve(true);
+                this.updateDictionaryMessage("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
+                resolve(false);
+            }, TIMEOUT_VERIFICATION);
         });
     }
 }
