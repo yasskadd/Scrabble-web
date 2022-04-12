@@ -7,11 +7,9 @@ import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
 import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { RackService } from '@app/services/rack.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
-import { Container } from 'typedi';
 
 const MAX_QUANTITY = 7;
 
@@ -34,6 +32,8 @@ export class Game {
         public letterReserve: LetterReserve,
         public isMode2990: boolean,
         dictionaryValidation: DictionaryValidationService,
+        letterPlacement: LetterPlacementService,
+        wordSolver: WordSolverService,
     ) {
         this.start(player1, player2);
         this.beginningTime = new Date();
@@ -44,8 +44,10 @@ export class Game {
         this.isGameAbandoned = false;
         this.gameMode = '';
         this.dictionaryValidation = dictionaryValidation;
-        this.letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
-        this.wordSolver = new WordSolverService(dictionaryValidation);
+        // this.letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+        this.letterPlacement = letterPlacement;
+        // this.wordSolver = new WordSolverService(dictionaryValidation);
+        this.wordSolver = wordSolver;
     }
 
     start(player1: Player, player2: Player): void {
