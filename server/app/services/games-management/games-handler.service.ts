@@ -63,4 +63,17 @@ export class GamesHandler {
         });
         this.dictionaries = tempDictionariesMap;
     }
+
+    async updateDictionaries(title: string) {
+        const dictionary = await this.dictionaryStorage.selectDictionaryInfo(title);
+        const dictionaryValidation = new DictionaryValidationService(dictionary[0].words);
+        const wordSolver = new WordSolverService(dictionaryValidation);
+        const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+        const behavior = {
+            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+            wordSolver: wordSolver as WordSolverService,
+            letterPlacement: letterPlacement as LetterPlacementService,
+        };
+        this.dictionaries.set(title, behavior);
+    }
 }

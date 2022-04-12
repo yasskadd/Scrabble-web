@@ -14,6 +14,11 @@ export class DictionaryStorageService {
         return await this.database.dictionaries.fetchDocuments({}, { projection: { title: 1, description: 1 } });
     }
 
+    async selectDictionaryInfo(title: string): Promise<Document[]> {
+        // eslint-disable-next-line object-shorthand
+        return await this.database.dictionaries.fetchDocuments({ title: title });
+    }
+
     async addDictionary(dictionary: Document) {
         if (await this.dictionaryIsInDb(dictionary.title)) return;
         await this.database.dictionaries.addDocument(dictionary);

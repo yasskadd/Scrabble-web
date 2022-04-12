@@ -9,8 +9,7 @@ import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 const TIMEOUT_REQUEST = 500;
-// const defaultDictionary: Dictionary = { title: 'Francais', description: 'Description de base', words: [] };
-const defaultDictionary: DictionaryInfo = { title: 'Francais', description: 'Description de base' };
+const TIMEOUT_POST = 2500;
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -51,7 +50,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FourMinuteAndThirty,
         TimeOptions.FiveMinute,
     ];
-    // dictionaryList: Dictionary[];
     dictionaryList: DictionaryInfo[];
     selectedFile: Dictionary | null;
 
@@ -80,13 +78,13 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.form = this.fb.group({
             timer: [defaultTimer, Validators.required],
             difficultyBot: [this.difficultyList[0], Validators.required],
-            dictionary: ['Francais', Validators.required],
+            dictionary: ['Mon dictionnaire', Validators.required],
         });
         (this.form.get('difficultyBot') as AbstractControl).valueChanges.subscribe(() => {
             this.updateBotList();
         });
         this.updateBotList();
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
+        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
     }
 
     async uploadDictionary() {
@@ -100,14 +98,16 @@ export class MultiplayerCreatePageComponent implements OnInit {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fileOnLoad(newDictionary: Record<string, unknown>): any {
+    fileOnLoad(newDictionary: Record<string, unknown>) {
         if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
             this.updateImportMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
         } else {
-            this.updateImportMessage('Ajout avec succès du nouveau dictionnaire', 'black');
             this.selectedFile = newDictionary as unknown as Dictionary;
             this.httpHandler.addDictionary(this.selectedFile).subscribe();
+            setTimeout(() => {
+                this.gameConfiguration.importDictionary((this.selectedFile as Dictionary).title);
+            }, TIMEOUT_POST);
+            this.updateImportMessage('Ajout avec succès du nouveau dictionnaire', 'black');
         }
     }
 
@@ -136,7 +136,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     onOpen() {
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = [defaultDictionary].concat(dictionaries)));
+        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
     }
 
     giveNameToBot(): void {
