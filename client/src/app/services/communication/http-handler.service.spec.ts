@@ -29,7 +29,7 @@ describe('HttpHandlerService', () => {
     });
 
     it('should return expected highScoreClassique list (HttpClient called once)', () => {
-        const expectedMessage: HighScores[] = [{ _id: '245isfdhhsdf', username: 'Vincent', type: 'classique', score: 20, position: '1' }];
+        const expectedMessage: HighScores[] = [{ _id: '245isfdhhsdf', username: 'Vincent', type: 'classique', score: 20, position: 1 }];
 
         // check the content of the mocked call
         service.getClassicHighScore().subscribe((response: HighScores[]) => {
@@ -91,7 +91,7 @@ describe('HttpHandlerService', () => {
     });
 
     it('should return expected highScoreLOG2990 list (HttpClient called once)', () => {
-        const expectedMessage: HighScores[] = [{ _id: '245isfdhhsdf', username: 'Vincent', type: 'LOG2990', score: 50, position: '1' }];
+        const expectedMessage: HighScores[] = [{ _id: '245isfdhhsdf', username: 'Vincent', type: 'LOG2990', score: 50, position: 1 }];
 
         // check the content of the mocked call
         service.getLOG2990HighScore().subscribe((response: HighScores[]) => {
