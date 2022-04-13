@@ -20,6 +20,10 @@
     margin-top: 10px;
 }
 
+::ng-deep .mat-dialog-container {
+    background-color: #c2e5da;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
