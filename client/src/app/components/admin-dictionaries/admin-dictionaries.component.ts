@@ -6,7 +6,7 @@ import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
-import { saveAs } from 'file-saver';
+import * as FileSaver from 'file-saver';
 
 const DEFAULT_DICTIONARY: DictionaryInfo = {
     title: 'Mon dictionnaire',
@@ -93,7 +93,7 @@ export class AdminDictionariesComponent {
     downloadFile(data: unknown) {
         const json = JSON.stringify(data);
         const blob = new Blob([json] as BlobPart[], { type: 'text/json' });
-        saveAs(blob, `${(data as Dictionary).title}.json`);
+        FileSaver.saveAs(blob, `${(data as Dictionary).title}.json`);
     }
 
     updateImportMessage(message: string, color: string) {
