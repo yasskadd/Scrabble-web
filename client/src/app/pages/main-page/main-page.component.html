@@ -2,6 +2,7 @@
     <app-header style="width: 100%"></app-header>
 
     <mat-card-title class="header-item">{{ title }}</mat-card-title>
+
     <mat-card class="justified">
         <mat-card-content class="container-buttons justified">
             <button id="classique" mat-raised-button color="primary" class="button game" (click)="openDialog('classique')">Scrabble Classique</button>
@@ -11,11 +12,6 @@
             </button>
         </mat-card-content>
     </mat-card>
-    <div class="footer justified">
-        <h4 class="team-name">Développeurs</h4>
-        <p>
-            <span>Mariana Chang Ieong</span>, <span>Vincent Richard</span>, <span>Christian Sassine</span>, <span>Yasser Kadimi</span>,
-            <span>Laurent Quoc Hoa Nguyen</span>, <span>Esmé Généreux</span>
-        </p>
-    </div>
+
+    <app-footer style="width: 100%"></app-footer>
 </body>
