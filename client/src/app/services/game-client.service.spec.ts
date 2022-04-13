@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
@@ -109,7 +110,14 @@ describe('GameClientService', () => {
     let service: GameClientService;
     let socketEmulator: SocketTestEmulator;
     let socketServiceMock: SocketClientServiceMock;
+    let matSnackBar: MatSnackBar;
     let gridServiceSpy: jasmine.SpyObj<GridService>;
+
+    const mockMatSnackBar = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        open: () => {},
+    };
+
     beforeEach(() => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid', 'drawRack']);
         socketEmulator = new SocketTestEmulator();
@@ -120,9 +128,11 @@ describe('GameClientService', () => {
             providers: [
                 { provide: ClientSocketService, useValue: socketServiceMock },
                 { provide: GridService, useValue: gridServiceSpy },
+                { provide: MatSnackBar, useValue: mockMatSnackBar },
             ],
         });
         service = TestBed.inject(GameClientService);
+        matSnackBar = TestBed.inject(MatSnackBar);
     });
 
     it('should be created', () => {
@@ -274,7 +284,9 @@ describe('GameClientService', () => {
     });
 
     it('completeObjective should set to complete the objective send to client to the second player', () => {
-        service.playerOne.objective = [OBJECTIVE];
+        service.playerOne.name = 'vincent';
+        service.secondPlayer.name = 'Chris';
+        service.playerOne.objective = [];
         service.secondPlayer.objective = [OBJECTIVE_TWO];
         service.secondPlayer.objective[0].complete = false;
         // eslint-disable-next-line dot-notation
@@ -349,6 +361,20 @@ describe('GameClientService', () => {
         const spy = spyOn(service, 'gameEndEvent' as never);
         socketEmulator.peerSideEmit(SocketEvents.GameEnd);
         expect(spy).toHaveBeenCalled();
+    });
+
+    it('openSnackBar should call the MatSnackBar open method', () => {
+        const matSnackBarSpy = spyOn(matSnackBar, 'open').and.stub();
+        // eslint-disable-next-line dot-notation
+        service['openSnackBar']('vous avez réussi un objectif');
+        expect(matSnackBarSpy.calls.count()).toBe(1);
+        const args = matSnackBarSpy.calls.argsFor(0);
+        expect(args[0]).toBe('vous avez réussi un objectif');
+        expect(args[1]).toBe('fermer');
+        expect(args[2]).toEqual({
+            duration: 3000,
+            horizontalPosition: 'center',
+        });
     });
 
     it('endGameEvent should call findWinnerByScore when the game is not finish already', () => {
