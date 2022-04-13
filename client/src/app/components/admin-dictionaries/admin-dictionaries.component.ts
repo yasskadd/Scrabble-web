@@ -5,6 +5,7 @@ import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-m
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
+import { saveAs } from 'file-saver';
 
 const DEFAULT_DICTIONARY: Dictionary = {
     title: 'Mon dictionnaire',
@@ -93,9 +94,8 @@ export class AdminDictionariesComponent {
 
     downloadFile(data: unknown) {
         const json = JSON.stringify(data);
-        const blob = new Blob([json] as BlobPart[], { type: 'file/json' });
-        const url = window.URL.createObjectURL(blob);
-        window.open(url);
+        const blob = new Blob([json] as BlobPart[], { type: 'text/json' });
+        saveAs(blob, `${(data as Dictionary).title}.json`);
     }
 
     updateImportMessage(message: string, color: string) {
