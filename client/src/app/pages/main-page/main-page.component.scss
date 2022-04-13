@@ -11,6 +11,11 @@
     justify-content: space-between;
 }
 
+::ng-deep .toolMainPage {
+    font-size: 14px;
+    background-color: #23501f;
+}
+
 .header {
     color: #23501f;
     height: 100px;

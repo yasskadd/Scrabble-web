@@ -4,9 +4,39 @@
     <mat-card-title class="header-item">{{ title }}</mat-card-title>
     <mat-card class="justified">
         <mat-card-content class="container-buttons justified">
-            <button id="classique" mat-raised-button color="primary" class="button game" (click)="openDialog('classique')">Scrabble Classique</button>
-            <button id="LOG2990" mat-raised-button color="primary" class="button game" (click)="openDialog('LOG2990')">Scrabble LOG2990</button>
-            <button mat-raised-button (click)="openHighScoreDialog()" color="accent" class="button score">
+            <button
+                id="classique"
+                mat-raised-button
+                color="primary"
+                class="button game"
+                (click)="openDialog('classique')"
+                [matTooltip]="'Mode classique de Scrabble'"
+                matTooltipPosition="right"
+                matTooltipClass="toolMainPage"
+            >
+                Scrabble Classique
+            </button>
+            <button
+                id="LOG2990"
+                mat-raised-button
+                color="primary"
+                class="button game"
+                (click)="openDialog('LOG2990')"
+                [matTooltip]="log2990Message"
+                matTooltipPosition="right"
+                matTooltipClass="toolMainPage"
+            >
+                Scrabble LOG2990
+            </button>
+            <button
+                mat-raised-button
+                (click)="openHighScoreDialog()"
+                color="accent"
+                class="button score"
+                [matTooltip]="'Classement des meilleurs scores pour chacun des modes de jeu'"
+                matTooltipPosition="right"
+                matTooltipClass="toolMainPage"
+            >
                 Meilleur scores <mat-icon class="button-icon">emoji_events</mat-icon>
             </button>
         </mat-card-content>
