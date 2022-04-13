@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
     styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
+    readonly buttonText: string[];
     readonly homePage: string[] = ['A', 'C', 'C', 'U', 'E', 'I', 'L'];
     readonly adminPage: string[] = ['A', 'D', 'M', 'I', 'N'];
     constructor(private router: Router) {}

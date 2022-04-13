@@ -1,5 +1,11 @@
-.footer {
-    height: 100px;
+.sticky {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer {
+    height: 120px;
     width: 100%;
     text-align: center;
     color: #23501f;
