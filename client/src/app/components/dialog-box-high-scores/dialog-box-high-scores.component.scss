@@ -22,6 +22,7 @@
 
 table {
     width: 100%;
+    border-collapse: collapse;
 }
 
 th {
@@ -29,11 +30,26 @@ th {
     padding: 10px;
 }
 td {
+    height: 30px;
+}
+
+.data {
     text-align: center;
     width: 50%;
     padding: 5px;
 }
 
+.first {
+    color: rgb(218, 165, 32);
+}
+
+.second {
+    color: rgb(211, 211, 211);
+}
+
+.third {
+    color: rgb(205, 127, 50);
+}
 .highScoreTableClassic,
 .highScoreTableLOG2990 {
     background-color: rgb(255, 255, 255);
