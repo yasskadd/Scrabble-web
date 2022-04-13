@@ -98,7 +98,7 @@ export class ChatboxHandlerService {
             { type: 'system-message', data: 'Bienvenue dans votre partie de Scrabble' },
             {
                 type: 'system-message',
-                data: 'La commande !aide est mise a votre disposition afin de faciliter votre compréhension du jeu',
+                data: 'La commande !aide est mise à votre disposition afin de faciliter votre compréhension du jeu',
             },
         ];
     }
@@ -156,9 +156,9 @@ export class ChatboxHandlerService {
         const validReserveCommand = '^!aide$';
         const validReserveCommandRegex = new RegExp(validReserveCommand);
         if (validReserveCommandRegex.test(userCommand)) {
-            this.messages.push({ type: 'system-message', data: 'VOICI LES COMMANDES VALIDE' });
+            this.messages.push({ type: 'system-message', data: 'VOICI LES COMMANDES VALIDES' });
             this.messages.push({ type: 'system-message', data: '!passer  : Faire passer son tour' });
-            this.messages.push({ type: 'system-message', data: '!réserve : Affiche toutes les lettres disponible dans la réserve' });
+            this.messages.push({ type: 'system-message', data: '!réserve : Affiche toutes les lettres disponibles dans la réserve' });
             this.messages.push({
                 type: 'system-message',
                 data: "!indice  : Envoie jusqu'à 3 possibilités de placement possible sur la planche de jeu",
@@ -166,14 +166,14 @@ export class ChatboxHandlerService {
             this.messages.push({
                 type: 'system-message',
                 data:
-                    '!echanger <lettre>:  Échanger les lettres de notre chevalet (celles-ci doivent être écritent en minuscule ou' +
+                    '!echanger <lettre>:  Échanger les lettres sélectionnées du chevalet (celles-ci doivent être écritent en minuscule ou' +
                     '* pour les lettres blanches (ex: !echanger e*a)',
             });
             this.messages.push({
                 type: 'system-message',
                 data:
                     '!placer <ligne><colonne>[(h|v)] <lettres>:  Placer un mot en utilisant les lettres de notre chevalet' +
-                    '(Mettre la lettre en majuscule lorsque nous utilisons une lettre blanche) (ex: !placer g9h adanT)',
+                    '(Mettre la lettre en majuscule lorsque vous utilisez une lettre blanche) (ex: !placer g9h adanT)',
             });
             return true;
         }

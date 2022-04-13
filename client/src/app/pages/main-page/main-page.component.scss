@@ -1,65 +1,87 @@
-.page-container {
+body {
     height: 100%;
     display: flex;
-    background-color: rgb(225, 232, 248);
+    background-color: #c2e5da;
 }
 
 .justified {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-}
-
-.header {
-    color: #23501f;
-    height: 100px;
-    width: 100%;
-    background-color: rgb(174, 192, 174);
-}
-
-.header-item {
     justify-content: center;
-    text-align: center;
-    margin: 7px;
+}
+
+.mat-card-title {
+    padding-bottom: 30px;
+    font-family: system-ui;
+}
+
+::ng-deep .toolMainPage {
+    font-size: 14px;
+    background-color: #23501f;
 }
 
 .mat-card {
     padding: 30px;
-    width: 400px;
+    width: 450px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-    background-color: rgb(174, 192, 174);
+    background-color: #7fa99b;
 }
+
 .mat-card-content {
     width: 100%;
 }
+
 .mat-raised-button:hover {
-    transform: scale(0.95);
+    transform: scale(1.01);
 }
 
 .button {
     margin: 7px;
-    text-align: center;
     width: 95%;
     padding: 5px;
+
     font-size: 23px;
+    font-weight: 500;
+    font-family: system-ui;
+    text-align: center;
+
+    color: #cff3e8;
+    background-color: #23501f;
 }
 
 .score {
     margin-top: 30px;
 }
 
-.footer {
-    height: 100px;
-    width: 100%;
-    text-align: center;
-    color: #23501f;
-    background-color: rgb(174, 192, 174);
-    justify-content: flex-end;
+#scores {
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    flex: 1;
 }
 
-.team-name {
-    margin: 10px;
-    font-weight: 500;
-    font-size: 20px;
+#scores:hover {
+    transform: scale(1.01);
+}
+
+#scores > * {
+    color: #23501f;
+    font-weight: 800;
+    font-family: system-ui;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fbd7a3;
+    border-radius: 5px;
+    margin: 2px;
+    margin-top: 30px;
+    width: 35px;
+    height: 35px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    text-align: center;
+}
+
+#scores #icon {
+    margin-left: 15px;
 }
