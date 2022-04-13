@@ -20,8 +20,8 @@ export enum ErrorType {
 @Service()
 export class LetterPlacementService {
     private dictionaryValidationService: DictionaryValidationService;
-    constructor(dictionary: string[], private rackService: RackService) {
-        this.dictionaryValidationService = new DictionaryValidationService(dictionary);
+    constructor(dictionaryValidation: DictionaryValidationService, private rackService: RackService) {
+        this.dictionaryValidationService = dictionaryValidation;
     }
 
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {

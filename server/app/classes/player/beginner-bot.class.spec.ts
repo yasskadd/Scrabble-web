@@ -4,6 +4,7 @@ import { Game } from '@app/classes/game.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Turn } from '@app/classes/turn.class';
 import { BotInformation } from '@app/interfaces/bot-information';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
@@ -17,15 +18,22 @@ describe('BotBeginner', () => {
     let botBeginner: BeginnerBot;
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
-    let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService>;
+    let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
+    let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
 
     beforeEach(() => {
         gameStub = Sinon.createStubInstance(Game) as Sinon.SinonStubbedInstance<Game> & Game;
         gameStub.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
-        botInfo = { timer: 60, roomId: 'testRoom', dictionary: ['string'] };
+        wordSolverStub = Sinon.createStubInstance(WordSolverService) as Sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
+        dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService) as Sinon.SinonStubbedInstance<DictionaryValidationService> &
+            DictionaryValidationService;
+        botInfo = {
+            timer: 60,
+            roomId: 'testRoom',
+            dictionaryValidation: dictionaryValidation as Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService,
+        };
         botBeginner = new BeginnerBot(true, 'robot', botInfo);
-        wordSolverStub = Sinon.createStubInstance(WordSolverService);
-        botBeginner['wordSolver'] = wordSolverStub as never;
+        botBeginner['wordSolver'] = wordSolverStub;
         botBeginner.setGame(gameStub);
     });
 
