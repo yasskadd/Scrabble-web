@@ -1,7 +1,7 @@
 .page-container {
     height: 100%;
     display: flex;
-    background-color: rgb(225, 232, 248);
+    background-color: #adc8bf;
 }
 
 .justified {
@@ -9,13 +9,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-}
-
-.header {
-    color: #23501f;
-    height: 100px;
-    width: 100%;
-    background-color: rgb(174, 192, 174);
 }
 
 .header-item {
@@ -26,15 +19,21 @@
 
 .mat-card {
     padding: 30px;
-    width: 400px;
+    width: 450px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-    background-color: rgb(174, 192, 174);
+    background-color: #7fa99b;
 }
+
 .mat-card-content {
     width: 100%;
 }
+
 .mat-raised-button:hover {
     transform: scale(0.95);
+}
+
+.word-container {
+    display: flex;
 }
 
 .button {
@@ -43,6 +42,8 @@
     width: 95%;
     padding: 5px;
     font-size: 23px;
+    background-color: #23501f;
+    font-weight: 300;
 }
 
 .score {
@@ -54,7 +55,7 @@
     width: 100%;
     text-align: center;
     color: #23501f;
-    background-color: rgb(174, 192, 174);
+    background-color: #7fa99b;
     justify-content: flex-end;
 }
 
