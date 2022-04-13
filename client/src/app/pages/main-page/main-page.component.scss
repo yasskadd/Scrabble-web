@@ -16,6 +16,11 @@
     font-family: system-ui;
 }
 
+::ng-deep .toolMainPage {
+    font-size: 14px;
+    background-color: #23501f;
+}
+
 .mat-card {
     padding: 30px;
     width: 450px;
