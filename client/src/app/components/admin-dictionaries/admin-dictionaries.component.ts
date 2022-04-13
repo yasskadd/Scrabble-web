@@ -3,13 +3,13 @@ import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 
-const DEFAULT_DICTIONARY: Dictionary = {
+const DEFAULT_DICTIONARY: DictionaryInfo = {
     title: 'Mon dictionnaire',
     description: 'Description de base',
-    words: [],
 };
 
 @Component({
@@ -22,7 +22,7 @@ export class AdminDictionariesComponent {
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
     form: FormGroup;
     selectedFile: Dictionary | null;
-    dictionaries: Dictionary[];
+    dictionaries: DictionaryInfo[];
     dictionaryInput: Dictionary;
 
     constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog) {
@@ -30,15 +30,15 @@ export class AdminDictionariesComponent {
         this.updateDictionaryList();
     }
 
-    isDefault(dictionary: Dictionary) {
+    isDefault(dictionary: DictionaryInfo) {
         return dictionary.title === 'Mon dictionnaire';
     }
 
-    deleteDictionary(dictionaryToDelete: Dictionary) {
+    deleteDictionary(dictionaryToDelete: DictionaryInfo) {
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
     }
 
-    openModifyDictionaryDialog(dictionaryToModify: Dictionary) {
+    openModifyDictionaryDialog(dictionaryToModify: DictionaryInfo) {
         const title = dictionaryToModify.title;
         const dialogRef = this.modifyDictionaryDialog.open(DialogBoxModifyDictionaryComponent, {
             width: '50%',
@@ -62,7 +62,7 @@ export class AdminDictionariesComponent {
         if (this.isUniqueTitle(modifiedDictionaryInfo.newTitle)) this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
     }
 
-    downloadJson(dictionary: Dictionary) {
+    downloadJson(dictionary: DictionaryInfo) {
         this.downloadFile(dictionary);
     }
 
@@ -78,12 +78,10 @@ export class AdminDictionariesComponent {
     }
 
     uploadDictionary() {
-        this.dictionaryService.uploadDictionary(this.file, this.selectedFile, this.fileError);
+        this.dictionaryService.uploadDictionary(null, this.file, this.selectedFile, this.fileError);
     }
 
     detectImportFile() {
-        console.log(this.fileError);
-        console.log(this.file);
         this.fileError.nativeElement.textContent = '';
         if (this.file.nativeElement.files.length === 0) {
             this.selectedFile = null;

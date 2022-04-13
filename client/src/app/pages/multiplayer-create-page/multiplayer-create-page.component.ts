@@ -89,7 +89,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     uploadDictionary() {
-        this.dictionaryService.uploadDictionary(this.file, this.selectedFile, this.fileError);
+        this.dictionaryService.uploadDictionary(this.gameConfiguration, this.file, this.selectedFile, this.fileError);
     }
 
     detectImportFile() {
@@ -181,18 +181,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
         setTimeout(() => {
             this.giveNameToBot();
         }, TIMEOUT_REQUEST);
-    }
-
-    private async readFile(selectedFile: File, fileReader: FileReader): Promise<Record<string, unknown>> {
-        return new Promise((resolve, reject) => {
-            fileReader.readAsText(selectedFile, 'UTF-8');
-            fileReader.onload = () => {
-                resolve(JSON.parse(fileReader.result as string));
-            };
-            fileReader.onerror = () => {
-                reject(Error('File is not a JSON'));
-            };
-        });
     }
 
     private async dictionaryIsInDB(title: string): Promise<boolean> {
