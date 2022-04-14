@@ -36,6 +36,7 @@ export class AdminDictionariesComponent {
 
     deleteDictionary(dictionaryToDelete: DictionaryInfo) {
         this.dictionaryService.deleteDictionary(dictionaryToDelete);
+        this.updateDictionaryList();
     }
 
     openModifyDictionaryDialog(dictionaryToModify: DictionaryInfo) {
@@ -55,7 +56,7 @@ export class AdminDictionariesComponent {
     }
 
     modifyDictionary(modifiedDictionaryInfo: ModifiedDictionaryInfo) {
-        if (modifiedDictionaryInfo.title === '' || modifiedDictionaryInfo.newDescription === '') return;
+        if (modifiedDictionaryInfo.newTitle === '' || modifiedDictionaryInfo.newDescription === '') return;
         this.dictionaryService.getDictionaries();
         if (!(modifiedDictionaryInfo.title === modifiedDictionaryInfo.newTitle || !this.isUniqueTitle(modifiedDictionaryInfo.newTitle))) return;
         this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
@@ -105,7 +106,7 @@ export class AdminDictionariesComponent {
     }
 
     addDictionary() {
-        if (this.isUniqueTitle(this.dictionaryInput.title)) {
+        if (!this.isUniqueTitle(this.dictionaryInput.title)) {
             this.dictionaryService.addDictionary(this.dictionaryInput);
         }
         this.resetDictionaryInput();

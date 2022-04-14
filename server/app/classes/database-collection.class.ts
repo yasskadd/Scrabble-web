@@ -39,8 +39,6 @@ export class DatabaseCollection {
 
     async replaceDocument(parameters: Filter<Document>, document: Document) {
         await this.connect();
-        console.log('replaceDocument database entered');
-        console.log(parameters + '    ' + document);
         await this.collection.replaceOne(parameters, document);
     }
 

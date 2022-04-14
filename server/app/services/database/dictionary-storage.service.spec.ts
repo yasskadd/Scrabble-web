@@ -68,17 +68,17 @@ describe('dictionaryStorage Service', () => {
         expect((databaseServiceStub.dictionaries as unknown as CollectionStub).addDocument.calledWith({} as Dictionary)).to.equal(true);
     });
 
-    it('removeDictionary() should not call removeDocument of DatabaseService if dictionary to remove is not in the database', async () => {
+    it('deleteDictionary() should not call removeDocument of DatabaseService if dictionary to remove is not in the database', async () => {
         const dictionaryIsInDbSpy = stub(dictionaryStorageService, 'dictionaryIsInDb');
         dictionaryIsInDbSpy.resolves(false);
-        await dictionaryStorageService.removeDictionary({} as Dictionary);
+        await dictionaryStorageService.deleteDictionary({} as Dictionary);
         expect((databaseServiceStub.dictionaries as unknown as CollectionStub).removeDocument.called).to.equal(false);
     });
 
-    it('removeDictionary() should call removeDocument of DatabaseService if dictionary to remove is in the database', async () => {
+    it('deleteDictionary() should call removeDocument of DatabaseService if dictionary to remove is in the database', async () => {
         const dictionaryIsInDbSpy = stub(dictionaryStorageService, 'dictionaryIsInDb');
         dictionaryIsInDbSpy.resolves(true);
-        await dictionaryStorageService.removeDictionary({ title: 'Mon dictionnaire' } as Dictionary);
+        await dictionaryStorageService.deleteDictionary({ title: 'Mon dictionnaire' } as Dictionary);
         expect((databaseServiceStub.dictionaries as unknown as CollectionStub).removeDocument.called).to.equal(true);
         expect(
             (databaseServiceStub.dictionaries as unknown as CollectionStub).removeDocument.calledWith({ title: 'Mon dictionnaire' } as Dictionary),

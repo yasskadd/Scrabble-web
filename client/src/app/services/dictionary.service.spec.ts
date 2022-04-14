@@ -6,7 +6,7 @@ import { DictionaryService } from './dictionary.service';
 
 // const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire' };
 
-describe('VirtualPlayersService', () => {
+describe('DictionaryService', () => {
     let service: DictionaryService;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
 

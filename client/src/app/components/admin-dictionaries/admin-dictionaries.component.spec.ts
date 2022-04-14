@@ -15,6 +15,7 @@ export class MatDialogMock {
     }
 }
 
+const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire' };
 describe('AdminDictionariesComponent', () => {
     let component: AdminDictionariesComponent;
     let fixture: ComponentFixture<AdminDictionariesComponent>;
@@ -134,7 +135,7 @@ describe('AdminDictionariesComponent', () => {
         it('addDictionary() should call dictionaryService.addDictionary() and resetDictionaryInput', () => {
             const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
             component.dictionaryInput = {
-                title: 'Mon dictionnaire',
+                title: 'Mon dictionnaire 2',
                 description: 'Un dictionnaire',
                 words: ['string'],
             };
@@ -143,6 +144,18 @@ describe('AdminDictionariesComponent', () => {
             expect(resetDictionnarySpy).toHaveBeenCalled();
         });
 
+        it('addDictionary() should not call dictionaryService.addDictionary()  if the title exist already', () => {
+            const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
+
+            component.dictionaryInput = {
+                title: 'Mon dictionnaire',
+                description: 'Un dictionnaire',
+                words: ['string'],
+            };
+            component.addDictionary();
+            expect(dictionaryServiceSpy.addDictionary).not.toHaveBeenCalled();
+            expect(resetDictionnarySpy).toHaveBeenCalled();
+        });
         // it('added dictionary should be added to list', () => {});
     });
 
@@ -167,6 +180,19 @@ describe('AdminDictionariesComponent', () => {
             expect(dictionaryServiceSpy.getDictionaries).toHaveBeenCalled();
         });
 
+        it('modifyDictionary() should not call updateDictionaryList if the title or the description is blank', () => {
+            const spy = spyOn(component, 'updateDictionaryList');
+
+            component.modifyDictionary({ title: '', newTitle: '', newDescription: '' });
+            expect(spy).not.toHaveBeenCalled();
+        });
+
+        it('modifyDictionary() should not call updateDictionaryList if the title is the same as an other one', () => {
+            const spy = spyOn(component, 'updateDictionaryList');
+
+            component.modifyDictionary({ title: 'Mon dictionnaire2', newTitle: 'Mon dictionnaire', newDescription: 'Bonjour' });
+            expect(spy).not.toHaveBeenCalled();
+        });
         // it('modified dictionary should have a new title and old description if only title is modified', () => {});
 
         // it('modified dictionary should have a new description and old title if only description is modified', () => {});
@@ -195,6 +221,15 @@ describe('AdminDictionariesComponent', () => {
             const message = '';
             component.detectImportFile();
             expect(component.fileError.nativeElement.textContent).toEqual(message);
+        });
+
+        it('detectImportFile() should set selectedFile to null if there is a file that is being selected', () => {
+            const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+            const dT = new DataTransfer();
+            dT.items.add(new File([blob], 'test.json'));
+            component.file.nativeElement.files = dT.files;
+            component.detectImportFile();
+            expect(component.selectedFile).toEqual(null);
         });
 
         it('selecting a file should call detectImportFile()', fakeAsync(() => {
