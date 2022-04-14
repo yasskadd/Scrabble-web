@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { Bot } from '@app/interfaces/bot';
 import { Dictionary } from '@app/interfaces/dictionary';
+import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
 import { HttpHandlerService } from './http-handler.service';
@@ -108,7 +109,7 @@ describe('HttpHandlerService', () => {
             const expectedMessage: Dictionary[] = [{ title: 'Mon dictionnaire', description: 'Une description', words: ['string'] }];
 
             // check the content of the mocked call
-            service.getDictionaries().subscribe((dictionaries: Dictionary[]) => {
+            service.getDictionaries().subscribe((dictionaries: DictionaryInfo[]) => {
                 expect(dictionaries).toEqual(expectedMessage);
             }, fail);
 
@@ -141,7 +142,7 @@ describe('HttpHandlerService', () => {
         });
 
         it('should not return any message when sending a Put request (HttpClient called once)', () => {
-            const sentMessage = { oldTitle: 'facile', newTitle: 'expert', newDescription: 'Expert Dictionary' };
+            const sentMessage = { title: 'facile', newTitle: 'expert', newDescription: 'Expert Dictionary' };
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.modifyDictionary(sentMessage).subscribe(() => {}, fail);

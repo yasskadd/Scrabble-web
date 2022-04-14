@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { DialogBoxModifyDictionaryComponent } from './dialog-box-modify-dictionary.component';
 
-const DICTIONARIES: Dictionary[] = [
-    { title: 'Title1', description: 'description1', words: ['yo'] },
-    { title: 'Title2', description: 'description2', words: ['yo'] },
-    { title: 'Title3', description: 'description3', words: ['yo'] },
-    { title: 'Title4', description: 'description4', words: ['yo'] },
-    { title: 'Title5', description: 'description5', words: ['yo'] },
-    { title: 'Title6', description: 'description6', words: ['yo'] },
-    { title: 'Title7', description: 'description7', words: ['yo'] },
-];
+// const DICTIONARIES: DictionaryInfo[] = [
+//     { title: 'Title1', description: 'description1' },
+//     { title: 'Title2', description: 'description2' },
+//     { title: 'Title3', description: 'description3' },
+//     { title: 'Title4', description: 'description4' },
+//     { title: 'Title5', description: 'description5' },
+//     { title: 'Title6', description: 'description6' },
+//     { title: 'Title7', description: 'description7' },
+// ];
 
 describe('DialogBoxModifyDictionaryComponent', () => {
     let component: DialogBoxModifyDictionaryComponent;
@@ -44,7 +43,7 @@ describe('DialogBoxModifyDictionaryComponent', () => {
             'resetDictionaries',
         ]);
 
-        dictionaryServiceSpy.dictionaries = DICTIONARIES; // TODO : make this work!!
+        // dictionaryServiceSpy.dictionaries = DICTIONARIES; // TODO : make this work!!
     });
 
     it('should create', () => {

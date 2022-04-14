@@ -34,9 +34,23 @@ fdescribe('AdminDictionariesComponent', () => {
     });
 
     describe('Default dictionary tests', () => {
-        it('isDefault() should return true if the dictionary is the default dictionary', () => {});
+        it('isDefault() should return true if the dictionary is the default dictionary', () => {
+            expect(
+                component.isDefault({
+                    title: 'Mon dictionnaire',
+                    description: 'Description de base',
+                }),
+            ).toBeTruthy();
+        });
 
-        it('isDefault() should return false if dictionary is not default dictionary', () => {});
+        it('isDefault() should return false if dictionary is not default dictionary', () => {
+            expect(
+                component.isDefault({
+                    title: 'Le dictionnaire larousse',
+                    description: 'dictionnaire francais',
+                }),
+            ).toBeFalsy();
+        });
 
         it('dictionary in list should have buttons if isDefault() returns false', () => {});
 
