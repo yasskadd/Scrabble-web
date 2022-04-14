@@ -11,7 +11,9 @@
             <div class="title">{{ dictionary.title }}</div>
             <div class="description">{{ dictionary.description }}</div>
             <div class="buttons">
-                <button mat-raised-button (click)="openModifyDictionaryDialog(dictionary)" *ngIf="!isDefault(dictionary)">Modifier</button>
+                <button class="buttonModify" mat-raised-button (click)="openModifyDictionaryDialog(dictionary)" *ngIf="!isDefault(dictionary)">
+                    Modifier
+                </button>
             </div>
             <div class="buttons">
                 <button mat-raised-button (click)="deleteDictionary(dictionary)" *ngIf="!isDefault(dictionary)">Supprimer</button>
