@@ -27,6 +27,7 @@ export class MainPageComponent {
     openHighScoreDialog(): void {
         this.highScore.open(DialogBoxHighScoresComponent, {
             width: this.dialogWidthHighScore,
+            panelClass: 'highScoreComponent',
             disableClose: true,
         });
     }
