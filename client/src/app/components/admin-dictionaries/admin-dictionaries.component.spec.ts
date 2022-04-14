@@ -15,7 +15,7 @@ export class MatDialogMock {
     }
 }
 
-fdescribe('AdminDictionariesComponent', () => {
+describe('AdminDictionariesComponent', () => {
     let component: AdminDictionariesComponent;
     let fixture: ComponentFixture<AdminDictionariesComponent>;
     let saveAsSpy: jasmine.Spy<jasmine.Func>;
@@ -211,6 +211,15 @@ fdescribe('AdminDictionariesComponent', () => {
             component.updateImportMessage(message, color);
             expect(component.fileError.nativeElement.textContent).toEqual(message);
             expect(component.fileError.nativeElement.style.color).toEqual(color);
+        });
+    });
+
+    describe('reset DictionaryInput tests', () => {
+        it('resetDictionaryInput() should call dictionaryService.resetDictionaries() and updateDictionaryList()', () => {
+            const spy = spyOn(component, 'updateDictionaryList');
+            component.resetDictionaries();
+            expect(dictionaryServiceSpy.resetDictionaries).toHaveBeenCalled();
+            expect(spy).toHaveBeenCalled();
         });
     });
 });
