@@ -1,11 +1,11 @@
 .sticky {
-    position: fixed;
+    position: absolute;
     bottom: 0;
     width: 100%;
 }
 
 footer {
-    height: 120px;
+    height: 85px;
     width: 100%;
     text-align: center;
     color: #23501f;
@@ -17,7 +17,7 @@ footer {
     font-family: system-ui;
     font-size: 20px;
     font-weight: 500;
-    margin-top: 30px;
+    margin-top: 20px;
     margin-bottom: 10px;
 }
 
