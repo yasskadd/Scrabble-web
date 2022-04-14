@@ -20,6 +20,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
+import { DictionaryService } from '@app/services/dictionary.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 import { of } from 'rxjs';
@@ -88,6 +89,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let fixture: ComponentFixture<MultiplayerCreatePageComponent>;
     let location: Location;
     let router: Router;
+    let dictionaryServiceSpy: jasmine.SpyObj<DictionaryService>;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
     let dictionaryVerificationSpy: jasmine.SpyObj<DictionaryVerificationService>;
@@ -107,6 +109,7 @@ describe('MultiplayerCreatePageComponent', () => {
             'beginScrabbleGame',
             'importDictionary',
         ]);
+        dictionaryServiceSpy = jasmine.createSpyObj('DictionaryService', ['uploadDictionary']);
 
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
@@ -142,6 +145,7 @@ describe('MultiplayerCreatePageComponent', () => {
 
             declarations: [MultiplayerCreatePageComponent],
             providers: [
+                { provide: DictionaryService, useValue: dictionaryServiceSpy },
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
                 { provide: MatSnackBar, useValue: mockMatSnackBar },
                 {
@@ -180,10 +184,9 @@ describe('MultiplayerCreatePageComponent', () => {
     // eslint-disable-next-line max-len
     it('uploadDictionary() should call fileOnLoad if there is a selected file to upload', async () => {});
 
-    it('uploadDictionary() should set textContent of fileError with no file selected message if there is no selected file to upload', () => {
-        const messageSpy = spyOn(component, 'updateDictionaryMessage');
+    it('uploadDictionary() should call dictionaryService.uploadDictionary', () => {
         component.uploadDictionary();
-        expect(messageSpy).toHaveBeenCalledWith("Il n'y a aucun fichier séléctioné", 'red');
+        expect(dictionaryServiceSpy.uploadDictionary).toHaveBeenCalled();
     });
 
     // eslint-disable-next-line max-len

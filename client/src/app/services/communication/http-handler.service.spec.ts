@@ -113,7 +113,7 @@ describe('HttpHandlerService', () => {
                 expect(dictionaries).toEqual(expectedMessage);
             }, fail);
 
-            const req = httpMock.expectOne(`${baseUrl}/dictionary`);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary/info`);
             expect(req.request.method).toBe('GET');
             // actually send the request
             req.flush(expectedMessage);
@@ -146,7 +146,7 @@ describe('HttpHandlerService', () => {
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.modifyDictionary(sentMessage).subscribe(() => {}, fail);
-            const req = httpMock.expectOne(`${baseUrl}/dictionary/modify`);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary/replace`);
             expect(req.request.method).toBe('PUT');
             // actually send the request
             req.flush(sentMessage);
@@ -157,7 +157,7 @@ describe('HttpHandlerService', () => {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             service.resetDictionaries().subscribe(() => {}, fail);
 
-            const req = httpMock.expectOne(`${baseUrl}/dictionary/reset`);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary`);
             expect(req.request.method).toBe('DELETE');
             // actually send the request
             req.flush({}, { status: 204, statusText: 'NO CONTENT' });

@@ -155,12 +155,7 @@ describe('AdminVirtualPlayersComponent', () => {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it('replaceBotName should not call virtualPlayerService.replaceBotName if the currentName is a default name', () => {
-        component.replaceBotName('paul', 'lore', 'debutant');
-        expect(virtualPlayersServiceSpy.replaceBotName).not.toHaveBeenCalled();
-    });
-
-    it('replaceBotName should not call virtualPlayerService.replaceBotName if the currentName is a name', () => {
+    it('replaceBotName should not call virtualPlayerService.replaceBotName if the currentName is a name already', () => {
         component.replaceBotName('MARC', 'MARC', 'debutant');
         expect(virtualPlayersServiceSpy.replaceBotName).not.toHaveBeenCalled();
     });
@@ -172,17 +167,14 @@ describe('AdminVirtualPlayersComponent', () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it('isNameDefault should return true if the name is from the defaultList', () => {
+        expect(component.isNameDefault('robert')).toBeTruthy();
+    });
+
     it('deleteBot should call updateBotList() and virtualPlayerService.deleteBotName if the name is not from the default list', () => {
         const spy = spyOn(component, 'updateBotList');
         component.deleteBot('vinc', 'debutant');
         expect(virtualPlayersServiceSpy.deleteBotName).toHaveBeenCalled();
-        expect(spy).toHaveBeenCalled();
-    });
-
-    it('deleteBot should  not call virtualPlayerService.deleteBotName if the name is from the default list', () => {
-        const spy = spyOn(component, 'updateBotList');
-        component.deleteBot('paul', 'debutant');
-        expect(virtualPlayersServiceSpy.deleteBotName).not.toHaveBeenCalled();
         expect(spy).toHaveBeenCalled();
     });
 
