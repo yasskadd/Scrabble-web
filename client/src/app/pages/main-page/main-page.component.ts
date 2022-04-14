@@ -10,6 +10,9 @@ import { DialogBoxHighScoresComponent } from '@app/components/dialog-box-high-sc
 })
 export class MainPageComponent {
     readonly title: string = "Bienvenue au Scrabble de l'équipe 107!";
+
+    log2990Message =
+        "Un mode qui regroupe toutes les beautés du Scrabble Classique avec l'ajout d'objectifs afin de rajouter une difficulté supplémentaire";
     private readonly dialogWidth: string = '500px';
     private readonly dialogWidthHighScore: string = '500px';
     constructor(private dialog: MatDialog, private highScore: MatDialog) {}

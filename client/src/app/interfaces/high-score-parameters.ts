@@ -3,5 +3,5 @@ export interface HighScores {
     username: string;
     type: string;
     score: number;
-    position: string;
+    position: number;
 }

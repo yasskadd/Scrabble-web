@@ -1,6 +1,8 @@
 <mat-card class="container-wrapper">
     <div #container class="message-container">
-        <div *ngFor="let message of messages" [class]="'message ' + message.type">{{ message.data }}</div>
+        <div *ngFor="let message of messages" [class]="'message ' + message.type">
+            <span>{{ message.data }}</span>
+        </div>
     </div>
 </mat-card>
 <mat-form-field appearance="outline" (keydown.enter)="submit()" class="user-input">

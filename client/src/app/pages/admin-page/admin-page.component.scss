@@ -1,8 +1,7 @@
 body {
-    height: 100%;
+    min-height: 100%;
     width: 100%;
-    background-color: rgb(174, 192, 174);
-    justify-content: center;
+    background-color: #c2e5da;
     align-items: center;
     flex-direction: column;
 }
@@ -12,10 +11,26 @@ body {
 }
 
 .mat-tab-group {
-    background-color: rgb(225, 232, 248);
+    position: fixed;
+    top: 100px;
+    bottom: 120px;
     justify-content: flex-start;
     border-radius: 5px;
-    width: 50%;
-    height: 70%;
+    background-color: #7fa99b;
+}
+
+::ng-deep .mat-tab-label {
+    color: #163414;
+    font-family: system-ui;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+::ng-deep .mat-tab-body-wrapper {
     padding: 20px;
+}
+
+::ng-deep .mat-tab-group.mat-primary .mat-ink-bar,
+.mat-tab-nav-bar.mat-primary .mat-ink-bar {
+    background-color: #163414;
 }

@@ -41,6 +41,7 @@
 td {
     color: #bd0808;
     text-shadow: 1px 1px 1px black;
+    cursor: pointer;
 }
 
 .complete {
@@ -55,4 +56,8 @@ td {
     font-weight: bold;
     color: #23501f;
     text-shadow: 1px 1px 1px black;
+}
+
+tr > td > div > mat-icon {
+    color: white;
 }

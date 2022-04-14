@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import * as constants from '@common/constants/board-info';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
@@ -29,7 +30,7 @@ export class GameClientService {
     gameboardUpdated: Subject<boolean>;
     turnFinish: ReplaySubject<boolean>;
 
-    constructor(private clientSocketService: ClientSocketService) {
+    constructor(private clientSocketService: ClientSocketService, private snackBar: MatSnackBar) {
         this.timer = 0;
         this.letterReserveLength = 0;
         this.playerOne = {} as Player;
@@ -114,8 +115,19 @@ export class GameClientService {
         if (this.playerOne.objective === undefined || this.secondPlayer.objective === undefined) return;
         const indexPlayerOne = this.playerOne.objective.findIndex((element) => element.name === objective.name);
         const indexSecondPlayer = this.secondPlayer.objective.findIndex((element) => element.name === objective.name);
-        if (indexPlayerOne !== constants.INVALID_INDEX) this.playerOne.objective[indexPlayerOne].complete = true;
-        if (indexSecondPlayer !== constants.INVALID_INDEX) this.secondPlayer.objective[indexSecondPlayer].complete = true;
+        if (indexPlayerOne !== constants.INVALID_INDEX && !this.playerOne.objective[indexPlayerOne].complete) {
+            this.playerOne.objective[indexPlayerOne].complete = true;
+            this.openSnackBar(`L'objectif ${this.playerOne.objective[indexPlayerOne].name} a été complété`);
+        }
+        if (indexSecondPlayer !== constants.INVALID_INDEX && !this.secondPlayer.objective[indexSecondPlayer].complete)
+            this.secondPlayer.objective[indexSecondPlayer].complete = true;
+    }
+
+    private openSnackBar(reason: string): void {
+        this.snackBar.open(reason, 'fermer', {
+            duration: 3000,
+            horizontalPosition: 'center',
+        });
     }
 
     private setObjectives(objective: InitObjective) {

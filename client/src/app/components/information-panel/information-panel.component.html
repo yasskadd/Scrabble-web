@@ -23,8 +23,8 @@
                         {{ objective.name }}
                     </td>
                     <td *ngIf="objective.isPublic !== true" [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
-                        <div *ngIf="!objective.multiplier">| pts : {{ objective.points }}</div>
-                        <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }}</div>
+                        <div *ngIf="!objective.multiplier">| pts : {{ objective.points }} <mat-icon [inline]="true">info</mat-icon></div>
+                        <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }} <mat-icon [inline]="true">info</mat-icon></div>
                     </td>
                 </tr>
             </tbody>
@@ -60,15 +60,15 @@
                         [ngClass]="{ complete: objective.complete }"
                         [matTooltip]="objective.description"
                     >
-                        {{ objective.name }} : {{ objective.description }}
+                        {{ objective.name }}
                     </td>
                     <td
                         *ngIf="objective.complete !== undefined && objective.isPublic !== true"
                         [ngClass]="{ complete: objective.complete }"
                         [matTooltip]="objective.description"
                     >
-                        <div *ngIf="!objective.multiplier">| pts : {{ objective.points }}</div>
-                        <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }}</div>
+                        <div *ngIf="!objective.multiplier">| pts : {{ objective.points }} <mat-icon [inline]="true">info</mat-icon></div>
+                        <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }} <mat-icon [inline]="true">info</mat-icon></div>
                     </td>
                 </tr>
             </tbody>
@@ -96,8 +96,8 @@
                     {{ objective.name }}
                 </td>
                 <td *ngIf="objective.isPublic === true" [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
-                    <div *ngIf="!objective.multiplier">| pts : {{ objective.points }}</div>
-                    <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }}</div>
+                    <div *ngIf="!objective.multiplier">| pts : {{ objective.points }} <mat-icon [inline]="true">info</mat-icon></div>
+                    <div *ngIf="objective.multiplier">| pts : {{ objective.multiplier }} <mat-icon [inline]="true">info</mat-icon></div>
                 </td>
             </tr>
         </tbody>
