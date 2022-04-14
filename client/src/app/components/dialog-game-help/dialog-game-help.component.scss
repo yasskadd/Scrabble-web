@@ -1,0 +1,33 @@
+.field-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.images {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0px;
+}
+
+.arrow {
+    font-size: 45px;
+}
+
+h1 {
+    align-self: center;
+}
+
+mat-card {
+    margin: 10px 0px;
+}
+
+mat-card-title {
+    text-align: center;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+}

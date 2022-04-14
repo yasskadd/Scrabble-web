@@ -1,0 +1,52 @@
+<mat-stepper linear="false" #stepper>
+    <mat-step completed="false">
+        <div class="field-wrapper">
+            <mat-card>
+                <mat-card-title>Placer une lettre sur le plateau de jeu</mat-card-title>
+                <mat-card-content>
+                    <div class="images">
+                        <img src="/assets/images/1.jpg" /> <mat-icon class="arrow" inline="true">arrow_right_alt</mat-icon>
+                        <img src="/assets/images/2.jpg" /> <mat-icon class="arrow" inline="true">arrow_right_alt</mat-icon>
+                        <img src="/assets/images/3.jpg" />
+                    </div>
+                    <p>
+                        Pour placer une lettre, il faudra <b>CLIQUER</b> sur le plateau de jeu et <b>ÉCRIRE</b> les lettres à placer avec le clavier.
+                        Pour finaliser le placement, pressez le boutton <b>ENTER</b>.
+                    </p>
+                    <p><b>Note :</b> Il faut attendre son tour avant de placer des lettres</p></mat-card-content
+                >
+            </mat-card>
+            <div class="buttons">
+                <button mat-raised-button mat-dialog-close><mat-icon>close</mat-icon> Fermer</button>
+                <button mat-raised-button matStepperNext>Suivant <mat-icon>arrow_forward_ios</mat-icon></button>
+            </div>
+        </div>
+    </mat-step>
+    <mat-step completed="false">
+        <div class="field-wrapper">
+            <mat-card> </mat-card>
+            <div class="buttons">
+                <button mat-raised-button matStepperPrevious><mat-icon>arrow_back_ios</mat-icon> Retour</button>
+                <button mat-raised-button matStepperNext>Suivant <mat-icon>arrow_forward_ios</mat-icon></button>
+            </div>
+        </div>
+    </mat-step>
+    <mat-step completed="false">
+        <div class="field-wrapper">
+            <mat-card> HelloWorld </mat-card>
+            <div class="buttons">
+                <button mat-raised-button matStepperPrevious><mat-icon>arrow_back_ios</mat-icon> Retour</button>
+                <button mat-raised-button matStepperNext>Suivant <mat-icon>arrow_forward_ios</mat-icon></button>
+            </div>
+        </div>
+    </mat-step>
+    <mat-step completed="false">
+        <div class="field-wrapper">
+            <mat-card> HelloWorld </mat-card>
+            <div class="buttons">
+                <button mat-raised-button matStepperPrevious><mat-icon>arrow_back_ios</mat-icon> Retour</button>
+                <button mat-raised-button mat-dialog-close><mat-icon>close</mat-icon> Fermer</button>
+            </div>
+        </div>
+    </mat-step>
+</mat-stepper>

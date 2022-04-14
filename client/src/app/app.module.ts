@@ -11,6 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -28,6 +29,7 @@ import { DialogBoxAbandonGameComponent } from './components/dialog-box-abandon-g
 import { DialogBoxGameTypeComponent } from './components/dialog-box-game-type/dialog-box-game-type.component';
 import { DialogBoxHighScoresComponent } from './components/dialog-box-high-scores/dialog-box-high-scores.component';
 import { DialogBoxNewGameComponent } from './components/dialog-box-new-game-component/dialog-box-new-game.component';
+import { DialogGameHelpComponent } from './components/dialog-game-help/dialog-game-help.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
@@ -67,6 +69,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         DialogBoxNewGameComponent,
         HeaderComponent,
         FooterComponent,
+        DialogGameHelpComponent,
     ],
     imports: [
         CommonModule,
@@ -87,6 +90,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         MatSliderModule,
         MatAutocompleteModule,
         MatProgressSpinnerModule,
+        MatStepperModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

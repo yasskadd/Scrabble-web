@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxGameTypeComponent } from '@app/components/dialog-box-game-type/dialog-box-game-type.component';
 import { DialogBoxHighScoresComponent } from '@app/components/dialog-box-high-scores/dialog-box-high-scores.component';
+import { DialogGameHelpComponent } from '@app/components/dialog-game-help/dialog-game-help.component';
 
 @Component({
     selector: 'app-main-page',
@@ -30,5 +31,9 @@ export class MainPageComponent {
             panelClass: 'highScoreComponent',
             disableClose: true,
         });
+    }
+
+    openHelpDialog() {
+        this.dialog.open(DialogGameHelpComponent, { width: this.dialogWidthHighScore });
     }
 }
