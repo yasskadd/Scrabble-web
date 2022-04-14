@@ -1,5 +1,4 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxModifyDictionaryComponent } from '@app/components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
@@ -21,7 +20,7 @@ const DEFAULT_DICTIONARY: DictionaryInfo = {
 export class AdminDictionariesComponent {
     @ViewChild('file', { static: false }) file: ElementRef;
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
-    form: FormGroup;
+
     selectedFile: Dictionary | null;
     dictionaries: DictionaryInfo[];
     dictionaryInput: Dictionary;
@@ -60,7 +59,8 @@ export class AdminDictionariesComponent {
         if (modifiedDictionaryInfo.title === '' || modifiedDictionaryInfo.newDescription === '') return;
 
         this.dictionaryService.getDictionaries();
-        if (this.isUniqueTitle(modifiedDictionaryInfo.newTitle)) this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
+
+        if (!this.isUniqueTitle(modifiedDictionaryInfo.newTitle)) this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
     }
 
     downloadJson(dictionary: DictionaryInfo) {
@@ -86,7 +86,6 @@ export class AdminDictionariesComponent {
         this.fileError.nativeElement.textContent = '';
         if (this.file.nativeElement.files.length === 0) {
             this.selectedFile = null;
-            this.form.controls.dictionary.enable();
         }
     }
 
@@ -102,8 +101,8 @@ export class AdminDictionariesComponent {
     }
 
     resetDictionaryInput() {
-        this.dictionaryService.resetDictionaries();
-        this.updateDictionaryList();
+        //     this.dictionaryService.resetDictionaries();
+        //     this.updateDictionaryList();
     }
 
     addDictionary() {

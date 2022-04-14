@@ -1,10 +1,19 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogModule } from '@angular/material/dialog';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryService } from '@app/services/dictionary.service';
 import * as saver from 'file-saver';
+import { of } from 'rxjs';
 import { AdminDictionariesComponent } from './admin-dictionaries.component';
+
+export class MatDialogMock {
+    open() {
+        return {
+            afterClosed: () => of({ action: true }),
+        };
+    }
+}
 
 fdescribe('AdminDictionariesComponent', () => {
     let component: AdminDictionariesComponent;
@@ -13,13 +22,24 @@ fdescribe('AdminDictionariesComponent', () => {
     let dictionaryServiceSpy: jasmine.SpyObj<DictionaryService>;
 
     beforeEach(async () => {
-        dictionaryServiceSpy = jasmine.createSpyObj('DictionaryService', ['deleteDictionary', 'getDictionaries', 'addDictionary']);
+        dictionaryServiceSpy = jasmine.createSpyObj('DictionaryService', [
+            'deleteDictionary',
+            'getDictionaries',
+            'addDictionary',
+            'modifyDictionary',
+            'resetDictionaries',
+            'uploadDictionary',
+        ]);
+
         dictionaryServiceSpy.getDictionaries.and.resolveTo([]);
         // eslint-disable-next-line deprecation/deprecation
         saveAsSpy = spyOn(saver, 'saveAs').and.stub();
         await TestBed.configureTestingModule({
             imports: [MatDialogModule],
-            providers: [{ provide: DictionaryService, useValue: dictionaryServiceSpy }],
+            providers: [
+                { provide: DictionaryService, useValue: dictionaryServiceSpy },
+                { provide: MatDialog, useClass: MatDialogMock },
+            ],
             declarations: [AdminDictionariesComponent],
             schemas: [NO_ERRORS_SCHEMA],
         }).compileComponents();
@@ -127,14 +147,70 @@ fdescribe('AdminDictionariesComponent', () => {
     });
 
     describe('Modify dictionary tests', () => {
-        it('openModifyDictionaryDialog() should open dialog box', () => {});
+        it('openModifyDictionaryDialog() should open dialog box', () => {
+            // eslint-disable-next-line dot-notation
+            const dialogSpy = spyOn(component['modifyDictionaryDialog'], 'open').and.returnValue({ afterClosed: () => of(true) } as MatDialogRef<
+                typeof component
+            >);
+            const spy = spyOn(component, 'modifyDictionary');
+            component.openModifyDictionaryDialog({
+                title: 'Le dictionnaire larousse',
+                description: 'dictionnaire francais',
+            });
+            expect(dialogSpy).toHaveBeenCalled();
+            expect(spy).toHaveBeenCalled();
+        });
 
-        it('modifyDictionary() should call dictionaryService.modifyDictionary()', () => {});
+        it('modifyDictionary() should call dictionaryService.modifyDictionary()', () => {
+            component.modifyDictionary({ title: 'Titre de Base', newTitle: 'Titre Modifier', newDescription: 'Nouvelle Description' });
+            expect(dictionaryServiceSpy.modifyDictionary).toHaveBeenCalled();
+            expect(dictionaryServiceSpy.getDictionaries).toHaveBeenCalled();
+        });
 
-        it('modified dictionary should have a new title and old description if only title is modified', () => {});
+        // it('modified dictionary should have a new title and old description if only title is modified', () => {});
 
-        it('modified dictionary should have a new description and old title if only description is modified', () => {});
+        // it('modified dictionary should have a new description and old title if only description is modified', () => {});
 
-        it('modified dictionary should have a new title and  description if title and description are modified', () => {});
+        // it('modified dictionary should have a new title and  description if title and description are modified', () => {});
+    });
+
+    describe('reset Dictionaries tests', () => {
+        it('resetDictionaries() should call dictionaryService.resetDictionaries() and updateDictionaryList()', () => {
+            const spy = spyOn(component, 'updateDictionaryList');
+            component.resetDictionaries();
+            expect(dictionaryServiceSpy.resetDictionaries).toHaveBeenCalled();
+            expect(spy).toHaveBeenCalled();
+        });
+    });
+
+    describe('Upload Dictionnary tests', () => {
+        it('uploadDictionary() should call dictionaryService.uploadDictionary()', () => {
+            component.uploadDictionary();
+            expect(dictionaryServiceSpy.uploadDictionary).toHaveBeenCalled();
+        });
+    });
+
+    describe('detectImportFile  tests', () => {
+        it('detectImportFile() should set textContent of fileError to nothing', () => {
+            const message = '';
+            component.detectImportFile();
+            expect(component.fileError.nativeElement.textContent).toEqual(message);
+        });
+
+        it('selecting a file should call detectImportFile()', fakeAsync(() => {
+            const detectImportFileSpy = spyOn(component, 'detectImportFile');
+            const input = fixture.debugElement.nativeElement.querySelector('#selectFiles');
+            input.dispatchEvent(new Event('change'));
+            tick();
+            fixture.detectChanges();
+            expect(detectImportFileSpy).toHaveBeenCalled();
+        }));
+        it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
+            const message = 'Message';
+            const color = 'red';
+            component.updateImportMessage(message, color);
+            expect(component.fileError.nativeElement.textContent).toEqual(message);
+            expect(component.fileError.nativeElement.style.color).toEqual(color);
+        });
     });
 });
