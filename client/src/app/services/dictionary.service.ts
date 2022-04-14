@@ -26,8 +26,10 @@ export class DictionaryService {
     }
 
     modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
-        this.httpHandler.modifyDictionary(dictionaryInfo).subscribe();
-        this.getDictionaries();
+        this.httpHandler
+            .modifyDictionary(dictionaryInfo)
+            .toPromise()
+            .then(async () => this.getDictionaries());
     }
 
     resetDictionaries() {

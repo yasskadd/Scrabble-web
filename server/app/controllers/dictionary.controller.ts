@@ -34,8 +34,9 @@ export class DictionaryController {
         });
 
         // TODO:
-        this.router.get('/replace', async (req: Request, res: Response) => {
-            const dictionaries = await this.dictionaryStorage.replaceDictionary(req.body);
+        this.router.put('/replace', async (req: Request, res: Response) => {
+            const infoToReplace = req.body;
+            const dictionaries = await this.dictionaryStorage.replaceDictionary(infoToReplace);
             res.json(dictionaries);
         });
 

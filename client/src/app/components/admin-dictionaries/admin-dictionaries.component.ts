@@ -39,15 +39,14 @@ export class AdminDictionariesComponent {
     }
 
     openModifyDictionaryDialog(dictionaryToModify: DictionaryInfo) {
-        const title = dictionaryToModify.title;
         const dialogRef = this.modifyDictionaryDialog.open(DialogBoxModifyDictionaryComponent, {
             width: '50%',
-            data: dictionaryToModify,
+            data: { title: dictionaryToModify.title, newTitle: dictionaryToModify.title, description: dictionaryToModify.description },
             disableClose: true,
         });
 
         dialogRef.afterClosed().subscribe((result) => {
-            this.modifyDictionary({ title, newTitle: result.title, newDescription: result.description });
+            this.modifyDictionary({ title: dictionaryToModify.title, newTitle: result.title, newDescription: result.description });
         });
     }
 
@@ -57,10 +56,10 @@ export class AdminDictionariesComponent {
 
     modifyDictionary(modifiedDictionaryInfo: ModifiedDictionaryInfo) {
         if (modifiedDictionaryInfo.title === '' || modifiedDictionaryInfo.newDescription === '') return;
-
         this.dictionaryService.getDictionaries();
-
-        if (!this.isUniqueTitle(modifiedDictionaryInfo.newTitle)) this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
+        if (!(modifiedDictionaryInfo.title === modifiedDictionaryInfo.newTitle || !this.isUniqueTitle(modifiedDictionaryInfo.newTitle))) return;
+        this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
+        this.updateDictionaryList();
     }
 
     downloadJson(dictionary: DictionaryInfo) {
