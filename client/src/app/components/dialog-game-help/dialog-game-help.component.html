@@ -24,7 +24,25 @@
     </mat-step>
     <mat-step completed="false">
         <div class="field-wrapper">
-            <mat-card> </mat-card>
+            <mat-card>
+                <mat-card-title>Placer une lettre dans une direction</mat-card-title>
+                <mat-card-content>
+                    <div class="images">
+                        <div class="wrapper-second-part">
+                            <div>
+                                <img src="/assets/images/4.jpg" /> <mat-icon class="arrow" inline="true">arrow_right_alt</mat-icon>
+                                <img src="/assets/images/5.jpg" />
+                            </div>
+                            <p>Par défaut, le <b>PREMIER CLIQUE</b> sur une case permet un placement <b>HORIZONTALE</b>.</p>
+                            <div>
+                                <img src="/assets/images/6.jpg" /> <mat-icon class="arrow" inline="true">arrow_right_alt</mat-icon>
+                                <img src="/assets/images/7.jpg" />
+                            </div>
+                            <p>Le <b>SECOND CLIQUE</b> sur une case permet un placement <b>VERTICAL</b>.</p>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
             <div class="buttons">
                 <button mat-raised-button matStepperPrevious><mat-icon>arrow_back_ios</mat-icon> Retour</button>
                 <button mat-raised-button matStepperNext>Suivant <mat-icon>arrow_forward_ios</mat-icon></button>
@@ -33,7 +51,22 @@
     </mat-step>
     <mat-step completed="false">
         <div class="field-wrapper">
-            <mat-card> HelloWorld </mat-card>
+            <mat-card>
+                <mat-card-title>Enlever des lettres</mat-card-title>
+                <mat-card-content>
+                    <div class="images">
+                        <div class="wrapper-second-part">
+                            <div><img src="/assets/images/8.jpg" /></div>
+                            <p>Pour enlever une lettre non finalisée, utiliser la touche <b>BACKSPACE</b>.</p>
+                            <mat-icon class="arrow" inline="true">arrow_downward</mat-icon>
+                            <div><img src="/assets/images/9.jpg" /></div>
+                            <p>Pour enlever tout les lettres non finalisées, utiliser la touche <b>ESCAPE</b>.</p>
+                            <mat-icon class="arrow" inline="true">arrow_downward</mat-icon>
+                            <div><img src="/assets/images/10.jpg" /></div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
             <div class="buttons">
                 <button mat-raised-button matStepperPrevious><mat-icon>arrow_back_ios</mat-icon> Retour</button>
                 <button mat-raised-button matStepperNext>Suivant <mat-icon>arrow_forward_ios</mat-icon></button>
