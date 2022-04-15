@@ -99,6 +99,14 @@ describe('InformationPanelComponent', () => {
         component.abandonGame();
         expect(dialogSpy).toHaveBeenCalled();
     });
+
+    it('should open a dialog box if the user needs help method is called', () => {
+        // eslint-disable-next-line dot-notation
+        const dialogSpy = spyOn(component['dialog'], 'open');
+        component.openHelpDialog();
+        expect(dialogSpy).toHaveBeenCalled();
+    });
+
     it('should navigate to the home page if the leaveGame method is called', () => {
         const spyRouter = spyOn(router, 'navigate');
         const expectedURL = '/' + MULTIPLAYER_HOME_PAGE;
