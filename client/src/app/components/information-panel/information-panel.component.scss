@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Proxima+Nova');
+
 .player {
     border: 1px solid #c3c3c3;
     border-radius: 4px;
@@ -39,8 +41,10 @@
 }
 
 td {
-    color: #bd0808;
-    text-shadow: 1px 1px 1px black;
+    padding-left: 5px;
+    color: #000;
+    font-family: 'proxima-nova', sans-serif;
+    font-weight: bold;
     cursor: pointer;
 }
 
@@ -54,10 +58,65 @@ td {
     font-size: 40px;
     font-style: oblique;
     font-weight: bold;
-    color: #23501f;
+    color: #c2e5da;
     text-shadow: 1px 1px 1px black;
 }
 
 tr > td > div > mat-icon {
     color: white;
+}
+
+.mat-expansion-panel {
+    background-color: rgba($color: white, $alpha: 0);
+}
+
+.mat-expansion-panel:not([class*='mat-elevation-z']) {
+    box-shadow: none;
+}
+
+.assignment-icon {
+    float: left;
+}
+
+.objective-tr {
+    display: flex;
+    vertical-align: inherit;
+    border-color: inherit;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.mat-card {
+    transition: box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    padding: 10px;
+    border-radius: 12px;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-color: #8cceb9;
+}
+
+.numberCircle {
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    padding: 8px;
+    background: #fff;
+    border: 0.5px solid #0c2939;
+    color: #000;
+    text-align: center;
+    font-family: 'proxima-nova', sans-serif;
+    font-weight: bold;
+    right: 13px;
+    bottom: 3px;
+}
+
+.isPublic-obj {
+    color: #fff;
+    opacity: 0.8;
+    font-family: 'proxima-nova', sans-serif;
+    font-weight: lighter;
+    font-size: small;
 }

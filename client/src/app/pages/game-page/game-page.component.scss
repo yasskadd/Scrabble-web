@@ -29,20 +29,25 @@ body {
     max-width: 375px;
     box-shadow: 1px 3px 2px -2px rgba(0, 0, 0, 0.2), 1px 2px 2px 1px rgba(0, 0, 0, 0.14), 1px 2px 4px 1px rgba(0, 0, 0, 0.12);
     padding: 10px;
-    background-color: rgb(174, 192, 174);
+    background: rgb(142, 196, 178);
+    background: radial-gradient(circle, rgba(142, 196, 178, 1) 35%, rgba(131, 196, 174, 1) 100%);
 }
 
 .play-area {
     overflow: auto;
     flex-grow: 4;
     align-items: center;
-    background-color: rgb(225, 232, 248);
+    background: rgb(194, 229, 218);
+    background: radial-gradient(circle, rgba(194, 229, 218, 1) 35%, rgba(152, 215, 195, 1) 100%);
     justify-content: center;
+    border: solid #000;
+    border-width: 0 2px;
 }
 
 .chatbox {
     flex-grow: 1;
     max-width: 400px;
-    padding: 10px 10px 0px 10px;
-    background-color: rgb(174, 192, 174);
+    padding: 7px 7px 0px 10px;
+    background: rgb(142, 196, 178, 0.25);
+    background: radial-gradient(circle, rgba(142, 196, 178, 1) 35%, rgba(131, 196, 174, 1) 100%);
 }
