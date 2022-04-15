@@ -86,3 +86,8 @@ body {
 .highScoreComponent > mat-dialog-container {
     background-color: #7fa99b;
 }
+
+mat-step-header {
+    justify-content: center;
+    flex-direction: column;
+}

@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
 import { Router } from '@angular/router';
 import { DialogBoxAbandonGameComponent } from '@app/components/dialog-box-abandon-game/dialog-box-abandon-game.component';
+import { DialogGameHelpComponent } from '@app/components/dialog-game-help/dialog-game-help.component';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
@@ -47,5 +48,9 @@ export class InformationPanelComponent {
     leaveGame(): void {
         this.router.navigate(['/home']);
         this.gameClientService.quitGame();
+    }
+
+    openHelpDialog() {
+        this.dialog.open(DialogGameHelpComponent, { width: '50%' });
     }
 }

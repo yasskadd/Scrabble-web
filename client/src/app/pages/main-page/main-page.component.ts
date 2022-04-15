@@ -34,6 +34,6 @@ export class MainPageComponent {
     }
 
     openHelpDialog() {
-        this.dialog.open(DialogGameHelpComponent, { width: this.dialogWidthHighScore });
+        this.dialog.open(DialogGameHelpComponent, { width: '50%' });
     }
 }
