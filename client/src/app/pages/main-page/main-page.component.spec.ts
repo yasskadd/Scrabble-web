@@ -56,6 +56,13 @@ describe('MainPageComponent', () => {
         expect(dialogSpy).toHaveBeenCalled();
     });
 
+    it('openHelpDialog() should open the dialog', () => {
+        // eslint-disable-next-line dot-notation
+        const dialogSpy = spyOn(component['dialog'], 'open');
+        component.openHelpDialog();
+        expect(dialogSpy).toHaveBeenCalled();
+    });
+
     it('The Classic button should pass the Classique game mode', () => {
         const CLASSIC_GAME_MODE = 'classique';
         const openDialogSpy = spyOn(component, 'openDialog');
