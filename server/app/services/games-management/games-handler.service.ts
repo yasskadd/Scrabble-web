@@ -81,8 +81,9 @@ export class GamesHandler {
     async updateDictionary(oldDictionaryTitle: string, field: string, content: string) {
         await this.dictionaryStorage.updateDictionary(oldDictionaryTitle, field, content);
         const newTitle = field === 'title' ? content : oldDictionaryTitle;
-        this.dictionaries.set(newTitle, this.dictionaries.get(oldDictionaryTitle) as Behavior);
+        const behavior = this.dictionaries.get(oldDictionaryTitle) as Behavior;
         this.dictionaries.delete(oldDictionaryTitle);
+        this.dictionaries.set(newTitle, behavior);
     }
 
     async deleteDictionary(title: string) {

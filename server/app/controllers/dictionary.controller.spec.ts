@@ -44,7 +44,7 @@ describe('DictionaryController', () => {
     });
 
     it('should return 204 status is dictionary is in the database', async () => {
-        gamesHandler.dictionaryIsInDb.callThrough();
+        gamesHandler.dictionaryIsInDb.throws();
         return supertest(expressApp)
             .get('/dictionary/dictionaryisindb/title')
             .then((response) => {
