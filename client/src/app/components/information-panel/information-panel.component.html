@@ -44,7 +44,7 @@
             </mat-card>
         </tr>
         <p class="obj-paragraph">Complétés (Vous)</p>
-        <tr class="objective-tr" *ngFor="let objective of this.gameClientService.playerOne.objective">
+        <tr class="objective-tr" *ngFor="let objective of this.filterCompleteObjectives()">
             <mat-card *ngIf="objective.complete" class="objective-completed">
                 <p *ngIf="objective.isPublic && objective.complete" class="isPublic-obj"><mat-icon>people</mat-icon></p>
                 <p *ngIf="!objective.isPublic && objective.complete" class="isPublic-obj"><mat-icon>person</mat-icon></p>

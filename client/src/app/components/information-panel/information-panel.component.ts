@@ -8,6 +8,7 @@ import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { TimerService } from '@app/services/timer.service';
+import { Objective } from '@common/interfaces/objective';
 
 @Component({
     selector: 'app-information-panel',
@@ -52,5 +53,11 @@ export class InformationPanelComponent {
 
     openHelpDialog() {
         this.dialog.open(DialogGameHelpComponent, { width: '50%' });
+    }
+
+    filterCompleteObjectives() {
+        const objectives: Objective[] = this.gameClientService.playerOne.objective as Objective[];
+        if (objectives) return objectives.filter((objective) => objective.complete);
+        else return [];
     }
 }
