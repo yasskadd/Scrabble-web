@@ -1,18 +1,18 @@
 import { Dictionary } from '@app/interfaces/dictionary';
-import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { Request, Response, Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { Service } from 'typedi';
 
 const HTTP_STATUS_CREATED = StatusCodes.CREATED;
+const HTTP_STATUS_NO_CONTENT = StatusCodes.NO_CONTENT;
 const HTTP_STATUS_FOUND = StatusCodes.OK;
 
 @Service()
 export class DictionaryController {
     router: Router;
 
-    constructor(private readonly dictionaryStorage: DictionaryStorageService, private gamesHandler: GamesHandler) {
+    constructor(private gamesHandler: GamesHandler) {
         this.configureRouter();
     }
 
@@ -25,12 +25,12 @@ export class DictionaryController {
                 await this.gamesHandler.dictionaryIsInDb(title);
                 res.status(HTTP_STATUS_FOUND).send();
             } catch {
-                res.status(HTTP_STATUS_CREATED).send();
+                res.status(HTTP_STATUS_NO_CONTENT).send();
             }
         });
 
         this.router.get('/info', async (req: Request, res: Response) => {
-            const dictionaries = (await this.dictionaryStorage.getDictionaries()).map((dictionary: Dictionary) => ({
+            const dictionaries = (await this.gamesHandler.getDictionaries()).map((dictionary: Dictionary) => ({
                 title: dictionary.title,
                 description: dictionary.description,
             }));
