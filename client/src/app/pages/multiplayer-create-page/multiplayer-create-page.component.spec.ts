@@ -185,7 +185,7 @@ describe('MultiplayerCreatePageComponent', () => {
         dT.items.add(new File([blob], 'test.json'));
         component.file.nativeElement.files = dT.files;
 
-        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
+        dictionaryVerificationSpy.globalVerification.and.callFake(async () => 'Did not passed');
         await component.uploadDictionary();
         expect(messageSpy).toHaveBeenCalled();
     });
@@ -203,23 +203,11 @@ describe('MultiplayerCreatePageComponent', () => {
         const dT = new DataTransfer();
         dT.items.add(new File([blob], 'test.json'));
         component.file.nativeElement.files = dT.files;
-        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Passed');
+        dictionaryVerificationSpy.globalVerification.and.callFake(async () => 'Passed');
         component.fileOnLoad({});
         tick(5000);
         expect(messageSpy).toHaveBeenCalledWith('Ajout avec succès du nouveau dictionnaire', 'black');
         expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
-    }));
-
-    // eslint-disable-next-line max-len
-    it('fileOnLoad() should call importDictionary of GameConfigurationService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Passed');
-        component.fileOnLoad({});
-        tick(5000);
-        expect(gameConfigurationServiceSpy.importDictionary).toHaveBeenCalled();
     }));
 
     // eslint-disable-next-line max-len
@@ -229,7 +217,7 @@ describe('MultiplayerCreatePageComponent', () => {
         const dT = new DataTransfer();
         dT.items.add(new File([blob], 'test.json'));
         component.file.nativeElement.files = dT.files;
-        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
+        dictionaryVerificationSpy.globalVerification.and.callFake(async () => 'Did not passed');
         component.fileOnLoad({});
         tick(5000);
         expect(messageSpy).toHaveBeenCalledWith('Did not passed', 'red');

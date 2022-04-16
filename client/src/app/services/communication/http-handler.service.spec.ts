@@ -129,6 +129,30 @@ describe('HttpHandlerService', () => {
         req.flush(sentMessage);
     });
 
+    it('should return status code 200 if dictionary is in database list (HttpClient called once)', () => {
+        // check the content of the mocked call
+        service.dictionaryIsInDb('dictionary').subscribe((response) => {
+            // eslint-disable-next-line @typescript-eslint/no-magic-numbers
+            expect(response.status).toEqual(200);
+        }, fail);
+
+        const req = httpMock.expectOne(`${baseUrl}/dictionary/dictionaryisindb/dictionary`);
+        expect(req.request.method).toBe('GET');
+        // actually send the request
+        req.flush('dictionary');
+    });
+
+    it('should not return any message when sending a PUT request for modifyDictionary (HttpClient called once)', () => {
+        const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
+        // check the content of the mocked call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        service.modifyDictionary(dictionary).subscribe(() => {}, fail);
+        const req = httpMock.expectOne(`${baseUrl}/dictionary/replace`);
+        expect(req.request.method).toBe('PUT');
+        // actually send the request
+        req.flush(dictionary);
+    });
+
     it('should return expected BeginnerBot list (HttpClient called once)', () => {
         const expectedMessage: Bot[] = [{ username: 'Vincent', difficulty: 'debutant' }];
 

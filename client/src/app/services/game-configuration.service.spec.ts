@@ -54,14 +54,6 @@ describe('GameConfigurationService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('importDictionary() should send a command to the server to import a new dictionary', () => {
-        const title = 'Mon dictionnaire';
-        // eslint-disable-next-line dot-notation
-        const spyOnSocket = spyOn(service['clientSocket'], 'send');
-        service.importDictionary(title);
-        expect(spyOnSocket).toHaveBeenCalledWith(SocketEvents.ImportDictionary, title);
-    });
-
     it('beginScrabbleGame() send a message to the server with a room id to start the game of this room', () => {
         // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');

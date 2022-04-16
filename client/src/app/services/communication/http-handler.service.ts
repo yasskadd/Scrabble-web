@@ -73,8 +73,8 @@ export class HttpHandlerService {
         );
     }
 
-    modifyDictionary(bot: Dictionary): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, bot).pipe(catchError(this.handleError<void>('modifyDictionary')));
+    modifyDictionary(dictionary: Dictionary): Observable<void> {
+        return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
     }
 
     getBeginnerBots(): Observable<Bot[]> {
