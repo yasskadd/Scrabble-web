@@ -61,8 +61,20 @@ export class HttpHandlerService {
         return this.http.post<void>(`${this.baseUrl}/dictionary/upload`, dictionary).pipe(catchError(this.handleError<void>('addDictionary')));
     }
 
-    modifyDictionary(bot: Dictionary): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, bot).pipe(catchError(this.handleError<void>('modifyDictionary')));
+    // Reason: the server does't really return something but just a status code
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dictionaryIsInDb(title: string): Observable<any> {
+        return (
+            this.http
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .get<any>(`${this.baseUrl}/dictionary/dictionaryisindb/${title}`, { observe: 'response' })
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .pipe(catchError(this.handleError<any>('dictionaryIsInDb')))
+        );
+    }
+
+    modifyDictionary(dictionary: Dictionary): Observable<void> {
+        return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
     }
 
     getBeginnerBots(): Observable<Bot[]> {
