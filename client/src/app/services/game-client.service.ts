@@ -208,6 +208,7 @@ export class GameClientService {
         this.playerOneTurn = false;
         this.isGameFinish = true;
         this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
+        this.openSnackBar(this.winningMessage);
     }
 
     private skipEvent(gameInfo: GameInfo) {
@@ -226,13 +227,16 @@ export class GameClientService {
     private findWinnerByScore(): void {
         if (this.playerOne.score === this.secondPlayer.score) {
             this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
+            this.openSnackBar(this.winningMessage);
             return;
         }
         if (this.playerOne.score > this.secondPlayer.score) {
             this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
+            this.openSnackBar(this.winningMessage);
             return;
         }
         this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
+        this.openSnackBar(this.winningMessage);
     }
     private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {
         let letterString = '';

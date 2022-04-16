@@ -2,6 +2,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderChange, MatSliderModule } from '@angular/material/slider';
@@ -72,6 +73,7 @@ describe('InformationPanelComponent', () => {
                 FormsModule,
                 BrowserModule,
                 MatIconModule,
+                MatCardModule,
                 RouterTestingModule.withRoutes([{ path: MULTIPLAYER_HOME_PAGE, component: StubComponent }]),
             ],
             declarations: [InformationPanelComponent],

@@ -21,6 +21,24 @@
     justify-content: flex-end;
 }
 
+.game-infos {
+    border: 1px solid #c3c3c3;
+    border-radius: 4px;
+    padding: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: rgba(225, 248, 227, 0.513);
+}
+#combined {
+    display: flex;
+    justify-content: space-between;
+}
+
+.game-infos > * {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+}
 .name-score > * {
     width: 100%;
     display: flex;
@@ -166,4 +184,12 @@ tr > td > div > mat-icon {
     border: 1px solid #609987;
     display: inline-block;
     background-color: rgba(0, 0, 0, 0);
+}
+
+.score {
+    color: rgb(5, 5, 5) !important;
+}
+
+.playerInfo {
+    text-align: left;
 }
