@@ -43,18 +43,16 @@ export class DictionaryService {
 
     async uploadDictionary(
         gameConfiguration: GameConfigurationService | null,
-        file: ElementRef,
+        files: FileList,
         selectedFile: Dictionary | null,
         fileError: ElementRef,
     ) {
-        if (file.nativeElement.files.length !== 0) {
+        if (files.length !== 0) {
             const fileReader = new FileReader();
-            const content = await this.readFile(file.nativeElement.files[0], fileReader);
+            const content = await this.readFile(files[0], fileReader);
             this.updateDictionaryMessage(fileError, 'En vérification, veuillez patienter...', 'red');
             this.fileOnLoad(gameConfiguration, selectedFile, fileError, content);
-        } else {
-            this.updateDictionaryMessage(fileError, "Il n'y a aucun fichier séléctioné", 'red');
-        }
+        } else this.updateDictionaryMessage(fileError, "Il n'y a aucun fichier séléctioné", 'red');
     }
 
     fileOnLoad(
@@ -63,9 +61,9 @@ export class DictionaryService {
         fileError: ElementRef,
         newDictionary: Record<string, unknown>,
     ) {
-        if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
+        if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed')
             this.updateDictionaryMessage(fileError, this.dictionaryVerification.globalVerification(newDictionary), 'red');
-        } else {
+        else {
             selectedFile = newDictionary as unknown as Dictionary;
             this.httpHandler.addDictionary(selectedFile).subscribe();
             setTimeout(() => {

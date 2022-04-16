@@ -79,7 +79,7 @@ export class AdminDictionariesComponent {
     }
 
     uploadDictionary() {
-        this.dictionaryService.uploadDictionary(null, this.file, this.selectedFile, this.fileError);
+        this.dictionaryService.uploadDictionary(null, this.file.nativeElement.files, this.selectedFile, this.fileError);
     }
 
     detectImportFile() {

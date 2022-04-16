@@ -402,6 +402,7 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
         expect(timerOptions.length).toEqual(component.timerList.length);
     }));
+
     it('should set timer to timer option when one is select', fakeAsync(() => {
         const timerSelect = fixture.debugElement.nativeElement.querySelector('#timer-select');
         timerSelect.click();
