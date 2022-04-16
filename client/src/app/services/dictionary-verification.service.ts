@@ -1,29 +1,29 @@
 import { Injectable } from '@angular/core';
 import { Dictionary } from '@app/interfaces/dictionary';
-import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HttpHandlerService } from './communication/http-handler.service';
+import { GameConfigurationService } from './game-configuration.service';
 
 const MAX_TITLE_CHAR = 30;
 const MAX_DESCRIPTION_CHAR = 125;
+const HTTP_STATUS_FOUND = 200;
 
 @Injectable({
     providedIn: 'root',
 })
 export class DictionaryVerificationService {
-    dictionaries: DictionaryInfo[];
+    constructor(private readonly httpHandler: HttpHandlerService, public gameConfiguration: GameConfigurationService) {}
 
-    constructor(private readonly httpHandler: HttpHandlerService) {
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaries = dictionaries));
-    }
-    globalVerification(dictionary: unknown): string {
+    async globalVerification(dictionary: unknown): Promise<string> {
         if (!this.isDictionary(dictionary))
             return "Le fichier téléversé n'est pas un dictionnaire. Les champs title, description ou words sont manquant.";
         if (this.fieldEmptyVerification(dictionary as Dictionary) !== 'Passed') return this.fieldEmptyVerification(dictionary as Dictionary);
         if (this.fieldLimitVerification(dictionary as Dictionary) !== 'Passed') return this.fieldLimitVerification(dictionary as Dictionary);
-        if (this.alreadyExist((dictionary as Dictionary).title) !== 'Passed') return this.alreadyExist((dictionary as Dictionary).title);
+        const alreadyExist = await this.alreadyExist((dictionary as Dictionary).title);
+        if (alreadyExist !== 'Passed') return alreadyExist;
         return 'Passed';
     }
 
+    // Reason: we don't really what type of content the json file has.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private isDictionary(dictionary: any): boolean {
         if ('title' && 'description' && 'words' in dictionary) {
@@ -57,10 +57,14 @@ export class DictionaryVerificationService {
         return array.length > maxLimit;
     }
 
-    private alreadyExist(title: string): string {
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaries = dictionaries));
-        if (this.dictionaries.some((dictionary) => dictionary.title === title)) return 'Le dictionnaire existe déjà dans la base de données';
-        return 'Passed';
+    private async alreadyExist(title: string): Promise<string> {
+        return this.httpHandler
+            .dictionaryIsInDb(title)
+            .toPromise()
+            .then((response) => {
+                if (response.status === HTTP_STATUS_FOUND) return 'Le dictionnaire existe déjà dans la base de données';
+                return 'Passed';
+            });
     }
 
     private wordsListIsValid(words: unknown): boolean {
@@ -73,24 +77,6 @@ export class DictionaryVerificationService {
 
     private wordIsValid(word: unknown): boolean {
         if (typeof word !== 'string') return false;
-        // if (this.wordHasSpace(word)) return false;
-        // if (this.isOneLetterWord(word)) return false;
-        // if (this.wordHasHyphen(word)) return false;
         return /^[a-z][a-z]+$/.test(word as string);
     }
-
-    // private wordHasSpace(word: string): boolean {
-    //     if (word.indexOf(' ') >= 0) return true;
-    //     return false;
-    // }
-
-    // private isOneLetterWord(word: string): boolean {
-    //     if (word.length === 1) return true;
-    //     return false;
-    // }
-
-    // private wordHasHyphen(word: string): boolean {
-    //     if (word.indexOf('-') >= 0) return true;
-    //     return false;
-    // }
 }

@@ -10,8 +10,6 @@ import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 const TIMEOUT_REQUEST = 500;
-const TIMEOUT_POST = 5000;
-const TIMEOUT_VERIFICATION = 50;
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -95,22 +93,25 @@ export class MultiplayerCreatePageComponent implements OnInit {
             const fileReader = new FileReader();
             const content = await this.readFile(selectedFile, fileReader);
             this.updateDictionaryMessage('En vérification, veuillez patienter...', 'red');
-            this.fileOnLoad(content);
+            await this.fileOnLoad(content);
         } else {
             this.updateDictionaryMessage("Il n'y a aucun fichier séléctioné", 'red');
         }
     }
 
-    fileOnLoad(newDictionary: Record<string, unknown>) {
-        if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
-            this.updateDictionaryMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
+    async fileOnLoad(newDictionary: Record<string, unknown>) {
+        const globalVerification = await this.dictionaryVerification.globalVerification(newDictionary);
+        if (globalVerification !== 'Passed') {
+            this.updateDictionaryMessage(globalVerification, 'red');
         } else {
             this.selectedFile = newDictionary as unknown as Dictionary;
-            this.httpHandler.addDictionary(this.selectedFile).subscribe();
-            setTimeout(() => {
-                this.gameConfiguration.importDictionary((this.selectedFile as Dictionary).title);
-                this.updateDictionaryMessage('Ajout avec succès du nouveau dictionnaire', 'black');
-            }, TIMEOUT_POST);
+            this.httpHandler
+                .addDictionary(this.selectedFile)
+                .toPromise()
+                .then(() => {
+                    this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
+                    this.updateDictionaryMessage('Ajout avec succès du nouveau dictionnaire', 'black');
+                });
         }
     }
 
@@ -218,13 +219,14 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     private async dictionaryIsInDB(title: string): Promise<boolean> {
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                if (this.dictionaryList.some((dictionary) => dictionary.title === title)) resolve(true);
+        return this.httpHandler
+            .getDictionaries()
+            .toPromise()
+            .then((dictionaries) => {
+                this.dictionaryList = dictionaries;
+                if (dictionaries.some((dictionary) => dictionary.title === title)) return true;
                 this.updateDictionaryMessage("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
-                resolve(false);
-            }, TIMEOUT_VERIFICATION);
-        });
+                return false;
+            });
     }
 }
