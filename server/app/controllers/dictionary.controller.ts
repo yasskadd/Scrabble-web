@@ -29,14 +29,9 @@ export class DictionaryController {
             }
         });
 
-        // TODO : TEST
         this.router.get('/all/:title', async (req: Request, res: Response) => {
-            try {
-                const title = req.params.title;
-                res.json(await this.gamesHandler.getDictionary(title));
-            } catch {
-                res.status(HTTP_STATUS_NO_CONTENT).send();
-            }
+            const title = req.params.title;
+            res.json(await this.gamesHandler.getDictionary(title));
         });
 
         this.router.delete('/', async (req: Request, res: Response) => {
@@ -44,18 +39,16 @@ export class DictionaryController {
             res.sendStatus(HTTP_STATUS_NO_CONTENT);
         });
 
-        // TODO:
         this.router.patch('/', async (req: Request, res: Response) => {
             const dictionaryTitle = req.body;
             await this.gamesHandler.deleteDictionary(dictionaryTitle.title);
             res.sendStatus(HTTP_STATUS_NO_CONTENT);
         });
 
-        // TODO:
         this.router.put('/', async (req: Request, res: Response) => {
             const infoToReplace = req.body;
-            const dictionaries = await this.gamesHandler.updateDictionary(infoToReplace);
-            res.json(dictionaries);
+            await this.gamesHandler.updateDictionary(infoToReplace);
+            res.sendStatus(HTTP_STATUS_CREATED);
         });
 
         this.router.get('/info', async (req: Request, res: Response) => {

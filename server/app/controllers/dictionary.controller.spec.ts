@@ -1,4 +1,5 @@
 import { Application } from '@app/app';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
 import { expect } from 'chai';
 import { StatusCodes } from 'http-status-codes';
@@ -21,6 +22,12 @@ const DICTIONARIES_INFO = [
     { title: 'Deuxieme dicitonnaire', description: 'Un dictionnaire' },
     { title: 'Troisieme dicitonnaire', description: 'Un dictionnaire' },
 ];
+
+const DICTIONARY: Dictionary = {
+    title: 'BigTests',
+    description: 'Big things',
+    words: [],
+};
 
 describe('DictionaryController', () => {
     let gamesHandler: SinonStubbedInstance<GamesHandler>;
@@ -63,7 +70,40 @@ describe('DictionaryController', () => {
 
     it('should return status 201 on dictionary post', async () => {
         return supertest(expressApp)
-            .post('/dictionary/')
+            .post('/dictionary')
+            .then((response) => {
+                expect(response.status).to.deep.equal(HTTP_STATUS_CREATED);
+            });
+    });
+
+    it('should return full dictionary on dictionary get', async () => {
+        gamesHandler.getDictionary.resolves(DICTIONARY);
+        return supertest(expressApp)
+            .get('/dictionary/all/BigThings')
+            .then((response) => {
+                expect(response.body).to.deep.equal(DICTIONARY);
+            });
+    });
+
+    it('should return status 204 when reseting all dictionaries', async () => {
+        return supertest(expressApp)
+            .delete('/dictionary')
+            .then((response) => {
+                expect(response.status).to.deep.equal(HTTP_STATUS_NO_CONTENT);
+            });
+    });
+
+    it('should return status 204 when deleting a dictionary', async () => {
+        return supertest(expressApp)
+            .patch('/dictionary')
+            .then((response) => {
+                expect(response.status).to.deep.equal(HTTP_STATUS_NO_CONTENT);
+            });
+    });
+
+    it('should return status 201 when we replace the information of a dictionary', async () => {
+        return supertest(expressApp)
+            .put('/dictionary')
             .then((response) => {
                 expect(response.status).to.deep.equal(HTTP_STATUS_CREATED);
             });

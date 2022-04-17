@@ -94,7 +94,7 @@ describe('VirtualPlayersController', () => {
 
     it('should return status 201 on virtualPlayer replace', async () => {
         return supertest(expressApp)
-            .put('/virtualPlayer/replace')
+            .put('/virtualPlayer')
             .then((response) => {
                 expect(response.status).to.deep.equal(HTTP_STATUS_CREATED);
             });

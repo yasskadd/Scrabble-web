@@ -220,7 +220,11 @@ describe('GamesHandler Service', () => {
     });
 
     it('updateDictionary() should call updateDictionary of DictionaryStorage', async () => {
-        await gamesHandler.updateDictionary('dictionary', 'title', 'string');
+        await gamesHandler.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
         expect(dictionaryStorageStub.updateDictionary.called).to.equal(true);
     });
 
@@ -238,7 +242,11 @@ describe('GamesHandler Service', () => {
             letterPlacement: letterPlacement as LetterPlacementService,
         };
         gamesHandler['dictionaries'].set(dictionary.title, behavior);
-        await gamesHandler.updateDictionary('dictionary1', 'title', 'string');
+        await gamesHandler.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
         expect(gamesHandler['dictionaries'].has('dictionary1')).to.equal(false);
     });
 
@@ -256,7 +264,11 @@ describe('GamesHandler Service', () => {
             letterPlacement: letterPlacement as LetterPlacementService,
         };
         gamesHandler['dictionaries'].set(dictionary.title, behavior);
-        await gamesHandler.updateDictionary('dictionary1', 'description', 'string');
+        await gamesHandler.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
         expect(gamesHandler['dictionaries'].has('dictionary1')).to.equal(true);
     });
 

@@ -42,7 +42,11 @@ describe('dictionaryStorage Service', () => {
         const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
         const dictionaryBuffer = Buffer.from(JSON.stringify(dictionary));
         getDictionaryStub.resolves(dictionaryBuffer);
-        await dictionaryStorageService.updateDictionary('dictionary', 'title', 'string');
+        await dictionaryStorageService.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
         expect(getDictionaryStub.called).to.equal(true);
     });
 
@@ -52,7 +56,11 @@ describe('dictionaryStorage Service', () => {
         const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
         const dictionaryBuffer = Buffer.from(JSON.stringify(dictionary));
         getDictionaryStub.resolves(dictionaryBuffer);
-        await dictionaryStorageService.updateDictionary('dictionary', 'title', 'string');
+        await dictionaryStorageService.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
         expect(addDictionaryStub.called).to.equal(true);
     });
 
@@ -62,7 +70,11 @@ describe('dictionaryStorage Service', () => {
         const dictionaryBuffer = Buffer.from(JSON.stringify(dictionary));
         const deletedDictionaryStub = Sinon.stub(dictionaryStorageService, 'deletedDictionary');
         getDictionaryStub.resolves(dictionaryBuffer);
-        await dictionaryStorageService.updateDictionary('dictionary1', 'title', 'string');
+        await dictionaryStorageService.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
         expect(deletedDictionaryStub.called).to.equal(true);
     });
 });
