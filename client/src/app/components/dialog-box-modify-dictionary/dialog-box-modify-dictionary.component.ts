@@ -13,5 +13,5 @@ export interface DialogData {
     styleUrls: ['./dialog-box-modify-dictionary.component.scss'],
 })
 export class DialogBoxModifyDictionaryComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public dictionaryData: DialogData) {}
+    constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 }
