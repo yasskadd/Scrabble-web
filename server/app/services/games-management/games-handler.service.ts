@@ -25,6 +25,14 @@ export class GamesHandler {
         this.setDictionaries();
     }
 
+    resetDictionaries() {
+        throw new Error('Method not implemented.');
+    }
+
+    replaceDictionary(infoToReplace: unknown) {
+        throw new Error('Method not implemented.');
+    }
+
     updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
         const player = this.players.get(socket.id) as Player;
         const players = this.gamePlayers.get(roomId) as Player[];

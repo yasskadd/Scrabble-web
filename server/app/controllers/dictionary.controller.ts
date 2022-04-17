@@ -29,23 +29,23 @@ export class DictionaryController {
             }
         });
 
-        // this.router.delete('/', async (req: Request, res: Response) => {
-        //     this.gamesHandler.resetDictionaries();
-        //     res.sendStatus(NO_CONTENT);
-        // });
+        this.router.delete('/', async (req: Request, res: Response) => {
+            this.gamesHandler.resetDictionaries();
+            res.sendStatus(HTTP_STATUS_NO_CONTENT);
+        });
 
-        // this.router.patch('/delete', async (req: Request, res: Response) => {
-        //     const dictionaryTitle = req.body;
-        //     await this.gamesHandler.deleteDictionary(dictionaryTitle);
-        //     res.sendStatus(NO_CONTENT);
-        // });
+        this.router.patch('/delete', async (req: Request, res: Response) => {
+            const dictionaryTitle = req.body;
+            await this.gamesHandler.deleteDictionary(dictionaryTitle);
+            res.sendStatus(HTTP_STATUS_NO_CONTENT);
+        });
 
-        // // TODO:
-        // this.router.put('/replace', async (req: Request, res: Response) => {
-        //     const infoToReplace = req.body;
-        //     const dictionaries = await this.gamesHandler.replaceDictionary(infoToReplace);
-        //     res.json(dictionaries);
-        // });
+        // TODO:
+        this.router.put('/replace', async (req: Request, res: Response) => {
+            const infoToReplace = req.body;
+            const dictionaries = await this.gamesHandler.replaceDictionary(infoToReplace);
+            res.json(dictionaries);
+        });
 
         this.router.get('/info', async (req: Request, res: Response) => {
             const dictionaries = (await this.gamesHandler.getDictionaries()).map((dictionary: Dictionary) => ({
