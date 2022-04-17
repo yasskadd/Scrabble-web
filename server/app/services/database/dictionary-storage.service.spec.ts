@@ -37,6 +37,15 @@ describe('dictionaryStorage Service', () => {
         expect(readFileStub.called).to.equal(true);
     });
 
+    it('getDictionariesFileName() should call readdir from fs.promises and should return all .json files', async () => {
+        const readdirStub = Sinon.stub(fs.promises, 'readdir');
+        readdirStub.resolves(['MisterWorldWide.json', 'booji.json', 'Gugu'] as never);
+        readdirStub.returns(['MisterWorldWide.json', 'booji.json', 'Gugu'] as never);
+        const result = await dictionaryStorageService.getDictionariesFileName();
+        expect(result).to.deep.equal(['MisterWorldWide.json', 'booji.json']);
+        expect(readdirStub.called).to.equal(true);
+    });
+
     it('updateDictionary() should call getDictionary', async () => {
         const getDictionaryStub = Sinon.stub(dictionaryStorageService, 'getDictionary');
         const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
