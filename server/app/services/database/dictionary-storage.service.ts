@@ -1,4 +1,5 @@
 import { Dictionary } from '@app/interfaces/dictionary';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Service } from 'typedi';
@@ -21,11 +22,12 @@ export class DictionaryStorageService {
         return await fs.promises.readFile(`./assets/${fileName}.json`);
     }
 
-    async updateDictionary(oldDictionaryTitle: string, field: string, content: string) {
-        const dictionaryToUpdate = JSON.parse((await this.getDictionary(oldDictionaryTitle)).toString());
-        dictionaryToUpdate[field] = content;
+    async updateDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
+        const dictionaryToUpdate = JSON.parse((await this.getDictionary(dictionaryInfo.title)).toString());
+        dictionaryToUpdate.title = dictionaryInfo.newTitle;
+        dictionaryToUpdate.description = dictionaryInfo.newDescription;
         await this.addDictionary(dictionaryToUpdate.title, JSON.stringify(dictionaryToUpdate));
-        await this.deletedDictionary(oldDictionaryTitle);
+        await this.deletedDictionary(dictionaryInfo.title);
     }
 
     async getDictionaries(): Promise<Dictionary[]> {

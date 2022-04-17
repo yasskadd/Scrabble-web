@@ -39,12 +39,12 @@ export class DictionaryController {
         //     res.sendStatus(NO_CONTENT);
         // });
 
-        // // TODO:
-        // this.router.put('/', async (req: Request, res: Response) => {
-        //     const infoToReplace = req.body;
-        //     const dictionaries = await this.gamesHandler.replaceDictionary(infoToReplace);
-        //     res.json(dictionaries);
-        // });
+        // TODO:
+        this.router.put('/', async (req: Request, res: Response) => {
+            const infoToReplace = req.body;
+            const dictionaries = await this.gamesHandler.updateDictionary(infoToReplace);
+            res.json(dictionaries);
+        });
 
         this.router.get('/info', async (req: Request, res: Response) => {
             const dictionaries = (await this.gamesHandler.getDictionaries()).map((dictionary: Dictionary) => ({

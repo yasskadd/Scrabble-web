@@ -58,8 +58,7 @@ export class AdminDictionariesComponent {
         if (modifiedDictionaryInfo.newTitle === '' || modifiedDictionaryInfo.newDescription === '') return;
         this.dictionaryService.getDictionaries();
         if (!(modifiedDictionaryInfo.title === modifiedDictionaryInfo.newTitle || !this.isUniqueTitle(modifiedDictionaryInfo.newTitle))) return;
-        this.dictionaryService.modifyDictionary(modifiedDictionaryInfo);
-        this.updateDictionaryList();
+        this.dictionaryService.modifyDictionary(modifiedDictionaryInfo).then(() => this.updateDictionaryList());
     }
 
     downloadJson(dictionary: DictionaryInfo) {

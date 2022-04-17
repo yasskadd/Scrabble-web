@@ -9,6 +9,7 @@ import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 
@@ -78,12 +79,11 @@ export class GamesHandler {
         }
     }
 
-    async updateDictionary(oldDictionaryTitle: string, field: string, content: string) {
-        await this.dictionaryStorage.updateDictionary(oldDictionaryTitle, field, content);
-        const newTitle = field === 'title' ? content : oldDictionaryTitle;
-        const behavior = this.dictionaries.get(oldDictionaryTitle) as Behavior;
-        this.dictionaries.delete(oldDictionaryTitle);
-        this.dictionaries.set(newTitle, behavior);
+    async updateDictionary(dictionaryModification: ModifiedDictionaryInfo) {
+        await this.dictionaryStorage.updateDictionary(dictionaryModification);
+        const behavior = this.dictionaries.get(dictionaryModification.title) as Behavior;
+        this.dictionaries.delete(dictionaryModification.title);
+        this.dictionaries.set(dictionaryModification.newTitle, behavior);
     }
 
     async deleteDictionary(title: string) {
