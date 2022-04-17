@@ -88,7 +88,13 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     uploadDictionary() {
-        this.dictionaryService.uploadDictionary(this.file.nativeElement.files, this.selectedFile, this.fileError, this.dictionaryList);
+        this.dictionaryService.uploadDictionary(
+            this.file.nativeElement.files,
+            this.selectedFile,
+            this.fileError.nativeElement.textContent,
+            this.file.nativeElement.style.color,
+            this.dictionaryList,
+        );
     }
 
     detectImportFile() {

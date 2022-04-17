@@ -73,7 +73,13 @@ export class AdminDictionariesComponent {
 
     uploadDictionary() {
         this.dictionaryService
-            .uploadDictionary(this.file.nativeElement.files, this.selectedFile, this.fileError, this.dictionaryList)
+            .uploadDictionary(
+                this.file.nativeElement.files,
+                this.selectedFile,
+                this.fileError.nativeElement.textContent,
+                this.file.nativeElement.style.color,
+                this.dictionaryList,
+            )
             .then(() => this.updateDictionaryList());
     }
 
