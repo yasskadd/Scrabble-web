@@ -23,7 +23,6 @@ export class AdminDictionariesComponent {
 
     selectedFile: Dictionary | null;
     dictionaries: DictionaryInfo[];
-    dictionaryInput: Dictionary;
 
     constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog) {
         this.selectedFile = null;
@@ -98,17 +97,5 @@ export class AdminDictionariesComponent {
     updateImportMessage(message: string, color: string) {
         this.fileError.nativeElement.textContent = message;
         this.fileError.nativeElement.style.color = color;
-    }
-
-    resetDictionaryInput() {
-        //     this.dictionaryService.resetDictionaries();
-        //     this.updateDictionaryList();
-    }
-
-    addDictionary() {
-        if (!this.isUniqueTitle(this.dictionaryInput.title)) {
-            this.dictionaryService.addDictionary(this.dictionaryInput);
-        }
-        this.resetDictionaryInput();
     }
 }
