@@ -62,7 +62,7 @@ export class HttpHandlerService {
 
     addDictionary(dictionary: Dictionary): Observable<void> {
         return this.http
-            .post<void>(`${this.baseUrl}/dictionary/upload`, {
+            .post<void>(`${this.baseUrl}/dictionary`, {
                 title: dictionary.title,
                 description: dictionary.description,
                 words: dictionary.words,
@@ -83,7 +83,7 @@ export class HttpHandlerService {
     }
 
     modifyDictionary(dictionary: ModifiedDictionaryInfo): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
+        return this.http.put<void>(`${this.baseUrl}/dictionary`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
     }
 
     getBeginnerBots(): Observable<Bot[]> {
@@ -95,7 +95,7 @@ export class HttpHandlerService {
     }
 
     addBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
+        return this.http.post<void>(`${this.baseUrl}/virtualPlayer`, bot).pipe(catchError(this.handleError<void>('addBot')));
     }
 
     replaceBot(bot: BotNameInfo): Observable<void> {

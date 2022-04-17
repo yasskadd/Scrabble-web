@@ -63,7 +63,7 @@ describe('DictionaryController', () => {
 
     it('should return status 201 on dictionary post', async () => {
         return supertest(expressApp)
-            .post('/dictionary/upload')
+            .post('/dictionary/')
             .then((response) => {
                 expect(response.status).to.deep.equal(HTTP_STATUS_CREATED);
             });

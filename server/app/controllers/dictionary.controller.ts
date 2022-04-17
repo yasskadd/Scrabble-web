@@ -55,7 +55,7 @@ export class DictionaryController {
             res.json(dictionaries);
         });
 
-        this.router.post('/upload', async (req: Request, res: Response) => {
+        this.router.post('/', async (req: Request, res: Response) => {
             const dictionary = req.body;
             await this.gamesHandler.addDictionary(dictionary);
             res.sendStatus(HTTP_STATUS_CREATED);
