@@ -181,22 +181,10 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    // eslint-disable-next-line max-len
-    it('uploadDictionary() should call fileOnLoad if there is a selected file to upload', async () => {});
-
     it('uploadDictionary() should call dictionaryService.uploadDictionary', () => {
         component.uploadDictionary();
         expect(dictionaryServiceSpy.uploadDictionary).toHaveBeenCalled();
     });
-
-    // eslint-disable-next-line max-len
-    it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {}));
-
-    // eslint-disable-next-line max-len
-    it('fileOnLoad() should call importDictionary of GameConfigurationService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {}));
-
-    // eslint-disable-next-line max-len
-    it('fileOnLoad() should call updateImportMessage with error message if file selected did not pass globalVerification of DictionaryVerificationService', fakeAsync(() => {}));
 
     it('clicking on import button should call uploadDictionary()', fakeAsync(() => {
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });

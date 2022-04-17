@@ -74,10 +74,6 @@ export class GameConfigurationService {
         });
     }
 
-    importDictionary(title: string): void {
-        this.clientSocket.send(SocketEvents.ImportDictionary, title);
-    }
-
     setIsGameStartedSubject(): void {
         this.isGameStarted.next(true);
         this.isGameStarted = new ReplaySubject<boolean>(1);

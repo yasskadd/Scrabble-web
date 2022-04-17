@@ -22,7 +22,7 @@ export class AdminDictionariesComponent {
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
 
     selectedFile: Dictionary | null;
-    dictionaries: DictionaryInfo[];
+    dictionaryList: DictionaryInfo[];
 
     constructor(public dictionaryService: DictionaryService, private modifyDictionaryDialog: MatDialog) {
         this.selectedFile = null;
@@ -51,7 +51,7 @@ export class AdminDictionariesComponent {
     }
 
     isUniqueTitle(title: string): boolean {
-        return this.dictionaries.some((dictionary) => dictionary.title.toLowerCase() === title.toString().toLowerCase());
+        return this.dictionaryList.some((dictionary) => dictionary.title.toLowerCase() === title.toString().toLowerCase());
     }
 
     modifyDictionary(modifiedDictionaryInfo: ModifiedDictionaryInfo) {
@@ -73,12 +73,12 @@ export class AdminDictionariesComponent {
 
     updateDictionaryList() {
         this.dictionaryService.getDictionaries().then((dictionaries) => {
-            this.dictionaries = [DEFAULT_DICTIONARY, ...dictionaries];
+            this.dictionaryList = [DEFAULT_DICTIONARY, ...dictionaries];
         });
     }
 
     uploadDictionary() {
-        this.dictionaryService.uploadDictionary(null, this.file.nativeElement.files, this.selectedFile, this.fileError);
+        this.dictionaryService.uploadDictionary(this.file.nativeElement.files, this.selectedFile, this.fileError, this.dictionaryList);
     }
 
     detectImportFile() {

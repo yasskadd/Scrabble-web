@@ -6,7 +6,7 @@
 </div>
 
 <mat-selection-list [multiple]="false">
-    <mat-list-option *ngFor="let dictionary of dictionaries" [value]="dictionary">
+    <mat-list-option *ngFor="let dictionary of dictionaryList" [value]="dictionary">
         <div class="justified">
             <div class="title">{{ dictionary.title }}</div>
             <div class="description">{{ dictionary.description }}</div>

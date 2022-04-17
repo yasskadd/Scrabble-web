@@ -4,9 +4,7 @@ import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { HttpHandlerService } from './communication/http-handler.service';
 import { DictionaryVerificationService } from './dictionary-verification.service';
-import { GameConfigurationService } from './game-configuration.service';
 
-const TIMEOUT_POST = 5000;
 @Injectable({
     providedIn: 'root',
 })
@@ -41,35 +39,34 @@ export class DictionaryService {
         return this.httpHandler.getDictionaries().toPromise();
     }
 
-    async uploadDictionary(
-        gameConfiguration: GameConfigurationService | null,
-        files: FileList,
-        selectedFile: Dictionary | null,
-        fileError: ElementRef,
-    ) {
+    async uploadDictionary(files: FileList, selectedFile: Dictionary | null, fileError: ElementRef, dictionaryList: DictionaryInfo[]) {
         if (files.length !== 0) {
             const fileReader = new FileReader();
             const content = await this.readFile(files[0], fileReader);
             this.updateDictionaryMessage(fileError, 'En vérification, veuillez patienter...', 'red');
-            this.fileOnLoad(gameConfiguration, selectedFile, fileError, content);
+            this.fileOnLoad(selectedFile, fileError, content, dictionaryList);
         } else this.updateDictionaryMessage(fileError, "Il n'y a aucun fichier séléctioné", 'red');
     }
 
-    fileOnLoad(
-        gameConfiguration: GameConfigurationService | null,
+    async fileOnLoad(
         selectedFile: Dictionary | null,
         fileError: ElementRef,
         newDictionary: Record<string, unknown>,
+        // REASON : dictionaryList is used in admin-page and multiplayer-create-page
+        // eslint-disable-next-line no-unused-vars
+        dictionaryList: DictionaryInfo[],
     ) {
-        if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed')
-            this.updateDictionaryMessage(fileError, this.dictionaryVerification.globalVerification(newDictionary), 'red');
+        const dictionaryVerification = await this.dictionaryVerification.globalVerification(newDictionary);
+        if (dictionaryVerification !== 'Passed') this.updateDictionaryMessage(fileError, dictionaryVerification, 'red');
         else {
             selectedFile = newDictionary as unknown as Dictionary;
-            this.httpHandler.addDictionary(selectedFile).subscribe();
-            setTimeout(() => {
-                if (gameConfiguration) gameConfiguration.importDictionary((selectedFile as Dictionary).title);
-                this.updateDictionaryMessage(fileError, 'Ajout avec succès du nouveau dictionnaire', 'black');
-            }, TIMEOUT_POST);
+            this.httpHandler
+                .addDictionary(selectedFile)
+                .toPromise()
+                .then(() => {
+                    this.httpHandler.getDictionaries().subscribe((dictionaries) => (dictionaryList = dictionaries));
+                    this.updateDictionaryMessage(fileError, 'Ajout avec succès du nouveau dictionnaire', 'black');
+                });
         }
     }
 

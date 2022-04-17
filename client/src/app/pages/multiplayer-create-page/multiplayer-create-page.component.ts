@@ -10,7 +10,6 @@ import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 const TIMEOUT_REQUEST = 500;
-const TIMEOUT_VERIFICATION = 50;
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -89,7 +88,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     uploadDictionary() {
-        this.dictionaryService.uploadDictionary(this.gameConfiguration, this.file.nativeElement.files, this.selectedFile, this.fileError);
+        this.dictionaryService.uploadDictionary(this.file.nativeElement.files, this.selectedFile, this.fileError, this.dictionaryList);
     }
 
     detectImportFile() {
@@ -184,13 +183,14 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     private async dictionaryIsInDB(title: string): Promise<boolean> {
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                if (this.dictionaryList.some((dictionary) => dictionary.title === title)) resolve(true);
+        return this.httpHandler
+            .getDictionaries()
+            .toPromise()
+            .then((dictionaries) => {
+                this.dictionaryList = dictionaries;
+                if (dictionaries.some((dictionary) => dictionary.title === title)) return true;
                 this.updateDictionaryMessage("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
-                resolve(false);
-            }, TIMEOUT_VERIFICATION);
-        });
+                return false;
+            });
     }
 }

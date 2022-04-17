@@ -10,10 +10,11 @@ describe('DictionaryVerificationService', () => {
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
 
     beforeEach(() => {
-        httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries']);
+        httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'dictionaryIsInDb']);
         httpHandlerSpy.getDictionaries.and.returnValue(
             of([{ _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire', words: ['string'] }]),
         );
+        httpHandlerSpy.dictionaryIsInDb.and.returnValue(of({}));
         TestBed.configureTestingModule({
             imports: [HttpClientModule],
             providers: [{ provide: HttpHandlerService, useValue: httpHandlerSpy }],
@@ -25,16 +26,16 @@ describe('DictionaryVerificationService', () => {
         expect(service).toBeTruthy();
     });
 
-    it('globalVerification() should not return Passed if the file is not a dictionary', () => {
+    it('globalVerification() should not return Passed if the file is not a dictionary', async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isDictionarySpy = spyOn<any>(service, 'isDictionary');
         isDictionarySpy.and.callFake(() => false);
-        expect(service.globalVerification({})).toEqual(
+        expect(await service.globalVerification({})).toEqual(
             "Le fichier téléversé n'est pas un dictionnaire. Les champs title, description ou words sont manquant.",
         );
     });
 
-    it('globalVerification() should not return Passed if the file has empty field', () => {
+    it('globalVerification() should not return Passed if the file has empty field', async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isDictionarySpy = spyOn<any>(service, 'isDictionary');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,10 +44,10 @@ describe('DictionaryVerificationService', () => {
         isDictionarySpy.and.callFake(() => true);
         fieldEmptyVerificationSpy.and.callFake(() => 'Did not pass');
 
-        expect(service.globalVerification({})).toEqual('Did not pass');
+        expect(await service.globalVerification({})).toEqual('Did not pass');
     });
 
-    it('globalVerification() should not return Passed if the file title and description does not respect character limit', () => {
+    it('globalVerification() should not return Passed if the file title and description does not respect character limit', async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isDictionarySpy = spyOn<any>(service, 'isDictionary');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,10 +59,10 @@ describe('DictionaryVerificationService', () => {
         fieldEmptyVerificationSpy.and.callFake(() => 'Passed');
         fieldLimitVerificationSpy.and.callFake(() => 'Did not pass');
 
-        expect(service.globalVerification({})).toEqual('Did not pass');
+        expect(await service.globalVerification({})).toEqual('Did not pass');
     });
 
-    it('globalVerification() should not return Passed if the file already exist in database', () => {
+    it('globalVerification() should not return Passed if the file already exist in database', async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isDictionarySpy = spyOn<any>(service, 'isDictionary');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,10 +77,10 @@ describe('DictionaryVerificationService', () => {
         fieldLimitVerificationSpy.and.callFake(() => 'Passed');
         alreadyExistSpy.and.callFake(() => 'Did not pass');
 
-        expect(service.globalVerification({})).toEqual('Did not pass');
+        expect(await service.globalVerification({})).toEqual('Did not pass');
     });
 
-    it('globalVerification() should return Passed if the file passed all tests', () => {
+    it('globalVerification() should return Passed if the file passed all tests', async () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isDictionarySpy = spyOn<any>(service, 'isDictionary');
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,7 +95,7 @@ describe('DictionaryVerificationService', () => {
         fieldLimitVerificationSpy.and.callFake(() => 'Passed');
         alreadyExistSpy.and.callFake(() => 'Passed');
 
-        expect(service.globalVerification({})).toEqual('Passed');
+        expect(await service.globalVerification({})).toEqual('Passed');
     });
 
     it('isDictionary() should return false if the dictionary does not have a title, description and words fields', () => {
@@ -211,16 +212,10 @@ describe('DictionaryVerificationService', () => {
         expect(service['fieldCharacterLimit'](dictionary.split(''), maxLimit)).toBeFalsy();
     });
 
-    it('alreadyExist() should return Passed if the uploaded file already exist in the database', () => {
+    it('alreadyExist() should return Passed if the uploaded file already exist in the database', async () => {
         const dictionary = 'Mon nouveau dictionnaire';
         // eslint-disable-next-line dot-notation
-        expect(service['alreadyExist'](dictionary)).toEqual('Passed');
-    });
-
-    it('alreadyExist() should not return Passed if the uploaded file already exist in the database', () => {
-        const dictionary = 'Mon dictionnaire';
-        // eslint-disable-next-line dot-notation
-        expect(service['alreadyExist'](dictionary)).toEqual('Le dictionnaire existe déjà dans la base de données');
+        expect(await service['alreadyExist'](dictionary)).toEqual('Passed');
     });
 
     it('wordsListIsValid() should return true if the words passed as param is valid', () => {
