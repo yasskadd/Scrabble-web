@@ -43,11 +43,9 @@ export class PlayerRackComponent implements OnInit {
 
     @HostListener('mousewheel', ['$event'])
     onScrollEvent(event: WheelEvent) {
-        if (!this.gameClient.isGameFinish) {
-            this.cancel();
-            this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
-            this.repositionRack();
-        }
+        this.cancel();
+        this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
+        this.repositionRack();
     }
 
     @HostListener('window: click', ['$event'])
