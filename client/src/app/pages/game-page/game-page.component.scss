@@ -31,17 +31,20 @@ body {
     padding: 10px;
     background: rgb(142, 196, 178);
     background: radial-gradient(circle, rgba(142, 196, 178, 1) 35%, rgba(131, 196, 174, 1) 100%);
+    min-height: 755px;
 }
 
 .play-area {
     overflow: auto;
-    flex-grow: 4;
+    flex-grow: 7;
     align-items: center;
     background: rgb(194, 229, 218);
     background: radial-gradient(circle, rgba(194, 229, 218, 1) 35%, rgba(152, 215, 195, 1) 100%);
     justify-content: center;
     border: solid #000;
     border-width: 0 2px;
+    min-width: 620px;
+    min-height: 755px;
 }
 
 .chatbox {
@@ -50,4 +53,5 @@ body {
     padding: 7px 7px 0px 10px;
     background: rgb(142, 196, 178, 0.25);
     background: radial-gradient(circle, rgba(142, 196, 178, 1) 35%, rgba(131, 196, 174, 1) 100%);
+    min-height: 755px;
 }
