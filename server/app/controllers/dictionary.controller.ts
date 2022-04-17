@@ -28,7 +28,6 @@ export class DictionaryController {
                 res.status(HTTP_STATUS_NO_CONTENT).send();
             }
         });
-
         // this.router.delete('/', async (req: Request, res: Response) => {
         //     this.gamesHandler.resetDictionaries();
         //     res.sendStatus(NO_CONTENT);
@@ -41,7 +40,7 @@ export class DictionaryController {
         // });
 
         // // TODO:
-        // this.router.put('/replace', async (req: Request, res: Response) => {
+        // this.router.put('/', async (req: Request, res: Response) => {
         //     const infoToReplace = req.body;
         //     const dictionaries = await this.gamesHandler.replaceDictionary(infoToReplace);
         //     res.json(dictionaries);
@@ -55,7 +54,7 @@ export class DictionaryController {
             res.json(dictionaries);
         });
 
-        this.router.post('/upload', async (req: Request, res: Response) => {
+        this.router.post('/', async (req: Request, res: Response) => {
             const dictionary = req.body;
             await this.gamesHandler.addDictionary(dictionary);
             res.sendStatus(HTTP_STATUS_CREATED);

@@ -124,7 +124,7 @@ describe('HttpHandlerService', () => {
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.addDictionary(sentMessage).subscribe(() => {}, fail);
-            const req = httpMock.expectOne(`${baseUrl}/dictionary/upload`);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary`);
             expect(req.request.method).toBe('POST');
             // actually send the request
             req.flush(sentMessage);
@@ -135,7 +135,7 @@ describe('HttpHandlerService', () => {
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.addBot(sentMessage).subscribe(() => {}, fail);
-            const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/upload`);
+            const req = httpMock.expectOne(`${baseUrl}/virtualPlayer`);
             expect(req.request.method).toBe('POST');
             // actually send the request
             req.flush(sentMessage);
@@ -146,7 +146,7 @@ describe('HttpHandlerService', () => {
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.modifyDictionary(sentMessage).subscribe(() => {}, fail);
-            const req = httpMock.expectOne(`${baseUrl}/dictionary/replace`);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary`);
             expect(req.request.method).toBe('PUT');
             // actually send the request
             req.flush(sentMessage);
@@ -209,7 +209,7 @@ describe('HttpHandlerService', () => {
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.addBot(sentMessage).subscribe(() => {}, fail);
-            const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/upload`);
+            const req = httpMock.expectOne(`${baseUrl}/virtualPlayer`);
             expect(req.request.method).toBe('POST');
             // actually send the request
             req.flush(sentMessage);

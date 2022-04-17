@@ -86,7 +86,7 @@ describe('VirtualPlayersController', () => {
 
     it('should return status 201 on virtualPlayer upload', async () => {
         return supertest(expressApp)
-            .post('/virtualPlayer/upload')
+            .post('/virtualPlayer')
             .then((response) => {
                 expect(response.status).to.deep.equal(HTTP_STATUS_CREATED);
             });
