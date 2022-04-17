@@ -30,11 +30,4 @@ describe('DialogBoxModifyDictionaryComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('dialog should be closed after closeDialog()', () => {
-        // eslint-disable-next-line dot-notation
-        const spy = spyOn(component['dialogRef'], 'close').and.callThrough();
-        component.closeDialog();
-        expect(spy).toHaveBeenCalled();
-    });
 });

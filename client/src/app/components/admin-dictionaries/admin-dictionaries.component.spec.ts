@@ -50,7 +50,7 @@ describe('AdminDictionariesComponent', () => {
         fixture = TestBed.createComponent(AdminDictionariesComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-        component.dictionaries = [
+        component.dictionaryList = [
             {
                 title: 'Mon dictionnaire',
                 description: 'Description de base',

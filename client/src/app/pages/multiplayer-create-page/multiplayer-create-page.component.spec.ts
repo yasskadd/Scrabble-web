@@ -227,7 +227,7 @@ describe('MultiplayerCreatePageComponent', () => {
     it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
         const message = 'Message';
         const color = 'red';
-        component.updateDictionaryMessage(message, color);
+        dictionaryServiceSpy.updateDictionaryMessage('', '', message, color);
         expect(component.fileError.nativeElement.textContent).toEqual(message);
         expect(component.fileError.nativeElement.style.color).toEqual(color);
     });
@@ -606,12 +606,12 @@ describe('MultiplayerCreatePageComponent', () => {
 
     it('dictionaryIsInDB() should return error message if file is not in database ', fakeAsync(() => {
         const title = 'test';
-        const updateDictionaryMessageSpy = spyOn(component, 'updateDictionaryMessage');
+        const updateDictionaryMessageSpy = spyOn(dictionaryServiceSpy, 'updateDictionaryMessage');
         // Testing private method
         // eslint-disable-next-line dot-notation
         component['dictionaryIsInDB'](title);
         tick();
         flush();
-        expect(updateDictionaryMessageSpy).toHaveBeenCalledWith("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
+        expect(updateDictionaryMessageSpy).toHaveBeenCalledWith('', '', "Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
     }));
 });
