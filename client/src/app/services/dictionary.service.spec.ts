@@ -1,10 +1,7 @@
 import { fakeAsync, TestBed } from '@angular/core/testing';
-import { AdminDictionariesComponent } from '@app/components/admin-dictionaries/admin-dictionaries.component';
 import { Dictionary } from '@app/interfaces/dictionary';
-import { MultiplayerCreatePageComponent } from '@app/pages/multiplayer-create-page/multiplayer-create-page.component';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { of } from 'rxjs';
-import { DictionaryVerificationService } from './dictionary-verification.service';
 import { DictionaryService } from './dictionary.service';
 
 const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire' };
@@ -12,9 +9,6 @@ const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description
 describe('DictionaryService', () => {
     let service: DictionaryService;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
-    let mutliplayerCreatePageComponent: MultiplayerCreatePageComponent;
-    let adminDictionariesComponent: AdminDictionariesComponent;
-    let dictionaryVerificationService: DictionaryVerificationService;
 
     beforeEach(() => {
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', [
@@ -85,14 +79,14 @@ describe('DictionaryService', () => {
 
     // TODO : ces tests se trouvaient dans le multiplayer create page avant, mais les fonctions on été move dans le dictionary service
     fit('uploadDictionary() should call fileOnLoad() if there is a selected file to upload', async () => {
-        //     const messageSpy = spyOn(service, 'fileOnLoad');
-        //     const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        //     const dT = new DataTransfer();
-        //     dT.items.add(new File([blob], 'test.json'));
-        //     service.file.nativeElement.files = dT.files;
-        //     dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
-        //     await service.uploadDictionary();
-        //     expect(messageSpy).toHaveBeenCalled();
+        const messageSpy = spyOn(service, 'fileOnLoad');
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        dT.items.add(new File([blob], 'test.json'));
+        service.file.nativeElement.files = dT.files;
+        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
+        await service.uploadDictionary();
+        expect(messageSpy).toHaveBeenCalled();
     });
 
     it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
