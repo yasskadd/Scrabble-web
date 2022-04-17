@@ -42,12 +42,6 @@ export class DatabaseCollection {
         await this.collection.replaceOne(parameters, document);
     }
 
-    async updateDocument(oldParams: Filter<Document>, newParams: Filter<Document>) {
-        await this.connect();
-
-        await this.collection.updateOne(oldParams, newParams);
-    }
-
     async resetCollection() {
         await this.connect();
         await this.collection.deleteMany({});

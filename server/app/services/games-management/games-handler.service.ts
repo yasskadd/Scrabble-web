@@ -91,7 +91,6 @@ export class GamesHandler {
         for (const file of files) {
             await this.deleteDictionary(file.replace('.json', ''));
         }
-        throw new Error('Method not implemented.');
     }
 
     async deleteDictionary(title: string) {
