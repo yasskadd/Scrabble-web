@@ -50,15 +50,10 @@ body {
     background-color: #23501f;
 }
 
-.score {
-    margin-top: 30px;
-}
-
 #scores {
     display: flex;
     flex-direction: row;
     cursor: pointer;
-    flex: 1;
 }
 
 #scores:hover {
@@ -87,6 +82,17 @@ body {
 }
 
 .help-button {
+    position: absolute;
+    margin-right: -460px;
+    margin-bottom: -190px !important;
     background-color: #23501f;
-    align-self: flex-end;
+}
+
+::ng-deep .mat-fab {
+    height: 40px !important;
+    width: 40px !important;
+}
+
+::ng-deep .mat-button-wrapper {
+    padding: 0px !important;
 }
