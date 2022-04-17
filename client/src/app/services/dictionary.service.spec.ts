@@ -83,9 +83,17 @@ describe('DictionaryService', () => {
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();
         dT.items.add(new File([blob], 'test.json'));
-        service.file.nativeElement.files = dT.files;
-        dictionaryVerificationSpy.globalVerification.and.callFake(() => 'Did not passed');
-        await service.uploadDictionary();
+        await service.uploadDictionary(
+            dT.files,
+            {
+                title: 'testDictionary',
+                description: 'dictionary for testing purposes',
+                words: ['hello', 'friend', 'you', 'will', 'dead', 'projet'],
+            },
+            "Ce dictionnaire n'est plus disponible, veuillez choisir un autre",
+            'red',
+            [] as Dictionary[],
+        );
         expect(messageSpy).toHaveBeenCalled();
     });
 

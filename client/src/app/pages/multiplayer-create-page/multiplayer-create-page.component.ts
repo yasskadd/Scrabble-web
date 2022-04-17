@@ -106,11 +106,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
         }
     }
 
-    updateDictionaryMessage(message: string, color: string) {
-        this.fileError.nativeElement.textContent = message;
-        this.fileError.nativeElement.style.color = color;
-    }
-
     onMouseOver(dictionary: DictionaryInfo) {
         this.info.nativeElement.children[0].textContent = dictionary.title;
         this.info.nativeElement.children[1].textContent = dictionary.description;
@@ -195,7 +190,12 @@ export class MultiplayerCreatePageComponent implements OnInit {
             .then((dictionaries) => {
                 this.dictionaryList = dictionaries;
                 if (dictionaries.some((dictionary) => dictionary.title === title)) return true;
-                this.updateDictionaryMessage("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
+                this.dictionaryService.updateDictionaryMessage(
+                    this.fileError.nativeElement.textContent,
+                    this.fileError.nativeElement.style.color,
+                    "Ce dictionnaire n'est plus disponible, veuillez choisir un autre",
+                    'red',
+                );
                 return false;
             });
     }

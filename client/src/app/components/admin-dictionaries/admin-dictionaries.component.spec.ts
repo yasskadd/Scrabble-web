@@ -131,33 +131,33 @@ describe('AdminDictionariesComponent', () => {
         // });
     });
 
-    describe('Add dictionary tests', () => {
-        it('addDictionary() should call dictionaryService.addDictionary() and resetDictionaryInput', () => {
-            const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
-            component.dictionaryInput = {
-                title: 'Mon dictionnaire 2',
-                description: 'Un dictionnaire',
-                words: ['string'],
-            };
-            component.addDictionary();
-            expect(dictionaryServiceSpy.addDictionary).toHaveBeenCalled();
-            expect(resetDictionnarySpy).toHaveBeenCalled();
-        });
+    // describe('Add dictionary tests', () => {
+    //     it('addDictionary() should call dictionaryService.addDictionary() and resetDictionaryInput', () => {
+    //         const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
+    //         component.dictionaryInput = {
+    //             title: 'Mon dictionnaire 2',
+    //             description: 'Un dictionnaire',
+    //             words: ['string'],
+    //         };
+    //         component.addDictionary();
+    //         expect(dictionaryServiceSpy.addDictionary).toHaveBeenCalled();
+    //         expect(resetDictionnarySpy).toHaveBeenCalled();
+    //     });
 
-        it('addDictionary() should not call dictionaryService.addDictionary()  if the title exist already', () => {
-            const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
+    //     it('addDictionary() should not call dictionaryService.addDictionary()  if the title exist already', () => {
+    //         const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
 
-            component.dictionaryInput = {
-                title: 'Mon dictionnaire',
-                description: 'Un dictionnaire',
-                words: ['string'],
-            };
-            component.addDictionary();
-            expect(dictionaryServiceSpy.addDictionary).not.toHaveBeenCalled();
-            expect(resetDictionnarySpy).toHaveBeenCalled();
-        });
-        // it('added dictionary should be added to list', () => {});
-    });
+    //         component.dictionaryInput = {
+    //             title: 'Mon dictionnaire',
+    //             description: 'Un dictionnaire',
+    //             words: ['string'],
+    //         };
+    //         component.addDictionary();
+    //         expect(dictionaryServiceSpy.addDictionary).not.toHaveBeenCalled();
+    //         expect(resetDictionnarySpy).toHaveBeenCalled();
+    //     });
+    //     it('added dictionary should be added to list', () => {});
+    // });
 
     describe('Modify dictionary tests', () => {
         it('openModifyDictionaryDialog() should open dialog box', () => {
