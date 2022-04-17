@@ -26,14 +26,6 @@ export class GamesHandler {
         this.setDictionaries();
     }
 
-    resetDictionaries() {
-        throw new Error('Method not implemented.');
-    }
-
-    replaceDictionary(infoToReplace: unknown) {
-        throw new Error('Method not implemented.');
-    }
-
     updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
         const player = this.players.get(socket.id) as Player;
         const players = this.gamePlayers.get(roomId) as Player[];
@@ -94,6 +86,14 @@ export class GamesHandler {
         this.dictionaries.set(dictionaryModification.newTitle, behavior);
     }
 
+    async resetDictionaries() {
+        const files = (await this.dictionaryStorage.getDictionariesFileName()).filter((file) => file !== 'dictionary.json');
+        for (const file of files) {
+            await this.deleteDictionary(file.replace('.json', ''));
+        }
+        throw new Error('Method not implemented.');
+    }
+
     async deleteDictionary(title: string) {
         await this.dictionaryStorage.deletedDictionary(title);
         this.dictionaries.delete(title);
@@ -105,5 +105,10 @@ export class GamesHandler {
 
     async getDictionaries(): Promise<Dictionary[]> {
         return await this.dictionaryStorage.getDictionaries();
+    }
+
+    async getDictionary(title: string): Promise<Dictionary> {
+        const dictionary = JSON.parse((await this.dictionaryStorage.getDictionary(title)).toString());
+        return dictionary;
     }
 }

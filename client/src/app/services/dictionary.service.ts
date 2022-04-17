@@ -36,6 +36,10 @@ export class DictionaryService {
         return this.httpHandler.getDictionaries().toPromise();
     }
 
+    async getDictionary(title: string): Promise<Dictionary> {
+        return this.httpHandler.getDictionary(title).toPromise();
+    }
+
     async uploadDictionary(files: FileList, selectedFile: Dictionary | null, fileError: ElementRef, dictionaryList: DictionaryInfo[]) {
         if (files.length !== 0) {
             const fileReader = new FileReader();

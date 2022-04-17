@@ -5,12 +5,7 @@ import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { DictionaryService } from '@app/services/dictionary.service';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
-import * as FileSaver from 'file-saver';
-
-const DEFAULT_DICTIONARY: DictionaryInfo = {
-    title: 'Mon dictionnaire',
-    description: 'Description de base',
-};
+import { saveAs } from 'file-saver';
 
 @Component({
     selector: 'app-admin-dictionaries',
@@ -62,7 +57,7 @@ export class AdminDictionariesComponent {
     }
 
     downloadJson(dictionary: DictionaryInfo) {
-        this.downloadFile(dictionary);
+        this.dictionaryService.getDictionary(dictionary.title).then((fullDictionary) => this.downloadFile(fullDictionary));
     }
 
     resetDictionaries() {
@@ -72,12 +67,14 @@ export class AdminDictionariesComponent {
 
     updateDictionaryList() {
         this.dictionaryService.getDictionaries().then((dictionaries) => {
-            this.dictionaryList = [DEFAULT_DICTIONARY, ...dictionaries];
+            this.dictionaryList = [...dictionaries];
         });
     }
 
     uploadDictionary() {
-        this.dictionaryService.uploadDictionary(this.file.nativeElement.files, this.selectedFile, this.fileError, this.dictionaryList);
+        this.dictionaryService
+            .uploadDictionary(this.file.nativeElement.files, this.selectedFile, this.fileError, this.dictionaryList)
+            .then(() => this.updateDictionaryList());
     }
 
     detectImportFile() {
@@ -90,7 +87,7 @@ export class AdminDictionariesComponent {
     downloadFile(data: unknown) {
         const json = JSON.stringify(data);
         const blob = new Blob([json] as BlobPart[], { type: 'text/json' });
-        FileSaver.saveAs(blob, `${(data as Dictionary).title}.json`);
+        saveAs(blob, `${(data as Dictionary).title}.json`);
     }
 
     updateImportMessage(message: string, color: string) {

@@ -29,16 +29,27 @@ export class DictionaryController {
             }
         });
 
-        // this.router.delete('/', async (req: Request, res: Response) => {
-        //     this.gamesHandler.resetDictionaries();
-        //     res.sendStatus(NO_CONTENT);
-        // });
+        // TODO : TEST
+        this.router.get('/all/:title', async (req: Request, res: Response) => {
+            try {
+                const title = req.params.title;
+                res.json(await this.gamesHandler.getDictionary(title));
+            } catch {
+                res.status(HTTP_STATUS_NO_CONTENT).send();
+            }
+        });
 
-        // this.router.patch('/delete', async (req: Request, res: Response) => {
-        //     const dictionaryTitle = req.body;
-        //     await this.gamesHandler.deleteDictionary(dictionaryTitle);
-        //     res.sendStatus(NO_CONTENT);
-        // });
+        this.router.delete('/', async (req: Request, res: Response) => {
+            await this.gamesHandler.resetDictionaries();
+            res.sendStatus(HTTP_STATUS_NO_CONTENT);
+        });
+
+        // TODO:
+        this.router.patch('/', async (req: Request, res: Response) => {
+            const dictionaryTitle = req.body;
+            await this.gamesHandler.deleteDictionary(dictionaryTitle.title);
+            res.sendStatus(HTTP_STATUS_NO_CONTENT);
+        });
 
         // TODO:
         this.router.put('/', async (req: Request, res: Response) => {

@@ -12,6 +12,6 @@
 </form>
 
 <div id="buttons">
-    <button mat-raised-button (click)="closeDialog()">Annuler</button>
+    <button mat-raised-button mat-dialog-close>Annuler</button>
     <button mat-raised-button [mat-dialog-close]="{ title: dictionaryData.newTitle, description: dictionaryData.description }">Modifier</button>
 </div>

@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface DialogData {
     title: string;
@@ -13,9 +13,5 @@ export interface DialogData {
     styleUrls: ['./dialog-box-modify-dictionary.component.scss'],
 })
 export class DialogBoxModifyDictionaryComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public dictionaryData: DialogData, private dialogRef: MatDialogRef<DialogBoxModifyDictionaryComponent>) {}
-
-    closeDialog() {
-        this.dialogRef.close();
-    }
+    constructor(@Inject(MAT_DIALOG_DATA) public dictionaryData: DialogData) {}
 }

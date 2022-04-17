@@ -168,7 +168,7 @@ describe('HttpHandlerService', () => {
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.deleteDictionary(sentMessage).subscribe(() => {}, fail);
-            const req = httpMock.expectOne(`${baseUrl}/dictionary/delete`);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary`);
             expect(req.request.method).toBe('PATCH');
             // actually send the request
             req.flush(sentMessage);

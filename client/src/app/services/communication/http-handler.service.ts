@@ -50,13 +50,18 @@ export class HttpHandlerService {
             .pipe(catchError(this.handleError<DictionaryInfo[]>('getDictionaries', [])));
     }
 
+    // TODO : TEST
+    getDictionary(title: string): Observable<Dictionary> {
+        return this.http.get<Dictionary>(`${this.baseUrl}/dictionary/all/` + title).pipe(catchError(this.handleError<Dictionary>('getDictionaries')));
+    }
+
     resetDictionaries(): Observable<Dictionary[]> {
         return this.http.delete<Dictionary[]>(`${this.baseUrl}/dictionary`).pipe(catchError(this.handleError<Dictionary[]>('getDictionaries', [])));
     }
 
     deleteDictionary(dictionaryTitle: string): Observable<void> {
         return this.http
-            .patch<void>(`${this.baseUrl}/dictionary/delete`, { title: dictionaryTitle })
+            .patch<void>(`${this.baseUrl}/dictionary`, { title: dictionaryTitle })
             .pipe(catchError(this.handleError<void>('deleteDictionary')));
     }
 
