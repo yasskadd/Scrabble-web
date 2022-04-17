@@ -28,6 +28,7 @@ export class DictionaryController {
                 res.status(HTTP_STATUS_NO_CONTENT).send();
             }
         });
+
         // this.router.delete('/', async (req: Request, res: Response) => {
         //     this.gamesHandler.resetDictionaries();
         //     res.sendStatus(NO_CONTENT);
