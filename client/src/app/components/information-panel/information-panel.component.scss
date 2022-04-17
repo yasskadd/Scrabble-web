@@ -1,12 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Proxima+Nova');
 
 .player {
-    border: 1px solid #c3c3c3;
     border-radius: 4px;
     padding: 20px;
     margin-left: 5px;
     margin-right: 5px;
-    background-color: rgba(225, 248, 227, 0.513);
+    background-color: #aecec4;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -31,12 +30,11 @@
 }
 
 .game-infos {
-    border: 1px solid #c3c3c3;
     border-radius: 4px;
     padding: 20px;
     margin-left: 5px;
     margin-right: 5px;
-    background-color: rgba(225, 248, 227, 0.513);
+    background-color: #aecec4;
 }
 #combined {
     display: flex;
