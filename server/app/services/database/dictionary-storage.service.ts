@@ -30,8 +30,8 @@ export class DictionaryStorageService {
         const dictionaryToUpdate = JSON.parse((await this.getDictionary(dictionaryInfo.title)).toString());
         dictionaryToUpdate.title = dictionaryInfo.newTitle;
         dictionaryToUpdate.description = dictionaryInfo.newDescription;
-        await this.addDictionary(dictionaryToUpdate.title, JSON.stringify(dictionaryToUpdate));
         await this.deletedDictionary(dictionaryInfo.title);
+        await this.addDictionary(dictionaryToUpdate.title, JSON.stringify(dictionaryToUpdate));
     }
 
     async getDictionaries(): Promise<Dictionary[]> {

@@ -181,44 +181,6 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('clicking on import button should call uploadDictionary()', fakeAsync(() => {
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-        const uploadDictionarySpy = spyOn(importDictionaryComponentSpy, 'uploadDictionary');
-        const button = fixture.debugElement.nativeElement.querySelector('#import');
-        button.click();
-        tick();
-        fixture.detectChanges();
-        expect(uploadDictionarySpy).toHaveBeenCalled();
-    }));
-
-    it('detectImportFile() should disable dictionary select options if a file has been selected', () => {
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        const disableSpy = spyOn(component.form.controls.dictionary, 'disable');
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-        component.detectImportFile();
-        expect(disableSpy).toHaveBeenCalled();
-    });
-
-    it('detectImportFile() should set textContent of fileError to nothing', () => {
-        const message = '';
-        component.detectImportFile();
-        expect(component.fileError.nativeElement.textContent).toEqual(message);
-    });
-
-    it('selecting a file should call detectImportFile()', fakeAsync(() => {
-        const detectImportFileSpy = spyOn(component, 'detectImportFile');
-        const input = fixture.debugElement.nativeElement.querySelector('#selectFiles');
-        input.dispatchEvent(new Event('change'));
-        tick();
-        fixture.detectChanges();
-        expect(detectImportFileSpy).toHaveBeenCalled();
-    }));
-
     it('onMouseOver() should set textContent of info panel with title and description of the dictionary passed as param', () => {
         component.onMouseOver(DB_DICTIONARY);
         expect(component.info.nativeElement.children[0].textContent).toEqual(DB_DICTIONARY.title);

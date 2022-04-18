@@ -15,17 +15,22 @@ describe('ImportDictionaryComponent', () => {
     let dictionaryVerifificationServiceSpy: jasmine.SpyObj<DictionaryVerificationService>;
 
     beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [ImportDictionaryComponent],
-        }).compileComponents();
-    });
-
-    beforeEach(() => {
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
         httpHandlerSpy.addDictionary.and.returnValue(of({} as unknown as void));
 
         dictionaryVerifificationServiceSpy = jasmine.createSpyObj('DictionaryVerificationService', ['globalVerification']);
+
+        await TestBed.configureTestingModule({
+            declarations: [ImportDictionaryComponent],
+            providers: [
+                { provide: HttpHandlerService, useValue: httpHandlerSpy },
+                { provide: DictionaryVerificationService, useValue: dictionaryVerifificationServiceSpy },
+            ],
+        }).compileComponents();
+    });
+
+    beforeEach(() => {
         fixture = TestBed.createComponent(ImportDictionaryComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -35,12 +40,29 @@ describe('ImportDictionaryComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('clicking on import button should call uploadDictionary()', fakeAsync(() => {
+        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
+        const dT = new DataTransfer();
+        dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
+        const uploadDictionarySpy = spyOn(component, 'uploadDictionary');
+        const button = fixture.debugElement.nativeElement.querySelector('#import');
+        button.click();
+        tick();
+        fixture.detectChanges();
+        expect(uploadDictionarySpy).toHaveBeenCalled();
+    }));
+
     // TODO : ces tests se trouvaient dans le multiplayer create page avant, mais les fonctions on été move dans le dictionary service
-    it('uploadDictionary() should call fileOnLoad() if there is a selected file to upload', async () => {
+
+    it('uploadDictionary() should call fileOnLoad if there is a selected file to upload', async () => {
         const messageSpy = spyOn(component, 'fileOnLoad');
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();
         dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
+
+        dictionaryVerifificationServiceSpy.globalVerification.and.callFake(async () => 'Did not passed');
         await component.uploadDictionary();
         expect(messageSpy).toHaveBeenCalled();
     });
@@ -51,14 +73,11 @@ describe('ImportDictionaryComponent', () => {
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();
         dT.items.add(new File([blob], 'test.json'));
+        component.file.nativeElement.files = dT.files;
         dictionaryVerifificationServiceSpy.globalVerification.and.callFake(async () => 'Passed');
         component.fileOnLoad({});
         tick(TIMEOUT);
-
-        expect(messageSpy).toHaveBeenCalledWith(
-            "Le fichier téléversé n'est pas un dictionnaire. Les champs title, description ou words sont manquant.",
-            'red',
-        );
+        expect(messageSpy).toHaveBeenCalledWith('Ajout avec succès du nouveau dictionnaire', 'black');
         expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
     }));
 

@@ -16,6 +16,7 @@ describe('DictionaryService', () => {
             'modifyDictionary',
             'resetDictionaries',
             'deleteDictionary',
+            'getDictionary',
         ]);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
         httpHandlerSpy.addDictionary.and.returnValue(of({} as unknown as void));
@@ -52,6 +53,11 @@ describe('DictionaryService', () => {
         service.resetDictionaries();
         expect(httpHandlerSpy.resetDictionaries).toHaveBeenCalled();
         expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
+    });
+
+    it('should call httpHandler getDictionary() when calling dictionaryService getDictionary() is called', () => {
+        service.getDictionary('TITRE');
+        expect(httpHandlerSpy.getDictionary).toHaveBeenCalled();
     });
 
     it('should call httpHandler getDictionaries() when calling dictionaryService getDictionaries() is called', () => {

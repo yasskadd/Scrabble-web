@@ -87,15 +87,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
     }
 
-    detectImportFile() {
-        this.fileError.nativeElement.textContent = '';
-        if (this.file.nativeElement.files.length !== 0) this.form.controls.dictionary.disable();
-        else {
-            this.selectedFile = null;
-            this.form.controls.dictionary.enable();
-        }
-    }
-
     onMouseOver(dictionary: DictionaryInfo) {
         this.info.nativeElement.children[0].textContent = dictionary.title;
         this.info.nativeElement.children[1].textContent = dictionary.description;

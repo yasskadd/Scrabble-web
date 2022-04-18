@@ -1,5 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
@@ -10,25 +9,14 @@ import { DictionaryVerificationService } from '@app/services/dictionary-verifica
     templateUrl: './import-dictionary.component.html',
     styleUrls: ['./import-dictionary.component.scss'],
 })
-export class ImportDictionaryComponent implements OnInit {
+export class ImportDictionaryComponent {
     @ViewChild('file', { static: false }) file: ElementRef;
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
     dictionaryList: DictionaryInfo[];
     selectedFile: Dictionary | null;
-    form: FormGroup;
 
-    constructor(
-        private readonly httpHandler: HttpHandlerService,
-        private dictionaryVerification: DictionaryVerificationService,
-        private fb: FormBuilder,
-    ) {
+    constructor(private readonly httpHandler: HttpHandlerService, private dictionaryVerification: DictionaryVerificationService) {
         this.selectedFile = null;
-    }
-
-    ngOnInit(): void {
-        this.form = this.fb.group({
-            dictionary: ['Mon dictionnaire', Validators.required],
-        });
     }
 
     async uploadDictionary() {
