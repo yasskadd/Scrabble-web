@@ -31,6 +31,7 @@ import { DialogBoxModifyDictionaryComponent } from './components/dialog-box-modi
 import { DialogBoxNewGameComponent } from './components/dialog-box-new-game-component/dialog-box-new-game.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
+import { ImportDictionaryComponent } from './components/import-dictionary/import-dictionary.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
@@ -69,6 +70,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         DialogBoxNewGameComponent,
         HeaderComponent,
         FooterComponent,
+        ImportDictionaryComponent,
     ],
     imports: [
         CommonModule,
@@ -90,7 +92,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         MatProgressSpinnerModule,
         MatAutocompleteModule,
     ],
-    providers: [],
+    providers: [ImportDictionaryComponent],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

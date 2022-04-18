@@ -71,33 +71,9 @@ export class AdminDictionariesComponent {
         });
     }
 
-    uploadDictionary() {
-        this.dictionaryService
-            .uploadDictionary(
-                this.file.nativeElement.files,
-                this.selectedFile,
-                this.fileError.nativeElement.textContent,
-                this.file.nativeElement.style.color,
-                this.dictionaryList,
-            )
-            .then(() => this.updateDictionaryList());
-    }
-
-    detectImportFile() {
-        this.fileError.nativeElement.textContent = '';
-        if (this.file.nativeElement.files.length === 0) {
-            this.selectedFile = null;
-        }
-    }
-
     downloadFile(data: unknown) {
         const json = JSON.stringify(data);
         const blob = new Blob([json] as BlobPart[], { type: 'text/json' });
         saveAs(blob, `${(data as Dictionary).title}.json`);
-    }
-
-    updateImportMessage(message: string, color: string) {
-        this.fileError.nativeElement.textContent = message;
-        this.fileError.nativeElement.style.color = color;
     }
 }

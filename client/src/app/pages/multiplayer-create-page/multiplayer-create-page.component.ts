@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ImportDictionaryComponent } from '@app/components/import-dictionary/import-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
-import { DictionaryService } from '@app/services/dictionary.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
@@ -62,7 +62,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private fb: FormBuilder,
         private readonly httpHandler: HttpHandlerService,
         private renderer: Renderer2,
-        private dictionaryService: DictionaryService,
+        private importDictionaryComponent: ImportDictionaryComponent,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
@@ -85,16 +85,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
         });
         this.updateBotList();
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
-    }
-
-    uploadDictionary() {
-        this.dictionaryService.uploadDictionary(
-            this.file.nativeElement.files,
-            this.selectedFile,
-            this.fileError.nativeElement.textContent,
-            this.file.nativeElement.style.color,
-            this.dictionaryList,
-        );
     }
 
     detectImportFile() {
@@ -190,12 +180,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
             .then((dictionaries) => {
                 this.dictionaryList = dictionaries;
                 if (dictionaries.some((dictionary) => dictionary.title === title)) return true;
-                this.dictionaryService.updateDictionaryMessage(
-                    this.fileError.nativeElement.textContent,
-                    this.fileError.nativeElement.style.color,
-                    "Ce dictionnaire n'est plus disponible, veuillez choisir un autre",
-                    'red',
-                );
+                this.importDictionaryComponent.updateDictionaryMessage("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
                 return false;
             });
     }

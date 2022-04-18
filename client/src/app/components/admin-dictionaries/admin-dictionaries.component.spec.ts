@@ -1,5 +1,5 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryService } from '@app/services/dictionary.service';
@@ -15,7 +15,6 @@ export class MatDialogMock {
     }
 }
 
-const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire' };
 describe('AdminDictionariesComponent', () => {
     let component: AdminDictionariesComponent;
     let fixture: ComponentFixture<AdminDictionariesComponent>;
@@ -206,46 +205,6 @@ describe('AdminDictionariesComponent', () => {
             component.resetDictionaries();
             expect(dictionaryServiceSpy.resetDictionaries).toHaveBeenCalled();
             expect(spy).toHaveBeenCalled();
-        });
-    });
-
-    describe('Upload Dictionnary tests', () => {
-        it('uploadDictionary() should call dictionaryService.uploadDictionary()', () => {
-            component.uploadDictionary();
-            expect(dictionaryServiceSpy.uploadDictionary).toHaveBeenCalled();
-        });
-    });
-
-    describe('detectImportFile  tests', () => {
-        it('detectImportFile() should set textContent of fileError to nothing', () => {
-            const message = '';
-            component.detectImportFile();
-            expect(component.fileError.nativeElement.textContent).toEqual(message);
-        });
-
-        it('detectImportFile() should set selectedFile to null if there is a file that is being selected', () => {
-            const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-            const dT = new DataTransfer();
-            dT.items.add(new File([blob], 'test.json'));
-            component.file.nativeElement.files = dT.files;
-            component.detectImportFile();
-            expect(component.selectedFile).toEqual(null);
-        });
-
-        it('selecting a file should call detectImportFile()', fakeAsync(() => {
-            const detectImportFileSpy = spyOn(component, 'detectImportFile');
-            const input = fixture.debugElement.nativeElement.querySelector('#selectFiles');
-            input.dispatchEvent(new Event('change'));
-            tick();
-            fixture.detectChanges();
-            expect(detectImportFileSpy).toHaveBeenCalled();
-        }));
-        it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
-            const message = 'Message';
-            const color = 'red';
-            component.updateImportMessage(message, color);
-            expect(component.fileError.nativeElement.textContent).toEqual(message);
-            expect(component.fileError.nativeElement.style.color).toEqual(color);
         });
     });
 

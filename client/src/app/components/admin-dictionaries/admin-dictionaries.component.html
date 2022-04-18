@@ -28,6 +28,5 @@
 </mat-selection-list>
 
 <h1>Ajouter un dictionnaire (format .json)</h1>
-<input #file (change)="detectImportFile()" type="file" id="selectFiles" accept=".json" value="Import" /><br />
-<button mat-raised-button (click)="uploadDictionary()" id="import">Ajouter le dictionnaire</button>
-<p #fileError id="file-error"></p>
+
+<app-import-dictionary></app-import-dictionary>
