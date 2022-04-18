@@ -33,7 +33,6 @@ describe('AdminDictionariesComponent', () => {
         ]);
 
         dictionaryServiceSpy.getDictionaries.and.resolveTo([]);
-        dictionaryServiceSpy.uploadDictionary.and.resolveTo();
         dictionaryServiceSpy.modifyDictionary.and.resolveTo();
         dictionaryServiceSpy.getDictionary.and.resolveTo({} as Dictionary);
 

@@ -21,7 +21,6 @@ import { ImportDictionaryComponent } from '@app/components/import-dictionary/imp
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
-import { DictionaryService } from '@app/services/dictionary.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 import { of } from 'rxjs';
@@ -110,7 +109,7 @@ describe('MultiplayerCreatePageComponent', () => {
             'beginScrabbleGame',
             'importDictionary',
         ]);
-        importDictionaryComponentSpy = jasmine.createSpyObj('DictionaryService', ['uploadDictionary']);
+        importDictionaryComponentSpy = jasmine.createSpyObj('DictionaryService', ['uploadDictionary', 'updateDictionaryMessage']);
 
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
@@ -146,7 +145,7 @@ describe('MultiplayerCreatePageComponent', () => {
 
             declarations: [MultiplayerCreatePageComponent],
             providers: [
-                { provide: DictionaryService, useValue: importDictionaryComponentSpy },
+                { provide: ImportDictionaryComponent, useValue: importDictionaryComponentSpy },
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
                 { provide: MatSnackBar, useValue: mockMatSnackBar },
                 {
@@ -219,14 +218,6 @@ describe('MultiplayerCreatePageComponent', () => {
         fixture.detectChanges();
         expect(detectImportFileSpy).toHaveBeenCalled();
     }));
-
-    it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
-        const message = 'Message';
-        const color = 'red';
-        importDictionaryComponentSpy.updateDictionaryMessage(message, color);
-        expect(component.fileError.nativeElement.textContent).toEqual(message);
-        expect(component.fileError.nativeElement.style.color).toEqual(color);
-    });
 
     it('onMouseOver() should set textContent of info panel with title and description of the dictionary passed as param', () => {
         component.onMouseOver(DB_DICTIONARY);
@@ -602,12 +593,14 @@ describe('MultiplayerCreatePageComponent', () => {
 
     it('dictionaryIsInDB() should return error message if file is not in database ', fakeAsync(() => {
         const title = 'test';
-        const updateDictionaryMessageSpy = spyOn(importDictionaryComponentSpy, 'updateDictionaryMessage');
         // Testing private method
         // eslint-disable-next-line dot-notation
         component['dictionaryIsInDB'](title);
         tick();
         flush();
-        expect(updateDictionaryMessageSpy).toHaveBeenCalledWith("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
+        expect(importDictionaryComponentSpy.updateDictionaryMessage).toHaveBeenCalledWith(
+            "Ce dictionnaire n'est plus disponible, veuillez choisir un autre",
+            'red',
+        );
     }));
 });

@@ -10,9 +10,17 @@ describe('DictionaryService', () => {
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
 
     beforeEach(() => {
-        httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
+        httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', [
+            'getDictionaries',
+            'addDictionary',
+            'modifyDictionary',
+            'resetDictionaries',
+            'deleteDictionary',
+        ]);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
         httpHandlerSpy.addDictionary.and.returnValue(of({} as unknown as void));
+        httpHandlerSpy.deleteDictionary.and.returnValue(of());
+        httpHandlerSpy.resetDictionaries.and.returnValue(of());
 
         TestBed.configureTestingModule({
             providers: [{ provide: HttpHandlerService, useValue: httpHandlerSpy }],

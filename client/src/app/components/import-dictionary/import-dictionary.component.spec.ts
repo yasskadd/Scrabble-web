@@ -36,7 +36,7 @@ describe('ImportDictionaryComponent', () => {
     });
 
     // TODO : ces tests se trouvaient dans le multiplayer create page avant, mais les fonctions on été move dans le dictionary service
-    fit('uploadDictionary() should call fileOnLoad() if there is a selected file to upload', async () => {
+    it('uploadDictionary() should call fileOnLoad() if there is a selected file to upload', async () => {
         const messageSpy = spyOn(component, 'fileOnLoad');
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();
@@ -46,7 +46,7 @@ describe('ImportDictionaryComponent', () => {
     });
 
     // eslint-disable-next-line max-len
-    fit('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
+    it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
         const messageSpy = spyOn(component, 'updateDictionaryMessage');
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();
@@ -135,5 +135,13 @@ describe('ImportDictionaryComponent', () => {
             expect(component.fileError.nativeElement.textContent).toEqual(message);
             expect(component.fileError.nativeElement.style.color).toEqual(color);
         });
+    });
+
+    it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
+        const message = 'Message';
+        const color = 'red';
+        component.updateDictionaryMessage(message, color);
+        expect(component.fileError.nativeElement.textContent).toEqual(message);
+        expect(component.fileError.nativeElement.style.color).toEqual(color);
     });
 });
