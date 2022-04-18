@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
-// eslint-disable-next-line max-classes-per-file
+/* eslint-disable-next-line max-classes-per-file */
 import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, Renderer2, Type } from '@angular/core';
