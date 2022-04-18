@@ -62,9 +62,13 @@ export class DictionaryVerificationService {
             .dictionaryIsInDb(title)
             .toPromise()
             .then((response) => {
-                if (response.status === HTTP_STATUS_FOUND) return 'Le dictionnaire existe déjà dans la base de données';
-                return 'Passed';
+                return this.returnStatus(response.status);
             });
+    }
+
+    private returnStatus(response: number) {
+        if (response === HTTP_STATUS_FOUND) return 'Le dictionnaire existe déjà dans la base de données';
+        return 'Passed';
     }
 
     private wordsListIsValid(words: unknown): boolean {
