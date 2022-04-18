@@ -108,8 +108,19 @@ tr > td > div > mat-icon {
     box-shadow: none;
 }
 
-.mat-expansion-panel-body {
-    padding: 0 10px 16px;
+.mat-expansion-panel-header-title {
+    color: rgb(35 80 31);
+    font-family: system-ui;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.mat-expansion-panel-header-title > mat-icon {
+    padding-right: 7px;
+}
+
+::ng-deep .mat-expansion-panel-body {
+    padding: 0 24px 10px;
 }
 
 .assignment-icon {
@@ -211,4 +222,11 @@ tr > td > div > mat-icon {
 
 .playerInfo {
     text-align: left;
+}
+
+::ng-deep .mat-body p,
+::ng-deep .mat-body-1 p,
+::ng-deep .mat-typography p {
+    margin: 0;
+    margin-bottom: 5px;
 }
