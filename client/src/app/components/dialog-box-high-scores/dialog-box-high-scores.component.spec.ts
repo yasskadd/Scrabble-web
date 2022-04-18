@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +11,7 @@ describe('DialogBoxHighScoresComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [MatCardModule, MatIconModule],
+            schemas: [NO_ERRORS_SCHEMA],
             declarations: [DialogBoxHighScoresComponent],
         }).compileComponents();
     });

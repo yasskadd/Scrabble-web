@@ -1,5 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
-import { Component } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -87,6 +87,7 @@ describe('InformationPanelComponent', () => {
                 RouterTestingModule.withRoutes([{ path: MULTIPLAYER_HOME_PAGE, component: StubComponent }]),
             ],
             declarations: [InformationPanelComponent],
+            schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 { provide: GameClientService, useValue: gameClientSpy },
                 { provide: LetterPlacementService, useValue: letterPlacementService },

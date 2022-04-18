@@ -154,7 +154,6 @@ export class ObjectivesHandler {
             secondPlayerObjectives.splice(secondPlayerObjectives.indexOf(objective), 1);
         } else player.objectives.splice(player.objectives.indexOf(objective), 1);
         this.addObjectivePoints(player, objective);
-        console.log(player.name);
         this.socketManager.emitRoom(player.room, 'CompletedObjective', { objective, name: player.name });
     }
 }

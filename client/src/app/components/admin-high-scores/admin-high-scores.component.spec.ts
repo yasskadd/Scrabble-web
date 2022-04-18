@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +16,7 @@ describe('AdminHighScoresComponent', () => {
         await TestBed.configureTestingModule({
             imports: [MatCardModule, MatIconModule],
             declarations: [AdminHighScoresComponent],
+            schemas: [NO_ERRORS_SCHEMA],
             providers: [{ provide: HighScoresService, useValue: highScoresServiceSpy }],
         }).compileComponents();
     });

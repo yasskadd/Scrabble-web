@@ -134,7 +134,6 @@ export class PlayerRackComponent implements OnInit {
     }
 
     onLeftClick(event: MouseEvent, letter: number) {
-        console.log(letter);
         event.preventDefault();
         this.cancel();
 
