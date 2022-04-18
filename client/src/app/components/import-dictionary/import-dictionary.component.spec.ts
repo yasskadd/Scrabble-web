@@ -67,6 +67,14 @@ describe('ImportDictionaryComponent', () => {
         expect(messageSpy).toHaveBeenCalled();
     });
 
+    it('uploadDictionary() should not call fileOnLoad if there is a not a selected file to upload', async () => {
+        const messageSpy = spyOn(component, 'fileOnLoad');
+
+        dictionaryVerifificationServiceSpy.globalVerification.and.callFake(async () => 'Did not passed');
+        await component.uploadDictionary();
+        expect(messageSpy).not.toHaveBeenCalled();
+    });
+
     // eslint-disable-next-line max-len
     it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
         const messageSpy = spyOn(component, 'updateDictionaryMessage');
