@@ -282,8 +282,13 @@ describe('GamesHandler Service', () => {
     });
 
     it('dictionaryIsInDb() should call dictionaryIsInDb of DictionaryStorage', async () => {
-        await gamesHandler.dictionaryIsInDb('dictionary1');
+        await gamesHandler.dictionaryIsInDb('dictionary');
         expect(dictionaryStorageStub.dictionaryIsInDb.called).to.equal(true);
+    });
+
+    it('dictionaryIsInDb() should call dictionaryIsInDb of DictionaryStorage with dictionary if we check the default dictionnary', async () => {
+        await gamesHandler.dictionaryIsInDb('Mon dictionnaire');
+        expect(dictionaryStorageStub.dictionaryIsInDb.calledOnceWithExactly('dictionary')).to.equal(true);
     });
 
     it('getDictionaries() should call getDictionaries of DictionaryStorage', async () => {
@@ -296,7 +301,16 @@ describe('GamesHandler Service', () => {
         // eslint-disable-next-line deprecation/deprecation
         const testBuffer = new Buffer('{ "hello": "World" }');
         dictionaryStorageStub.getDictionary.resolves(testBuffer);
-        await gamesHandler.getDictionary('dictionary1');
+        await gamesHandler.getDictionary('dictionary');
         expect(dictionaryStorageStub.getDictionary.called).to.equal(true);
+    });
+
+    it('getDictionary() should call getDictionary of DictionaryStorage with dictionary if we want to default dictionnary', async () => {
+        // REASON : We need a buffer
+        // eslint-disable-next-line deprecation/deprecation
+        const testBuffer = new Buffer('{ "hello": "World" }');
+        dictionaryStorageStub.getDictionary.resolves(testBuffer);
+        await gamesHandler.getDictionary('Mon dictionnaire');
+        expect(dictionaryStorageStub.getDictionary.calledOnceWithExactly('dictionary')).to.equal(true);
     });
 });

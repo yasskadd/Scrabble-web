@@ -99,6 +99,7 @@ export class GamesHandler {
     }
 
     async dictionaryIsInDb(title: string) {
+        if (title === 'Mon dictionnaire') title = 'dictionary';
         return await this.dictionaryStorage.dictionaryIsInDb(title);
     }
 
@@ -107,6 +108,7 @@ export class GamesHandler {
     }
 
     async getDictionary(title: string): Promise<Dictionary> {
+        if (title === 'Mon dictionnaire') title = 'dictionary';
         const dictionary = JSON.parse((await this.dictionaryStorage.getDictionary(title)).toString());
         return dictionary;
     }
