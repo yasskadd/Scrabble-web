@@ -131,6 +131,19 @@ describe('HttpHandlerService', () => {
         });
 
         it('should not return any message when sending a POST request (HttpClient called once)', () => {
+            const expectedMessage: Dictionary = { title: 'BIG_BOI', description: 'Une description', words: ['string'] };
+            // subscribe to the mocked call
+            // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
+            service.getDictionary('BIG_BOI').subscribe((dictionary) => {
+                expect(dictionary).toEqual(expectedMessage);
+            }, fail);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary/all/BIG_BOI`);
+            expect(req.request.method).toBe('GET');
+            // actually send the request
+            req.flush(expectedMessage);
+        });
+
+        it('should not return any message when sending a POST request (HttpClient called once)', () => {
             const sentMessage: Bot = { username: 'Vincent', difficulty: 'Expert' };
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
@@ -139,6 +152,16 @@ describe('HttpHandlerService', () => {
             expect(req.request.method).toBe('POST');
             // actually send the request
             req.flush(sentMessage);
+        });
+
+        it('should expect to return the status when to call dictionaryIsInDb', () => {
+            const title = 'BIG_BOI';
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            service.dictionaryIsInDb(title).subscribe(() => {}, fail);
+            const req = httpMock.expectOne(`${baseUrl}/dictionary/dictionaryisindb/${title}`);
+            expect(req.request.method).toBe('GET');
+            // actually send the request
+            req.flush({});
         });
 
         it('should not return any message when sending a Put request (HttpClient called once)', () => {
@@ -204,7 +227,7 @@ describe('HttpHandlerService', () => {
             req.flush(expectedMessage);
         });
 
-        it('should not return any message when sending a POST request (HttpClient called once)', () => {
+        it('should return the dictionary requested (HttpClient called once)', () => {
             const sentMessage: Bot = { username: 'Vincent', difficulty: 'Expert' };
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
