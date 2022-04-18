@@ -29,8 +29,7 @@ export class AdminDictionariesComponent {
     }
 
     deleteDictionary(dictionaryToDelete: DictionaryInfo) {
-        this.dictionaryService.deleteDictionary(dictionaryToDelete);
-        this.updateDictionaryList();
+        this.dictionaryService.deleteDictionary(dictionaryToDelete).then(() => this.updateDictionaryList());
     }
 
     openModifyDictionaryDialog(dictionaryToModify: DictionaryInfo) {

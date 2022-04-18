@@ -20,11 +20,8 @@ export class DictionaryService {
         return this.getDictionaries();
     }
 
-    deleteDictionary(dictionarytoRemove: DictionaryInfo) {
-        this.httpHandler
-            .deleteDictionary(dictionarytoRemove.title)
-            .toPromise()
-            .then(async () => this.getDictionaries());
+    async deleteDictionary(dictionarytoRemove: DictionaryInfo): Promise<void> {
+        return this.httpHandler.deleteDictionary(dictionarytoRemove.title).toPromise();
     }
 
     async modifyDictionary(dictionaryInfo: ModifiedDictionaryInfo): Promise<void> {

@@ -3,7 +3,7 @@
 /* eslint-disable-next-line max-classes-per-file */
 import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, Renderer2, Type } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, Renderer2, Type } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -142,7 +142,7 @@ describe('MultiplayerCreatePageComponent', () => {
                     { path: GAME_ROUTE, component: StubComponent },
                 ]),
             ],
-
+            schemas: [NO_ERRORS_SCHEMA],
             declarations: [MultiplayerCreatePageComponent],
             providers: [
                 { provide: ImportDictionaryComponent, useValue: importDictionaryComponentSpy },

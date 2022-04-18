@@ -35,6 +35,7 @@ describe('AdminDictionariesComponent', () => {
         dictionaryServiceSpy.getDictionaries.and.resolveTo([]);
         dictionaryServiceSpy.modifyDictionary.and.resolveTo();
         dictionaryServiceSpy.getDictionary.and.resolveTo({} as Dictionary);
+        dictionaryServiceSpy.deleteDictionary.and.resolveTo();
 
         // eslint-disable-next-line deprecation/deprecation
         saveAsSpy = spyOn(saver, 'saveAs').and.stub();
