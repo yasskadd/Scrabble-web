@@ -22,6 +22,8 @@ describe('DictionaryService', () => {
         httpHandlerSpy.addDictionary.and.returnValue(of({} as unknown as void));
         httpHandlerSpy.deleteDictionary.and.returnValue(of());
         httpHandlerSpy.resetDictionaries.and.returnValue(of());
+        httpHandlerSpy.modifyDictionary.and.returnValue(of());
+        httpHandlerSpy.getDictionary.and.returnValue(of());
 
         TestBed.configureTestingModule({
             providers: [{ provide: HttpHandlerService, useValue: httpHandlerSpy }],
