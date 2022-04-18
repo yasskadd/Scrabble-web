@@ -2,19 +2,19 @@
     display: flex;
     flex-direction: row;
     margin-bottom: 10px;
-    justify-content: space-between;
+    justify-content: space-evenly;
 }
 
 h1 {
     text-align: center;
 }
 
-#abandonButton {
+#stayButton {
     color: #f0fff3;
     background-color: #155724;
 }
 
-#stayButton {
+#abandonButton {
     color: #f0fff3;
     background-color: #b42222;
 }

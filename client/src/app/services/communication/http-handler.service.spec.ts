@@ -243,7 +243,7 @@ describe('HttpHandlerService', () => {
             // subscribe to the mocked call
             // eslint-disable-next-line @typescript-eslint/no-empty-function -- We explicitly need an empty function
             service.replaceBot(sentMessage).subscribe(() => {}, fail);
-            const req = httpMock.expectOne(`${baseUrl}/virtualPlayer/replace`);
+            const req = httpMock.expectOne(`${baseUrl}/virtualPlayer`);
             expect(req.request.method).toBe('PUT');
             // actually send the request
             req.flush(sentMessage);

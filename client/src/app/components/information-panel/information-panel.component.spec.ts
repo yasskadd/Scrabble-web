@@ -1,7 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
-import { Component } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderChange, MatSliderModule } from '@angular/material/slider';
@@ -11,14 +12,22 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { Letter } from '@common/interfaces/letter';
+import { Objective } from '@common/interfaces/objective';
 import { of } from 'rxjs';
 import { InformationPanelComponent } from './information-panel.component';
 
 const MULTIPLAYER_HOME_PAGE = 'home';
 type Timer = { minutes: number; seconds: number };
-type Player = { name: string; score: number; rack?: Letter[]; room: string };
+type Player = { name: string; score: number; rack: Letter[]; objective?: Objective[] };
 
 const TIMER: Timer = { minutes: 1, seconds: 20 };
+
+const OBJECTIVE_TWO: Objective = {
+    name: 'NoClue',
+    isPublic: true,
+    points: 20,
+    type: 'Word',
+} as Objective;
 
 const PLAYER_TWO: Player = {
     name: 'QLF',
@@ -29,7 +38,8 @@ const PLAYER_TWO: Player = {
         { value: 'p', quantity: 2, points: 1 },
     ],
     room: '3',
-};
+    objective: [OBJECTIVE_TWO],
+} as Player;
 const PLAYER_ONE: Player = {
     name: '667',
     score: 23,
@@ -38,7 +48,8 @@ const PLAYER_ONE: Player = {
         { value: 'b', quantity: 2, points: 1 },
     ],
     room: '1',
-};
+    objective: [OBJECTIVE_TWO],
+} as Player;
 @Component({
     template: '',
 })
@@ -72,9 +83,11 @@ describe('InformationPanelComponent', () => {
                 FormsModule,
                 BrowserModule,
                 MatIconModule,
+                MatCardModule,
                 RouterTestingModule.withRoutes([{ path: MULTIPLAYER_HOME_PAGE, component: StubComponent }]),
             ],
             declarations: [InformationPanelComponent],
+            schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 { provide: GameClientService, useValue: gameClientSpy },
                 { provide: LetterPlacementService, useValue: letterPlacementService },
@@ -99,6 +112,14 @@ describe('InformationPanelComponent', () => {
         component.abandonGame();
         expect(dialogSpy).toHaveBeenCalled();
     });
+
+    it('should open a dialog box if the user needs help method is called', () => {
+        // eslint-disable-next-line dot-notation
+        const dialogSpy = spyOn(component['dialog'], 'open');
+        component.openHelpDialog();
+        expect(dialogSpy).toHaveBeenCalled();
+    });
+
     it('should navigate to the home page if the leaveGame method is called', () => {
         const spyRouter = spyOn(router, 'navigate');
         const expectedURL = '/' + MULTIPLAYER_HOME_PAGE;
@@ -216,5 +237,25 @@ describe('InformationPanelComponent', () => {
         fixture.detectChanges();
         expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
         expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
+    });
+
+    it('filterCompletedObjectives() should return the objectives completed by the first player if true is passed as an argument', () => {
+        gameClientSpy.playerOne.objective = [
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.playerOne.name } as Objective,
+            { name: 'ObjectiveTest2', complete: false, user: gameClientSpy.playerOne.name } as Objective,
+        ];
+        expect(component.filterCompletedObjectives(true)).toEqual([
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.playerOne.name } as Objective,
+        ]);
+    });
+
+    it('filterCompletedObjectives() should return the objectives completed by the second player if false is passed as an argument', () => {
+        gameClientSpy.secondPlayer.objective = [
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.secondPlayer.name } as Objective,
+            { name: 'ObjectiveTest2', complete: false, user: gameClientSpy.secondPlayer.name } as Objective,
+        ];
+        expect(component.filterCompletedObjectives(false)).toEqual([
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.secondPlayer.name } as Objective,
+        ]);
     });
 });

@@ -8,7 +8,7 @@
         (click)="onLeftClick($event, i)"
         (contextmenu)="onRightClick($event, i)"
     >
-        <div class="letter-value" [style.font-size]="letterSize + 'px'">
+        <div class="letter-value" [style.font-size]="letterSize + 'px'" *ngIf="letter.value !== undefined">
             {{ letter.value.toUpperCase() }}
         </div>
         <div class="letter-points" [style.font-size]="pointsSize + 'px'">{{ letter.points }}</div>

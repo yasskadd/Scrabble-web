@@ -8,32 +8,37 @@ const descFiveLettersPlacedTwice = 'Placer 5 lettres ou plus 2 tours de suite';
 const descThreeWordsFormed = 'Placer 3 mots ou plus en un seul tour';
 const descTwoSameWords = 'Placer 2 mots pareils collés en un seul tour';
 
-export const oneVowelWord: Objective = { name: 'OneVowelWord', points: 15, type: 'Word', description: descOneVowel } as Objective;
+export const oneVowelWord: Objective = { name: 'Mot avec une voyelle', points: 15, type: 'Word', description: descOneVowel } as Objective;
 export const palindromicWord: Objective = {
-    name: 'PalindromicWord',
+    name: 'Palindrome',
     points: 0,
     type: 'Word',
     description: descPalindromicWord,
     multiplier: 'x2 pour le mot',
 } as Objective;
-export const alphabeticalWord: Objective = { name: 'AlphabeticalWord', points: 20, type: 'Word', description: descAlphabeticalWord } as Objective;
-export const moreThan10Letters: Objective = { name: 'MoreThan10Letters', points: 20, type: 'Word', description: descMoreThan10Letters } as Objective;
+export const alphabeticalWord: Objective = { name: 'Mot alphabétique', points: 20, type: 'Word', description: descAlphabeticalWord } as Objective;
+export const moreThan10Letters: Objective = {
+    name: 'Mot de 10 lettres',
+    points: 20,
+    type: 'Word',
+    description: descMoreThan10Letters,
+} as Objective;
 export const threeWordsFormed: Objective = {
-    name: 'ThreeWordsFormed',
+    name: '3 mots en 1 tour',
     points: 0,
     type: 'Word',
     description: descThreeWordsFormed,
     multiplier: 'x2 pour le tour',
 } as Objective;
-export const twoSameWords: Objective = { name: 'TwoSameWords', points: 20, type: 'Word', description: descTwoSameWords } as Objective;
+export const twoSameWords: Objective = { name: '2 fois le même mot', points: 20, type: 'Word', description: descTwoSameWords } as Objective;
 export const fiveLettersPlacedTwice: Objective = {
-    name: 'FiveLettersPlaced',
+    name: '5 lettres placées 2 fois',
     points: 20,
     type: 'Turn',
     description: descFiveLettersPlacedTwice,
 } as Objective;
 export const clueCommandNeverUsed: Objective = {
-    name: 'ClueCommandNeverUsed',
+    name: 'Indice jamais utilisé',
     points: 45,
     type: 'ClueCommand',
     description: descClueCommand,

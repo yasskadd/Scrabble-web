@@ -1,8 +1,8 @@
 export const TOTAL_COLUMNS = 16;
 export const TOTAL_ROWS = 16;
 
-export const GRID_CANVAS_WIDTH = 600;
-export const GRID_CANVAS_HEIGHT = 600;
+export const GRID_CANVAS_WIDTH = 560;
+export const GRID_CANVAS_HEIGHT = 560;
 export const FONT_SIZE = 20;
 export const BOARD_TILE_SIZE = 16;
 

@@ -60,8 +60,7 @@ export class AdminDictionariesComponent {
     }
 
     resetDictionaries() {
-        this.dictionaryService.resetDictionaries();
-        this.updateDictionaryList();
+        this.dictionaryService.resetDictionaries().then(() => this.updateDictionaryList());
     }
 
     updateDictionaryList() {

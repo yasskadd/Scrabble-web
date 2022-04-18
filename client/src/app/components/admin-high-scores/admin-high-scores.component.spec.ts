@@ -1,3 +1,4 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,6 +16,7 @@ describe('AdminHighScoresComponent', () => {
         await TestBed.configureTestingModule({
             imports: [MatCardModule, MatIconModule],
             declarations: [AdminHighScoresComponent],
+            schemas: [NO_ERRORS_SCHEMA],
             providers: [{ provide: HighScoresService, useValue: highScoresServiceSpy }],
         }).compileComponents();
     });
@@ -28,12 +30,6 @@ describe('AdminHighScoresComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
-
-    it('should call getHighScores when calling getHighScores from component', () => {
-        component.getHighScores();
-        expect(highScoresServiceSpy.getHighScores).toHaveBeenCalled();
-    });
-
     it('should call resetHighScores when calling resetHighScores from component', () => {
         component.resetHighScores();
         expect(highScoresServiceSpy.resetHighScores).toHaveBeenCalled();

@@ -11,9 +11,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DialogGameHelpComponent } from '@app/components/dialog-game-help/dialog-game-help.component';
+import { HighScoresComponent } from '@app/components/high-scores/high-scores.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -70,6 +73,8 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         DialogBoxNewGameComponent,
         HeaderComponent,
         FooterComponent,
+        DialogGameHelpComponent,
+        HighScoresComponent,
         ImportDictionaryComponent,
     ],
     imports: [
@@ -90,6 +95,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         HttpClientModule,
         MatSliderModule,
         MatProgressSpinnerModule,
+        MatStepperModule,
         MatAutocompleteModule,
     ],
     providers: [ImportDictionaryComponent],
