@@ -138,8 +138,11 @@ export class LetterPlacementService {
     }
 
     private incrementByOne(coordinate: Coordinate) {
-        if (this.isHorizontal) coordinate.x++;
-        else coordinate.y++;
+        if (!this.isHorizontal) {
+            coordinate.y++;
+            return;
+        }
+        coordinate.x++;
     }
 
     private setPropreties() {
