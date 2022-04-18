@@ -47,6 +47,6 @@ export class DictionaryValidationService {
     }
 
     private isolateInvalidWords(foundWords: Word[]): [boolean, Word[]] {
-        return [foundWords.filter((word) => word.isValid === false).length !== 0, foundWords.filter((word) => word.isValid === false)];
+        return [foundWords.filter((word) => !word.isValid).length !== 0, foundWords.filter((word) => !word.isValid)];
     }
 }

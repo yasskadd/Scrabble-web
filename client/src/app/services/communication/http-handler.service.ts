@@ -5,6 +5,7 @@ import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HighScores } from '@app/interfaces/high-score-parameters';
 import { GameHistoryInfo } from '@common/interfaces/game-history-info';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -49,16 +50,29 @@ export class HttpHandlerService {
             .pipe(catchError(this.handleError<DictionaryInfo[]>('getDictionaries', [])));
     }
 
-    deleteDictionaries(): Observable<Dictionary[]> {
+    // TODO : TEST
+    getDictionary(title: string): Observable<Dictionary> {
+        return this.http.get<Dictionary>(`${this.baseUrl}/dictionary/all/` + title).pipe(catchError(this.handleError<Dictionary>('getDictionaries')));
+    }
+
+    resetDictionaries(): Observable<Dictionary[]> {
         return this.http.delete<Dictionary[]>(`${this.baseUrl}/dictionary`).pipe(catchError(this.handleError<Dictionary[]>('getDictionaries', [])));
     }
 
-    deleteDictionary(dictionary: Dictionary): Observable<void> {
-        return this.http.patch<void>(`${this.baseUrl}/dictionary/remove`, dictionary).pipe(catchError(this.handleError<void>('deleteDictionary')));
+    deleteDictionary(dictionaryTitle: string): Observable<void> {
+        return this.http
+            .patch<void>(`${this.baseUrl}/dictionary`, { title: dictionaryTitle })
+            .pipe(catchError(this.handleError<void>('deleteDictionary')));
     }
 
     addDictionary(dictionary: Dictionary): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/dictionary/upload`, dictionary).pipe(catchError(this.handleError<void>('addDictionary')));
+        return this.http
+            .post<void>(`${this.baseUrl}/dictionary`, {
+                title: dictionary.title,
+                description: dictionary.description,
+                words: dictionary.words,
+            })
+            .pipe(catchError(this.handleError<void>('addDictionary')));
     }
 
     // Reason: the server does't really return something but just a status code
@@ -73,8 +87,8 @@ export class HttpHandlerService {
         );
     }
 
-    modifyDictionary(dictionary: Dictionary): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/dictionary/replace`, dictionary).pipe(catchError(this.handleError<void>('modifyDictionary')));
+    modifyDictionary(dictionary: ModifiedDictionaryInfo): Observable<void> {
+        return this.http.put<void>(`${this.baseUrl}/dictionary`, dictionary).pipe(catchError(this.handleError<void>('updateDictionary')));
     }
 
     getBeginnerBots(): Observable<Bot[]> {
@@ -86,7 +100,7 @@ export class HttpHandlerService {
     }
 
     addBot(bot: Bot): Observable<void> {
-        return this.http.post<void>(`${this.baseUrl}/virtualPlayer/upload`, bot).pipe(catchError(this.handleError<void>('addBot')));
+        return this.http.post<void>(`${this.baseUrl}/virtualPlayer`, bot).pipe(catchError(this.handleError<void>('addBot')));
     }
 
     replaceBot(bot: BotNameInfo): Observable<void> {

@@ -6,6 +6,7 @@ import { ExpertBot } from '@app/classes/player/expert-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
+import { Behavior } from '@app/interfaces/behavior';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
@@ -129,7 +130,7 @@ export class GamesStateService {
         const player = this.gamesHandler.players.has(gameInfo.socketId[0]) ? 1 : 0;
         let newPlayer: Player;
         if (player === 1 && gameInfo.socketId[player] === undefined && gameInfo.botDifficulty !== undefined) {
-            const dictionaryValidation = this.gamesHandler.dictionaries.get(gameInfo.dictionary)?.dictionaryValidation;
+            const dictionaryValidation = (this.gamesHandler.dictionaries.get(gameInfo.dictionary) as Behavior).dictionaryValidation;
             if (gameInfo.botDifficulty === 'Débutant')
                 newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
@@ -161,9 +162,9 @@ export class GamesStateService {
             new Turn(gameInfo.timer),
             new LetterReserve(),
             gameInfo.mode === 'classique' ? false : true,
-            gameBehavior?.dictionaryValidation as DictionaryValidationService,
-            gameBehavior?.letterPlacement as LetterPlacementService,
-            gameBehavior?.wordSolver as WordSolverService,
+            (gameBehavior as Behavior).dictionaryValidation as DictionaryValidationService,
+            (gameBehavior as Behavior).letterPlacement as LetterPlacementService,
+            (gameBehavior as Behavior).wordSolver as WordSolverService,
         );
     }
 
