@@ -113,7 +113,6 @@ export class GameClientService {
     }
 
     private completeObjective(completedObjective: CompletedObjective) {
-        console.log(completedObjective);
         if (this.playerOne.objective === undefined || this.secondPlayer.objective === undefined) return;
         const indexPlayerOne = this.playerOne.objective.findIndex((element) => element.name === completedObjective.objective.name);
         const indexSecondPlayer = this.secondPlayer.objective.findIndex((element) => element.name === completedObjective.objective.name);

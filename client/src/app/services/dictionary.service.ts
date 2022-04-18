@@ -28,9 +28,8 @@ export class DictionaryService {
         return this.httpHandler.modifyDictionary(dictionaryInfo).toPromise();
     }
 
-    resetDictionaries() {
-        this.httpHandler.resetDictionaries().subscribe();
-        this.getDictionaries();
+    async resetDictionaries(): Promise<Dictionary[]> {
+        return this.httpHandler.resetDictionaries().toPromise();
     }
 
     async getDictionaries(): Promise<DictionaryInfo[]> {

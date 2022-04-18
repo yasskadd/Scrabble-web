@@ -18,9 +18,16 @@ import { InformationPanelComponent } from './information-panel.component';
 
 const MULTIPLAYER_HOME_PAGE = 'home';
 type Timer = { minutes: number; seconds: number };
-type Player = { name: string; score: number; rack?: Letter[]; room: string };
+type Player = { name: string; score: number; rack: Letter[]; objective?: Objective[] };
 
 const TIMER: Timer = { minutes: 1, seconds: 20 };
+
+const OBJECTIVE_TWO: Objective = {
+    name: 'NoClue',
+    isPublic: true,
+    points: 20,
+    type: 'Word',
+} as Objective;
 
 const PLAYER_TWO: Player = {
     name: 'QLF',
@@ -31,7 +38,8 @@ const PLAYER_TWO: Player = {
         { value: 'p', quantity: 2, points: 1 },
     ],
     room: '3',
-};
+    objective: [OBJECTIVE_TWO],
+} as Player;
 const PLAYER_ONE: Player = {
     name: '667',
     score: 23,
@@ -40,7 +48,8 @@ const PLAYER_ONE: Player = {
         { value: 'b', quantity: 2, points: 1 },
     ],
     room: '1',
-};
+    objective: [OBJECTIVE_TWO],
+} as Player;
 @Component({
     template: '',
 })
@@ -234,7 +243,7 @@ describe('InformationPanelComponent', () => {
             { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.playerOne.name } as Objective,
             { name: 'ObjectiveTest2', complete: false, user: gameClientSpy.playerOne.name } as Objective,
         ];
-        expect(component.filterCompletedObjectives(true)).toBe([
+        expect(component.filterCompletedObjectives(true)).toEqual([
             { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.playerOne.name } as Objective,
         ]);
     });
@@ -244,7 +253,7 @@ describe('InformationPanelComponent', () => {
             { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.secondPlayer.name } as Objective,
             { name: 'ObjectiveTest2', complete: false, user: gameClientSpy.secondPlayer.name } as Objective,
         ];
-        expect(component.filterCompletedObjectives(false)).toBe([
+        expect(component.filterCompletedObjectives(false)).toEqual([
             { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.secondPlayer.name } as Objective,
         ]);
     });

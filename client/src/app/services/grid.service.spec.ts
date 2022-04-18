@@ -10,8 +10,8 @@ describe('GridService', () => {
     let gridService: GridService;
     let ctxStub: CanvasRenderingContext2D;
 
-    const CANVAS_WIDTH = 600;
-    const CANVAS_HEIGHT = 600;
+    const CANVAS_WIDTH = 560;
+    const CANVAS_HEIGHT = 560;
     const POSITION_TEST = { x: 2, y: 11 };
     const BOARD_SIZE = 15;
     const GAMEBOARD_TEST: LetterTileInterface[] = [
@@ -251,7 +251,7 @@ describe('GridService', () => {
 
     it(' getPosition should return the coordinates of the x and y positions of the tile', () => {
         const firstPosition = gridService.getPosition({ x: 55, y: 55 });
-        const lastPosition = gridService.getPosition({ x: 580, y: 580 });
+        const lastPosition = gridService.getPosition({ x: 540, y: 540 });
         expect(firstPosition).toEqual({ x: 1, y: 1 });
         expect(lastPosition).toEqual({ x: 15, y: 15 });
     });

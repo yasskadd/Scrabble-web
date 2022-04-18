@@ -54,7 +54,6 @@ describe('DictionaryService', () => {
     it('should call httpHandler resetDictionaries() when calling dictionaryService resetDictionaries() is called', () => {
         service.resetDictionaries();
         expect(httpHandlerSpy.resetDictionaries).toHaveBeenCalled();
-        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
     it('should call httpHandler getDictionary() when calling dictionaryService getDictionary() is called', () => {
