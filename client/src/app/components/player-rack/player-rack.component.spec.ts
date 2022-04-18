@@ -157,17 +157,6 @@ describe('PlayerRackComponent', () => {
         expect(mockScroll.deltaY).toBeLessThan(0);
     });
 
-    it('clicking outside the rack should call clickOutside', () => {
-        const indexLetter = 0;
-        const spy = spyOn(component, 'clickOutside');
-        const mockClick = new MouseEvent('oncontextmenu');
-        component.onRightClick(mockClick, indexLetter);
-        fixture.detectChanges();
-        window.dispatchEvent(new MouseEvent('click'));
-        fixture.detectChanges();
-        expect(spy).toHaveBeenCalled();
-    });
-
     it('clicking outside the rack should deselect all selected letters', () => {
         const spy = spyOn(component, 'cancel');
         spyOn(fixture.debugElement.nativeElement, 'contains').and.callFake(() => {
@@ -380,6 +369,28 @@ describe('PlayerRackComponent', () => {
         const spy = spyOn(component, 'repositionRack');
         component.buttonPressed = 'a';
         expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('dispatchAction should not call call cancel, repositionRack, and selectManipulation if the selection is not valid', () => {
+        const cancelSpy = spyOn(component, 'cancel');
+        const repositionRackSpy = spyOn(component, 'repositionRack');
+        const selectManipulationSpy = spyOn(component, 'selectManipulation');
+        component.currentSelection = -1;
+        component.dispatchAction();
+        expect(cancelSpy).not.toHaveBeenCalled();
+        expect(repositionRackSpy).not.toHaveBeenCalled();
+        expect(selectManipulationSpy).not.toHaveBeenCalled();
+    });
+
+    it('dispatchAction should call call cancel, repositionRack, and selectManipulation if the selection is not valid', () => {
+        const cancelSpy = spyOn(component, 'cancel');
+        const repositionRackSpy = spyOn(component, 'repositionRack');
+        const selectManipulationSpy = spyOn(component, 'selectManipulation');
+        component.currentSelection = 1;
+        component.dispatchAction();
+        expect(cancelSpy).toHaveBeenCalled();
+        expect(repositionRackSpy).toHaveBeenCalled();
+        expect(selectManipulationSpy).toHaveBeenCalled();
     });
 
     it('selectManipulation should not have previous selection if the key pressed references one letter', () => {

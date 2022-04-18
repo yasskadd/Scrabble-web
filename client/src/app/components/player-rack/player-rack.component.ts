@@ -60,11 +60,7 @@ export class PlayerRackComponent implements OnInit {
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            if (this.currentSelection !== board.INVALID_INDEX) {
-                this.cancel();
-                this.repositionRack();
-                this.selectManipulation();
-            }
+            this.dispatchAction();
         });
     }
 
@@ -84,6 +80,14 @@ export class PlayerRackComponent implements OnInit {
 
     get noPlacedLetters(): boolean {
         return this.letterPlacementService.noLettersPlaced();
+    }
+
+    dispatchAction() {
+        if (this.currentSelection !== board.INVALID_INDEX) {
+            this.cancel();
+            this.repositionRack();
+            this.selectManipulation();
+        }
     }
 
     skipTurn() {
