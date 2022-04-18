@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Proxima+Nova');
 
+#panel-title {
+    text-align: center;
+    margin-bottom: 0px;
+}
+
 .player {
     border-radius: 4px;
     padding: 20px;
@@ -19,6 +24,10 @@
     color: #23501f;
 }
 
+#player-2 {
+    margin-bottom: 40px;
+}
+
 .time {
     transform: scale(1.5);
     display: flex;
@@ -31,14 +40,12 @@
 }
 
 .game-infos {
-    position: relative;
-    bottom: 10px;
-    padding: 15px;
-    border-radius: 4px;
+    padding: 5px;
     margin-left: 5px;
     margin-right: 5px;
+    margin-bottom: 20px;
     background-color: #aecec4;
-    width: 235px;
+    border-radius: 4px;
 }
 
 #combined {
@@ -50,6 +57,7 @@
     display: flex;
     justify-content: center;
 }
+
 .name-score > * {
     width: 100%;
     display: flex;
@@ -80,21 +88,16 @@ td {
     display: block;
 }
 
-#versus {
-    text-align: center;
-    font-size: 40px;
-    font-style: oblique;
-    font-weight: bold;
-    color: #c2e5da;
-    text-shadow: 1px 1px 1px black;
-}
-
 tr > td > div > mat-icon {
     color: white;
 }
 
 .mat-expansion-panel {
-    background-color: rgba($color: white, $alpha: 0);
+    padding: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 20px;
+    background-color: #aecec4;
 }
 
 .mat-expansion-panel:not([class*='mat-elevation-z']) {
