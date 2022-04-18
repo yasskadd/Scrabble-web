@@ -1,6 +1,49 @@
 <h1 mat-dialog-title id="panel-title">
-    <img src="https://bit.ly/3m206ss" width="300" height="60" alt="Logo Scrabble" (click)="abandonGame()" />
+    <img
+        src="https://bit.ly/3m206ss"
+        width="250"
+        height="50"
+        alt="Logo Scrabble"
+        *ngIf="!this.gameClientService.isGameFinish"
+        (click)="abandonGame()"
+    />
 </h1>
+
+<section class="player" [ngClass]="{ active: this.gameClientService.playerOneTurn }" id="player-1">
+    <mat-card-title-group class="playerInfo">
+        <mat-card-title>{{ this.gameClientService.playerOne.name }}</mat-card-title>
+        <mat-card-subtitle class="score">{{ this.gameClientService.playerOne.score }} POINTS </mat-card-subtitle>
+        <mat-card-subtitle class="rack-letters" *ngIf="this.gameClientService.playerOne.rack.length < 7">
+            {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet</mat-card-subtitle
+        >
+    </mat-card-title-group>
+    <mat-card-content>
+        <div class="time" id="playerOneTimer" *ngIf="this.gameClientService.playerOneTurn">
+            <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
+                this.timer.timerToSecond(this.gameClientService.timer)
+            }}
+        </div>
+        <div class="time" *ngIf="!this.gameClientService.playerOneTurn"></div>
+    </mat-card-content>
+</section>
+
+<section class="player" [ngClass]="{ active: !this.gameClientService.playerOneTurn }" id="player-2">
+    <mat-card-title-group class="playerInfo">
+        <mat-card-title>{{ this.gameClientService.secondPlayer.name }}</mat-card-title>
+        <mat-card-subtitle class="score">{{ this.gameClientService.secondPlayer.score }} POINTS </mat-card-subtitle>
+        <mat-card-subtitle class="rack-letters" *ngIf="this.gameClientService.secondPlayer.rack.length < 7">
+            {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
+        </mat-card-subtitle>
+    </mat-card-title-group>
+    <mat-card-content>
+        <div class="time" id="playerTwoTimer" *ngIf="!this.gameClientService.playerOneTurn">
+            <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
+                this.timer.timerToSecond(this.gameClientService.timer)
+            }}
+        </div>
+        <div class="time" *ngIf="this.gameClientService.playerOneTurn"></div>
+    </mat-card-content>
+</section>
 
 <div class="objectives" *ngIf="this.gameClientService.playerOne.objective">
     <mat-divider></mat-divider>
@@ -66,47 +109,6 @@
     </mat-expansion-panel>
     <mat-divider></mat-divider>
 </div>
-
-<section class="player" [ngClass]="{ active: this.gameClientService.playerOneTurn }" id="player-1">
-    <mat-card class="example-card">
-        <mat-card-title-group class="playerInfo">
-            <mat-card-title>{{ this.gameClientService.playerOne.name }}</mat-card-title>
-            <mat-card-subtitle class="score">{{ this.gameClientService.playerOne.score }} POINTS </mat-card-subtitle>
-        </mat-card-title-group>
-        <mat-card-content>
-            <div id="playerNumberLettersRack" *ngIf="this.gameClientService.playerOne.rack.length < 7">
-                {{ this.gameClientService.playerOne.rack?.length }} lettres disponibles sur le chevalet
-            </div>
-            <div class="time" id="playerOneTimer" *ngIf="this.gameClientService.playerOneTurn">
-                <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
-                    this.timer.timerToSecond(this.gameClientService.timer)
-                }}
-            </div>
-            <div class="time" *ngIf="!this.gameClientService.playerOneTurn"><mat-icon>timer</mat-icon>-:-</div>
-        </mat-card-content>
-    </mat-card>
-</section>
-<div id="versus">VS</div>
-<section class="player" [ngClass]="{ active: !this.gameClientService.playerOneTurn }" id="player-2">
-    <mat-card class="example-card">
-        <mat-card-title-group class="playerInfo">
-            <mat-card-title>{{ this.gameClientService.secondPlayer.name }}</mat-card-title>
-            <mat-card-subtitle class="score">{{ this.gameClientService.secondPlayer.score }} POINTS </mat-card-subtitle>
-        </mat-card-title-group>
-        <mat-card-content>
-            <div *ngIf="this.gameClientService.secondPlayer.rack.length < 7">
-                {{ this.gameClientService.secondPlayer.rack?.length }} lettres disponibles sur le chevalet
-            </div>
-
-            <div class="time" id="playerTwoTimer" *ngIf="!this.gameClientService.playerOneTurn">
-                <mat-icon>timer</mat-icon>{{ this.timer.timerToMinute(this.gameClientService.timer) }}:{{
-                    this.timer.timerToSecond(this.gameClientService.timer)
-                }}
-            </div>
-            <div class="time" *ngIf="this.gameClientService.playerOneTurn"><mat-icon>timer</mat-icon>-:-</div>
-        </mat-card-content>
-    </mat-card>
-</section>
 
 <section class="game-infos">
     <div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>

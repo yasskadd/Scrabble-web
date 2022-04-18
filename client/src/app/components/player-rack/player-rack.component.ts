@@ -43,11 +43,9 @@ export class PlayerRackComponent implements OnInit {
 
     @HostListener('mousewheel', ['$event'])
     onScrollEvent(event: WheelEvent) {
-        if (!this.gameClient.isGameFinish) {
-            this.cancel();
-            this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
-            this.repositionRack();
-        }
+        this.cancel();
+        this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
+        this.repositionRack();
     }
 
     @HostListener('window: click', ['$event'])
@@ -104,9 +102,9 @@ export class PlayerRackComponent implements OnInit {
             this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
             this.previousSelection = this.currentSelection;
             this.lettersToManipulate.push(this.currentSelection);
-        } else {
-            this.lettersToExchange = [];
+            return;
         }
+        this.lettersToExchange = [];
     }
 
     repositionRack() {
@@ -130,13 +128,16 @@ export class PlayerRackComponent implements OnInit {
         this.lettersToManipulate = [];
         if (!this.lettersToExchange.includes(letter)) {
             this.lettersToExchange.push(letter);
-        } else {
-            this.lettersToExchange.splice(this.lettersToExchange.indexOf(letter), 1);
+            return;
         }
+        this.lettersToExchange.splice(this.lettersToExchange.indexOf(letter), 1);
     }
+
     onLeftClick(event: MouseEvent, letter: number) {
+        console.log(letter);
         event.preventDefault();
         this.cancel();
+
         this.currentSelection = letter;
         this.lettersToManipulate.push(letter);
     }
@@ -164,12 +165,14 @@ export class PlayerRackComponent implements OnInit {
             }
             this.gameClient.playerOne.rack[this.rackIndices] = temp;
             this.currentSelection = this.rackIndices;
-        } else {
-            temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
-            this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
-            this.gameClient.playerOne.rack[this.currentSelection] = temp;
-            this.currentSelection -= 1;
+            this.lettersToManipulate.push(this.currentSelection);
+            return;
         }
+        temp = this.gameClient.playerOne.rack[this.currentSelection - 1];
+        this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
+        this.gameClient.playerOne.rack[this.currentSelection] = temp;
+        this.currentSelection -= 1;
+
         this.lettersToManipulate.push(this.currentSelection);
     }
 

@@ -39,6 +39,7 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
+import { HighScoresComponent } from './components/high-scores/high-scores.component';
 
 /**
  * Main module that is used in main.ts.
@@ -70,6 +71,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         HeaderComponent,
         FooterComponent,
         DialogGameHelpComponent,
+        HighScoresComponent,
     ],
     imports: [
         CommonModule,
