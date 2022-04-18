@@ -76,11 +76,4 @@ describe('DialogBoxGameTypeComponent', () => {
     it('Game mode should be in the passed data', () => {
         expect(component.gameMode).toEqual(DATA_GAME_MODE);
     });
-
-    // it('dialog should be closed after onYesClick()', () => {
-    //     // eslint-disable-next-line dot-notation
-    //     const spy = spyOn(component['dialogRef'], 'close').and.callThrough();
-    //     component.closeDialog();
-    //     expect(spy).toHaveBeenCalled();
-    // });
 });
