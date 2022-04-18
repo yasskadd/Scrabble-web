@@ -43,9 +43,8 @@ export class PlayerRackComponent implements OnInit {
 
     @HostListener('mousewheel', ['$event'])
     onScrollEvent(event: WheelEvent) {
-        this.cancel();
         this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
-        this.repositionRack();
+        this.dispatchAction();
     }
 
     @HostListener('window: click', ['$event'])
@@ -140,7 +139,6 @@ export class PlayerRackComponent implements OnInit {
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
         this.cancel();
-
         this.currentSelection = letter;
         this.lettersToManipulate.push(letter);
     }
