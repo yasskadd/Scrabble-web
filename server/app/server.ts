@@ -3,7 +3,6 @@ import * as http from 'http';
 import { AddressInfo } from 'net';
 import { Service } from 'typedi';
 import { DatabaseService } from './services/database/database.service';
-import { GamesHandler } from './services/games-management/games-handler.service';
 import { SocketManager } from './services/socket/socket-manager.service';
 import { SocketSubscribeHandler } from './services/socket/socket-subscribe-handler.service';
 
@@ -18,7 +17,6 @@ export class Server {
         private socketManager: SocketManager,
         private handler: SocketSubscribeHandler,
         private databaseService: DatabaseService,
-        private gameHandler: GamesHandler,
     ) {}
 
     private static normalizePort(val: number | string): number | string | boolean {
@@ -44,7 +42,6 @@ export class Server {
 
         try {
             await this.databaseService.connect();
-            await this.gameHandler.setDictionaries();
         } catch {
             process.exit(1);
         }

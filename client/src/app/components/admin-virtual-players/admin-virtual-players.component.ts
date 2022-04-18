@@ -65,13 +65,11 @@ export class AdminVirtualPlayersComponent {
     replaceBotName(currentName: string, newName: string, difficulty: string) {
         if (newName === '') return;
         this.updateBotList();
-        if (this.isNameDefault(currentName)) return;
         if (this.isUniqueName(newName)) this.virtualPlayerService.replaceBotName({ currentName, newName, difficulty });
     }
 
     deleteBot(username: string, difficulty: string) {
         this.updateBotList();
-        if (this.isNameDefault(username)) return;
         this.virtualPlayerService.deleteBotName(username, difficulty);
     }
 

@@ -1,17 +1,15 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ImportDictionaryComponent } from '@app/components/import-dictionary/import-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryInfo } from '@app/interfaces/dictionary-info';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
-import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
 const TIMEOUT_REQUEST = 500;
-const TIMEOUT_POST = 5000;
-const TIMEOUT_VERIFICATION = 50;
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -64,7 +62,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private fb: FormBuilder,
         private readonly httpHandler: HttpHandlerService,
         private renderer: Renderer2,
-        private dictionaryVerification: DictionaryVerificationService,
+        private importDictionaryComponent: ImportDictionaryComponent,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
@@ -87,45 +85,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
         });
         this.updateBotList();
         this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
-    }
-
-    async uploadDictionary() {
-        if (this.file.nativeElement.files.length !== 0) {
-            const selectedFile = this.file.nativeElement.files[0];
-            const fileReader = new FileReader();
-            const content = await this.readFile(selectedFile, fileReader);
-            this.updateDictionaryMessage('En vérification, veuillez patienter...', 'red');
-            this.fileOnLoad(content);
-        } else {
-            this.updateDictionaryMessage("Il n'y a aucun fichier séléctioné", 'red');
-        }
-    }
-
-    fileOnLoad(newDictionary: Record<string, unknown>) {
-        if (this.dictionaryVerification.globalVerification(newDictionary) !== 'Passed') {
-            this.updateDictionaryMessage(this.dictionaryVerification.globalVerification(newDictionary), 'red');
-        } else {
-            this.selectedFile = newDictionary as unknown as Dictionary;
-            this.httpHandler.addDictionary(this.selectedFile).subscribe();
-            setTimeout(() => {
-                this.gameConfiguration.importDictionary((this.selectedFile as Dictionary).title);
-                this.updateDictionaryMessage('Ajout avec succès du nouveau dictionnaire', 'black');
-            }, TIMEOUT_POST);
-        }
-    }
-
-    detectImportFile() {
-        this.fileError.nativeElement.textContent = '';
-        if (this.file.nativeElement.files.length !== 0) this.form.controls.dictionary.disable();
-        else {
-            this.selectedFile = null;
-            this.form.controls.dictionary.enable();
-        }
-    }
-
-    updateDictionaryMessage(message: string, color: string) {
-        this.fileError.nativeElement.textContent = message;
-        this.fileError.nativeElement.style.color = color;
     }
 
     onMouseOver(dictionary: DictionaryInfo) {
@@ -205,26 +164,15 @@ export class MultiplayerCreatePageComponent implements OnInit {
         }, TIMEOUT_REQUEST);
     }
 
-    private async readFile(selectedFile: File, fileReader: FileReader): Promise<Record<string, unknown>> {
-        return new Promise((resolve, reject) => {
-            fileReader.readAsText(selectedFile, 'UTF-8');
-            fileReader.onload = () => {
-                resolve(JSON.parse(fileReader.result as string));
-            };
-            fileReader.onerror = () => {
-                reject(Error('File is not a JSON'));
-            };
-        });
-    }
-
     private async dictionaryIsInDB(title: string): Promise<boolean> {
-        this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                if (this.dictionaryList.some((dictionary) => dictionary.title === title)) resolve(true);
-                this.updateDictionaryMessage("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
-                resolve(false);
-            }, TIMEOUT_VERIFICATION);
-        });
+        return this.httpHandler
+            .getDictionaries()
+            .toPromise()
+            .then((dictionaries) => {
+                this.dictionaryList = dictionaries;
+                if (dictionaries.some((dictionary) => dictionary.title === title)) return true;
+                this.importDictionaryComponent.updateDictionaryMessage("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
+                return false;
+            });
     }
 }

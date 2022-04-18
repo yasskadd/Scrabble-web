@@ -1,6 +1,7 @@
 import { Game } from '@app/classes/game.class';
 import { Player } from '@app/classes/player/player.class';
 import { Behavior } from '@app/interfaces/behavior';
+import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
 import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
@@ -8,6 +9,7 @@ import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
 import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { Socket } from 'socket.io';
 import { Container, Service } from 'typedi';
 
@@ -21,6 +23,7 @@ export class GamesHandler {
         this.players = new Map();
         this.gamePlayers = new Map();
         this.dictionaries = new Map();
+        this.setDictionaries();
     }
 
     updatePlayerInfo(socket: Socket, roomId: string, game: Game) {
@@ -43,7 +46,7 @@ export class GamesHandler {
     }
 
     async setDictionaries() {
-        const dictionaries = await this.dictionaryStorage.getAllDictionary();
+        const dictionaries = await this.getDictionaries();
         const tempDictionariesMap: Map<string, Behavior> = new Map();
         dictionaries.forEach((dictionary) => {
             const dictionaryValidation = new DictionaryValidationService(dictionary.words);
@@ -59,16 +62,52 @@ export class GamesHandler {
         this.dictionaries = tempDictionariesMap;
     }
 
-    async updateDictionaries(title: string) {
-        const dictionary = await this.dictionaryStorage.selectDictionaryInfo(title);
-        const dictionaryValidation = new DictionaryValidationService(dictionary[0].words);
-        const wordSolver = new WordSolverService(dictionaryValidation);
-        const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
-        const behavior = {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
-        };
-        this.dictionaries.set(title, behavior);
+    async addDictionary(dictionary: Dictionary) {
+        try {
+            await this.dictionaryIsInDb(dictionary.title);
+        } catch {
+            await this.dictionaryStorage.addDictionary(dictionary.title, JSON.stringify(dictionary));
+            const dictionaryValidation = new DictionaryValidationService(dictionary.words);
+            const wordSolver = new WordSolverService(dictionaryValidation);
+            const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+            const behavior = {
+                dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+                wordSolver: wordSolver as WordSolverService,
+                letterPlacement: letterPlacement as LetterPlacementService,
+            };
+            this.dictionaries.set(dictionary.title, behavior);
+        }
+    }
+
+    async updateDictionary(dictionaryModification: ModifiedDictionaryInfo) {
+        await this.dictionaryStorage.updateDictionary(dictionaryModification);
+        const behavior = this.dictionaries.get(dictionaryModification.title) as Behavior;
+        this.dictionaries.delete(dictionaryModification.title);
+        this.dictionaries.set(dictionaryModification.newTitle, behavior);
+    }
+
+    async resetDictionaries() {
+        const files = (await this.dictionaryStorage.getDictionariesFileName()).filter((file) => file !== 'dictionary.json');
+        for (const file of files) {
+            await this.deleteDictionary(file.replace('.json', ''));
+        }
+    }
+
+    async deleteDictionary(title: string) {
+        await this.dictionaryStorage.deletedDictionary(title);
+        this.dictionaries.delete(title);
+    }
+
+    async dictionaryIsInDb(title: string) {
+        return await this.dictionaryStorage.dictionaryIsInDb(title);
+    }
+
+    async getDictionaries(): Promise<Dictionary[]> {
+        return await this.dictionaryStorage.getDictionaries();
+    }
+
+    async getDictionary(title: string): Promise<Dictionary> {
+        const dictionary = JSON.parse((await this.dictionaryStorage.getDictionary(title)).toString());
+        return dictionary;
     }
 }

@@ -7,8 +7,11 @@ import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
 import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
+import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
+import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
+import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
@@ -20,13 +23,6 @@ import { Server as ioServer, Socket as ServerSocket } from 'socket.io';
 import { io as Client, Socket } from 'socket.io-client';
 
 const ROOM = '0';
-const DICTIONARIES = [
-    { title: 'Premier dictonnaire', description: 'Un dictionnaire', words: ['string'] },
-    { title: 'Deuxième dictonnaire', description: 'Un dictionnaire', words: ['string'] },
-    { title: 'Troisième dictonnaire', description: 'Un dictionnaire', words: ['string'] },
-];
-
-const SELECTED_DICTIONARY = [{ title: 'Mon dictionnaire', description: 'Un dictionnaire', words: ['string'] }];
 
 describe('GamesHandler Service', () => {
     let gamesHandler: GamesHandler;
@@ -188,29 +184,119 @@ describe('GamesHandler Service', () => {
         });
     });
 
-    it('setDictionaries() should call getAllDictionary of DictionaryStorage', async () => {
-        dictionaryStorageStub.getAllDictionary.resolves(DICTIONARIES);
+    it('setDictionaries() should call getDictionaries', async () => {
+        const getDictionaryStub = sinon.stub(gamesHandler, 'getDictionaries');
+        const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
+        getDictionaryStub.resolves([dictionary]);
         await gamesHandler.setDictionaries();
-        expect(dictionaryStorageStub.getAllDictionary.called).to.equal(true);
+        expect(getDictionaryStub.called).to.equal(true);
     });
 
     it('setDictionaries() should set dictionaries attribute', async () => {
-        dictionaryStorageStub.getAllDictionary.resolves(DICTIONARIES);
+        const getDictionaryStub = sinon.stub(gamesHandler, 'getDictionaries');
+        const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
+        getDictionaryStub.resolves([dictionary]);
         await gamesHandler.setDictionaries();
         expect(gamesHandler['dictionaries'].size).to.be.greaterThan(0);
     });
 
-    it('updateDictionaries() should call selectDictionaryInfo of DictionaryStorage', async () => {
-        const title = 'Mon dictionnaire';
-        dictionaryStorageStub.selectDictionaryInfo.resolves(SELECTED_DICTIONARY);
-        await gamesHandler.updateDictionaries(title);
-        expect(dictionaryStorageStub.selectDictionaryInfo.called).to.equal(true);
+    it('addDictionary() should do nothing if the dictionary to be added is already in the database', async () => {
+        const dictionaryIsInDbStub = sinon.stub(gamesHandler, 'dictionaryIsInDb');
+        const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
+        dictionaryIsInDbStub.resolves({} as unknown as void);
+        await gamesHandler.addDictionary(dictionary);
+        expect(gamesHandler['dictionaries'].size).to.equal(0);
+        expect(dictionaryStorageStub.addDictionary.called).to.equal(false);
     });
 
-    it('updateDictionaries() should add to dictionaries a new dictionary behavior', async () => {
-        const title = 'Mon dictionnaire';
-        dictionaryStorageStub.selectDictionaryInfo.resolves(SELECTED_DICTIONARY);
-        await gamesHandler.updateDictionaries(title);
+    // eslint-disable-next-line max-len
+    it('addDictionary() should call addDictionary of DictionaryStorage and set dictionaries attribute if the dictionary to be added is not in the database', async () => {
+        const dictionaryIsInDbStub = sinon.stub(gamesHandler, 'dictionaryIsInDb');
+        const dictionary = { title: 'dictionary1', description: 'description', words: ['string'] };
+        dictionaryIsInDbStub.throws();
+        await gamesHandler.addDictionary(dictionary);
         expect(gamesHandler['dictionaries'].size).to.be.greaterThan(0);
+        expect(dictionaryStorageStub.addDictionary.called).to.equal(true);
+    });
+
+    it('updateDictionary() should call updateDictionary of DictionaryStorage', async () => {
+        await gamesHandler.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
+        expect(dictionaryStorageStub.updateDictionary.called).to.equal(true);
+    });
+
+    it('updateDictionary() should set dictionaries with new key', async () => {
+        const dictionary = { title: 'dictionary1', description: 'description', words: ['string'] };
+        const dictionaryValidation = sinon.createStubInstance(
+            DictionaryValidationService,
+        ) as sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
+        const wordSolver = sinon.createStubInstance(WordSolverService) as sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
+        const letterPlacement = sinon.createStubInstance(LetterPlacementService) as sinon.SinonStubbedInstance<LetterPlacementService> &
+            LetterPlacementService;
+        const behavior = {
+            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+            wordSolver: wordSolver as WordSolverService,
+            letterPlacement: letterPlacement as LetterPlacementService,
+        };
+        gamesHandler['dictionaries'].set(dictionary.title, behavior);
+        await gamesHandler.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
+        expect(gamesHandler['dictionaries'].has('dictionary')).to.equal(false);
+    });
+
+    it('resetDictionaries() should call getDictionariesFileName of DictionaryStorage', async () => {
+        const deleteDictionaryStub = sinon.stub(gamesHandler, 'deleteDictionary');
+        dictionaryStorageStub.getDictionariesFileName.resolves(['Dictionary', 'Dictionary2']);
+        await gamesHandler.resetDictionaries();
+        expect(dictionaryStorageStub.getDictionariesFileName.called).to.equal(true);
+        expect(deleteDictionaryStub.called).to.equal(true);
+    });
+
+    it('deleteDictionary() should call deleteDictionary of DictionaryStorage', async () => {
+        await gamesHandler.deleteDictionary('dictionary1');
+        expect(dictionaryStorageStub.deletedDictionary.called).to.equal(true);
+    });
+
+    it('deleteDictionary() should delete key value of dictionaries', async () => {
+        const dictionary = { title: 'dictionary1', description: 'description', words: ['string'] };
+        const dictionaryValidation = sinon.createStubInstance(
+            DictionaryValidationService,
+        ) as sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
+        const wordSolver = sinon.createStubInstance(WordSolverService) as sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
+        const letterPlacement = sinon.createStubInstance(LetterPlacementService) as sinon.SinonStubbedInstance<LetterPlacementService> &
+            LetterPlacementService;
+        const behavior = {
+            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+            wordSolver: wordSolver as WordSolverService,
+            letterPlacement: letterPlacement as LetterPlacementService,
+        };
+        gamesHandler['dictionaries'].set(dictionary.title, behavior);
+        await gamesHandler.deleteDictionary('dictionary1');
+        expect(gamesHandler['dictionaries'].size).to.equal(0);
+    });
+
+    it('dictionaryIsInDb() should call dictionaryIsInDb of DictionaryStorage', async () => {
+        await gamesHandler.dictionaryIsInDb('dictionary1');
+        expect(dictionaryStorageStub.dictionaryIsInDb.called).to.equal(true);
+    });
+
+    it('getDictionaries() should call getDictionaries of DictionaryStorage', async () => {
+        await gamesHandler.getDictionaries();
+        expect(dictionaryStorageStub.getDictionaries.called).to.equal(true);
+    });
+
+    it('getDictionary() should call getDictionary of DictionaryStorage', async () => {
+        // REASON : We need a buffer
+        // eslint-disable-next-line deprecation/deprecation
+        const testBuffer = new Buffer('{ "hello": "World" }');
+        dictionaryStorageStub.getDictionary.resolves(testBuffer);
+        await gamesHandler.getDictionary('dictionary1');
+        expect(dictionaryStorageStub.getDictionary.called).to.equal(true);
     });
 });

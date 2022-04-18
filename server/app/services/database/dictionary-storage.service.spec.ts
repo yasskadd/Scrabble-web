@@ -1,99 +1,89 @@
-import { DatabaseCollection } from '@app/classes/database-collection.class';
-import { Dictionary } from '@app/interfaces/dictionary';
 import { expect } from 'chai';
+import * as fs from 'fs';
 import * as Sinon from 'sinon';
-import { stub } from 'sinon';
-import { DatabaseService } from './database.service';
 import { DictionaryStorageService } from './dictionary-storage.service';
 
-type CollectionStub = Sinon.SinonStubbedInstance<DatabaseCollection>;
-
-const DICTIONARIES = [
-    { title: 'Premier dictonnaire', description: 'Un dictionnaire', words: ['string'] },
-    { title: 'Deuxième dictonnaire', description: 'Un dictionnaire', words: ['string'] },
-    { title: 'Troisième dictonnaire', description: 'Un dictionnaire', words: ['string'] },
-];
-
-const DICTIONARIES_INFO = [
-    { title: 'Premier dicitonnaire', description: 'Un dictionnaire' },
-    { title: 'Deuxieme dicitonnaire', description: 'Un dictionnaire' },
-    { title: 'Troisieme dicitonnaire', description: 'Un dictionnaire' },
-];
-
-const SELECTED_DICTIONARY = [{ title: 'Mon dictionnaire', description: 'Un dictionnaire' }];
-
 describe('dictionaryStorage Service', () => {
-    let databaseServiceStub: Sinon.SinonStubbedInstance<DatabaseService>;
     let dictionaryStorageService: DictionaryStorageService;
 
     beforeEach(async () => {
-        databaseServiceStub = Sinon.createStubInstance(DatabaseService);
-        databaseServiceStub.dictionaries = Sinon.createStubInstance(DatabaseCollection) as never;
-        dictionaryStorageService = new DictionaryStorageService(databaseServiceStub as unknown as DatabaseService);
+        dictionaryStorageService = new DictionaryStorageService();
     });
     afterEach(async () => {
         Sinon.reset();
     });
 
-    it('getAllDictionary() should return all the dictionaries from the database', async () => {
-        (databaseServiceStub.dictionaries as unknown as CollectionStub).fetchDocuments.resolves(DICTIONARIES);
-        const dictionaries = await dictionaryStorageService.getAllDictionary();
-        expect(dictionaries).to.be.deep.equal(DICTIONARIES);
+    it('dictionaryIsInDb() should call access from fs.promises', async () => {
+        const accessStub = Sinon.stub(fs.promises, 'access');
+        await dictionaryStorageService.dictionaryIsInDb('dictionary');
+        expect(accessStub.called).to.equal(true);
     });
 
-    it('getAllDictionaryInfo() should return all the dictionaries title and description from the database', async () => {
-        (databaseServiceStub.dictionaries as unknown as CollectionStub).fetchDocuments.resolves(DICTIONARIES_INFO);
-        const dictionaries = await dictionaryStorageService.getAllDictionaryInfo();
-        expect(dictionaries).to.be.deep.equal(DICTIONARIES_INFO);
+    it('addDictionary() should call writeFile from fs.promises', async () => {
+        const writeFileStub = Sinon.stub(fs.promises, 'writeFile');
+        await dictionaryStorageService.addDictionary('dictionary1', 'data');
+        expect(writeFileStub.called).to.equal(true);
     });
 
-    it('selectDictionaryInfo() should return the dictionary with that match the title passed as param from the database', async () => {
-        (databaseServiceStub.dictionaries as unknown as CollectionStub).fetchDocuments.resolves(SELECTED_DICTIONARY);
-        const dictionary = await dictionaryStorageService.selectDictionaryInfo('Mon dictionnaire');
-        expect(dictionary).to.be.deep.equal(SELECTED_DICTIONARY);
+    it('deletedDictionary() should call unlink from fs.promises', async () => {
+        const unlinkStub = Sinon.stub(fs.promises, 'unlink');
+        await dictionaryStorageService.deletedDictionary('dictionary1');
+        expect(unlinkStub.called).to.equal(true);
     });
 
-    it('addDictionary() should not call addDocument of DatabaseService if dictionary to add is already in the database', async () => {
-        const dictionaryIsInDbSpy = stub(dictionaryStorageService, 'dictionaryIsInDb');
-        dictionaryIsInDbSpy.resolves(true);
-        await dictionaryStorageService.addDictionary({} as Dictionary);
-        expect((databaseServiceStub.dictionaries as unknown as CollectionStub).addDocument.called).to.equal(false);
+    it('getDictionary() should call readFile from fs.promises', async () => {
+        const readFileStub = Sinon.stub(fs.promises, 'readFile');
+        await dictionaryStorageService.getDictionary('dictionary');
+        expect(readFileStub.called).to.equal(true);
     });
 
-    it('addDictionary() should call addDocument of DatabaseService if dictionary to add is not in the database', async () => {
-        const dictionaryIsInDbSpy = stub(dictionaryStorageService, 'dictionaryIsInDb');
-        dictionaryIsInDbSpy.resolves(false);
-        await dictionaryStorageService.addDictionary({} as Dictionary);
-        expect((databaseServiceStub.dictionaries as unknown as CollectionStub).addDocument.called).to.equal(true);
-        expect((databaseServiceStub.dictionaries as unknown as CollectionStub).addDocument.calledWith({} as Dictionary)).to.equal(true);
+    it('getDictionariesFileName() should call readdir from fs.promises and should return all .json files', async () => {
+        const readdirStub = Sinon.stub(fs.promises, 'readdir');
+        readdirStub.resolves(['MisterWorldWide.json', 'booji.json', 'Gugu'] as never);
+        readdirStub.returns(['MisterWorldWide.json', 'booji.json', 'Gugu'] as never);
+        const result = await dictionaryStorageService.getDictionariesFileName();
+        expect(result).to.deep.equal(['MisterWorldWide.json', 'booji.json']);
+        expect(readdirStub.called).to.equal(true);
     });
 
-    it('removeDictionary() should not call removeDocument of DatabaseService if dictionary to remove is not in the database', async () => {
-        const dictionaryIsInDbSpy = stub(dictionaryStorageService, 'dictionaryIsInDb');
-        dictionaryIsInDbSpy.resolves(false);
-        await dictionaryStorageService.removeDictionary({} as Dictionary);
-        expect((databaseServiceStub.dictionaries as unknown as CollectionStub).removeDocument.called).to.equal(false);
+    it('updateDictionary() should call getDictionary', async () => {
+        const getDictionaryStub = Sinon.stub(dictionaryStorageService, 'getDictionary');
+        const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
+        const dictionaryBuffer = Buffer.from(JSON.stringify(dictionary));
+        getDictionaryStub.resolves(dictionaryBuffer);
+        await dictionaryStorageService.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
+        expect(getDictionaryStub.called).to.equal(true);
     });
 
-    it('removeDictionary() should call removeDocument of DatabaseService if dictionary to remove is in the database', async () => {
-        const dictionaryIsInDbSpy = stub(dictionaryStorageService, 'dictionaryIsInDb');
-        dictionaryIsInDbSpy.resolves(true);
-        await dictionaryStorageService.removeDictionary({ title: 'Mon dictionnaire' } as Dictionary);
-        expect((databaseServiceStub.dictionaries as unknown as CollectionStub).removeDocument.called).to.equal(true);
-        expect(
-            (databaseServiceStub.dictionaries as unknown as CollectionStub).removeDocument.calledWith({ title: 'Mon dictionnaire' } as Dictionary),
-        ).to.equal(true);
+    it('updateDictionary() should call addDictionary', async () => {
+        const getDictionaryStub = Sinon.stub(dictionaryStorageService, 'getDictionary');
+        const addDictionaryStub = Sinon.stub(dictionaryStorageService, 'addDictionary');
+        const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
+        const dictionaryBuffer = Buffer.from(JSON.stringify(dictionary));
+        getDictionaryStub.resolves(dictionaryBuffer);
+        await dictionaryStorageService.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
+        expect(addDictionaryStub.called).to.equal(true);
     });
 
-    it('dictionaryIsInDb() should return true if dictionary title exist in the database', async () => {
-        (databaseServiceStub.dictionaries as unknown as CollectionStub).fetchDocuments.resolves([DICTIONARIES[0]]);
-        const dictionaryIsInDb = await dictionaryStorageService.dictionaryIsInDb(DICTIONARIES[0].title);
-        expect(dictionaryIsInDb).to.equal(true);
-    });
-
-    it('dictionaryIsInDb() should return false if dictionary title does not exist in the database', async () => {
-        (databaseServiceStub.dictionaries as unknown as CollectionStub).fetchDocuments.resolves([]);
-        const dictionaryIsInDb = await dictionaryStorageService.dictionaryIsInDb('Mon dictionnaire');
-        expect(dictionaryIsInDb).to.equal(false);
+    it('updateDictionary() should call deletedDictionary', async () => {
+        const getDictionaryStub = Sinon.stub(dictionaryStorageService, 'getDictionary');
+        const dictionary = { title: 'dictionary', description: 'description', words: ['string'] };
+        const dictionaryBuffer = Buffer.from(JSON.stringify(dictionary));
+        const deletedDictionaryStub = Sinon.stub(dictionaryStorageService, 'deletedDictionary');
+        getDictionaryStub.resolves(dictionaryBuffer);
+        await dictionaryStorageService.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
+        expect(deletedDictionaryStub.called).to.equal(true);
     });
 });

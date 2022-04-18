@@ -1,45 +1,46 @@
-import { Document } from 'mongodb';
+import { Dictionary } from '@app/interfaces/dictionary';
+import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
+import * as fs from 'fs';
+import * as path from 'path';
 import { Service } from 'typedi';
-import { DatabaseService } from './database.service';
 
 @Service()
 export class DictionaryStorageService {
-    constructor(private database: DatabaseService) {}
-
-    async getAllDictionary(): Promise<Document[]> {
-        return await this.database.dictionaries.fetchDocuments({});
+    async dictionaryIsInDb(fileName: string) {
+        return await fs.promises.access(`./assets/${fileName}.json`, fs.constants.R_OK);
     }
 
-    async getAllDictionaryInfo(): Promise<Document[]> {
-        return await this.database.dictionaries.fetchDocuments({}, { projection: { title: 1, description: 1 } });
+    async addDictionary(fileName: string, data: string): Promise<void> {
+        return await fs.promises.writeFile(`./assets/${fileName}.json`, data);
     }
 
-    async selectDictionaryInfo(title: string): Promise<Document[]> {
-        // eslint-disable-next-line object-shorthand
-        return await this.database.dictionaries.fetchDocuments({ title: title });
+    async deletedDictionary(fileName: string): Promise<void> {
+        return await fs.promises.unlink(`./assets/${fileName}.json`);
     }
 
-    async addDictionary(dictionary: Document) {
-        if (await this.dictionaryIsInDb(dictionary.title)) return;
-        await this.database.dictionaries.addDocument(dictionary);
+    async getDictionary(fileName: string): Promise<Buffer> {
+        return await fs.promises.readFile(`./assets/${fileName}.json`);
     }
 
-    async removeDictionary(dictionary: Document) {
-        if (!(await this.dictionaryIsInDb(dictionary.title))) return;
-        await this.database.dictionaries.removeDocument(dictionary);
+    async getDictionariesFileName(): Promise<string[]> {
+        return (await fs.promises.readdir('./assets')).filter((file) => path.extname(file) === '.json');
     }
 
-    async dictionaryIsInDb(title: string): Promise<boolean> {
-        // eslint-disable-next-line object-shorthand
-        const document = await this.database.dictionaries.fetchDocuments({ title: title }, { projection: { title: 1 } });
-        return document.length ? true : false;
+    async updateDictionary(dictionaryInfo: ModifiedDictionaryInfo) {
+        const dictionaryToUpdate = JSON.parse((await this.getDictionary(dictionaryInfo.title)).toString());
+        dictionaryToUpdate.title = dictionaryInfo.newTitle;
+        dictionaryToUpdate.description = dictionaryInfo.newDescription;
+        await this.deletedDictionary(dictionaryInfo.title);
+        await this.addDictionary(dictionaryToUpdate.title, JSON.stringify(dictionaryToUpdate));
     }
 
-    // async populateDb() {
-    //     const inDb = await this.dictionaryIsInDb('Mon dictionnaire');
-    //     if (inDb) return;
-    //     const jsonDictionary = JSON.parse(fs.readFileSync('../common/assets/spanish.json', 'utf8'));
-
-    //     await this.addDictionary(jsonDictionary);
-    // }
+    async getDictionaries(): Promise<Dictionary[]> {
+        const jsonsInDir = (await fs.promises.readdir('././assets/')).filter((file) => path.extname(file) === '.json');
+        const dictionaries = jsonsInDir.map((file) => {
+            const fileData = fs.readFileSync(path.join('././assets/', file));
+            const json = JSON.parse(fileData.toString());
+            return json;
+        });
+        return dictionaries;
+    }
 }

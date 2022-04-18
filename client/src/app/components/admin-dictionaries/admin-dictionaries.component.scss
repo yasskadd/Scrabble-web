@@ -1,5 +1,14 @@
-// .justified {
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: space-between;
-// }
+.justified {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.description {
+    flex: 4;
+}
+
+.title,
+.buttons {
+    flex: 1;
+}

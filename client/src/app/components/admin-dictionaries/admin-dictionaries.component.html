@@ -1,18 +1,32 @@
 <h1>Liste des dictionnaires disponibles</h1>
-<!-- 
+
 <div class="action-buttons">
     <button mat-raised-button color="basic" (click)="updateDictionaryList()">Rafraîchir <mat-icon>refresh</mat-icon></button>
-    <button mat-raised-button color="warn" (click)="resetDictionaries()">Reinitialiser <mat-icon>delete</mat-icon></button>
+    <button mat-raised-button color="warn" (click)="resetDictionaries()">Réinitialiser <mat-icon>delete</mat-icon></button>
 </div>
 
 <mat-selection-list [multiple]="false">
-    <mat-list-option *ngFor="let dictionary of dictionaries" [value]="dictionary">
+    <mat-list-option *ngFor="let dictionary of dictionaryList" [value]="dictionary">
         <div class="justified">
-            <div style="flex: 1">{{ dictionary.title }}</div>
-            <div style="flex: 3">{{ dictionary.description }}</div>
-            <button mat-raised-button (click)="openModifyDictionaryDialog(dictionary)">Modifier</button>
-            <button mat-raised-button (click)="deleteDictionary(dictionary)">Supprimer</button>
+            <div class="title">{{ dictionary.title }}</div>
+            <div class="description">{{ dictionary.description }}</div>
+            <div class="buttons">
+                <button class="buttonModify" mat-raised-button (click)="openModifyDictionaryDialog(dictionary)" *ngIf="!isDefault(dictionary)">
+                    Modifier
+                </button>
+            </div>
+            <div class="buttons">
+                <button mat-raised-button (click)="deleteDictionary(dictionary)" *ngIf="!isDefault(dictionary)">Supprimer</button>
+            </div>
+            <div class="buttons">
+                <button mat-raised-button (click)="downloadJson(dictionary)" *ngIf="!isDefault(dictionary)">
+                    <mat-icon>file_download</mat-icon>
+                </button>
+            </div>
         </div>
     </mat-list-option>
 </mat-selection-list>
-<button mat-raised-button (click)="openAddDictionaryDialog()">Ajouter un dictionaire</button> -->
+
+<h1>Ajouter un dictionnaire (format .json)</h1>
+
+<app-import-dictionary></app-import-dictionary>

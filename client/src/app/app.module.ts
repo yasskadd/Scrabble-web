@@ -15,6 +15,8 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DialogGameHelpComponent } from '@app/components/dialog-game-help/dialog-game-help.component';
+import { HighScoresComponent } from '@app/components/high-scores/high-scores.component';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { AppRoutingModule } from '@app/modules/app-routing.module';
 import { AppMaterialModule } from '@app/modules/material.module';
@@ -28,10 +30,11 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxAbandonGameComponent } from './components/dialog-box-abandon-game/dialog-box-abandon-game.component';
 import { DialogBoxGameTypeComponent } from './components/dialog-box-game-type/dialog-box-game-type.component';
 import { DialogBoxHighScoresComponent } from './components/dialog-box-high-scores/dialog-box-high-scores.component';
+import { DialogBoxModifyDictionaryComponent } from './components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
 import { DialogBoxNewGameComponent } from './components/dialog-box-new-game-component/dialog-box-new-game.component';
-import { DialogGameHelpComponent } from './components/dialog-game-help/dialog-game-help.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
+import { ImportDictionaryComponent } from './components/import-dictionary/import-dictionary.component';
 import { InformationPanelComponent } from './components/information-panel/information-panel.component';
 import { PlayerRackComponent } from './components/player-rack/player-rack.component';
 import { AdminPageComponent } from './pages/admin-page/admin-page.component';
@@ -39,7 +42,6 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
 import { MultiplayerCreatePageComponent } from './pages/multiplayer-create-page/multiplayer-create-page.component';
 import { MultiplayerJoinPageComponent } from './pages/multiplayer-join-page/multiplayer-join-page.component';
 import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/waiting-opponent-page.component';
-import { HighScoresComponent } from './components/high-scores/high-scores.component';
 
 /**
  * Main module that is used in main.ts.
@@ -66,12 +68,14 @@ import { HighScoresComponent } from './components/high-scores/high-scores.compon
         AdminDictionariesComponent,
         AdminVirtualPlayersComponent,
         AdminGameHistoryComponent,
+        DialogBoxModifyDictionaryComponent,
         AdminHighScoresComponent,
         DialogBoxNewGameComponent,
         HeaderComponent,
         FooterComponent,
         DialogGameHelpComponent,
         HighScoresComponent,
+        ImportDictionaryComponent,
     ],
     imports: [
         CommonModule,
@@ -90,11 +94,11 @@ import { HighScoresComponent } from './components/high-scores/high-scores.compon
         FormsModule,
         HttpClientModule,
         MatSliderModule,
-        MatAutocompleteModule,
         MatProgressSpinnerModule,
         MatStepperModule,
+        MatAutocompleteModule,
     ],
-    providers: [],
+    providers: [ImportDictionaryComponent],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
