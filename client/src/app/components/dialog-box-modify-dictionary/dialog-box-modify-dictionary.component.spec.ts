@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DialogBoxModifyDictionaryComponent } from './dialog-box-modify-dictionary.component';
 
 describe('DialogBoxModifyDictionaryComponent', () => {
@@ -13,6 +18,7 @@ describe('DialogBoxModifyDictionaryComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
+            imports: [MatDialogModule, MatIconModule, MatFormFieldModule, MatInputModule, FormsModule, BrowserAnimationsModule],
             declarations: [DialogBoxModifyDictionaryComponent],
             providers: [
                 { provide: MAT_DIALOG_DATA, useValue: {} },
