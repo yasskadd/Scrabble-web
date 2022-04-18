@@ -21,8 +21,7 @@ export class TimerService {
 
         if (second === 0) {
             return minute.toString() + ':00 minutes';
-        } else {
-            return minute.toString() + ':30 minutes';
         }
+        return minute.toString() + ':30 minutes';
     }
 }
