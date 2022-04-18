@@ -60,14 +60,11 @@ export class InformationPanelComponent {
         const objectives: Objective[] = isFirstPlayer
             ? (this.gameClientService.playerOne.objective as Objective[])
             : (this.gameClientService.secondPlayer.objective as Objective[]);
-        const completed = objectives.filter((objective) => objective.complete && objective.user === playerName);
-        if (objectives) return completed;
-        else return [];
+        return objectives.filter((objective) => objective.complete && objective.user === playerName);
     }
 
     filterNotCompletedObjectives() {
         const objectives: Objective[] = this.gameClientService.playerOne.objective as Objective[];
-        if (objectives) return objectives.filter((objective) => !objective.complete);
-        else return [];
+        return objectives.filter((objective) => !objective.complete);
     }
 }
