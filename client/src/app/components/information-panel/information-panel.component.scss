@@ -5,6 +5,7 @@
     padding: 20px;
     margin-left: 5px;
     margin-right: 5px;
+    margin-bottom: 20px;
     background-color: #aecec4;
     display: flex;
     flex-direction: row;
@@ -30,12 +31,16 @@
 }
 
 .game-infos {
+    position: relative;
+    bottom: 10px;
+    padding: 15px;
     border-radius: 4px;
-    padding: 20px;
     margin-left: 5px;
     margin-right: 5px;
     background-color: #aecec4;
+    width: 235px;
 }
+
 #combined {
     display: flex;
     justify-content: space-between;
@@ -44,7 +49,6 @@
 .game-infos > * {
     display: flex;
     justify-content: center;
-    padding-top: 10px;
 }
 .name-score > * {
     width: 100%;
@@ -52,17 +56,12 @@
     justify-content: center;
 }
 
-#panel-title {
-    color: cadetblue;
-}
-
 .active {
     margin-left: 10px;
     margin-right: 0;
     border: 2px solid #23501f;
     background-color: #c2e5da;
-    box-shadow: rgb(35, 80, 31, 0.4) -5px 5px, rgb(35, 80, 31, 0.3) -10px 10px, rgb(35, 80, 31, 0.2) -15px 15px, rgb(35, 80, 31, 0.1) -20px 20px,
-        rgb(35, 80, 31, 0.05) -25px 25px;
+    box-shadow: rgb(35, 80, 31, 0.4) -5px 5px, rgb(35, 80, 31, 0.3) -10px 10px, rgb(35, 80, 31, 0.2) -15px 15px;
 }
 
 td {
