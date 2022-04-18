@@ -57,13 +57,11 @@ describe('DictionaryService', () => {
     it('should call httpHandler deleteDictionary() when calling dictionaryService deleteDictionary() is called', () => {
         service.deleteDictionary({ title: 'test dictionary', description: 'a test dictionary' });
         expect(httpHandlerSpy.deleteDictionary).toHaveBeenCalled();
-        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
     it('should call httpHandler modifyDictionary() when calling dictionaryService modifyDictionary() is called', () => {
         service.modifyDictionary({ title: 'test dictionary', newTitle: 'test test', newDescription: 'a test dictionary' });
         expect(httpHandlerSpy.modifyDictionary).toHaveBeenCalled();
-        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
     it('should call httpHandler resetDictionaries() when calling dictionaryService resetDictionaries() is called', () => {
@@ -78,7 +76,7 @@ describe('DictionaryService', () => {
     });
 
     // TODO : ces tests se trouvaient dans le multiplayer create page avant, mais les fonctions on été move dans le dictionary service
-    fit('uploadDictionary() should call fileOnLoad() if there is a selected file to upload', async () => {
+    it('uploadDictionary() should call fileOnLoad() if there is a selected file to upload', async () => {
         const messageSpy = spyOn(service, 'fileOnLoad');
         const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
         const dT = new DataTransfer();

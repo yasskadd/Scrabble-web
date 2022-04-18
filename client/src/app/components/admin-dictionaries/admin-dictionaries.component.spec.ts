@@ -30,9 +30,14 @@ describe('AdminDictionariesComponent', () => {
             'modifyDictionary',
             'resetDictionaries',
             'uploadDictionary',
+            'getDictionary',
         ]);
 
         dictionaryServiceSpy.getDictionaries.and.resolveTo([]);
+        dictionaryServiceSpy.uploadDictionary.and.resolveTo();
+        dictionaryServiceSpy.modifyDictionary.and.resolveTo();
+        dictionaryServiceSpy.getDictionary.and.resolveTo({} as Dictionary);
+
         // eslint-disable-next-line deprecation/deprecation
         saveAsSpy = spyOn(saver, 'saveAs').and.stub();
         await TestBed.configureTestingModule({
@@ -62,8 +67,12 @@ describe('AdminDictionariesComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should download a file', () => {
+    it('should download a json', () => {
         component.downloadJson({} as Dictionary);
+        expect(dictionaryServiceSpy.getDictionary).toHaveBeenCalled();
+    });
+    it('should download a file', () => {
+        component.downloadFile({} as Dictionary);
         expect(saveAsSpy).toHaveBeenCalled();
     });
 
@@ -193,11 +202,6 @@ describe('AdminDictionariesComponent', () => {
             component.modifyDictionary({ title: 'Mon dictionnaire2', newTitle: 'Mon dictionnaire', newDescription: 'Bonjour' });
             expect(spy).not.toHaveBeenCalled();
         });
-        // it('modified dictionary should have a new title and old description if only title is modified', () => {});
-
-        // it('modified dictionary should have a new description and old title if only description is modified', () => {});
-
-        // it('modified dictionary should have a new title and  description if title and description are modified', () => {});
     });
 
     describe('reset Dictionaries tests', () => {

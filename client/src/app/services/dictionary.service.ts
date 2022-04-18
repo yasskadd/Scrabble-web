@@ -46,7 +46,7 @@ export class DictionaryService {
         fileErrorMessage: string,
         fileErrorColor: string,
         dictionaryList: DictionaryInfo[],
-    ) {
+    ): Promise<void> {
         if (files.length !== 0) {
             const fileReader = new FileReader();
             const content = await this.readFile(files[0], fileReader);
