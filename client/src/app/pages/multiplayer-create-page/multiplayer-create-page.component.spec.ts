@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable max-lines */
-// eslint-disable-next-line max-classes-per-file
+/* eslint-disable-next-line max-classes-per-file */
 import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, Renderer2, Type } from '@angular/core';
@@ -17,6 +17,7 @@ import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ImportDictionaryComponent } from '@app/components/import-dictionary/import-dictionary.component';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { HttpHandlerService } from '@app/services/communication/http-handler.service';
 import { DictionaryVerificationService } from '@app/services/dictionary-verification.service';
@@ -88,6 +89,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let fixture: ComponentFixture<MultiplayerCreatePageComponent>;
     let location: Location;
     let router: Router;
+    let importDictionaryComponentSpy: jasmine.SpyObj<ImportDictionaryComponent>;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
     let dictionaryVerificationSpy: jasmine.SpyObj<DictionaryVerificationService>;
@@ -107,6 +109,7 @@ describe('MultiplayerCreatePageComponent', () => {
             'beginScrabbleGame',
             'importDictionary',
         ]);
+        importDictionaryComponentSpy = jasmine.createSpyObj('DictionaryService', ['uploadDictionary', 'updateDictionaryMessage']);
 
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
@@ -142,6 +145,7 @@ describe('MultiplayerCreatePageComponent', () => {
 
             declarations: [MultiplayerCreatePageComponent],
             providers: [
+                { provide: ImportDictionaryComponent, useValue: importDictionaryComponentSpy },
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
                 { provide: MatSnackBar, useValue: mockMatSnackBar },
                 {
@@ -175,98 +179,6 @@ describe('MultiplayerCreatePageComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-
-    // eslint-disable-next-line max-len
-    it('uploadDictionary() should call fileOnLoad if there is a selected file to upload', async () => {
-        const messageSpy = spyOn(component, 'fileOnLoad');
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-
-        dictionaryVerificationSpy.globalVerification.and.callFake(async () => 'Did not passed');
-        await component.uploadDictionary();
-        expect(messageSpy).toHaveBeenCalled();
-    });
-
-    it('uploadDictionary() should set textContent of fileError with no file selected message if there is no selected file to upload', () => {
-        const messageSpy = spyOn(component, 'updateDictionaryMessage');
-        component.uploadDictionary();
-        expect(messageSpy).toHaveBeenCalledWith("Il n'y a aucun fichier séléctioné", 'red');
-    });
-
-    // eslint-disable-next-line max-len
-    it('fileOnLoad() should call addDictionary of HttpHandlerService if file selected passed globalVerification of DictionaryVerificationService', fakeAsync(() => {
-        const messageSpy = spyOn(component, 'updateDictionaryMessage');
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-        dictionaryVerificationSpy.globalVerification.and.callFake(async () => 'Passed');
-        component.fileOnLoad({});
-        tick(5000);
-        expect(messageSpy).toHaveBeenCalledWith('Ajout avec succès du nouveau dictionnaire', 'black');
-        expect(httpHandlerSpy.addDictionary).toHaveBeenCalled();
-    }));
-
-    // eslint-disable-next-line max-len
-    it('fileOnLoad() should call updateImportMessage with error message if file selected did not pass globalVerification of DictionaryVerificationService', fakeAsync(() => {
-        const messageSpy = spyOn(component, 'updateDictionaryMessage');
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-        dictionaryVerificationSpy.globalVerification.and.callFake(async () => 'Did not passed');
-        component.fileOnLoad({});
-        tick(5000);
-        expect(messageSpy).toHaveBeenCalledWith('Did not passed', 'red');
-    }));
-
-    it('clicking on import button should call uploadDictionary()', fakeAsync(() => {
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-        const uploadDictionarySpy = spyOn(component, 'uploadDictionary');
-        const button = fixture.debugElement.nativeElement.querySelector('#import');
-        button.click();
-        tick();
-        fixture.detectChanges();
-        expect(uploadDictionarySpy).toHaveBeenCalled();
-    }));
-
-    it('detectImportFile() should disable dictionary select options if a file has been selected', () => {
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const dT = new DataTransfer();
-        const disableSpy = spyOn(component.form.controls.dictionary, 'disable');
-        dT.items.add(new File([blob], 'test.json'));
-        component.file.nativeElement.files = dT.files;
-        component.detectImportFile();
-        expect(disableSpy).toHaveBeenCalled();
-    });
-
-    it('detectImportFile() should set textContent of fileError to nothing', () => {
-        const message = '';
-        component.detectImportFile();
-        expect(component.fileError.nativeElement.textContent).toEqual(message);
-    });
-
-    it('selecting a file should call detectImportFile()', fakeAsync(() => {
-        const detectImportFileSpy = spyOn(component, 'detectImportFile');
-        const input = fixture.debugElement.nativeElement.querySelector('#selectFiles');
-        input.dispatchEvent(new Event('change'));
-        tick();
-        fixture.detectChanges();
-        expect(detectImportFileSpy).toHaveBeenCalled();
-    }));
-
-    it('updateImportMessage() should set textContent of fileError p with message and text color passed as param', () => {
-        const message = 'Message';
-        const color = 'red';
-        component.updateDictionaryMessage(message, color);
-        expect(component.fileError.nativeElement.textContent).toEqual(message);
-        expect(component.fileError.nativeElement.style.color).toEqual(color);
     });
 
     it('onMouseOver() should set textContent of info panel with title and description of the dictionary passed as param', () => {
@@ -427,6 +339,7 @@ describe('MultiplayerCreatePageComponent', () => {
         flush();
         expect(timerOptions.length).toEqual(component.timerList.length);
     }));
+
     it('should set timer to timer option when one is select', fakeAsync(() => {
         const timerSelect = fixture.debugElement.nativeElement.querySelector('#timer-select');
         timerSelect.click();
@@ -640,31 +553,16 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(component['getDictionary'](DB_DICTIONARY.title)).toEqual(DB_DICTIONARY);
     });
 
-    it('readFile() should return the content of the file', async () => {
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        // eslint-disable-next-line dot-notation
-        const res = await component['readFile'](new File([blob], 'test.json'), new FileReader());
-        expect(res).toEqual(DB_DICTIONARY);
-    });
-
-    it('readFile() should return error message if file cannot be opened ', () => {
-        const blob = new Blob([JSON.stringify(DB_DICTIONARY)], { type: 'application/json' });
-        const fileReader = new FileReader();
-        // eslint-disable-next-line dot-notation
-        const res = component['readFile'](new File([blob], 'test.json'), fileReader).then(() => {
-            fileReader.dispatchEvent(new ErrorEvent('error'));
-        });
-        expect(res).not.toEqual(DB_DICTIONARY as unknown as Promise<Record<string, unknown>>);
-    });
-
     it('dictionaryIsInDB() should return error message if file is not in database ', fakeAsync(() => {
         const title = 'test';
-        const updateDictionaryMessageSpy = spyOn(component, 'updateDictionaryMessage');
         // Testing private method
         // eslint-disable-next-line dot-notation
         component['dictionaryIsInDB'](title);
         tick();
         flush();
-        expect(updateDictionaryMessageSpy).toHaveBeenCalledWith("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
+        expect(importDictionaryComponentSpy.updateDictionaryMessage).toHaveBeenCalledWith(
+            "Ce dictionnaire n'est plus disponible, veuillez choisir un autre",
+            'red',
+        );
     }));
 });

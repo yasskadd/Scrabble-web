@@ -220,11 +220,15 @@ describe('GamesHandler Service', () => {
     });
 
     it('updateDictionary() should call updateDictionary of DictionaryStorage', async () => {
-        await gamesHandler.updateDictionary('dictionary', 'title', 'string');
+        await gamesHandler.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
         expect(dictionaryStorageStub.updateDictionary.called).to.equal(true);
     });
 
-    it('updateDictionary() should set dictionaries with new key if the field updated is title', async () => {
+    it('updateDictionary() should set dictionaries with new key', async () => {
         const dictionary = { title: 'dictionary1', description: 'description', words: ['string'] };
         const dictionaryValidation = sinon.createStubInstance(
             DictionaryValidationService,
@@ -238,26 +242,20 @@ describe('GamesHandler Service', () => {
             letterPlacement: letterPlacement as LetterPlacementService,
         };
         gamesHandler['dictionaries'].set(dictionary.title, behavior);
-        await gamesHandler.updateDictionary('dictionary1', 'title', 'string');
-        expect(gamesHandler['dictionaries'].has('dictionary1')).to.equal(false);
+        await gamesHandler.updateDictionary({
+            title: 'dictionary',
+            newTitle: 'dictionaryModified',
+            newDescription: 'description',
+        });
+        expect(gamesHandler['dictionaries'].has('dictionary')).to.equal(false);
     });
 
-    it('updateDictionary() should update dictionaries if the field updated is not title', async () => {
-        const dictionary = { title: 'dictionary1', description: 'description', words: ['string'] };
-        const dictionaryValidation = sinon.createStubInstance(
-            DictionaryValidationService,
-        ) as sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
-        const wordSolver = sinon.createStubInstance(WordSolverService) as sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
-        const letterPlacement = sinon.createStubInstance(LetterPlacementService) as sinon.SinonStubbedInstance<LetterPlacementService> &
-            LetterPlacementService;
-        const behavior = {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
-        };
-        gamesHandler['dictionaries'].set(dictionary.title, behavior);
-        await gamesHandler.updateDictionary('dictionary1', 'description', 'string');
-        expect(gamesHandler['dictionaries'].has('dictionary1')).to.equal(true);
+    it('resetDictionaries() should call getDictionariesFileName of DictionaryStorage', async () => {
+        const deleteDictionaryStub = sinon.stub(gamesHandler, 'deleteDictionary');
+        dictionaryStorageStub.getDictionariesFileName.resolves(['Dictionary', 'Dictionary2']);
+        await gamesHandler.resetDictionaries();
+        expect(dictionaryStorageStub.getDictionariesFileName.called).to.equal(true);
+        expect(deleteDictionaryStub.called).to.equal(true);
     });
 
     it('deleteDictionary() should call deleteDictionary of DictionaryStorage', async () => {
@@ -291,5 +289,14 @@ describe('GamesHandler Service', () => {
     it('getDictionaries() should call getDictionaries of DictionaryStorage', async () => {
         await gamesHandler.getDictionaries();
         expect(dictionaryStorageStub.getDictionaries.called).to.equal(true);
+    });
+
+    it('getDictionary() should call getDictionary of DictionaryStorage', async () => {
+        // REASON : We need a buffer
+        // eslint-disable-next-line deprecation/deprecation
+        const testBuffer = new Buffer('{ "hello": "World" }');
+        dictionaryStorageStub.getDictionary.resolves(testBuffer);
+        await gamesHandler.getDictionary('dictionary1');
+        expect(dictionaryStorageStub.getDictionary.called).to.equal(true);
     });
 });
