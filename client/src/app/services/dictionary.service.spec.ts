@@ -33,13 +33,11 @@ describe('DictionaryService', () => {
     it('should call httpHandler deleteDictionary() when calling dictionaryService deleteDictionary() is called', () => {
         service.deleteDictionary({ title: 'test dictionary', description: 'a test dictionary' });
         expect(httpHandlerSpy.deleteDictionary).toHaveBeenCalled();
-        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
     it('should call httpHandler modifyDictionary() when calling dictionaryService modifyDictionary() is called', () => {
         service.modifyDictionary({ title: 'test dictionary', newTitle: 'test test', newDescription: 'a test dictionary' });
         expect(httpHandlerSpy.modifyDictionary).toHaveBeenCalled();
-        expect(httpHandlerSpy.getDictionaries).toHaveBeenCalled();
     });
 
     it('should call httpHandler resetDictionaries() when calling dictionaryService resetDictionaries() is called', () => {

@@ -29,9 +29,14 @@ describe('AdminDictionariesComponent', () => {
             'modifyDictionary',
             'resetDictionaries',
             'uploadDictionary',
+            'getDictionary',
         ]);
 
         dictionaryServiceSpy.getDictionaries.and.resolveTo([]);
+        dictionaryServiceSpy.uploadDictionary.and.resolveTo();
+        dictionaryServiceSpy.modifyDictionary.and.resolveTo();
+        dictionaryServiceSpy.getDictionary.and.resolveTo({} as Dictionary);
+
         // eslint-disable-next-line deprecation/deprecation
         saveAsSpy = spyOn(saver, 'saveAs').and.stub();
         await TestBed.configureTestingModule({
@@ -61,8 +66,12 @@ describe('AdminDictionariesComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should download a file', () => {
+    it('should download a json', () => {
         component.downloadJson({} as Dictionary);
+        expect(dictionaryServiceSpy.getDictionary).toHaveBeenCalled();
+    });
+    it('should download a file', () => {
+        component.downloadFile({} as Dictionary);
         expect(saveAsSpy).toHaveBeenCalled();
     });
 
@@ -108,55 +117,7 @@ describe('AdminDictionariesComponent', () => {
             });
             expect(dictionaryServiceSpy.deleteDictionary).toHaveBeenCalled();
         });
-
-        // it('deleted dictionary should disappear dictionary from list', () => {
-        //     component.dictionaries = [
-        //         {
-        //             title: 'Mon dictionnaire',
-        //             description: 'Description de base',
-        //         },
-        //         {
-        //             title: 'Mauvais',
-        //             description: 'Mauvais de base',
-        //         },
-        //     ];
-
-        //     expect(component.dictionaries.length).toEqual(0);
-        //     component.deleteDictionary({
-        //         title: 'Mauvais',
-        //         description: 'Mauvais de base',
-        //     });
-        //     expect(component.dictionaries.length).toEqual(0);
-        // });
     });
-
-    // describe('Add dictionary tests', () => {
-    //     it('addDictionary() should call dictionaryService.addDictionary() and resetDictionaryInput', () => {
-    //         const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
-    //         component.dictionaryInput = {
-    //             title: 'Mon dictionnaire 2',
-    //             description: 'Un dictionnaire',
-    //             words: ['string'],
-    //         };
-    //         component.addDictionary();
-    //         expect(dictionaryServiceSpy.addDictionary).toHaveBeenCalled();
-    //         expect(resetDictionnarySpy).toHaveBeenCalled();
-    //     });
-
-    //     it('addDictionary() should not call dictionaryService.addDictionary()  if the title exist already', () => {
-    //         const resetDictionnarySpy = spyOn(component, 'resetDictionaryInput' as never);
-
-    //         component.dictionaryInput = {
-    //             title: 'Mon dictionnaire',
-    //             description: 'Un dictionnaire',
-    //             words: ['string'],
-    //         };
-    //         component.addDictionary();
-    //         expect(dictionaryServiceSpy.addDictionary).not.toHaveBeenCalled();
-    //         expect(resetDictionnarySpy).toHaveBeenCalled();
-    //     });
-    //     it('added dictionary should be added to list', () => {});
-    // });
 
     describe('Modify dictionary tests', () => {
         it('openModifyDictionaryDialog() should open dialog box', () => {
@@ -192,11 +153,6 @@ describe('AdminDictionariesComponent', () => {
             component.modifyDictionary({ title: 'Mon dictionnaire2', newTitle: 'Mon dictionnaire', newDescription: 'Bonjour' });
             expect(spy).not.toHaveBeenCalled();
         });
-        // it('modified dictionary should have a new title and old description if only title is modified', () => {});
-
-        // it('modified dictionary should have a new description and old title if only description is modified', () => {});
-
-        // it('modified dictionary should have a new title and  description if title and description are modified', () => {});
     });
 
     describe('reset Dictionaries tests', () => {
