@@ -8,6 +8,7 @@ import { Objective } from '@common/interfaces/objective';
 import { ReplaySubject, Subject } from 'rxjs';
 import { ClientSocketService } from './communication/client-socket.service';
 
+type CompletedObjective = { objective: Objective; name: string };
 type InitObjective = { objectives1: Objective[]; objectives2: Objective[]; playerName: string };
 type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
@@ -69,8 +70,8 @@ export class GameClientService {
             this.viewUpdateEvent(info);
         });
 
-        this.clientSocketService.on('CompletedObjective', (objective: Objective) => {
-            this.completeObjective(objective);
+        this.clientSocketService.on('CompletedObjective', (completedObjective: CompletedObjective) => {
+            this.completeObjective(completedObjective);
         });
 
         this.clientSocketService.on('InitObjective', (objective: InitObjective) => {
@@ -111,16 +112,20 @@ export class GameClientService {
         this.winningMessage = '';
     }
 
-    private completeObjective(objective: Objective) {
+    private completeObjective(completedObjective: CompletedObjective) {
+        console.log(completedObjective);
         if (this.playerOne.objective === undefined || this.secondPlayer.objective === undefined) return;
-        const indexPlayerOne = this.playerOne.objective.findIndex((element) => element.name === objective.name);
-        const indexSecondPlayer = this.secondPlayer.objective.findIndex((element) => element.name === objective.name);
+        const indexPlayerOne = this.playerOne.objective.findIndex((element) => element.name === completedObjective.objective.name);
+        const indexSecondPlayer = this.secondPlayer.objective.findIndex((element) => element.name === completedObjective.objective.name);
         if (indexPlayerOne !== constants.INVALID_INDEX && !this.playerOne.objective[indexPlayerOne].complete) {
             this.playerOne.objective[indexPlayerOne].complete = true;
+            this.playerOne.objective[indexPlayerOne].user = completedObjective.name;
             this.openSnackBar(`L'objectif ${this.playerOne.objective[indexPlayerOne].name} a été complété`);
         }
-        if (indexSecondPlayer !== constants.INVALID_INDEX && !this.secondPlayer.objective[indexSecondPlayer].complete)
+        if (indexSecondPlayer !== constants.INVALID_INDEX && !this.secondPlayer.objective[indexSecondPlayer].complete) {
             this.secondPlayer.objective[indexSecondPlayer].complete = true;
+            this.secondPlayer.objective[indexSecondPlayer].user = completedObjective.name;
+        }
     }
 
     private openSnackBar(reason: string): void {

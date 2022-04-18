@@ -55,9 +55,19 @@ export class InformationPanelComponent {
         this.dialog.open(DialogGameHelpComponent, { width: '50%' });
     }
 
-    filterCompleteObjectives() {
+    filterCompletedObjectives(isFirstPlayer: boolean) {
+        const playerName: string = isFirstPlayer ? this.gameClientService.playerOne.name : this.gameClientService.secondPlayer.name;
+        const objectives: Objective[] = isFirstPlayer
+            ? (this.gameClientService.playerOne.objective as Objective[])
+            : (this.gameClientService.secondPlayer.objective as Objective[]);
+        const completed = objectives.filter((objective) => objective.complete && objective.user === playerName);
+        if (objectives) return completed;
+        else return [];
+    }
+
+    filterNotCompletedObjectives() {
         const objectives: Objective[] = this.gameClientService.playerOne.objective as Objective[];
-        if (objectives) return objectives.filter((objective) => objective.complete);
+        if (objectives) return objectives.filter((objective) => !objective.complete);
         else return [];
     }
 }

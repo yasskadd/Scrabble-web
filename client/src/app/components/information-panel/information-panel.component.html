@@ -12,7 +12,7 @@
             </mat-panel-title>
         </mat-expansion-panel-header>
         <p class="obj-paragraph">En cours</p>
-        <tr class="objective-tr" *ngFor="let objective of this.gameClientService.playerOne.objective">
+        <tr class="objective-tr" *ngFor="let objective of this.filterNotCompletedObjectives()">
             <mat-card *ngIf="!objective.complete">
                 <td [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description" id="td-objective">
                     <p *ngIf="objective.isPublic && !objective.complete" class="isPublic-obj">
@@ -23,51 +23,43 @@
                     </p>
                     {{ objective.name }}
                     <mat-icon [inline]="true">info</mat-icon>
-                    <div
-                        *ngIf="!objective.multiplier"
-                        [ngClass]="{ complete: objective.complete }"
-                        [matTooltip]="objective.description"
-                        class="numberCircle"
-                    >
+                    <div *ngIf="!objective.multiplier" [ngClass]="{ complete: objective.complete }" class="numberCircle">
                         {{ objective.points }}
                     </div>
 
-                    <div
-                        *ngIf="objective.multiplier"
-                        [ngClass]="{ complete: objective.complete }"
-                        [matTooltip]="objective.description"
-                        class="numberCircle"
-                    >
-                        x2
-                    </div>
+                    <div *ngIf="objective.multiplier" [ngClass]="{ complete: objective.complete }" class="numberCircle">x2</div>
                 </td>
             </mat-card>
         </tr>
         <p class="obj-paragraph">Complétés (Vous)</p>
-        <tr class="objective-tr" *ngFor="let objective of this.filterCompleteObjectives()">
-            <mat-card *ngIf="objective.complete" class="objective-completed">
+        <tr class="objective-tr" *ngFor="let objective of this.filterCompletedObjectives(true)">
+            <mat-card *ngIf="objective.complete && objective.user === this.gameClientService.playerOne.name" class="objective-completed">
                 <p *ngIf="objective.isPublic && objective.complete" class="isPublic-obj"><mat-icon>people</mat-icon></p>
                 <p *ngIf="!objective.isPublic && objective.complete" class="isPublic-obj"><mat-icon>person</mat-icon></p>
                 <td [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
                     {{ objective.name }}
                     <mat-icon [inline]="true">info</mat-icon>
-                    <div
-                        *ngIf="!objective.multiplier"
-                        [ngClass]="{ complete: objective.complete }"
-                        [matTooltip]="objective.description"
-                        class="numberCircle"
-                    >
+                    <div *ngIf="!objective.multiplier" [ngClass]="{ complete: objective.complete }" class="numberCircle">
                         {{ objective.points }}
                     </div>
 
-                    <div
-                        *ngIf="objective.multiplier"
-                        [ngClass]="{ complete: objective.complete }"
-                        [matTooltip]="objective.description"
-                        class="numberCircle"
-                    >
-                        x2
+                    <div *ngIf="objective.multiplier" [ngClass]="{ complete: objective.complete }" class="numberCircle">x2</div>
+                </td>
+            </mat-card>
+        </tr>
+        <p class="obj-paragraph">Complétés (Adversaire)</p>
+        <tr class="objective-tr" *ngFor="let objective of this.filterCompletedObjectives(false)">
+            <mat-card *ngIf="objective.complete && objective.user === this.gameClientService.secondPlayer.name" class="objective-completed">
+                <p *ngIf="objective.isPublic && objective.complete" class="isPublic-obj"><mat-icon>people</mat-icon></p>
+                <p *ngIf="!objective.isPublic && objective.complete" class="isPublic-obj"><mat-icon>person</mat-icon></p>
+                <td [ngClass]="{ complete: objective.complete }" [matTooltip]="objective.description">
+                    {{ objective.name }}
+                    <mat-icon [inline]="true">info</mat-icon>
+                    <div *ngIf="!objective.multiplier" [ngClass]="{ complete: objective.complete }" class="numberCircle">
+                        {{ objective.points }}
                     </div>
+
+                    <div *ngIf="objective.multiplier" [ngClass]="{ complete: objective.complete }" class="numberCircle">x2</div>
                 </td>
             </mat-card>
         </tr>

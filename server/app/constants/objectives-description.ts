@@ -32,7 +32,7 @@ export const threeWordsFormed: Objective = {
 } as Objective;
 export const twoSameWords: Objective = { name: '2 fois le même mot', points: 20, type: 'Word', description: descTwoSameWords } as Objective;
 export const fiveLettersPlacedTwice: Objective = {
-    name: '5 lettres placées en 1 tour',
+    name: '5 lettres placées 2 fois',
     points: 20,
     type: 'Turn',
     description: descFiveLettersPlacedTwice,

@@ -12,6 +12,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { Letter } from '@common/interfaces/letter';
+import { Objective } from '@common/interfaces/objective';
 import { of } from 'rxjs';
 import { InformationPanelComponent } from './information-panel.component';
 
@@ -226,5 +227,25 @@ describe('InformationPanelComponent', () => {
         fixture.detectChanges();
         expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
         expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
+    });
+
+    it('filterCompletedObjectives() should return the objectives completed by the first player if true is passed as an argument', () => {
+        gameClientSpy.playerOne.objective = [
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.playerOne.name } as Objective,
+            { name: 'ObjectiveTest2', complete: false, user: gameClientSpy.playerOne.name } as Objective,
+        ];
+        expect(component.filterCompletedObjectives(true)).toBe([
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.playerOne.name } as Objective,
+        ]);
+    });
+
+    it('filterCompletedObjectives() should return the objectives completed by the second player if false is passed as an argument', () => {
+        gameClientSpy.secondPlayer.objective = [
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.secondPlayer.name } as Objective,
+            { name: 'ObjectiveTest2', complete: false, user: gameClientSpy.secondPlayer.name } as Objective,
+        ];
+        expect(component.filterCompletedObjectives(false)).toBe([
+            { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.secondPlayer.name } as Objective,
+        ]);
     });
 });
