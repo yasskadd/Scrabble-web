@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogBoxNewGameComponent } from '@app/components/dialog-box-new-game-component/dialog-box-new-game.component';
-import * as constants from '@app/constants/game';
 import { Bot } from '@app/interfaces/bot';
 import { VirtualPlayer, VirtualPlayersService } from '@app/services/virtual-players.service';
+import * as constants from '@common/constants/bots';
 
 @Component({
     selector: 'app-admin-virtual-players',
