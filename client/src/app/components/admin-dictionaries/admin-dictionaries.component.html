@@ -1,10 +1,8 @@
+<h1>Liste des dictionnaires disponibles</h1>
 <div class="action-buttons">
     <button mat-raised-button color="basic" (click)="updateDictionaryList()">Rafraîchir <mat-icon>refresh</mat-icon></button>
     <button mat-raised-button color="warn" (click)="resetDictionaries()">Réinitialiser <mat-icon>delete</mat-icon></button>
 </div>
-
-<h1>Liste des dictionnaires disponibles</h1>
-
 <mat-card class="dictionaryList">
     <table>
         <thead class="tableContainer">
@@ -15,7 +13,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let dictionary of dictionaryList">
+            <tr class="dictionary" *ngFor="let dictionary of dictionaryList">
                 <td class="title">{{ dictionary.title }}</td>
                 <td class="description">{{ dictionary.description }}</td>
                 <td class="justified">

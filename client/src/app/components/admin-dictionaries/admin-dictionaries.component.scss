@@ -19,8 +19,21 @@ th {
 }
 
 tr {
-    text-align: center;
+    text-align: left;
 }
+
+tr th {
+    padding-left: 0px;
+}
+
+mat-row {
+    background-color: #ffffff7c;
+}
+
+.buttons > * {
+    margin-left: 5px;
+}
+
 .description {
     flex: 4;
 }
