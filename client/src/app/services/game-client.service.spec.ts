@@ -48,7 +48,7 @@ const INIT_OBJECTIVE: InitObjective = {
     playerName: 'vincent',
 };
 
-const TIMEOUT = 15;
+const TIMEOUT = 30;
 const PLAYER_ONE: Player = {
     name: 'Maurice',
     score: 23,

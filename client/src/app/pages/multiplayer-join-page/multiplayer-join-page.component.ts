@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 import { TimerService } from '@app/services/timer.service';
 
+const TIMEOUT = 3000;
+
 @Component({
     selector: 'app-multiplayer-join-page',
     templateUrl: './multiplayer-join-page.component.html',
@@ -58,6 +60,7 @@ export class MultiplayerJoinPageComponent implements OnInit {
     }
     openSnackBar(reason: string): void {
         this.snackBar.open(reason, 'fermer', {
+            duration: TIMEOUT,
             verticalPosition: 'top',
         });
     }

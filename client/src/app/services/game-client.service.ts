@@ -14,7 +14,8 @@ type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
 type Player = { name: string; score: number; rack: Letter[]; objective?: Objective[] };
 type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
-const TIMEOUT = 15;
+const TIMEOUT_PASS = 30;
+const TIMEOUT = 3000;
 
 @Injectable({
     providedIn: 'root',
@@ -81,7 +82,7 @@ export class GameClientService {
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
             setTimeout(() => {
                 this.skipEvent(gameInfo);
-            }, TIMEOUT);
+            }, TIMEOUT_PASS);
         });
 
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
@@ -129,7 +130,7 @@ export class GameClientService {
 
     private openSnackBar(reason: string): void {
         this.snackBar.open(reason, 'fermer', {
-            duration: 3000,
+            duration: TIMEOUT,
             horizontalPosition: 'center',
         });
     }

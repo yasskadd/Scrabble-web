@@ -101,6 +101,7 @@ describe('MultiplayerJoinPageComponent', () => {
         expect(args[0]).toBe(TEST_ERROR);
         expect(args[1]).toBe('fermer');
         expect(args[2]).toEqual({
+            duration: 3000,
             verticalPosition: 'top',
         });
     });
