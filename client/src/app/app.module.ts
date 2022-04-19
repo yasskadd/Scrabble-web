@@ -30,8 +30,8 @@ import { ChatboxComponent } from './components/chatbox/chatbox.component';
 import { DialogBoxAbandonGameComponent } from './components/dialog-box-abandon-game/dialog-box-abandon-game.component';
 import { DialogBoxGameTypeComponent } from './components/dialog-box-game-type/dialog-box-game-type.component';
 import { DialogBoxHighScoresComponent } from './components/dialog-box-high-scores/dialog-box-high-scores.component';
+import { DialogBoxModifyBotNamesComponent } from './components/dialog-box-modify-bot-names/dialog-box-modify-bot-names.component';
 import { DialogBoxModifyDictionaryComponent } from './components/dialog-box-modify-dictionary/dialog-box-modify-dictionary.component';
-import { DialogBoxNewGameComponent } from './components/dialog-box-new-game-component/dialog-box-new-game.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ImportDictionaryComponent } from './components/import-dictionary/import-dictionary.component';
@@ -70,7 +70,7 @@ import { WaitingOpponentPageComponent } from './pages/waiting-opponent-page/wait
         AdminGameHistoryComponent,
         DialogBoxModifyDictionaryComponent,
         AdminHighScoresComponent,
-        DialogBoxNewGameComponent,
+        DialogBoxModifyBotNamesComponent,
         HeaderComponent,
         FooterComponent,
         DialogGameHelpComponent,

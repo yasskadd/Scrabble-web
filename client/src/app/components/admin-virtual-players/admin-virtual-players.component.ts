@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogBoxNewGameComponent } from '@app/components/dialog-box-new-game-component/dialog-box-new-game.component';
+import { DialogBoxModifyBotNamesComponent } from '@app/components/dialog-box-modify-bot-names/dialog-box-modify-bot-names.component';
 import { Bot } from '@app/interfaces/bot';
 import { VirtualPlayer, VirtualPlayersService } from '@app/services/virtual-players.service';
 import * as constants from '@common/constants/bots';
@@ -52,7 +52,7 @@ export class AdminVirtualPlayersComponent {
     }
 
     openReplaceNameDialog(currentName: string, difficulty: string) {
-        const dialogRef = this.dialog.open(DialogBoxNewGameComponent, {
+        const dialogRef = this.dialog.open(DialogBoxModifyBotNamesComponent, {
             width: this.dialogWidth,
             data: { currentName, newName: currentName },
         });
