@@ -239,7 +239,7 @@ export class GameClientService {
             this.openSnackBar(this.winningMessage);
             return;
         }
-        this.winningMessage = `Victoire à ${this.playerOne.name}! Bravo!`;
+        this.winningMessage = `Victoire à ${this.secondPlayer.name}! Bravo!`;
         this.openSnackBar(this.winningMessage);
     }
 
