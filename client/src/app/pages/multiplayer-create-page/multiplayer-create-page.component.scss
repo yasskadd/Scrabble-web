@@ -30,6 +30,9 @@ body {
     justify-content: space-between;
     padding: 1%;
 }
+.mat-card {
+    overflow-y: auto;
+}
 
 .mat-card-title {
     font-size: 23px;
