@@ -191,14 +191,14 @@ describe('PlayAreaComponent', () => {
     it('should have a winning message when the game is finish', () => {
         gameClientSpy.isGameFinish = true;
         fixture.detectChanges();
-        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
+        const message = fixture.debugElement.nativeElement.querySelector('#winning-message');
         expect(message).toBeTruthy();
     });
 
     it('should not have a winning message when the game is not finish', () => {
         gameClientSpy.isGameFinish = false;
         fixture.detectChanges();
-        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
+        const message = fixture.debugElement.nativeElement.querySelector('#winning-message');
         expect(message).not.toBeTruthy();
     });
 });
