@@ -230,18 +230,19 @@ export class GameClientService {
 
     private findWinnerByScore(): void {
         if (this.playerOne.score === this.secondPlayer.score) {
-            this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
+            this.winningMessage = 'Égalité! Vous avez le même score que votre adversaire!';
             this.openSnackBar(this.winningMessage);
             return;
         }
         if (this.playerOne.score > this.secondPlayer.score) {
-            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
+            this.winningMessage = `Victoire à ${this.playerOne.name}! Bravo!`;
             this.openSnackBar(this.winningMessage);
             return;
         }
-        this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
+        this.winningMessage = `Victoire à ${this.playerOne.name}! Bravo!`;
         this.openSnackBar(this.winningMessage);
     }
+
     private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {
         let letterString = '';
         lettersReserveUpdated.forEach((letter) => {

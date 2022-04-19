@@ -2,6 +2,27 @@
     height: 88%;
     margin-bottom: 5px;
 }
+
+#reserve {
+    display: flex;
+    align-items: center;
+    color: #23501f;
+}
+
+#number-letters {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fbd7a3;
+    border-radius: 3px;
+    margin: 10px;
+    width: 30px;
+    height: 30px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    text-align: center;
+}
+
 .message-container {
     height: 100%;
     width: 100%;
@@ -22,6 +43,7 @@
     color: rgb(12, 56, 200);
     text-align: left;
 }
+
 .current-user > span {
     background: beige;
     border-radius: 10px;

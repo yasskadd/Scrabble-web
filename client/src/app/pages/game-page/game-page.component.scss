@@ -28,6 +28,8 @@ body {
     padding: 10px;
     background-color: #7fa99b;
     min-height: 755px;
+    display: flex;
+    flex-direction: column;
 }
 
 .play-area {
@@ -38,6 +40,8 @@ body {
     justify-content: center;
     min-width: 620px;
     min-height: 755px;
+    display: flex;
+    flex-direction: column;
 }
 
 .chatbox {
@@ -46,4 +50,6 @@ body {
     padding: 7px 7px 0px 10px;
     background-color: #7fa99b;
     min-height: 755px;
+    display: flex;
+    flex-direction: column;
 }

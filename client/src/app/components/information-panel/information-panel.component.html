@@ -7,6 +7,7 @@
         *ngIf="!this.gameClientService.isGameFinish"
         (click)="abandonGame()"
     />
+    <img src="https://bit.ly/3m206ss" width="250" height="50" alt="Logo Scrabble" *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" />
 </h1>
 
 <section class="player" [ngClass]="{ active: this.gameClientService.playerOneTurn }" id="player-1">
@@ -107,9 +108,6 @@
         </tr>
     </mat-expansion-panel>
 </div>
-
-<div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>
-<b id="winningMessage" *ngIf="this.gameClientService.isGameFinish">{{ this.gameClientService.winningMessage }}</b>
 
 <div id="combined">
     <p>

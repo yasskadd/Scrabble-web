@@ -1,3 +1,8 @@
+<div id="reserve">
+    <div id="number-letters">{{ this.gameClientService.letterReserveLength }}</div>
+    lettres disponibles dans la réserve
+</div>
+
 <mat-card class="container-wrapper">
     <div #container class="message-container">
         <div *ngFor="let message of messages" [class]="'message ' + message.type">

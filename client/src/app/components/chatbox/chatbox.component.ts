@@ -1,6 +1,7 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
+import { GameClientService } from '@app/services/game-client.service';
 
 @Component({
     selector: 'app-chatbox',
@@ -11,9 +12,9 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     static readonly inputInitialState = '';
     @ViewChild('chatbox', { static: false }) chatbox: ElementRef;
     @ViewChild('container') private scrollBox: ElementRef;
-
     input = new FormControl(ChatboxComponent.inputInitialState);
-    constructor(private chatboxHandler: ChatboxHandlerService) {}
+
+    constructor(public gameClientService: GameClientService, private chatboxHandler: ChatboxHandlerService) {}
 
     @HostListener('click')
     clickInside() {

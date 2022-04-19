@@ -31,7 +31,7 @@ export class PlayAreaComponent implements AfterViewInit {
     constructor(
         private readonly gridService: GridService,
         private letterService: LetterPlacementService,
-        private gameClientService: GameClientService,
+        public gameClientService: GameClientService,
     ) {
         this.keyboardParentSubject = new Subject();
         this.mousePosition = { x: 0, y: 0 };
