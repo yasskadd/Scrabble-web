@@ -11,6 +11,17 @@
     width: 50%;
 }
 
+mat-selection-list {
+    width: 80%;
+}
+
+mat-list-option {
+    background-color: #c2e5da;
+    border: 1px solid #c2e5da;
+    border-radius: 15px;
+    margin-bottom: 2%;
+}
+
 .justified {
     display: flex;
     flex-direction: row;
