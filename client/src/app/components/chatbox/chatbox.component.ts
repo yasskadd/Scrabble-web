@@ -1,7 +1,9 @@
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 
+const PLACEMENT_COMMAND = '^!placer [a-o][0-9]{1,2}(v|h){0,1} [a-zA-Z]{1,7}$';
 @Component({
     selector: 'app-chatbox',
     templateUrl: './chatbox.component.html',
@@ -9,10 +11,12 @@ import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 })
 export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
     static readonly inputInitialState = '';
+    static readonly placementRegex = new RegExp(PLACEMENT_COMMAND);
     @ViewChild('chatbox', { static: false }) chatbox: ElementRef;
     @ViewChild('container') private scrollBox: ElementRef;
 
     input = new FormControl(ChatboxComponent.inputInitialState);
+    private lastMessage: ChatboxMessage;
     constructor(private chatboxHandler: ChatboxHandlerService) {}
 
     @HostListener('click')
@@ -36,8 +40,21 @@ export class ChatboxComponent implements AfterViewInit, AfterViewChecked {
         this.resetInput();
     }
 
+    isPlacementCommand(message: string): boolean {
+        return ChatboxComponent.placementRegex.test(message);
+    }
+
+    submitMessage(message: string) {
+        this.input.setValue(message);
+        this.submit();
+    }
+
     ngAfterViewChecked(): void {
-        this.scrollToBottom();
+        const lastMessage = this.chatboxHandler.messages[this.chatboxHandler.messages.length - 1];
+        if (this.lastMessage !== lastMessage) {
+            this.lastMessage = lastMessage;
+            this.scrollToBottom();
+        }
     }
 
     private resetInput() {
