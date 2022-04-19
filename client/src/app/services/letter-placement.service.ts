@@ -6,6 +6,8 @@ import { ChatboxHandlerService } from './chatbox-handler.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 
+const ASCII_ALPHABET_START = 96;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -35,7 +37,6 @@ export class LetterPlacementService {
 
     submitPlacement() {
         if (this.noLettersPlaced()) return;
-        const ASCII_ALPHABET_START = 96;
         const direction = this.isHorizontal ? 'h' : 'v';
         const verticalPlacement = String.fromCharCode(this.startTile.y + ASCII_ALPHABET_START);
         const lettersToSubmit = this.placedLetters.map((letter) => letter.value).join('');
