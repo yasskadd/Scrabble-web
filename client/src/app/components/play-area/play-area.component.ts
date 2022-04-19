@@ -26,7 +26,6 @@ export class PlayAreaComponent implements AfterViewInit {
     keyboardParentSubject: Subject<KeyboardEvent>;
     mousePosition: Vec2;
     buttonPressed;
-    value: number;
 
     constructor(
         private readonly gridService: GridService,
@@ -85,10 +84,6 @@ export class PlayAreaComponent implements AfterViewInit {
 
     get height(): number {
         return constants.GRID_CANVAS_HEIGHT;
-    }
-
-    formatLabel(value: number): string {
-        return value + 'px';
     }
 
     updateFontSize(event: MatSliderChange): void {

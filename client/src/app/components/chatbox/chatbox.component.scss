@@ -1,5 +1,5 @@
 .container-wrapper {
-    height: 88%;
+    height: 80%;
     margin-bottom: 5px;
 }
 
@@ -40,25 +40,25 @@
 }
 
 .current-user {
-    color: rgb(12, 56, 200);
-    text-align: left;
-}
-
-.current-user > span {
-    background: beige;
-    border-radius: 10px;
-    padding: 5px;
-}
-
-.opponent-user {
-    color: blueviolet;
+    color: #ffffff;
     text-align: right;
 }
 
+.current-user > span {
+    background: #23501f;
+    border-radius: 6px;
+    padding: 5px 10px;
+}
+
+.opponent-user {
+    color: #ffffff;
+    text-align: left;
+}
+
 .opponent-user > span {
-    background: lightcyan;
-    border-radius: 10px;
-    padding: 5px;
+    background: #7fa99b;
+    border-radius: 6px;
+    padding: 5px 10px;
 }
 
 ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
@@ -67,10 +67,8 @@
 }
 
 .system-message {
-    color: red;
+    color: #23501f;
     text-align: center;
-    background: lightgray;
-    border-radius: 10px;
 }
 
 .user-input {
@@ -82,7 +80,7 @@
 }
 
 .mat-card {
-    background: rgba(255, 255, 255, 0.853);
+    background: rgb(255 255 255 / 69%);
     color: rgba(0, 0, 0, 0.87);
 }
 

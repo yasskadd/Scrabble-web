@@ -157,7 +157,7 @@ export class ChatboxHandlerService {
         const validReserveCommandRegex = new RegExp(validReserveCommand);
         if (validReserveCommandRegex.test(userCommand)) {
             this.messages.push({ type: 'system-message', data: 'VOICI LES COMMANDES VALIDES' });
-            this.messages.push({ type: 'system-message', data: '!passer  : Faire passer son tour' });
+            this.messages.push({ type: 'system-message', data: '!passer  : Passer son tour' });
             this.messages.push({ type: 'system-message', data: '!réserve : Affiche toutes les lettres disponibles dans la réserve' });
             this.messages.push({
                 type: 'system-message',
@@ -166,8 +166,8 @@ export class ChatboxHandlerService {
             this.messages.push({
                 type: 'system-message',
                 data:
-                    '!echanger <lettre>:  Échanger les lettres sélectionnées du chevalet (celles-ci doivent être écritent en minuscule ou' +
-                    '* pour les lettres blanches (ex: !echanger e*a)',
+                    '!echanger <lettre>:  Échanger des lettres sur ton chevalet (celles-ci doivent être écritent en minuscule ou' +
+                    ' mettre " * " pour les lettres blanches (ex: !echanger e*a)',
             });
             this.messages.push({
                 type: 'system-message',

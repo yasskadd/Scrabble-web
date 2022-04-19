@@ -30,6 +30,7 @@ body {
     min-height: 760px;
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .play-area {
@@ -52,4 +53,5 @@ body {
     min-height: 773px;
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
 }

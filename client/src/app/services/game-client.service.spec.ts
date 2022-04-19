@@ -425,7 +425,7 @@ describe('GameClientService', () => {
         service.secondPlayer = PLAYER_TWO;
         service.playerOne.score = 32;
         service.secondPlayer.score = 32;
-        const messageWinner = 'Bravo aux deux joueur, vous avez le même score';
+        const messageWinner = 'Égalité! Vous avez le même score que votre adversaire!';
 
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
@@ -437,7 +437,7 @@ describe('GameClientService', () => {
         service.secondPlayer = PLAYER_TWO;
         service.playerOne.score = 33;
         service.secondPlayer.score = 32;
-        const messageWinner = `Bravo ${service.playerOne.name} vous avez gagné`;
+        const messageWinner = `Victoire à ${service.playerOne.name}! Bravo!`;
 
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
@@ -455,7 +455,7 @@ describe('GameClientService', () => {
         service.secondPlayer = PLAYER_TWO;
         service.playerOne.score = 32;
         service.secondPlayer.score = 42;
-        const messageWinner = `Bravo ${service.secondPlayer.name} vous avez gagné`;
+        const messageWinner = `Victoire à ${service.secondPlayer.name}! Bravo!`;
 
         // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();

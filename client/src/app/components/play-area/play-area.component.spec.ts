@@ -87,13 +87,6 @@ describe('PlayAreaComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('formatLabel should ', () => {
-        const valueToFormat = 4;
-        const expectedValue = '4px';
-        const testedValue = component.formatLabel(valueToFormat);
-        expect(testedValue).toEqual(expectedValue);
-    });
-
     it('should call updateGameboard() when the mat-slider is triggered', () => {
         const mockSlider = new MatSliderChange();
         component.updateFontSize(mockSlider);
@@ -193,5 +186,19 @@ describe('PlayAreaComponent', () => {
         const enterKeypressEvent = new KeyboardEvent('keydown', { key: 'a' });
         fixture.debugElement.triggerEventHandler('keydown', enterKeypressEvent);
         expect(letterPlacementServiceSpy.handlePlacement).toHaveBeenCalled();
+    });
+
+    it('should have a winning message when the game is finish', () => {
+        gameClientSpy.isGameFinish = true;
+        fixture.detectChanges();
+        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
+        expect(message).toBeTruthy();
+    });
+
+    it('should not have a winning message when the game is not finish', () => {
+        gameClientSpy.isGameFinish = false;
+        fixture.detectChanges();
+        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
+        expect(message).not.toBeTruthy();
     });
 });

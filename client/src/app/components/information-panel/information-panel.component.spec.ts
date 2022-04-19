@@ -212,20 +212,6 @@ describe('InformationPanelComponent', () => {
         expect(spy).toBeTruthy();
     }));
 
-    it('should have a winning message when the game is finish', () => {
-        gameClientSpy.isGameFinish = true;
-        fixture.detectChanges();
-        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
-        expect(message).toBeTruthy();
-    });
-
-    it('should not have a winning message when the game is not finish', () => {
-        gameClientSpy.isGameFinish = false;
-        fixture.detectChanges();
-        const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
-        expect(message).not.toBeTruthy();
-    });
-
     it('filterCompletedObjectives() should return the objectives completed by the first player if true is passed as an argument', () => {
         gameClientSpy.playerOne.objective = [
             { name: 'ObjectiveTest1', complete: true, user: gameClientSpy.playerOne.name } as Objective,
