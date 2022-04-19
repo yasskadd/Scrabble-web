@@ -115,13 +115,12 @@ export class ObjectivesHandler {
     }
 
     private isThreeWordsFormed(words: Word[]): boolean {
-        if (words.length > 2) {
-            const roundPoints = words.reduce((a, c) => {
-                return a + c.points;
-            }, 0);
-            ObjectivesInfo.threeWordsFormed.points = roundPoints * 2;
-            return true;
-        } else return false;
+        if (words.length <= 2) return false;
+        const roundPoints = words.reduce((a, c) => {
+            return a + c.points;
+        }, 0);
+        ObjectivesInfo.threeWordsFormed.points = roundPoints * 2;
+        return true;
     }
 
     private isSameWordTwoTimes(words: Word[]): boolean {
