@@ -112,12 +112,9 @@
 </div>
 
 <div id="combined">
-    <p>
-        <button id="abandonButton" *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button color="warn">
-            Abandonner
-        </button>
-    </p>
-    <p><button id="quitGame" *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button></p>
+    <button id="abandonButton" *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button color="warn">Abandonner</button>
+
+    <button id="quitGame" *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button>
     <button
         mat-fab
         color="accent"

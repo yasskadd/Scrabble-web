@@ -36,9 +36,6 @@
 #winning-message {
     position: absolute;
     top: calc(50% - 2em);
-    transform-origin: 50% 5em;
-    animation: wiggle 2s linear;
-    animation-iteration-count: 2;
     background-color: #23501f;
     color: #fff;
     padding: 10px;
@@ -46,32 +43,8 @@
     font-size: 20px;
     border-radius: 4px;
     font-weight: 400;
-}
-
-@keyframes wiggle {
-    0%,
-    7% {
-        transform: rotateZ(0);
-    }
-    15% {
-        transform: rotateZ(-15deg);
-    }
-    20% {
-        transform: rotateZ(10deg);
-    }
-    25% {
-        transform: rotateZ(-10deg);
-    }
-    30% {
-        transform: rotateZ(6deg);
-    }
-    35% {
-        transform: rotateZ(-4deg);
-    }
-    40%,
-    100% {
-        transform: rotateZ(0);
-    }
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 ::ng-deep .mat-accent .mat-slider-track-fill,

@@ -17,6 +17,12 @@
     justify-content: space-around;
 }
 
+.name-points-clock {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
 .player > * {
     display: flex;
     align-items: center;
