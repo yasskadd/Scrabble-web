@@ -39,23 +39,9 @@
     justify-content: flex-end;
 }
 
-.game-infos {
-    padding: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-bottom: 20px;
-    background-color: #aecec4;
-    border-radius: 4px;
-}
-
 #combined {
     display: flex;
     justify-content: space-between;
-}
-
-.game-infos > * {
-    display: flex;
-    justify-content: center;
 }
 
 .name-score > * {

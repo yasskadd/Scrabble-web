@@ -108,27 +108,25 @@
     </mat-expansion-panel>
 </div>
 
-<section class="game-infos">
-    <div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>
-    <b id="winningMessage" *ngIf="this.gameClientService.isGameFinish">{{ this.gameClientService.winningMessage }}</b>
+<div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>
+<b id="winningMessage" *ngIf="this.gameClientService.isGameFinish">{{ this.gameClientService.winningMessage }}</b>
 
-    <div id="combined">
-        <button
-            mat-fab
-            color="accent"
-            (click)="openHelpDialog()"
-            class="help-button"
-            matTooltip="Des instructions pour le jeu"
-            matTooltipPosition="right"
-            matTooltipClass="toolMainPage"
-        >
-            <mat-icon color="white">help_outline</mat-icon>
+<div id="combined">
+    <p>
+        <button id="abandonButton" *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button color="warn">
+            Abandonner
         </button>
-        <p>
-            <button id="abandonButton" *ngIf="!this.gameClientService.isGameFinish" (click)="abandonGame()" mat-raised-button color="warn">
-                Abandonner
-            </button>
-        </p>
-        <p><button id="quitGame" *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button></p>
-    </div>
-</section>
+    </p>
+    <p><button id="quitGame" *ngIf="this.gameClientService.isGameFinish" (click)="leaveGame()" mat-raised-button>Quitter</button></p>
+    <button
+        mat-fab
+        color="accent"
+        (click)="openHelpDialog()"
+        class="help-button"
+        matTooltip="Des instructions pour le jeu"
+        matTooltipPosition="right"
+        matTooltipClass="toolMainPage"
+    >
+        <mat-icon color="white">help_outline</mat-icon>
+    </button>
+</div>
