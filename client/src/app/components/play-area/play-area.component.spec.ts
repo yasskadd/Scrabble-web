@@ -1,27 +1,79 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatSliderChange } from '@angular/material/slider';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlayAreaComponent } from '@app/components/play-area/play-area.component';
 import { Vec2 } from '@app/interfaces/vec2';
+import { GameClientService } from '@app/services/game-client.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
+import { Letter } from '@common/interfaces/letter';
+import { Objective } from '@common/interfaces/objective';
+
+type Timer = { minutes: number; seconds: number };
+type Player = { name: string; score: number; rack: Letter[]; objective?: Objective[] };
+
+const TIMER: Timer = { minutes: 1, seconds: 20 };
+
+const OBJECTIVE_TWO: Objective = {
+    name: 'NoClue',
+    isPublic: true,
+    points: 20,
+    type: 'Word',
+} as Objective;
+
+const PLAYER_TWO: Player = {
+    name: 'QLF',
+    score: 327,
+    rack: [
+        { value: 'c', quantity: 2, points: 1 },
+        { value: 'r', quantity: 2, points: 1 },
+        { value: 'p', quantity: 2, points: 1 },
+    ],
+    room: '3',
+    objective: [OBJECTIVE_TWO],
+} as Player;
+
+const PLAYER_ONE: Player = {
+    name: '667',
+    score: 23,
+    rack: [
+        { value: 'a', quantity: 2, points: 1 },
+        { value: 'b', quantity: 2, points: 1 },
+    ],
+    room: '1',
+    objective: [OBJECTIVE_TWO],
+} as Player;
 
 describe('PlayAreaComponent', () => {
     let component: PlayAreaComponent;
     let fixture: ComponentFixture<PlayAreaComponent>;
     let mouseEvent: MouseEvent;
     let letterPlacementServiceSpy: jasmine.SpyObj<LetterPlacementService>;
+    let gameClientSpy: jasmine.SpyObj<GameClientService>;
 
     beforeEach(async () => {
+        gameClientSpy = jasmine.createSpyObj('GameClientService', ['startTimer', 'quitGame', 'updateGameboard'], {
+            playerOne: PLAYER_ONE,
+            secondPlayer: PLAYER_TWO,
+            gameTimer: TIMER,
+        });
+
         letterPlacementServiceSpy = jasmine.createSpyObj('LetterPlacementService', [
             'undoPlacement',
             'submitPlacement',
             'undoEverything',
             'handlePlacement',
             'placeLetterStartPosition',
+            'resetGameBoardView',
         ]);
+
         await TestBed.configureTestingModule({
             declarations: [PlayAreaComponent],
             schemas: [NO_ERRORS_SCHEMA],
-            providers: [{ provide: LetterPlacementService, useValue: letterPlacementServiceSpy }],
+            providers: [
+                { provide: LetterPlacementService, useValue: letterPlacementServiceSpy },
+                { provide: MatSnackBar, useValue: MatSnackBar },
+            ],
         }).compileComponents();
     });
 
@@ -33,6 +85,21 @@ describe('PlayAreaComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('formatLabel should ', () => {
+        const valueToFormat = 4;
+        const expectedValue = '4px';
+        const testedValue = component.formatLabel(valueToFormat);
+        expect(testedValue).toEqual(expectedValue);
+    });
+
+    it('should call updateGameboard() when the mat-slider is triggered', () => {
+        const mockSlider = new MatSliderChange();
+        component.updateFontSize(mockSlider);
+        fixture.detectChanges();
+        expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
+        expect(letterPlacementServiceSpy.resetGameBoardView).toHaveBeenCalled();
     });
 
     it('mouseHitDetect should assign the mouse position to mousePosition variable', () => {

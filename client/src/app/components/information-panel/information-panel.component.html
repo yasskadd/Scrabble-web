@@ -111,16 +111,6 @@
 <section class="game-infos">
     <div>{{ this.gameClientService.letterReserveLength }} lettres disponibles dans la réserve</div>
     <b id="winningMessage" *ngIf="this.gameClientService.isGameFinish">{{ this.gameClientService.winningMessage }}</b>
-    <mat-slider
-        id="updateFontSlider"
-        thumbLabel
-        [displayWith]="formatLabel"
-        [(ngModel)]="value"
-        (input)="updateFontSize($event)"
-        step="1"
-        min="20"
-        max="30"
-    ></mat-slider>
 
     <div id="combined">
         <button

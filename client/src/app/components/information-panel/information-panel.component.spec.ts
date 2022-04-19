@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSliderChange, MatSliderModule } from '@angular/material/slider';
+import { MatSliderModule } from '@angular/material/slider';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -40,6 +40,7 @@ const PLAYER_TWO: Player = {
     room: '3',
     objective: [OBJECTIVE_TWO],
 } as Player;
+
 const PLAYER_ONE: Player = {
     name: '667',
     score: 23,
@@ -50,6 +51,7 @@ const PLAYER_ONE: Player = {
     room: '1',
     objective: [OBJECTIVE_TWO],
 } as Player;
+
 @Component({
     template: '',
 })
@@ -130,13 +132,6 @@ describe('InformationPanelComponent', () => {
     it('should call the method gameClientService.quitGame if leaveGame is called', () => {
         component.leaveGame();
         expect(gameClientSpy.quitGame).toHaveBeenCalled();
-    });
-
-    it('formatLabel should ', () => {
-        const valueToFormat = 4;
-        const expectedValue = '4px';
-        const testedValue = component.formatLabel(valueToFormat);
-        expect(testedValue).toEqual(expectedValue);
     });
 
     it('should have a div with the timer when it is your turn to play', () => {
@@ -229,14 +224,6 @@ describe('InformationPanelComponent', () => {
         fixture.detectChanges();
         const message = fixture.debugElement.nativeElement.querySelector('#winningMessage');
         expect(message).not.toBeTruthy();
-    });
-
-    it('should call updateGameboard() when the mat-slider is triggered', () => {
-        const mockSlider = new MatSliderChange();
-        component.updateFontSize(mockSlider);
-        fixture.detectChanges();
-        expect(gameClientSpy.updateGameboard).toHaveBeenCalled();
-        expect(letterPlacementService.resetGameBoardView).toHaveBeenCalled();
     });
 
     it('filterCompletedObjectives() should return the objectives completed by the first player if true is passed as an argument', () => {

@@ -1,6 +1,8 @@
 import { AfterViewInit, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { MatSliderChange } from '@angular/material/slider';
 import * as constants from '@app/constants/board-view';
 import { Vec2 } from '@app/interfaces/vec2';
+import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { Subject } from 'rxjs';
@@ -24,8 +26,13 @@ export class PlayAreaComponent implements AfterViewInit {
     keyboardParentSubject: Subject<KeyboardEvent>;
     mousePosition: Vec2;
     buttonPressed;
+    value: number;
 
-    constructor(private readonly gridService: GridService, private letterService: LetterPlacementService) {
+    constructor(
+        private readonly gridService: GridService,
+        private letterService: LetterPlacementService,
+        private gameClientService: GameClientService,
+    ) {
         this.keyboardParentSubject = new Subject();
         this.mousePosition = { x: 0, y: 0 };
         this.buttonPressed = '';
@@ -78,5 +85,15 @@ export class PlayAreaComponent implements AfterViewInit {
 
     get height(): number {
         return constants.GRID_CANVAS_HEIGHT;
+    }
+
+    formatLabel(value: number): string {
+        return value + 'px';
+    }
+
+    updateFontSize(event: MatSliderChange): void {
+        this.gridService.letterSize = event.value as number;
+        this.gameClientService.updateGameboard();
+        this.letterService.resetGameBoardView();
     }
 }
