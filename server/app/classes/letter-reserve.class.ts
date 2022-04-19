@@ -21,9 +21,8 @@ export class LetterReserve {
 
     removeLetter(letterToRemove: Letter): void {
         this.lettersReserve.forEach((letter) => {
-            if (letter.value === letterToRemove.value) {
-                letter.quantity--;
-            }
+            if (letter.value !== letterToRemove.value) return;
+            letter.quantity--;
         });
     }
 
