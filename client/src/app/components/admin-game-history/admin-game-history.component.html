@@ -5,7 +5,7 @@
 <mat-expansion-panel *ngFor="let gameHistory of gamesHistory">
     <mat-expansion-panel-header>
         <mat-panel-title>
-            <div>[{{ gameHistory.beginningTime | date: 'MM/dd/yyyy, h:mm a' }}]</div>
+            <div>[{{ gameHistory.endTime | date: 'MM/dd/yyyy, h:mm a' }}]</div>
             <div>{{ gameHistory.firstPlayerName }} VS {{ gameHistory.secondPlayerName }}</div>
             <div><mat-panel-description *ngIf="gameHistory.abandoned">Partie Abandonnée </mat-panel-description></div>
         </mat-panel-title>
