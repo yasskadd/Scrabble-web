@@ -13,13 +13,11 @@ import { Objective } from '@common/interfaces/objective';
     styleUrls: ['./information-panel.component.scss'],
 })
 export class InformationPanelComponent {
-    private readonly dialogWidth: string = '40%';
-
     constructor(public gameClientService: GameClientService, public timer: TimerService, private dialog: MatDialog, private router: Router) {}
 
     abandonGame(): void {
         this.dialog.open(DialogBoxAbandonGameComponent, {
-            width: this.dialogWidth,
+            width: 'auto',
             panelClass: 'abandonDialogComponent',
             disableClose: true,
         });
