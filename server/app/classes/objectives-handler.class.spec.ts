@@ -330,6 +330,20 @@ describe('Objectives Handler Tests', () => {
     });
 
     context('verifyClueCommandEndGame() Tests', () => {
+        it('should return if the game mode is not 2990', () => {
+            player1.game.isMode2990 = false;
+            player2.game.isMode2990 = false;
+            player1.score = 0;
+            player2.score = 0;
+            player1.clueCommandUseCount = 0;
+            player2.clueCommandUseCount = 10;
+            player1.objectives.push(ObjectivesInfo.clueCommandNeverUsed);
+            player2.objectives.push(ObjectivesInfo.clueCommandNeverUsed);
+            objectivesHandler.verifyClueCommandEndGame(objectivesHandler.players);
+            expect(player1.score).to.be.equal(0);
+            expect(player2.score).to.be.equal(0);
+        });
+
         it('should give 45 points to player 1 if he never used clue command and not to player 2 if both players have the objective', () => {
             player1.score = 0;
             player2.score = 0;

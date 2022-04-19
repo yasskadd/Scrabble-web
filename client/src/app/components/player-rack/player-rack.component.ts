@@ -92,22 +92,24 @@ export class PlayerRackComponent implements OnInit {
     skipTurn() {
         this.chatBoxHandler.submitMessage('!passer');
     }
-    selectManipulation() {
-        this.duplicates = [];
 
+    findDuplicates() {
+        this.duplicates = [];
         for (const [i, letter] of this.rack.entries()) {
             if (letter.value === this.buttonPressed.toLowerCase() && !this.lettersToExchange.includes(i)) {
                 this.duplicates.push(i);
             }
         }
-
-        if (this.duplicates.length) {
-            this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
-            this.previousSelection = this.currentSelection;
-            this.lettersToManipulate.push(this.currentSelection);
+    }
+    selectManipulation() {
+        this.findDuplicates();
+        if (!this.duplicates.length) {
+            this.lettersToExchange = [];
             return;
         }
-        this.lettersToExchange = [];
+        this.currentSelection = this.duplicates[(this.duplicates.indexOf(this.currentSelection) + 1) % this.duplicates.length];
+        this.previousSelection = this.currentSelection;
+        this.lettersToManipulate.push(this.currentSelection);
     }
 
     repositionRack() {
@@ -173,7 +175,6 @@ export class PlayerRackComponent implements OnInit {
         this.gameClient.playerOne.rack[this.currentSelection - 1] = this.gameClient.playerOne.rack[this.currentSelection];
         this.gameClient.playerOne.rack[this.currentSelection] = temp;
         this.currentSelection -= 1;
-
         this.lettersToManipulate.push(this.currentSelection);
     }
 
@@ -186,12 +187,13 @@ export class PlayerRackComponent implements OnInit {
             }
             this.gameClient.playerOne.rack[0] = temp;
             this.currentSelection = 0;
-        } else {
-            temp = this.gameClient.playerOne.rack[this.currentSelection + 1];
-            this.gameClient.playerOne.rack[this.currentSelection + 1] = this.gameClient.playerOne.rack[this.currentSelection];
-            this.gameClient.playerOne.rack[this.currentSelection] = temp;
-            this.currentSelection += 1;
+            this.lettersToManipulate.push(this.currentSelection);
+            return;
         }
+        temp = this.gameClient.playerOne.rack[this.currentSelection + 1];
+        this.gameClient.playerOne.rack[this.currentSelection + 1] = this.gameClient.playerOne.rack[this.currentSelection];
+        this.gameClient.playerOne.rack[this.currentSelection] = temp;
+        this.currentSelection += 1;
         this.lettersToManipulate.push(this.currentSelection);
     }
 }

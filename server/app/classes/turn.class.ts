@@ -45,10 +45,11 @@ export class Turn {
             this.inactivePlayer = this.activePlayer;
             this.activePlayer = tempInactivePlayer;
             this.start();
-        } else {
-            this.activePlayer = undefined;
-            this.inactivePlayer = undefined;
+            this.endTurn.next(this.activePlayer);
+            return;
         }
+        this.activePlayer = undefined;
+        this.inactivePlayer = undefined;
         this.endTurn.next(this.activePlayer);
     }
 
@@ -59,8 +60,11 @@ export class Turn {
     skipTurn(): void {
         const timesToEnd = 6;
         this.incrementSkipCounter();
-        if (this.skipCounter === timesToEnd) this.end(true);
-        else this.end();
+        if (this.skipCounter !== timesToEnd) {
+            this.end();
+            return;
+        }
+        this.end(true);
     }
 
     resetSkipCounter(): void {

@@ -124,8 +124,11 @@ export class Word {
     }
 
     private incrementPosition(position: Coordinate) {
-        if (this.isHorizontal) position.x++;
-        else position.y++;
+        if (!this.isHorizontal) {
+            position.y++;
+            return;
+        }
+        position.x++;
     }
 
     private checkValidity(commandLettersCopy: string[]) {
@@ -135,9 +138,11 @@ export class Word {
 
     private addLetterPoints(placedWord: Word, gameboard: Gameboard) {
         this.wordCoords.forEach((coord: Coordinate) => {
-            if (this.coordHasLetterMultiplier(gameboard, coord) && this.isNewLetterCoord(placedWord, coord))
+            if (this.coordHasLetterMultiplier(gameboard, coord) && this.isNewLetterCoord(placedWord, coord)) {
                 this.addLetterPointsWithMultiplier(gameboard, coord);
-            else this.addLetterPointsWithoutMultiplier(gameboard, coord);
+                return;
+            }
+            this.addLetterPointsWithoutMultiplier(gameboard, coord);
         });
     }
 

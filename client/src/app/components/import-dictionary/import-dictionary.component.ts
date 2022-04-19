@@ -20,31 +20,31 @@ export class ImportDictionaryComponent {
     }
 
     async uploadDictionary() {
-        if (this.file.nativeElement.files.length !== 0) {
-            const selectedFile = this.file.nativeElement.files[0];
-            const fileReader = new FileReader();
-            const content = await this.readFile(selectedFile, fileReader);
-            this.updateDictionaryMessage('En vérification, veuillez patienter...', 'red');
-            await this.fileOnLoad(content);
-        } else {
+        if (this.file.nativeElement.files.length === 0) {
             this.updateDictionaryMessage("Il n'y a aucun fichier séléctioné", 'red');
+            return;
         }
+        const selectedFile = this.file.nativeElement.files[0];
+        const fileReader = new FileReader();
+        const content = await this.readFile(selectedFile, fileReader);
+        this.updateDictionaryMessage('En vérification, veuillez patienter...', 'red');
+        await this.fileOnLoad(content);
     }
 
     async fileOnLoad(newDictionary: Record<string, unknown>) {
         const globalVerification = await this.dictionaryVerification.globalVerification(newDictionary);
         if (globalVerification !== 'Passed') {
             this.updateDictionaryMessage(globalVerification, 'red');
-        } else {
-            this.selectedFile = newDictionary as unknown as Dictionary;
-            this.httpHandler
-                .addDictionary(this.selectedFile)
-                .toPromise()
-                .then(() => {
-                    this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
-                    this.updateDictionaryMessage('Ajout avec succès du nouveau dictionnaire', 'black');
-                });
+            return;
         }
+        this.selectedFile = newDictionary as unknown as Dictionary;
+        this.httpHandler
+            .addDictionary(this.selectedFile)
+            .toPromise()
+            .then(() => {
+                this.httpHandler.getDictionaries().subscribe((dictionaries) => (this.dictionaryList = dictionaries));
+                this.updateDictionaryMessage('Ajout avec succès du nouveau dictionnaire', 'black');
+            });
     }
 
     detectImportFile() {

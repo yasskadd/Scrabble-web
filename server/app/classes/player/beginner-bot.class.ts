@@ -6,12 +6,14 @@ import { Bot } from './bot.class';
 export class BeginnerBot extends Bot {
     playTurn(): void {
         const randomNumber = this.getRandomNumber(Constant.MAX_NUMBER);
-        if (randomNumber < 3) {
-            setTimeout(() => {
-                if (randomNumber === 1) this.skipTurn();
-                else this.exchangeLetters();
-            }, Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
-        } else this.placeLetters();
+        if (randomNumber >= 3) {
+            this.placeLetters();
+            return;
+        }
+        setTimeout(() => {
+            if (randomNumber === 1) this.skipTurn();
+            else this.exchangeLetters();
+        }, Constant.SECOND_3 - this.countUp * Constant.SECOND_1);
     }
 
     exchangeLetters(): void {
@@ -45,15 +47,18 @@ export class BeginnerBot extends Bot {
             commandInfoMap.forEach((value, key) => {
                 if (this.inRange(value, 1, Constant.RANGE_6)) commandInfoList.push(key);
             });
-        } else if (this.inRange(randomNumber, Constant.PROB_5, Constant.PROB_7)) {
+            return commandInfoList;
+        }
+        if (this.inRange(randomNumber, Constant.PROB_5, Constant.PROB_7)) {
             commandInfoMap.forEach((value, key) => {
                 if (this.inRange(value, Constant.RANGE_7, Constant.RANGE_12)) commandInfoList.push(key);
             });
-        } else {
-            commandInfoMap.forEach((value, key) => {
-                if (this.inRange(value, Constant.RANGE_13, Constant.RANGE_18)) commandInfoList.push(key);
-            });
+            return commandInfoList;
         }
+
+        commandInfoMap.forEach((value, key) => {
+            if (this.inRange(value, Constant.RANGE_13, Constant.RANGE_18)) commandInfoList.push(key);
+        });
         return commandInfoList;
     }
 
