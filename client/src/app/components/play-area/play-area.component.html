@@ -5,7 +5,6 @@
             <p id="font-size">Taille de la police :</p>
             <mat-slider
                 id="updateFontSlider"
-                thumbLabel
                 [displayWith]="formatLabel"
                 [(ngModel)]="value"
                 (input)="updateFontSize($event)"
