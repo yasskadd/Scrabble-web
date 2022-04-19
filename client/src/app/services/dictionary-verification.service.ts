@@ -72,11 +72,9 @@ export class DictionaryVerificationService {
     }
 
     private wordsListIsValid(words: unknown): boolean {
-        if (Array.isArray(words)) {
-            if (words.some((word) => !this.wordIsValid(word))) return false;
-            return true;
-        }
-        return false;
+        if (!Array.isArray(words)) return false;
+        if (words.some((word) => !this.wordIsValid(word))) return false;
+        return true;
     }
 
     private wordIsValid(word: unknown): boolean {

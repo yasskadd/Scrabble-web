@@ -149,8 +149,11 @@ export class WordSolverService {
         if (currentNode.isWord && this.isOutOfBoundsOrIsOccupied(nextPosition) && anchorFilled)
             this.createCommandInfo(partialWord, this.decrementCoord(nextPosition, this.isHorizontal) as Coordinate);
         if (nextPosition === null) return;
-        if (!this.gameboard.getLetterTile(nextPosition).isOccupied) this.addRackLetterToPartialWord(nextPosition, partialWord, currentNode);
-        else this.addBoardLetterToPartialWord(nextPosition, partialWord, currentNode);
+        if (!this.gameboard.getLetterTile(nextPosition).isOccupied) {
+            this.addRackLetterToPartialWord(nextPosition, partialWord, currentNode);
+            return;
+        }
+        this.addBoardLetterToPartialWord(nextPosition, partialWord, currentNode);
     }
 
     private isOutOfBoundsOrIsOccupied(nextPosition: Coordinate): boolean {
@@ -201,10 +204,9 @@ export class WordSolverService {
 
     private addBoardLetterToPartialWord(nextPosition: Coordinate, partialWord: string, currentNode: LetterTreeNode) {
         const existingLetter: string = this.gameboard.getLetterTile(nextPosition).letter;
-        if (currentNode.children.has(existingLetter)) {
-            const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
-            this.extendWordAfterAnchor(partialWord + existingLetter, currentNode.children.get(existingLetter) as LetterTreeNode, nextPos, true);
-        }
+        if (!currentNode.children.has(existingLetter)) return;
+        const nextPos = this.isHorizontal ? { x: nextPosition.x + 1, y: nextPosition.y } : { x: nextPosition.x, y: nextPosition.y + 1 };
+        this.extendWordAfterAnchor(partialWord + existingLetter, currentNode.children.get(existingLetter) as LetterTreeNode, nextPos, true);
     }
 
     private findLettersForBoardTiles(): Map<Coordinate, string[]> {
@@ -275,13 +277,13 @@ export class WordSolverService {
 
     private decrementCoord(coord: Coordinate, isHorizontal: boolean): Coordinate | null {
         if (isHorizontal && coord.x !== 1) return { x: coord.x - 1, y: coord.y } as Coordinate;
-        else if (!isHorizontal && coord.y !== 1) return { x: coord.x, y: coord.y - 1 } as Coordinate;
+        if (!isHorizontal && coord.y !== 1) return { x: coord.x, y: coord.y - 1 } as Coordinate;
         return null;
     }
 
     private incrementCoord(coord: Coordinate, isHorizontal: boolean): Coordinate | null {
         if (isHorizontal && coord.x !== constants.TOTAL_TILES_IN_COLUMN) return { x: coord.x + 1, y: coord.y } as Coordinate;
-        else if (!isHorizontal && coord.y !== constants.TOTAL_TILES_IN_ROW) return { x: coord.x, y: coord.y + 1 } as Coordinate;
+        if (!isHorizontal && coord.y !== constants.TOTAL_TILES_IN_ROW) return { x: coord.x, y: coord.y + 1 } as Coordinate;
         return null;
     }
 }

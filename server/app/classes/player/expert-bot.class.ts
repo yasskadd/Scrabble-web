@@ -31,19 +31,26 @@ export class ExpertBot extends Bot {
         if (this.game === undefined || this.playedTurned) return;
         let lettersLeftInReserve: number = this.game.letterReserve.totalQuantity();
         const rackStringArray: string[] = [...this.rackToString()];
-        if (lettersLeftInReserve === 0) this.skipTurn();
-        else if (lettersLeftInReserve >= Constant.letterReserveMinQuantity) {
+        if (lettersLeftInReserve === 0) {
+            this.skipTurn();
+            this.playedTurned = true;
+            return;
+        }
+
+        if (lettersLeftInReserve >= Constant.letterReserveMinQuantity) {
             this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${rackStringArray.length} lettres`);
             this.game.exchange(rackStringArray, this);
-        } else {
-            const lettersToExchange: string[] = new Array();
-            while (lettersLeftInReserve > 0 && rackStringArray.length > 0) {
-                lettersToExchange.push(rackStringArray.splice(this.getRandomNumber(rackStringArray.length) - 1, 1)[0]);
-                lettersLeftInReserve--;
-            }
-            this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
-            this.rack = this.game.exchange(lettersToExchange, this);
+            this.playedTurned = true;
+            return;
         }
+        const lettersToExchange: string[] = new Array();
+        while (lettersLeftInReserve > 0 && rackStringArray.length > 0) {
+            lettersToExchange.push(rackStringArray.splice(this.getRandomNumber(rackStringArray.length) - 1, 1)[0]);
+            lettersLeftInReserve--;
+        }
+        this.socketManager.emitRoom(this.botInfo.roomId, SocketEvents.GameMessage, `!echanger ${lettersToExchange.length} lettres`);
+        this.rack = this.game.exchange(lettersToExchange, this);
+
         this.playedTurned = true;
     }
 }
