@@ -8,7 +8,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { GameClientService } from '@app/services/game-client.service';
 import { DialogBoxAbandonGameComponent } from './dialog-box-abandon-game.component';
 const MULTIPLAYER_HOME_PAGE = 'home';
-
+const TIMEOUT = 3000;
 @Component({
     template: '',
 })
@@ -55,6 +55,7 @@ describe('AbandonGameDialogBoxComponent', () => {
         expect(args[0]).toBe(message);
         expect(args[1]).toBe('fermer');
         expect(args[2]).toEqual({
+            duration: TIMEOUT,
             verticalPosition: 'top',
         });
     });

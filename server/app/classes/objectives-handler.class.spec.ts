@@ -367,5 +367,11 @@ describe('Objectives Handler Tests', () => {
             expect(player1.score).to.be.equal(0);
             expect(player2.score).to.be.equal(0);
         });
+
+        it('should instantly return if game mode is not LOG2990', () => {
+            player1.game.isMode2990 = false;
+            objectivesHandler.verifyClueCommandEndGame(objectivesHandler.players);
+            expect(socketManagerStub.emitRoom.called).to.be.equal(false);
+        });
     });
 });

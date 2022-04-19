@@ -14,7 +14,8 @@ type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
 type PlayerInformation = { name: string; score: number; rack: Letter[]; room: string; gameboard: LetterTileInterface[] };
 type Player = { name: string; score: number; rack: Letter[]; objective?: Objective[] };
 type GameInfo = { gameboard: LetterTileInterface[]; players: Player[]; activePlayer: string };
-const TIMEOUT = 15;
+const TIMEOUT_PASS = 30;
+const TIMEOUT = 3000;
 
 @Injectable({
     providedIn: 'root',
@@ -81,7 +82,7 @@ export class GameClientService {
         this.clientSocketService.on(SocketEvents.Skip, (gameInfo: GameInfo) => {
             setTimeout(() => {
                 this.skipEvent(gameInfo);
-            }, TIMEOUT);
+            }, TIMEOUT_PASS);
         });
 
         this.clientSocketService.on(SocketEvents.TimerClientUpdate, (newTimer: number) => {
@@ -129,7 +130,7 @@ export class GameClientService {
 
     private openSnackBar(reason: string): void {
         this.snackBar.open(reason, 'fermer', {
-            duration: 3000,
+            duration: TIMEOUT,
             horizontalPosition: 'center',
         });
     }
@@ -212,7 +213,6 @@ export class GameClientService {
         this.playerOneTurn = false;
         this.isGameFinish = true;
         this.winningMessage = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
-        this.openSnackBar(this.winningMessage);
     }
 
     private skipEvent(gameInfo: GameInfo) {
@@ -230,18 +230,15 @@ export class GameClientService {
 
     private findWinnerByScore(): void {
         if (this.playerOne.score === this.secondPlayer.score) {
-            this.winningMessage = 'Bravo aux deux joueur, vous avez le même score';
-            this.openSnackBar(this.winningMessage);
+            this.winningMessage = 'Égalité! Vous avez le même score que votre adversaire!';
             return;
         }
-        if (this.playerOne.score > this.secondPlayer.score) {
-            this.winningMessage = `Bravo ${this.playerOne.name} vous avez gagné`;
-            this.openSnackBar(this.winningMessage);
-            return;
-        }
-        this.winningMessage = `Bravo ${this.secondPlayer.name} vous avez gagné`;
-        this.openSnackBar(this.winningMessage);
+        this.winningMessage =
+            this.playerOne.score > this.secondPlayer.score
+                ? `Victoire à ${this.playerOne.name}! Bravo!`
+                : `Victoire à ${this.secondPlayer.name}! Bravo!`;
     }
+
     private getAllLetterReserve(lettersReserveUpdated: Letter[]): void {
         let letterString = '';
         lettersReserveUpdated.forEach((letter) => {

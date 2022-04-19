@@ -3,12 +3,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChatboxMessage } from '@app/interfaces/chatbox-message';
 import { ChatboxHandlerService } from '@app/services/chatbox-handler.service';
 import { ChatboxComponent } from './chatbox.component';
 
 const TEST_MESSAGE: ChatboxMessage = { type: 'WorldHello', data: 'WeBigProjectBoisNow' };
+
+const mockMatSnackBar = {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    open: () => {},
+};
 
 describe('ChatboxComponent', () => {
     let component: ChatboxComponent;
@@ -20,7 +26,10 @@ describe('ChatboxComponent', () => {
         await TestBed.configureTestingModule({
             imports: [MatCardModule, MatFormFieldModule, FormsModule, ReactiveFormsModule, MatInputModule, BrowserAnimationsModule],
             declarations: [ChatboxComponent],
-            providers: [{ provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy }],
+            providers: [
+                { provide: ChatboxHandlerService, useValue: chatBoxHandlerSpy },
+                { provide: MatSnackBar, useValue: mockMatSnackBar },
+            ],
         }).compileComponents();
     });
 
