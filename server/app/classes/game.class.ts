@@ -44,9 +44,7 @@ export class Game {
         this.isGameAbandoned = false;
         this.gameMode = '';
         this.dictionaryValidation = dictionaryValidation;
-        // this.letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
         this.letterPlacement = letterPlacement;
-        // this.wordSolver = new WordSolverService(dictionaryValidation);
         this.wordSolver = wordSolver;
     }
 
@@ -114,9 +112,9 @@ export class Game {
     private endOfGameVerification(player: Player) {
         if (player.rackIsEmpty() && this.letterReserve.isEmpty()) {
             this.end();
-        } else {
-            this.turn.resetSkipCounter();
-            this.turn.end();
+            return;
         }
+        this.turn.resetSkipCounter();
+        this.turn.end();
     }
 }
