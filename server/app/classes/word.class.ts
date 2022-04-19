@@ -82,12 +82,19 @@ export class Word {
     private findFirstCoord(coord: Coordinate, gameboard: Gameboard): Coordinate {
         const backwardPosition = this.isHorizontal ? { x: coord.x - 1, y: coord.y } : { x: coord.x, y: coord.y - 1 };
 
-        if (gameboard.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied) {
-            while (gameboard.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied)
-                this.decrementBackwardPosition(backwardPosition);
-            this.incrementPosition(backwardPosition);
-            return backwardPosition;
-        } else return coord;
+        // if (gameboard.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied) {
+        //     while (gameboard.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied)
+        //         this.decrementBackwardPosition(backwardPosition);
+        //     this.incrementPosition(backwardPosition);
+        //     return backwardPosition;
+        // } else return coord;
+
+        if (!gameboard.isWithinBoardLimits(backwardPosition) || !gameboard.getLetterTile(backwardPosition).isOccupied) return coord;
+
+        while (gameboard.isWithinBoardLimits(backwardPosition) && gameboard.getLetterTile(backwardPosition).isOccupied)
+            this.decrementBackwardPosition(backwardPosition);
+        this.incrementPosition(backwardPosition);
+        return backwardPosition;
     }
 
     private decrementBackwardPosition(backwardPosition: Coordinate) {
