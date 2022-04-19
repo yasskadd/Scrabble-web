@@ -33,11 +33,6 @@ export class MultiplayerCreatePageComponent implements OnInit {
     @ViewChild('file', { static: false }) file: ElementRef;
     @ViewChild('fileError', { static: false }) fileError: ElementRef;
 
-    botName: string;
-    playerName: string;
-    form: FormGroup;
-    gameMode: string;
-    difficultyList: string[];
     timerList = [
         TimeOptions.ThirtySecond,
         TimeOptions.OneMinute,
@@ -50,8 +45,13 @@ export class MultiplayerCreatePageComponent implements OnInit {
         TimeOptions.FourMinuteAndThirty,
         TimeOptions.FiveMinute,
     ];
+    botName: string;
+    playerName: string;
+    form: FormGroup;
+    difficultyList: string[];
     dictionaryList: DictionaryInfo[];
     selectedFile: Dictionary | null;
+    private gameMode: string;
 
     constructor(
         public virtualPlayers: VirtualPlayersService,
