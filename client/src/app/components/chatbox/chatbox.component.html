@@ -6,7 +6,8 @@
 <mat-card class="container-wrapper">
     <div #container class="message-container">
         <div *ngFor="let message of messages" [class]="'message ' + message.type">
-            <span>{{ message.data }}</span>
+            <span *ngIf="!isPlacementCommand(message.data)">{{ message.data }}</span>
+            <span *ngIf="isPlacementCommand(message.data)" class="placement" (click)="submitMessage(message.data)">{{ message.data }}</span>
         </div>
     </div>
 </mat-card>
