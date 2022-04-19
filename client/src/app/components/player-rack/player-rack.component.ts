@@ -43,9 +43,8 @@ export class PlayerRackComponent implements OnInit {
 
     @HostListener('mousewheel', ['$event'])
     onScrollEvent(event: WheelEvent) {
-        this.cancel();
         this.buttonPressed = event.deltaY < 0 ? 'ArrowLeft' : 'ArrowRight';
-        this.repositionRack();
+        this.dispatchAction();
     }
 
     @HostListener('window: click', ['$event'])
@@ -60,11 +59,7 @@ export class PlayerRackComponent implements OnInit {
     ngOnInit() {
         this.keyboardParentSubject.subscribe((event) => {
             this.buttonPressed = event.key;
-            if (this.currentSelection !== board.INVALID_INDEX) {
-                this.cancel();
-                this.repositionRack();
-                this.selectManipulation();
-            }
+            this.dispatchAction();
         });
     }
 
@@ -84,6 +79,14 @@ export class PlayerRackComponent implements OnInit {
 
     get noPlacedLetters(): boolean {
         return this.letterPlacementService.noLettersPlaced();
+    }
+
+    dispatchAction() {
+        if (this.currentSelection !== board.INVALID_INDEX) {
+            this.cancel();
+            this.repositionRack();
+            this.selectManipulation();
+        }
     }
 
     skipTurn() {
@@ -134,6 +137,7 @@ export class PlayerRackComponent implements OnInit {
         }
         this.lettersToExchange.splice(this.lettersToExchange.indexOf(letter), 1);
     }
+
     onLeftClick(event: MouseEvent, letter: number) {
         event.preventDefault();
         this.cancel();

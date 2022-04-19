@@ -3,10 +3,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSliderChange } from '@angular/material/slider';
 import { Router } from '@angular/router';
 import { DialogBoxAbandonGameComponent } from '@app/components/dialog-box-abandon-game/dialog-box-abandon-game.component';
+import { DialogGameHelpComponent } from '@app/components/dialog-game-help/dialog-game-help.component';
 import { GameClientService } from '@app/services/game-client.service';
 import { GridService } from '@app/services/grid.service';
 import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { TimerService } from '@app/services/timer.service';
+import { Objective } from '@common/interfaces/objective';
 
 @Component({
     selector: 'app-information-panel',
@@ -47,5 +49,22 @@ export class InformationPanelComponent {
     leaveGame(): void {
         this.router.navigate(['/home']);
         this.gameClientService.quitGame();
+    }
+
+    openHelpDialog() {
+        this.dialog.open(DialogGameHelpComponent, { width: '50%' });
+    }
+
+    filterCompletedObjectives(isFirstPlayer: boolean) {
+        const playerName: string = isFirstPlayer ? this.gameClientService.playerOne.name : this.gameClientService.secondPlayer.name;
+        const objectives: Objective[] = isFirstPlayer
+            ? (this.gameClientService.playerOne.objective as Objective[])
+            : (this.gameClientService.secondPlayer.objective as Objective[]);
+        return objectives.filter((objective) => objective.complete && objective.user === playerName);
+    }
+
+    filterNotCompletedObjectives() {
+        const objectives: Objective[] = this.gameClientService.playerOne.objective as Objective[];
+        return objectives.filter((objective) => !objective.complete);
     }
 }

@@ -12,6 +12,7 @@ import { ClientSocketService } from './communication/client-socket.service';
 import { GameClientService } from './game-client.service';
 import { GridService } from './grid.service';
 
+type CompletedObjective = { objective: Objective; name: string };
 type InitObjective = { objectives1: Objective[]; objectives2: Objective[]; playerName: string };
 type Player = { name: string; score: number; rack: Letter[]; room: string; objective?: Objective[] };
 type PlayInfo = { gameboard: LetterTileInterface[]; activePlayer: string };
@@ -30,6 +31,16 @@ const OBJECTIVE: Objective = {
     points: 20,
     type: 'Word',
 } as Objective;
+
+const COMPLETE_OBJECTIVE: CompletedObjective = {
+    objective: OBJECTIVE,
+    name: 'vincent',
+};
+
+const COMPLETE_OBJECTIVE_TWO: CompletedObjective = {
+    objective: OBJECTIVE_TWO,
+    name: 'Chris',
+};
 
 const INIT_OBJECTIVE: InitObjective = {
     objectives1: [OBJECTIVE],
@@ -279,7 +290,7 @@ describe('GameClientService', () => {
         service.secondPlayer.objective = [OBJECTIVE];
         service.playerOne.objective[0].complete = false;
         // eslint-disable-next-line dot-notation
-        service['completeObjective'](OBJECTIVE_TWO);
+        service['completeObjective'](COMPLETE_OBJECTIVE_TWO);
         expect(service.playerOne.objective[0].complete).toEqual(true);
     });
 
@@ -290,7 +301,7 @@ describe('GameClientService', () => {
         service.secondPlayer.objective = [OBJECTIVE_TWO];
         service.secondPlayer.objective[0].complete = false;
         // eslint-disable-next-line dot-notation
-        service['completeObjective'](OBJECTIVE_TWO);
+        service['completeObjective'](COMPLETE_OBJECTIVE_TWO);
         expect(service.secondPlayer.objective[0].complete).toEqual(true);
     });
 
@@ -299,7 +310,7 @@ describe('GameClientService', () => {
         service.secondPlayer.name = 'Chris';
         expect(service.playerOne.objective).toEqual(undefined);
         // eslint-disable-next-line dot-notation
-        service['completeObjective'](OBJECTIVE);
+        service['completeObjective'](COMPLETE_OBJECTIVE);
         expect(service.playerOne.objective).toEqual(undefined);
     });
 

@@ -6,4 +6,5 @@ export interface Objective {
     description: string;
     multiplier?: string;
     complete?: boolean;
+    user?: string;
 }

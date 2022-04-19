@@ -104,7 +104,7 @@ export class HttpHandlerService {
     }
 
     replaceBot(bot: BotNameInfo): Observable<void> {
-        return this.http.put<void>(`${this.baseUrl}/virtualPlayer/replace`, bot).pipe(catchError(this.handleError<void>('replaceBot')));
+        return this.http.put<void>(`${this.baseUrl}/virtualPlayer`, bot).pipe(catchError(this.handleError<void>('replaceBot')));
     }
 
     resetBot(): Observable<void> {

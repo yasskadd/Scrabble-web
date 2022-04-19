@@ -5,6 +5,8 @@ import { of } from 'rxjs';
 import { HttpHandlerService } from './communication/http-handler.service';
 import { DictionaryVerificationService } from './dictionary-verification.service';
 
+const HTTP_STATUS_FOUND = 200;
+
 describe('DictionaryVerificationService', () => {
     let service: DictionaryVerificationService;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
@@ -216,6 +218,11 @@ describe('DictionaryVerificationService', () => {
         const dictionary = 'Mon nouveau dictionnaire';
         // eslint-disable-next-line dot-notation
         expect(await service['alreadyExist'](dictionary)).toEqual('Passed');
+    });
+
+    it('returnStatus() should return Le dictionnaire existe déjà dans la base de données if HTTP status is 200', async () => {
+        // eslint-disable-next-line dot-notation
+        expect(service['returnStatus'](HTTP_STATUS_FOUND)).toEqual('Le dictionnaire existe déjà dans la base de données');
     });
 
     it('wordsListIsValid() should return true if the words passed as param is valid', () => {

@@ -1,13 +1,3 @@
-.container {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    background-color: rgb(105, 236, 193);
-    top: 5%;
-    border: 2px solid rgb(44, 223, 20);
-    border-radius: 50px;
-}
-
 .headerContent {
     display: flex;
     flex-direction: row;
@@ -15,65 +5,14 @@
     justify-content: space-between;
 }
 
-.wrapper {
-    text-align: center;
-    margin-top: 10px;
-}
-
-::ng-deep .mat-dialog-container {
-    background-color: #c2e5da;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th {
-    font-size: 20px;
-    padding: 10px;
-}
-td {
-    height: 30px;
-}
-
-.data {
-    text-align: center;
-    width: 50%;
-    padding: 5px;
-}
-
-.first {
-    color: rgb(218, 165, 32);
-}
-
-.second {
-    color: rgb(211, 211, 211);
-}
-
-.third {
-    color: rgb(205, 127, 50);
-}
-.highScoreTableClassic,
-.highScoreTableLOG2990 {
-    background-color: rgb(255, 255, 255);
-    border: 2px solid rgb(44, 223, 20);
-    border-radius: 50px;
-    margin-bottom: 40px;
-    padding: 0px;
-}
-
 .containerTitle {
     text-align: center;
     font-size: 40px;
     font-style: oblique;
     font-weight: bold;
-    color: rgb(179, 22, 179);
+    color: #23501f;
     text-shadow: 1px 1px 1px rgb(0, 0, 0);
     padding: 0px 0px 20px 0px;
     text-transform: uppercase;
-}
-
-mat-icon {
-    font-size: 30px;
+    width: 150%;
 }

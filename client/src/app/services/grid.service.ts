@@ -98,6 +98,8 @@ export class GridService {
         this.setFontSize(this.boardTileSize);
         for (let i = 1; i < constants.TOTAL_COLUMNS; i++) {
             const position: Coordinate = { x: i, y: 0 };
+            this.gridContext.fillStyle = '#7fa99b';
+            this.fillTile({ x: i, y: 1 });
             this.gridContext.textBaseline = 'middle';
             this.drawText(position, String(i));
         }
@@ -108,6 +110,8 @@ export class GridService {
         for (let i = 1; i < constants.TOTAL_ROWS; i++) {
             const char = String.fromCharCode(chatCode + i);
             const position: Coordinate = { x: 0, y: i };
+            this.gridContext.fillStyle = '#7fa99b';
+            this.fillTile({ x: 1, y: i });
             this.drawLetter(position, char);
         }
     }

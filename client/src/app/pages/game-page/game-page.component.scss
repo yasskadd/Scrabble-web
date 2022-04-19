@@ -1,11 +1,10 @@
 body {
     height: 100%;
     display: flex;
-    justify-content: space-between;
 }
 
 .load {
-    background-color: antiquewhite;
+    background-color: #7fa99b;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -21,28 +20,30 @@ body {
 .justified {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 .information-panel {
     flex-grow: 1;
-    max-width: 375px;
-    box-shadow: 1px 3px 2px -2px rgba(0, 0, 0, 0.2), 1px 2px 2px 1px rgba(0, 0, 0, 0.14), 1px 2px 4px 1px rgba(0, 0, 0, 0.12);
+    width: 250px;
     padding: 10px;
-    background-color: rgb(174, 192, 174);
+    background-color: #7fa99b;
+    min-height: 755px;
 }
 
 .play-area {
     overflow: auto;
-    flex-grow: 4;
+    flex-grow: 7;
     align-items: center;
-    background-color: rgb(225, 232, 248);
+    background-color: #c2e5da;
     justify-content: center;
+    min-width: 620px;
+    min-height: 755px;
 }
 
 .chatbox {
     flex-grow: 1;
-    max-width: 400px;
-    padding: 10px 10px 0px 10px;
-    background-color: rgb(174, 192, 174);
+    max-width: 300px;
+    padding: 7px 7px 0px 10px;
+    background-color: #7fa99b;
+    min-height: 755px;
 }

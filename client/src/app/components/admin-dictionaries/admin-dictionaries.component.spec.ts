@@ -36,6 +36,7 @@ describe('AdminDictionariesComponent', () => {
         dictionaryServiceSpy.modifyDictionary.and.resolveTo();
         dictionaryServiceSpy.getDictionary.and.resolveTo({} as Dictionary);
         dictionaryServiceSpy.deleteDictionary.and.resolveTo();
+        dictionaryServiceSpy.resetDictionaries.and.resolveTo();
 
         // eslint-disable-next-line deprecation/deprecation
         saveAsSpy = spyOn(saver, 'saveAs').and.stub();
@@ -156,20 +157,9 @@ describe('AdminDictionariesComponent', () => {
     });
 
     describe('reset Dictionaries tests', () => {
-        it('resetDictionaries() should call dictionaryService.resetDictionaries() and updateDictionaryList()', () => {
-            const spy = spyOn(component, 'updateDictionaryList');
+        it('resetDictionaries() should call dictionaryService.resetDictionaries()', () => {
             component.resetDictionaries();
             expect(dictionaryServiceSpy.resetDictionaries).toHaveBeenCalled();
-            expect(spy).toHaveBeenCalled();
-        });
-    });
-
-    describe('reset DictionaryInput tests', () => {
-        it('resetDictionaryInput() should call dictionaryService.resetDictionaries() and updateDictionaryList()', () => {
-            const spy = spyOn(component, 'updateDictionaryList');
-            component.resetDictionaries();
-            expect(dictionaryServiceSpy.resetDictionaries).toHaveBeenCalled();
-            expect(spy).toHaveBeenCalled();
         });
     });
 });
