@@ -105,16 +105,19 @@ export class ChatboxHandlerService {
 
     private isMessageACommand(userInput: string): void {
         const commandValid = userInput.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        if (this.isCommand(commandValid)) {
-            if (this.validCommand(commandValid)) this.commandHandler.sendCommand(commandValid);
-        } else {
+        if (!this.isCommand(commandValid)) {
             this.sendMessage(userInput);
+            return;
         }
+        if (this.validCommand(commandValid)) this.commandHandler.sendCommand(commandValid);
     }
 
     private configureClueCommand(clueCommand: CommandInfo[]): void {
-        if (clueCommand.length !== 0) this.addClueCommand(clueCommand);
-        else this.messages.push({ type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" });
+        if (clueCommand.length !== 0) {
+            this.addClueCommand(clueCommand);
+            return;
+        }
+        this.messages.push({ type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" });
     }
 
     private addClueCommand(clueCommand: CommandInfo[]): void {
