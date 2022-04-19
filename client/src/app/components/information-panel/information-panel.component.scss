@@ -40,6 +40,26 @@
     align-items: flex-end;
 }
 
+.countdown {
+    transform: scale(1.5);
+    display: flex;
+    align-items: flex-end;
+    animation-name: color;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes color {
+    0% {
+        color: rgb(238, 122, 122);
+    }
+    50% {
+        color: rgb(190, 55, 55);
+    }
+    100% {
+        color: #800020;
+    }
+}
 .player > .time {
     align-items: flex-end;
     justify-content: flex-end;

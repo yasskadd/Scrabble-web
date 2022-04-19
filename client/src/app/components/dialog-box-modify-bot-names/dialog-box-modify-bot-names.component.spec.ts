@@ -4,13 +4,13 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { DialogBoxNewGameComponent } from './dialog-box-new-game.component';
+import { DialogBoxModifyBotNamesComponent } from './dialog-box-modify-bot-names.component';
 
 const DATA_PLAYER_NAME = 'vincent';
 
 describe('DialogBoxNewGameComponent', () => {
-    let component: DialogBoxNewGameComponent;
-    let fixture: ComponentFixture<DialogBoxNewGameComponent>;
+    let component: DialogBoxModifyBotNamesComponent;
+    let fixture: ComponentFixture<DialogBoxModifyBotNamesComponent>;
 
     const dialogMock = {
         // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -20,7 +20,7 @@ describe('DialogBoxNewGameComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [MatDialogModule, MatFormFieldModule, MatInputModule, BrowserAnimationsModule, FormsModule],
-            declarations: [DialogBoxNewGameComponent],
+            declarations: [DialogBoxModifyBotNamesComponent],
             providers: [
                 { provide: MAT_DIALOG_DATA, useValue: DATA_PLAYER_NAME },
                 { provide: MatDialogRef, useValue: dialogMock },
@@ -29,7 +29,7 @@ describe('DialogBoxNewGameComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(DialogBoxNewGameComponent);
+        fixture = TestBed.createComponent(DialogBoxModifyBotNamesComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });

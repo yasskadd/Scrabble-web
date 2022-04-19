@@ -72,6 +72,7 @@ describe('PlayAreaComponent', () => {
             schemas: [NO_ERRORS_SCHEMA],
             providers: [
                 { provide: LetterPlacementService, useValue: letterPlacementServiceSpy },
+                { provide: GameClientService, useValue: gameClientSpy },
                 { provide: MatSnackBar, useValue: MatSnackBar },
             ],
         }).compileComponents();

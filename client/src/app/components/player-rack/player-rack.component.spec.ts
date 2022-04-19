@@ -104,7 +104,7 @@ describe('PlayerRackComponent', () => {
 
     it('should call skipTurn when the button to skip is pressed and it is your turn to play', fakeAsync(() => {
         const spy = spyOn(component, 'skipTurn');
-        const button = fixture.debugElement.nativeElement.querySelector('#skipTurn');
+        const button = fixture.debugElement.nativeElement.querySelector('#skip-turn');
         button.click();
         tick();
         fixture.detectChanges();
