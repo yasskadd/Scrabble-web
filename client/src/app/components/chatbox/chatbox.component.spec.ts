@@ -110,6 +110,8 @@ describe('ChatboxComponent', () => {
     });
 
     it('scrollToBottom() should be called after every new message', () => {
+        // eslint-disable-next-line dot-notation
+        component['lastMessage'] = {} as ChatboxMessage;
         const spyOnScrollBottom = spyOn(component, 'scrollToBottom' as never);
         const container = fixture.debugElement.nativeElement.querySelector('.message-container');
         container.appendChild(document.createElement('message'));
@@ -117,6 +119,38 @@ describe('ChatboxComponent', () => {
 
         expect(spyOnScrollBottom).toHaveBeenCalled();
     });
+
+    it('scrollToBottom() should not be called if there is no new message', () => {
+        // eslint-disable-next-line dot-notation
+        component['lastMessage'] = TEST_MESSAGE;
+        const spyOnScrollBottom = spyOn(component, 'scrollToBottom' as never);
+        const container = fixture.debugElement.nativeElement.querySelector('.message-container');
+        container.appendChild(document.createElement('message'));
+        fixture.detectChanges();
+
+        expect(spyOnScrollBottom).not.toHaveBeenCalled();
+    });
+
+    it('isPlacementCommand() should return true if the message is a placement command', () => {
+        const message1 = '!placer h8h Rip';
+        const message2 = 'MisterNOO';
+        const message3 = '!aide';
+
+        expect(component.isPlacementCommand(message1)).toBeTruthy();
+        expect(component.isPlacementCommand(message2)).toBeFalsy();
+        expect(component.isPlacementCommand(message3)).toBeFalsy();
+    });
+
+    it('submitMessage() should submit the message passed in parameters', () => {
+        const message1 = '!placer h8h Rip';
+        // REASON : empty function call
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        const submitSpy = spyOn(component, 'submit');
+        component.submitMessage(message1);
+        expect(submitSpy).toHaveBeenCalled();
+        expect(component.input.value).toEqual(message1);
+    });
+
     it("a mat error shouldn't be here when input is valid (less than 512 characters)", () => {
         const VALID_INPUT = 'HELLO';
         component.input.setValue(VALID_INPUT);
