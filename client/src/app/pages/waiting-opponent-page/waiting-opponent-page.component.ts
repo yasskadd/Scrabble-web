@@ -3,6 +3,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameConfigurationService } from '@app/services/game-configuration.service';
 
+const TIMEOUT = 3000;
+
 @Component({
     selector: 'app-waiting-opponent-page',
     templateUrl: './waiting-opponent-page.component.html',
@@ -68,6 +70,7 @@ export class WaitingOpponentPageComponent implements OnInit {
     }
     openSnackBar(reason: string): void {
         this.snackBar.open(reason, 'fermer', {
+            duration: TIMEOUT,
             verticalPosition: 'top',
         });
     }
