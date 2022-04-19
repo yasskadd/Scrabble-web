@@ -9,7 +9,6 @@ import { GameConfigurationService } from '@app/services/game-configuration.servi
 import { TimerService } from '@app/services/timer.service';
 import { VirtualPlayersService } from '@app/services/virtual-players.service';
 
-const TIMEOUT_REQUEST = 500;
 const enum TimeOptions {
     ThirtySecond = 30,
     OneMinute = 60,
@@ -158,10 +157,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     }
 
     private updateBotList(): void {
-        this.virtualPlayers.getBotNames();
-        setTimeout(() => {
-            this.giveNameToBot();
-        }, TIMEOUT_REQUEST);
+        this.virtualPlayers.getBotNames().then(() => this.giveNameToBot());
     }
 
     private async dictionaryIsInDB(title: string): Promise<boolean> {

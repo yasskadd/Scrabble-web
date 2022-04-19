@@ -22,36 +22,37 @@ export class VirtualPlayersService {
         this.httpHandler
             .addBot({ username: newName, difficulty: type === VirtualPlayer.Beginner ? 'debutant' : 'Expert' })
             .toPromise()
-            .then(() => this.getBotNames());
+            .then(async () => this.getBotNames());
     }
 
     deleteBotName(toRemove: string, difficulty: string) {
         this.httpHandler
             .deleteBot({ username: toRemove, difficulty })
             .toPromise()
-            .then(() => this.getBotNames());
+            .then(async () => this.getBotNames());
     }
 
     resetBotNames() {
         this.httpHandler
             .resetBot()
             .toPromise()
-            .then(() => this.getBotNames());
+            .then(async () => this.getBotNames());
     }
 
     replaceBotName(nameBotToReplace: BotNameInfo) {
         this.httpHandler
             .replaceBot(nameBotToReplace)
             .toPromise()
-            .then(() => this.getBotNames());
+            .then(async () => this.getBotNames());
     }
 
-    getBotNames() {
+    async getBotNames() {
         this.httpHandler.getBeginnerBots().subscribe((beginnerBot) => {
             this.beginnerBotNames = beginnerBot;
         });
         this.httpHandler.getExpertBots().subscribe((expertBot) => {
             this.expertBotNames = expertBot;
         });
+        return this.httpHandler.getBeginnerBots().toPromise();
     }
 }
