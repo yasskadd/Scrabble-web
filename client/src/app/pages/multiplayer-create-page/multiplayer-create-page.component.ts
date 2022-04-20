@@ -32,18 +32,7 @@ export class MultiplayerCreatePageComponent implements OnInit {
     @ViewChild('file', { static: false }) file: ElementRef;
     @ViewChild(ImportDictionaryComponent) importDictionaryComponent: ImportDictionaryComponent;
 
-    timerList = [
-        TimeOptions.ThirtySecond,
-        TimeOptions.OneMinute,
-        TimeOptions.OneMinuteAndThirty,
-        TimeOptions.TwoMinute,
-        TimeOptions.TwoMinuteAndThirty,
-        TimeOptions.ThreeMinute,
-        TimeOptions.ThreeMinuteAndThirty,
-        TimeOptions.FourMinute,
-        TimeOptions.FourMinuteAndThirty,
-        TimeOptions.FiveMinute,
-    ];
+    timerList: number[];
     botName: string;
     playerName: string;
     form: FormGroup;
@@ -64,6 +53,18 @@ export class MultiplayerCreatePageComponent implements OnInit {
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
+        this.timerList = [
+            TimeOptions.ThirtySecond,
+            TimeOptions.OneMinute,
+            TimeOptions.OneMinuteAndThirty,
+            TimeOptions.TwoMinute,
+            TimeOptions.TwoMinuteAndThirty,
+            TimeOptions.ThreeMinute,
+            TimeOptions.ThreeMinuteAndThirty,
+            TimeOptions.FourMinute,
+            TimeOptions.FourMinuteAndThirty,
+            TimeOptions.FiveMinute,
+        ];
         this.botName = '';
         this.difficultyList = ['Débutant', 'Expert'];
         this.selectedFile = null;
