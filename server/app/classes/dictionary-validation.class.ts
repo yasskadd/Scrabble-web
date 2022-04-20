@@ -3,8 +3,7 @@ import { LetterTree } from '@app/classes/trie/letter-tree.class';
 import { Word } from '@app/classes/word.class';
 import { ValidateWordReturn } from '@app/interfaces/validate-word-return';
 
-// @Service()
-export class DictionaryValidationService {
+export class DictionaryValidation {
     dictionary: Set<string> = new Set();
     trie: LetterTree;
     gameboard: Gameboard = new Gameboard();

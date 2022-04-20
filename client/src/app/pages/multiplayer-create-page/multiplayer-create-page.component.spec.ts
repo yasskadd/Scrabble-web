@@ -95,7 +95,6 @@ describe('MultiplayerCreatePageComponent', () => {
     let fixture: ComponentFixture<MultiplayerCreatePageComponent>;
     let location: Location;
     let router: Router;
-    let importDictionaryComponentSpy: jasmine.SpyObj<ImportDictionaryComponent>;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
     let dictionaryVerificationSpy: jasmine.SpyObj<DictionaryVerificationService>;
@@ -116,7 +115,6 @@ describe('MultiplayerCreatePageComponent', () => {
             'beginScrabbleGame',
             'importDictionary',
         ]);
-        importDictionaryComponentSpy = jasmine.createSpyObj('DictionaryService', ['uploadDictionary', 'updateDictionaryMessage']);
 
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
@@ -153,9 +151,8 @@ describe('MultiplayerCreatePageComponent', () => {
                 ]),
             ],
             schemas: [NO_ERRORS_SCHEMA],
-            declarations: [MultiplayerCreatePageComponent],
+            declarations: [MultiplayerCreatePageComponent, ImportDictionaryComponent],
             providers: [
-                { provide: ImportDictionaryComponent, useValue: importDictionaryComponentSpy },
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
                 { provide: MatSnackBar, useValue: mockMatSnackBar },
                 {

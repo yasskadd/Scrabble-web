@@ -1,22 +1,22 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-empty-function*/
 /* eslint-disable dot-notation*/
+import { DictionaryValidation } from '@app/classes/dictionary-validation.class';
 import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterPlacement } from '@app/classes/letter-placement.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { ObjectivesHandler } from '@app/classes/objectives-handler.class';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
+import { WordSolver } from '@app/classes/word-solver.class';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { expect } from 'chai';
 import { createServer, Server } from 'http';
@@ -70,15 +70,15 @@ describe('GamesState Service', () => {
         player2.objectives = [];
 
         game = sinon.createStubInstance(Game) as sinon.SinonStubbedInstance<Game> & Game;
-        game.wordSolver = sinon.createStubInstance(WordSolverService) as unknown as WordSolverService;
+        game.wordSolver = sinon.createStubInstance(WordSolver) as unknown as WordSolver;
         game.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
         game.letterReserve = sinon.createStubInstance(LetterReserve) as unknown as LetterReserve;
         game.letterReserve.lettersReserve = [{ value: 'c', quantity: 2, points: 1 }];
         game.gameboard = sinon.createStubInstance(Gameboard);
         game.objectivesHandler = sinon.createStubInstance(ObjectivesHandler) as ObjectivesHandler & sinon.SinonStubbedInstance<ObjectivesHandler>;
-        game.dictionaryValidation = sinon.createStubInstance(DictionaryValidationService) as unknown as DictionaryValidationService;
-        game.letterPlacement = sinon.createStubInstance(LetterPlacementService) as unknown as LetterPlacementService;
-        game.wordSolver = sinon.createStubInstance(WordSolverService) as unknown as WordSolverService;
+        game.dictionaryValidation = sinon.createStubInstance(DictionaryValidation) as unknown as DictionaryValidation;
+        game.letterPlacement = sinon.createStubInstance(LetterPlacement) as unknown as LetterPlacement;
+        game.wordSolver = sinon.createStubInstance(WordSolver) as unknown as WordSolver;
 
         player1.game = game;
 
@@ -194,9 +194,9 @@ describe('GamesState Service', () => {
         const FIRST_PLAYER = 'BIGBROTHER';
         const SECOND_PLAYER = 'LITTLEBROTHER';
         const FIRST_PLAYER_SOCKET_ID = '0';
-        const dictionaryValidation = new DictionaryValidationService(['string']);
-        const wordSolver = new WordSolverService(dictionaryValidation);
-        const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+        const dictionaryValidation = new DictionaryValidation(['string']);
+        const wordSolver = new WordSolver(dictionaryValidation);
+        const letterPlacement = new LetterPlacement(dictionaryValidation, Container.get(RackService));
 
         const gameInformation = {
             playerName: [FIRST_PLAYER, SECOND_PLAYER],
@@ -211,13 +211,13 @@ describe('GamesState Service', () => {
         const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
             timer: gameInformation.timer,
             roomId: gameInformation.roomId,
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+            dictionaryValidation: dictionaryValidation as DictionaryValidation,
         });
 
         gamesHandlerStub['dictionaries'].set('Francais', {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
+            dictionaryValidation: dictionaryValidation as DictionaryValidation,
+            wordSolver: wordSolver as WordSolver,
+            letterPlacement: letterPlacement as LetterPlacement,
         });
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
 
@@ -229,9 +229,9 @@ describe('GamesState Service', () => {
         const FIRST_PLAYER = 'BIGBROTHER';
         const SECOND_PLAYER = 'LITTLEBROTHER';
         const FIRST_PLAYER_SOCKET_ID = '0';
-        const dictionaryValidation = new DictionaryValidationService(['string']);
-        const wordSolver = new WordSolverService(dictionaryValidation);
-        const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+        const dictionaryValidation = new DictionaryValidation(['string']);
+        const wordSolver = new WordSolver(dictionaryValidation);
+        const letterPlacement = new LetterPlacement(dictionaryValidation, Container.get(RackService));
 
         const gameInformation = {
             playerName: [FIRST_PLAYER, SECOND_PLAYER],
@@ -245,13 +245,13 @@ describe('GamesState Service', () => {
         const EXPECTED_NEW_PLAYER = new BeginnerBot(false, SECOND_PLAYER, {
             timer: gameInformation.timer,
             roomId: gameInformation.roomId,
-            dictionaryValidation: new DictionaryValidationService(['string']),
+            dictionaryValidation: new DictionaryValidation(['string']),
         });
 
         gamesHandlerStub['dictionaries'].set('Francais', {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
+            dictionaryValidation: dictionaryValidation as DictionaryValidation,
+            wordSolver: wordSolver as WordSolver,
+            letterPlacement: letterPlacement as LetterPlacement,
         });
         gamesStateService['setAndGetPlayer'](gameInformation) as Player;
         const newPlayer = gamesStateService['setAndGetPlayer'](gameInformation) as Player;
@@ -261,9 +261,9 @@ describe('GamesState Service', () => {
     it('createNewGame() should return a new game created in classique mode', () => {
         sinon.stub(Turn);
         const TIMER = 60;
-        const dictionaryValidation = new DictionaryValidationService(['string']);
-        const wordSolver = new WordSolverService(dictionaryValidation);
-        const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+        const dictionaryValidation = new DictionaryValidation(['string']);
+        const wordSolver = new WordSolver(dictionaryValidation);
+        const letterPlacement = new LetterPlacement(dictionaryValidation, Container.get(RackService));
         const params = {
             playerName: [player1.name, player2.name],
             roomId: '1',
@@ -275,9 +275,9 @@ describe('GamesState Service', () => {
         };
 
         gamesHandlerStub['dictionaries'].set('Francais', {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
+            dictionaryValidation: dictionaryValidation as DictionaryValidation,
+            wordSolver: wordSolver as WordSolver,
+            letterPlacement: letterPlacement as LetterPlacement,
         });
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
         const gameTest = gamesStateService['createNewGame'](params);
@@ -285,9 +285,9 @@ describe('GamesState Service', () => {
     });
 
     it('createNewGame() should return a new game created in LOG2990 mode', () => {
-        const dictionaryValidation = new DictionaryValidationService(['string']);
-        const wordSolver = new WordSolverService(dictionaryValidation);
-        const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+        const dictionaryValidation = new DictionaryValidation(['string']);
+        const wordSolver = new WordSolver(dictionaryValidation);
+        const letterPlacement = new LetterPlacement(dictionaryValidation, Container.get(RackService));
         const TIMER = 60;
         const params = {
             playerName: [player1.name, player2.name],
@@ -300,9 +300,9 @@ describe('GamesState Service', () => {
         };
 
         gamesHandlerStub['dictionaries'].set('Francais', {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
+            dictionaryValidation: dictionaryValidation as DictionaryValidation,
+            wordSolver: wordSolver as WordSolver,
+            letterPlacement: letterPlacement as LetterPlacement,
         });
         gamesHandlerStub['gamePlayers'].set(player1.room, [player1, player2]);
         const gameTest = gamesStateService['createNewGame'](params);

@@ -1,8 +1,8 @@
 import { Game } from '@app/classes/game.class';
+import { WordSolver } from '@app/classes/word-solver.class';
 import * as Constant from '@app/constants/bot';
 import { BotInformation } from '@app/interfaces/bot-information';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Container } from 'typedi';
@@ -14,7 +14,7 @@ export class Bot extends Player {
     game: Game;
     protected countUp: number = 0;
     protected socketManager: SocketManager = Container.get(SocketManager);
-    protected wordSolver: WordSolverService;
+    protected wordSolver: WordSolver;
     protected playedTurned: boolean = false;
     private timer: number;
 
@@ -23,7 +23,7 @@ export class Bot extends Player {
         this.isPlayerOne = isPlayerOne;
         this.room = botInfo.roomId;
         this.timer = botInfo.timer;
-        this.wordSolver = new WordSolverService(botInfo.dictionaryValidation);
+        this.wordSolver = new WordSolver(botInfo.dictionaryValidation);
     }
 
     setGame(game: Game): void {

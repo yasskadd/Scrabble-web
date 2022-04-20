@@ -5,11 +5,11 @@ import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
+import { DictionaryValidation } from './dictionary-validation.class';
+import { LetterPlacement } from './letter-placement.class';
+import { WordSolver } from './word-solver.class';
 
 const MAX_QUANTITY = 7;
 
@@ -21,9 +21,9 @@ export class Game {
     isGameAbandoned: boolean;
     isModeSolo: boolean;
     objectivesHandler: ObjectivesHandler;
-    dictionaryValidation: DictionaryValidationService;
-    wordSolver: WordSolverService;
-    letterPlacement: LetterPlacementService;
+    dictionaryValidation: DictionaryValidation;
+    wordSolver: WordSolver;
+    letterPlacement: LetterPlacement;
 
     constructor(
         player1: Player,
@@ -31,9 +31,9 @@ export class Game {
         public turn: Turn,
         public letterReserve: LetterReserve,
         public isMode2990: boolean,
-        dictionaryValidation: DictionaryValidationService,
-        letterPlacement: LetterPlacementService,
-        wordSolver: WordSolverService,
+        dictionaryValidation: DictionaryValidation,
+        letterPlacement: LetterPlacement,
+        wordSolver: WordSolver,
     ) {
         this.start(player1, player2);
         this.beginningTime = new Date();

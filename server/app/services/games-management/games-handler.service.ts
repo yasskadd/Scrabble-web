@@ -1,13 +1,13 @@
+import { DictionaryValidation } from '@app/classes/dictionary-validation.class';
 import { Game } from '@app/classes/game.class';
+import { LetterPlacement } from '@app/classes/letter-placement.class';
 import { Player } from '@app/classes/player/player.class';
+import { WordSolver } from '@app/classes/word-solver.class';
 import { Behavior } from '@app/interfaces/behavior';
 import { Dictionary } from '@app/interfaces/dictionary';
 import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { RackService } from '@app/services/rack.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { ModifiedDictionaryInfo } from '@common/interfaces/modified-dictionary-info';
 import { Socket } from 'socket.io';
@@ -49,13 +49,13 @@ export class GamesHandler {
         const dictionaries = await this.getDictionaries();
         const tempDictionariesMap: Map<string, Behavior> = new Map();
         dictionaries.forEach((dictionary) => {
-            const dictionaryValidation = new DictionaryValidationService(dictionary.words);
-            const wordSolver = new WordSolverService(dictionaryValidation);
-            const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+            const dictionaryValidation = new DictionaryValidation(dictionary.words);
+            const wordSolver = new WordSolver(dictionaryValidation);
+            const letterPlacement = new LetterPlacement(dictionaryValidation, Container.get(RackService));
             const behavior = {
-                dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-                wordSolver: wordSolver as WordSolverService,
-                letterPlacement: letterPlacement as LetterPlacementService,
+                dictionaryValidation: dictionaryValidation as DictionaryValidation,
+                wordSolver: wordSolver as WordSolver,
+                letterPlacement: letterPlacement as LetterPlacement,
             };
             tempDictionariesMap.set(dictionary.title, behavior);
         });
@@ -67,13 +67,13 @@ export class GamesHandler {
             await this.dictionaryIsInDb(dictionary.title);
         } catch {
             await this.dictionaryStorage.addDictionary(dictionary.title, JSON.stringify(dictionary));
-            const dictionaryValidation = new DictionaryValidationService(dictionary.words);
-            const wordSolver = new WordSolverService(dictionaryValidation);
-            const letterPlacement = new LetterPlacementService(dictionaryValidation, Container.get(RackService));
+            const dictionaryValidation = new DictionaryValidation(dictionary.words);
+            const wordSolver = new WordSolver(dictionaryValidation);
+            const letterPlacement = new LetterPlacement(dictionaryValidation, Container.get(RackService));
             const behavior = {
-                dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-                wordSolver: wordSolver as WordSolverService,
-                letterPlacement: letterPlacement as LetterPlacementService,
+                dictionaryValidation: dictionaryValidation as DictionaryValidation,
+                wordSolver: wordSolver as WordSolver,
+                letterPlacement: letterPlacement as LetterPlacement,
             };
             this.dictionaries.set(dictionary.title, behavior);
         }
