@@ -1,3 +1,4 @@
+// Reason : a lot of components are used in game-page
 // eslint-disable-next-line max-classes-per-file
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';

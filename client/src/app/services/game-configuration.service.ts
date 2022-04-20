@@ -30,7 +30,6 @@ export class GameConfigurationService {
             statusGame: '',
             mode: '',
             botDifficulty: undefined,
-            // dictionary: {} as Dictionary,
             dictionary: '',
         };
         this.clientSocket.establishConnection();

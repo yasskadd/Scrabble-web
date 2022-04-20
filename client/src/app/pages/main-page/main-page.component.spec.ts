@@ -45,6 +45,7 @@ describe('MainPageComponent', () => {
 
     it('openDialog() should open the dialog', () => {
         const stubParameter = '';
+        // Reason : tessting private attribute
         // eslint-disable-next-line dot-notation
         const dialogSpy = spyOn(component['dialog'], 'open');
         component.openDialog(stubParameter);
@@ -52,6 +53,7 @@ describe('MainPageComponent', () => {
     });
 
     it('openHighScoreDialog() should open the dialog', () => {
+        // Reason : tessting private attribute
         // eslint-disable-next-line dot-notation
         const dialogSpy = spyOn(component['highScore'], 'open');
         component.openHighScoreDialog();
@@ -59,6 +61,7 @@ describe('MainPageComponent', () => {
     });
 
     it('openHelpDialog() should open the dialog', () => {
+        // Reason : tessting private attribute
         // eslint-disable-next-line dot-notation
         const dialogSpy = spyOn(component['dialog'], 'open');
         component.openHelpDialog();

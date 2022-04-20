@@ -246,7 +246,6 @@ describe('Bot Tests', () => {
         expect(bot['getRandomNumber'](MAX_NUMBER)).to.equal(EXPECTED_RESULT);
     });
 
-    // TODO: Temporary test for 100% coverage
     it('playTurn() tests', () => {
         bot.playTurn();
     });

@@ -141,6 +141,7 @@ describe('PlayAreaComponent', () => {
         const outsideClickEvent = new MouseEvent('click');
         const node = document.createElement('test') as Node;
         Object.defineProperty(outsideClickEvent, 'target', { value: node as Node, enumerable: true });
+        // Reason : tessting private attribute
         // eslint-disable-next-line dot-notation
         component['gridCanvas'].nativeElement.appendChild(node);
         component.mouseClickOutside(outsideClickEvent);

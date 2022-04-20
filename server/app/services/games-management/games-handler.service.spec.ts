@@ -209,6 +209,7 @@ describe('GamesHandler Service', () => {
         expect(dictionaryStorageStub.addDictionary.called).to.equal(false);
     });
 
+    // Reason : test name is very descriptive
     // eslint-disable-next-line max-len
     it('addDictionary() should call addDictionary of DictionaryStorage and set dictionaries attribute if the dictionary to be added is not in the database', async () => {
         const dictionaryIsInDbStub = sinon.stub(gamesHandler, 'dictionaryIsInDb');

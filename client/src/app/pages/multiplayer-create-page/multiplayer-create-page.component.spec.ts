@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable max-lines */
+/* eslint-disable max-lines -- all tests are necessary for 100% coverage */
+/* eslint-disable dot-notation -- testing private methods or attributes */
 /* eslint-disable-next-line max-classes-per-file */
 import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -98,6 +99,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let setStyleSpy: unknown;
 
     const mockMatSnackBar = {
+        // Reason : mock needed for test, but it doesn't have to do anything
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         open: () => {},
     };
@@ -293,13 +295,11 @@ describe('MultiplayerCreatePageComponent', () => {
         tick();
         fixture.detectChanges();
         flush();
-        // eslint-disable-next-line dot-notation
         component['createBotName']();
         expect(component.botName).not.toEqual('');
     }));
 
     it('createBotName should assign a name to the Beginner opponent', () => {
-        // eslint-disable-next-line dot-notation
         component['createBotName']();
         expect(component.botName).not.toEqual('');
     });
@@ -430,7 +430,7 @@ describe('MultiplayerCreatePageComponent', () => {
     }));
 
     it('createGame should call resetInput', fakeAsync(() => {
-        // Testing private method
+        // Reason : Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const spy = spyOn<any>(component, 'resetInput');
 
@@ -487,7 +487,6 @@ describe('MultiplayerCreatePageComponent', () => {
         const name = 'robert';
         component.playerName = name;
         component.botName = name;
-        // eslint-disable-next-line dot-notation
         component['validateName']();
         expect(component.botName).not.toEqual(name);
     });
@@ -496,7 +495,6 @@ describe('MultiplayerCreatePageComponent', () => {
         const name = 'robert';
         component.playerName = 'Vincent';
         component.botName = name;
-        // eslint-disable-next-line dot-notation
         component['validateName']();
         expect(component.botName).toEqual(name);
     });
@@ -519,9 +517,10 @@ describe('MultiplayerCreatePageComponent', () => {
     it('createGame should do nothing if selected dictionary is no longer in the database', fakeAsync(() => {
         const navigatePageSpy = spyOn(component, 'navigatePage');
         const validateNameSpy = spyOn(component, 'validateName' as never);
+        // Reason : Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const resetInputSpy = spyOn<any>(component, 'resetInput');
-
+        // Reason : Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dictionaryIsInDBStub = spyOn<any>(component, 'dictionaryIsInDB');
         dictionaryIsInDBStub.and.resolveTo(false);
@@ -537,8 +536,6 @@ describe('MultiplayerCreatePageComponent', () => {
     it('resetInput() should clear the playerName', () => {
         const VALID_NAME = 'Serge';
         component.playerName = VALID_NAME;
-        // Testing private method
-        // eslint-disable-next-line dot-notation
         component['resetInput']();
         expect(component.playerName).toEqual('');
     });
@@ -546,19 +543,15 @@ describe('MultiplayerCreatePageComponent', () => {
     it('getDictionary() should return selectedFile if a file has been imported', () => {
         const expectedDictionary = {} as Dictionary;
         component.selectedFile = expectedDictionary;
-        // eslint-disable-next-line dot-notation
         expect(component['getDictionary']('title')).toEqual(expectedDictionary);
     });
 
     it('getDictionary() should return the dictionary matching param title if there is no import file', () => {
-        // eslint-disable-next-line dot-notation
         expect(component['getDictionary'](DB_DICTIONARY.title)).toEqual(DB_DICTIONARY);
     });
 
     it('dictionaryIsInDB() should return error message if file is not in database ', fakeAsync(() => {
         const title = 'test';
-        // Testing private method
-        // eslint-disable-next-line dot-notation
         component['dictionaryIsInDB'](title);
         tick();
         flush();

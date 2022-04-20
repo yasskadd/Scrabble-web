@@ -142,6 +142,7 @@ describe('AdminVirtualPlayersComponent', () => {
     });
 
     it('should open a dialog box if the openReplaceNameDialog method is called', () => {
+        // Reason : we want to call private method
         // eslint-disable-next-line dot-notation
         const dialogSpy = spyOn(component['dialog'], 'open').and.returnValue({ afterClosed: () => of(true) } as MatDialogRef<typeof component>);
         component.openReplaceNameDialog('vincent', 'debutant');

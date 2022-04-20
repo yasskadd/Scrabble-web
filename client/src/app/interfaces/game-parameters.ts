@@ -1,5 +1,3 @@
-// import { Dictionary } from './dictionary';
-
 export interface GameParameters {
     username: string;
     dictionary: string;

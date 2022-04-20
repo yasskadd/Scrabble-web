@@ -28,6 +28,7 @@ describe('HighScoreController', () => {
         scoreStorage.getClassicTopScores.resolves(classicTopScores);
         scoreStorage.getLOG2990TopScores.resolves(lOG2990TopScores);
         const app = Container.get(Application);
+        // Reason : tesing private attribute
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['highScoreController'], 'scoreStorage', { value: scoreStorage });
         expressApp = app.app;

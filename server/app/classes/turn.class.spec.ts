@@ -13,6 +13,7 @@ describe('turn', () => {
     let player2: Player;
 
     beforeEach(() => {
+        // Reason : magic number for tests
         // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         time = 30;
         turn = new Turn(time);
@@ -136,6 +137,7 @@ describe('turn', () => {
     });
 
     it('incrementSkipCounter() should increment skipCounter by 1', () => {
+        // Reason : testing private method
         // eslint-disable-next-line dot-notation
         turn['incrementSkipCounter']();
 

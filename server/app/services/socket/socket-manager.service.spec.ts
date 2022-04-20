@@ -102,12 +102,14 @@ describe('SocketManager service tests', () => {
         testBoolean2 = false;
 
         clientSocket = Client(`http://localhost:${port}`);
+        // Reason : it is used in our tests
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackOn = (_) => {
             testBoolean1 = true;
             expect(testBoolean1).to.be.equal(true);
         };
 
+        // Reason : it is used in our tests
         // eslint-disable-next-line no-unused-vars
         changeBooleanCallbackSio = (i, _) => {
             testBoolean2 = true;

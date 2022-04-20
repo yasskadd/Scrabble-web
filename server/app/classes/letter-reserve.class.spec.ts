@@ -116,6 +116,7 @@ describe('LetterReserve', () => {
 
     it('shuffleArray should shuffle the letters array passed as argument', () => {
         const array = [{ value: 'a' } as Letter, { value: 'b' } as Letter, { value: 'c' } as Letter];
+        // Reason : testing private method
         // eslint-disable-next-line dot-notation
         expect(letterReserve['shuffleArray'](array)).to.not.eql(array);
     });

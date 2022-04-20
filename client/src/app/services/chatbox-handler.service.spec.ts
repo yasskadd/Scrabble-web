@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+/* eslint-disable dot-notation -- testing private methods or attributes */
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { SocketEvents } from '@common/constants/socket-events';
@@ -71,7 +72,6 @@ describe('ChatboxHandlerService', () => {
         commandHandlerSpy = jasmine.createSpyObj('CommandHandlerService', ['sendCommand']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
-        // eslint-disable-next-line dot-notation
         socketServiceMock['socket'] = socketEmulator as unknown as Socket;
 
         TestBed.configureTestingModule({
@@ -92,16 +92,12 @@ describe('ChatboxHandlerService', () => {
     it("validSyntax() should validate the syntax of the 'aide' command", () => {
         const VALID_SYNTAX = '!aide';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validSyntax'](VALID_SYNTAX)).toBeTruthy();
     });
 
     it("validSyntax() should validate the syntax of the 'placer' command", () => {
         const VALID_SYNTAX = '!placer';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validSyntax'](VALID_SYNTAX)).toBeTruthy();
     });
 
@@ -109,26 +105,19 @@ describe('ChatboxHandlerService', () => {
         const VALID_SYNTAX_1 = '!échanger';
         const VALID_SYNTAX_2 = '!echanger';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validSyntax'](VALID_SYNTAX_1)).toBeTruthy();
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validSyntax'](VALID_SYNTAX_2)).toBeTruthy();
     });
 
     it("validSyntax() should validate the syntax of the 'passer' command", () => {
         const VALID_SYNTAX = '!passer';
-        // eslint-disable-next-line dot-notation
         expect(service['validSyntax'](VALID_SYNTAX)).toBeTruthy();
     });
 
     it("validCommandParameters() shouldn't validate invalid command syntax", () => {
         const INVALID_SYNTAX = '!/d!azLaRuche! ';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](INVALID_SYNTAX)).toBeFalsy();
     });
 
@@ -136,8 +125,6 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS = '!aide';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](VALID_COMMAND_PARAMS)).toBeTruthy();
     });
 
@@ -146,8 +133,6 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS = '!echanger abv';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommand'](VALID_COMMAND_PARAMS)).toBeFalsy();
     });
 
@@ -156,8 +141,6 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS = '!echanger abv';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommand'](VALID_COMMAND_PARAMS)).toBeTruthy();
     });
 
@@ -165,8 +148,6 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS = '!passer';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](VALID_COMMAND_PARAMS)).toBeTruthy();
     });
 
@@ -174,8 +155,6 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND = '!placer a5v acd';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](VALID_COMMAND)).toBeTruthy();
     });
 
@@ -184,11 +163,8 @@ describe('ChatboxHandlerService', () => {
         const VALID_COMMAND_PARAMS_1 = '!échanger avd';
         const VALID_COMMAND_PARAMS_2 = '!echanger avd';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](VALID_COMMAND_PARAMS_1)).toBeTruthy();
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validCommandParameters'](VALID_COMMAND_PARAMS_2)).toBeTruthy();
     });
 
@@ -196,11 +172,8 @@ describe('ChatboxHandlerService', () => {
         const INVALID_COMMAND_PARAMS_1 = '!echanger 93248';
         const INVALID_COMMAND_PARAMS_2 = '!placer 251d Monsieur420Robert';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['validCommandParameters'](INVALID_COMMAND_PARAMS_1)).toBeFalsy();
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validCommandParameters'](INVALID_COMMAND_PARAMS_2)).toBeFalsy();
     });
 
@@ -217,8 +190,6 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND_PARAMS = '!echanger abv';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['exchangePossible'](VALID_COMMAND_PARAMS)).toBeFalsy();
     });
 
@@ -232,52 +203,44 @@ describe('ChatboxHandlerService', () => {
 
     it('validParameters() should return false when the parameters of the command are not valid', () => {
         const IS_COMMAND = '!echanger 56g';
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validParameters'](IS_COMMAND)).toBeFalsy();
     });
 
     it('validParameters() should return true when the parameters of the command are valid', () => {
         const IS_COMMAND = '!echanger gagner';
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validParameters'](IS_COMMAND)).toBeTruthy();
     });
 
     it('validSyntax() should return false when the syntax of the command is not valid', () => {
         const IS_COMMAND = '!echanreer gbr';
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validSyntax'](IS_COMMAND)).toBeFalsy();
     });
 
     it('validParameters() should return true when the syntax of the command is valid', () => {
         const IS_COMMAND = '!echanger gbr';
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validSyntax'](IS_COMMAND)).toBeTruthy();
     });
 
     it('isCommand() should recognize a command structure', () => {
         const IS_COMMAND = '!aide';
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['isCommand'](IS_COMMAND)).toBeTruthy();
     });
 
     it("isCommand() should recognize when it's not a command", () => {
         const NOT_A_COMMAND = 'aide moi Robert';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['isCommand'](NOT_A_COMMAND)).toBeFalsy();
     });
 
     it('validCommand() should return true on a valid command', () => {
         const VALID_COMMAND = '!aide';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validCommand'](VALID_COMMAND)).toBeTruthy();
     });
 
@@ -285,8 +248,7 @@ describe('ChatboxHandlerService', () => {
         const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'validCommandSyntax' as never);
         const VALID_COMMAND = '!passer';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['validCommand'](VALID_COMMAND);
         expect(spyOnvalidCommandSyntax).toHaveBeenCalled();
     });
@@ -295,8 +257,7 @@ describe('ChatboxHandlerService', () => {
         const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'validCommandParameters' as never);
         const VALID_COMMAND = '!passer';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['validCommandSyntax'](VALID_COMMAND);
         expect(spyOnvalidCommandSyntax).toHaveBeenCalled();
     });
@@ -305,8 +266,7 @@ describe('ChatboxHandlerService', () => {
         const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'validCommandParameters' as never);
         const VALID_COMMAND = '!pastser';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['validCommandSyntax'](VALID_COMMAND);
         expect(spyOnvalidCommandSyntax).not.toHaveBeenCalled();
     });
@@ -315,8 +275,7 @@ describe('ChatboxHandlerService', () => {
         const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'isCommandExchangePossible' as never);
         const VALID_COMMAND = '!echanger ate';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['validCommandParameters'](VALID_COMMAND);
         expect(spyOnvalidCommandSyntax).toHaveBeenCalled();
     });
@@ -325,8 +284,7 @@ describe('ChatboxHandlerService', () => {
         const spyOnvalidCommandSyntax = spyOn<ChatboxHandlerService>(service, 'isCommandExchangePossible' as never);
         const VALID_COMMAND = '!echanger 3dt';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['validCommandParameters'](VALID_COMMAND);
         expect(spyOnvalidCommandSyntax).not.toHaveBeenCalled();
     });
@@ -334,8 +292,7 @@ describe('ChatboxHandlerService', () => {
     it('validCommand() should add the corresponding error to the displayed messages and return false on an invalid syntax', () => {
         const INVALID_SYNTAX = '!abcdefg';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validCommand'](INVALID_SYNTAX)).toBeFalsy();
 
         const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de syntaxe' };
@@ -345,8 +302,7 @@ describe('ChatboxHandlerService', () => {
     it('validCommand() should add the corresponding error to the displayed messages and return false when it is not the player turn', () => {
         const commandTest = '!passer';
         gameClientServiceSpy.playerOneTurn = false;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validCommand'](commandTest)).toBeFalsy();
 
         const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: "Ce n'est pas votre tour" };
@@ -356,8 +312,7 @@ describe('ChatboxHandlerService', () => {
     it('validCommand() should add the corresponding error to the displayed messages and return false on an invalid command parameters', () => {
         const INVALID_COMMAND_PARAMS = '!placer Laruche enStage';
         gameClientServiceSpy.playerOneTurn = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['validCommand'](INVALID_COMMAND_PARAMS)).toBeFalsy();
 
         const EXPECTED_MESSAGE_FORMATED = { type: 'system-message', data: '[Erreur] La commande saisie est invalide' };
@@ -367,16 +322,12 @@ describe('ChatboxHandlerService', () => {
     it('configureSyntaxError() should return the valid ErrorMessage', () => {
         const EXPECTED_SYNTAX_ERROR = { type: 'system-message', data: '[Erreur] Erreur de syntaxe' };
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['configureSyntaxError']()).toEqual(EXPECTED_SYNTAX_ERROR);
     });
 
     it('configureInvalidError() should return the valid ErrorMessage', () => {
         const EXPECTED_INVALID_ERROR = { type: 'system-message', data: '[Erreur] La commande saisie est invalide' };
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['configureInvalidError']()).toEqual(EXPECTED_INVALID_ERROR);
     });
 
@@ -384,16 +335,12 @@ describe('ChatboxHandlerService', () => {
         const userInput = 'Bonjour adversaire';
         const EXPECTED_USER_MESSAGE = { type: 'current-user', data: `Toi : ${userInput}` };
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['configureUserMessage'](userInput)).toEqual(EXPECTED_USER_MESSAGE);
     });
 
     it('addMessage() should add message to the messages Array', () => {
         const EXPECTED_USER_MESSAGE = { type: 'current-user', data: 'Bonjour Monsieur' };
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         service['addMessage'](EXPECTED_USER_MESSAGE);
         expect(service.messages.pop()).toEqual(EXPECTED_USER_MESSAGE);
     });
@@ -401,8 +348,7 @@ describe('ChatboxHandlerService', () => {
     it('addDisconnect() should add a system-message to the messages Array saying that the other player disconnected from the room', () => {
         const EXPECTED_USER_DISCONNECTED_MESSAGE = { type: 'system-message', data: 'Richard a quitté le jeu' };
         gameClientServiceSpy.isGameFinish = true;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['addDisconnect']();
         expect(service.messages.pop()).toEqual(EXPECTED_USER_DISCONNECTED_MESSAGE);
     });
@@ -414,8 +360,7 @@ describe('ChatboxHandlerService', () => {
             data: "------L'adversaire à été remplacé par un joueur virtuel Débutant------",
         };
         gameClientServiceSpy.isGameFinish = false;
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['addDisconnect']();
         expect(service.messages.pop()).toEqual(EXPECTED_REPLACE_USER);
         expect(service.messages.pop()).toEqual(EXPECTED_USER_DISCONNECTED_MESSAGE);
@@ -443,7 +388,6 @@ describe('ChatboxHandlerService', () => {
         gameClientServiceSpy.playerOneTurn = true;
         const VALID_COMMAND = '!passer';
 
-        // eslint-disable-next-line dot-notation
         service['isMessageACommand'](VALID_COMMAND);
         expect(commandHandlerSpy.sendCommand).toHaveBeenCalled();
     });
@@ -452,7 +396,6 @@ describe('ChatboxHandlerService', () => {
         const spyOnSendMessage = spyOn<ChatboxHandlerService>(service, 'sendMessage' as never);
         const MESSAGE = 'Bonjour monsieur Robert';
 
-        // eslint-disable-next-line dot-notation
         service['isMessageACommand'](MESSAGE);
         expect(spyOnSendMessage).toHaveBeenCalled();
     });
@@ -468,15 +411,11 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('sendMessage() send a message to the server with a message event', () => {
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         const spyOnSocket = spyOn(service['clientSocket'], 'send');
         const EVENT_MESSAGE = 'message';
         const TEST_MESSAGE = 'Bonjour mon ami';
         const TEST_MESSAGE_OBJECT = { roomId: '1', message: 'Bonjour mon ami' };
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         service['sendMessage'](TEST_MESSAGE);
         expect(spyOnSocket).toHaveBeenCalledWith(EVENT_MESSAGE, TEST_MESSAGE_OBJECT);
     });
@@ -489,20 +428,15 @@ describe('ChatboxHandlerService', () => {
     });
 
     it('configureBaseSocketFeatures() should add the listeners to the socket', () => {
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocket'], 'on');
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         service['configureBaseSocketFeatures']();
         expect(spy).toHaveBeenCalled();
     });
 
     it('getAllLetter should return a list off all the letters with the string char of them', () => {
         const rackLetter = 'crp';
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         expect(service['getAllLetter'](gameClientServiceSpy.playerOne.rack as never)).toEqual(rackLetter);
     });
 
@@ -515,8 +449,7 @@ describe('ChatboxHandlerService', () => {
         const message1 = { type: 'system-message', data: `${letterReserve[0].value}: ${letterReserve[0].quantity}` };
         const message2 = { type: 'system-message', data: `${letterReserve[1].value}: ${letterReserve[1].quantity}` };
         const message3 = { type: 'system-message', data: `${letterReserve[2].value}: ${letterReserve[2].quantity}` };
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['configureReserveLetterCommand'](letterReserve as never);
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
@@ -548,8 +481,7 @@ describe('ChatboxHandlerService', () => {
                 wordPlacements[2].isHorizontal ? 'h' : 'v'
             } ${wordPlacements[2].letters.join('')}`,
         };
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['addClueCommand'](wordPlacements as never);
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
@@ -575,8 +507,7 @@ describe('ChatboxHandlerService', () => {
             } ${wordPlacements[1].letters.join('')}`,
         };
         const message3 = { type: 'system-message', data: 'Aucune autre possibilité possible' };
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['addClueCommand'](wordPlacements as never);
         expect(service.messages.pop()).toEqual(message3);
         expect(service.messages.pop()).toEqual(message2);
@@ -586,8 +517,7 @@ describe('ChatboxHandlerService', () => {
     it('configureClueCommand should explain to the player that no word placement are possible with the letters on his rack', () => {
         const spy = spyOn(service, 'addClueCommand' as never);
         const message1 = { type: 'system-message', data: "Il n'y a pas de possibilité de formation de mot possible" };
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['configureClueCommand']([] as never);
         expect(service.messages.pop()).toEqual(message1);
         expect(spy).not.toHaveBeenCalled();
@@ -599,8 +529,7 @@ describe('ChatboxHandlerService', () => {
             { firstCoordinate: { x: 1, y: 2 }, isHorizontal: true, letters: ['a', 'l', 'r'] },
             { firstCoordinate: { x: 3, y: 2 }, isHorizontal: false, letters: ['b', 'i', 'l', 'l', 'e'] },
         ];
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
+
         service['configureClueCommand'](wordPlacements as never);
         expect(spy).toHaveBeenCalledOnceWith(wordPlacements as never);
     });
@@ -652,16 +581,12 @@ describe('ChatboxHandlerService', () => {
     it('isHelpCommand() should return true if the command aide is valid', () => {
         const input = '!aide';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['isHelpCommand'](input)).toEqual(true);
     });
 
     it('isHelpCommand() should return false if the command aide is not valid', () => {
         const input = '!ae';
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['isHelpCommand'](input)).toEqual(false);
     });
     it('should called configureReserveLetterCommand  method if the server emit the Event', () => {
@@ -674,8 +599,6 @@ describe('ChatboxHandlerService', () => {
         const errorMessage = 'invalid placement';
         const EXPECTED_IMPOSSIBLE_ERROR = { type: 'system-message', data: `[Erreur] ${errorMessage}` };
 
-        // Reason : testing a private method
-        // eslint-disable-next-line dot-notation
         expect(service['configureImpossibleCommandError'](errorMessage)).toEqual(EXPECTED_IMPOSSIBLE_ERROR);
     });
 
