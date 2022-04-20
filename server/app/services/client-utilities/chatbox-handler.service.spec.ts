@@ -53,6 +53,7 @@ describe('Chatbox handler service tests', () => {
             expect(information).to.be.eql(TEST_MESSAGE);
             done();
         });
+        // Reason : testing private method
         // eslint-disable-next-line dot-notation
         chatboxHandlerService['sendMessage'](serverSocket, TEST_MESSAGE);
     });

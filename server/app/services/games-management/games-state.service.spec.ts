@@ -362,7 +362,6 @@ describe('GamesState Service', () => {
     });
 
     it('switchToSolo() should call generateBotName when we replace a player with a bot', () => {
-        // const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
         const generateBotNameStub = sinon.stub(gamesStateService, 'generateBotName' as never);
         const socketId = ['asdjcvknxcv', '534876tgsdfj'];
 
@@ -381,11 +380,9 @@ describe('GamesState Service', () => {
         gamesStateService['switchToSolo'](serverSocket, player1);
 
         expect(generateBotNameStub.called).to.equal(true);
-        //   expect(updateNewBotStub.called).to.equal(true);
     });
 
     it('switchToSolo() should call generateBotName when we replace a player with a bot', () => {
-        // const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
         const generateBotNameStub = sinon.stub(gamesStateService, 'generateBotName' as never);
         const socketId = ['asdjcvknxcv', '534876tgsdfj'];
         player1.game.turn.activePlayer = 'Bob';
@@ -402,11 +399,9 @@ describe('GamesState Service', () => {
 
         gamesStateService['switchToSolo'](serverSocket, player1);
         expect(generateBotNameStub.called).to.equal(true);
-        //   expect(updateNewBotStub.called).to.equal(true);
     });
 
     it('switchToSolo() should  not call updateNewBot when there is no player in the room', () => {
-        //  const updateNewBotStub = sinon.stub(gamesStateService, 'updateNewBot' as never);
         const generateBotNameStub = sinon.stub(gamesStateService, 'generateBotName' as never);
         const socketId = ['asdjcvknxcv', '534876tgsdfj'];
 
@@ -423,7 +418,6 @@ describe('GamesState Service', () => {
 
         gamesStateService['switchToSolo'](serverSocket, player1);
         expect(generateBotNameStub.called).to.equal(false);
-        //  expect(updateNewBotStub.called).to.equal(false);
     });
 
     it('disconnect() should call this.waitBeforeDisconnect() when the game is not already finish', () => {

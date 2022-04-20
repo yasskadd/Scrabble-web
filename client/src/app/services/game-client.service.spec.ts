@@ -1,5 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable dot-notation -- testing private methods or attributes */
+
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
@@ -114,6 +116,7 @@ const GAME_INFO: GameInfo = {
 const TIME = 12;
 
 export class SocketClientServiceMock extends ClientSocketService {
+    // Reason : need mock class that does nothing
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     override connect() {}
 }
@@ -125,6 +128,7 @@ describe('GameClientService', () => {
     let gridServiceSpy: jasmine.SpyObj<GridService>;
 
     const mockMatSnackBar = {
+        // Reason : needed mock that does nothing
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         open: () => {},
     };
@@ -133,7 +137,6 @@ describe('GameClientService', () => {
         gridServiceSpy = jasmine.createSpyObj('GridService', ['drawGrid', 'drawRack']);
         socketEmulator = new SocketTestEmulator();
         socketServiceMock = new SocketClientServiceMock();
-        // eslint-disable-next-line dot-notation
         socketServiceMock['socket'] = socketEmulator as unknown as Socket;
         TestBed.configureTestingModule({
             providers: [
@@ -186,7 +189,6 @@ describe('GameClientService', () => {
 
     it('should update the opponent information', () => {
         service.playerOne = PLAYER_ONE;
-        // eslint-disable-next-line dot-notation
         service['updateOpponentInformationEvent'](PLAYER_TWO);
         expect(service.secondPlayer.name).toEqual(PLAYER_TWO.name);
         expect(service.secondPlayer.rack).toEqual(PLAYER_TWO.rack);
@@ -207,14 +209,12 @@ describe('GameClientService', () => {
 
     it('updateNewGameboard should call updateGameboard', () => {
         const spy = spyOn(service, 'updateGameboard' as never);
-        // eslint-disable-next-line dot-notation
         service['updateNewGameboard'](GAME_INFO.gameboard);
         expect(spy).toHaveBeenCalled();
     });
 
     it('opponentLeaveGameEvent should set the winning message and the isGameFinish attribute', () => {
         const winningMessageTest = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
-        // eslint-disable-next-line dot-notation
         service['opponentLeaveGameEvent']();
         expect(service.winningMessage).toEqual(winningMessageTest);
         expect(service.isGameFinish).toBeTruthy();
@@ -225,7 +225,6 @@ describe('GameClientService', () => {
         const spy = spyOn(service, 'updateGameboard' as never);
         service.playerOne = GAME_INFO.players[0];
         service.secondPlayer = GAME_INFO.players[1];
-        // eslint-disable-next-line dot-notation
         service['skipEvent'](GAME_INFO);
         expect(service.gameboard).toEqual(GAME_INFO.gameboard);
         expect(service.playerOne.name).toEqual(GAME_INFO.players[0].name);
@@ -278,7 +277,6 @@ describe('GameClientService', () => {
 
     it('timerClientUpdateEvent should call isTurnFinish', () => {
         const spy = spyOn(service, 'isTurnFinish' as never);
-        // eslint-disable-next-line dot-notation
         service['timerClientUpdateEvent'](TIME);
         expect(spy).toHaveBeenCalled();
     });
@@ -289,7 +287,6 @@ describe('GameClientService', () => {
         service.playerOne.objective = [OBJECTIVE_TWO];
         service.secondPlayer.objective = [OBJECTIVE];
         service.playerOne.objective[0].complete = false;
-        // eslint-disable-next-line dot-notation
         service['completeObjective'](COMPLETE_OBJECTIVE_TWO);
         expect(service.playerOne.objective[0].complete).toEqual(true);
     });
@@ -300,7 +297,6 @@ describe('GameClientService', () => {
         service.playerOne.objective = [];
         service.secondPlayer.objective = [OBJECTIVE_TWO];
         service.secondPlayer.objective[0].complete = false;
-        // eslint-disable-next-line dot-notation
         service['completeObjective'](COMPLETE_OBJECTIVE_TWO);
         expect(service.secondPlayer.objective[0].complete).toEqual(true);
     });
@@ -309,7 +305,6 @@ describe('GameClientService', () => {
         service.playerOne.name = 'vincent';
         service.secondPlayer.name = 'Chris';
         expect(service.playerOne.objective).toEqual(undefined);
-        // eslint-disable-next-line dot-notation
         service['completeObjective'](COMPLETE_OBJECTIVE);
         expect(service.playerOne.objective).toEqual(undefined);
     });
@@ -319,7 +314,6 @@ describe('GameClientService', () => {
         service.secondPlayer.name = 'Chris';
 
         expect(service.playerOne.objective).toEqual(undefined);
-        // eslint-disable-next-line dot-notation
         service['setObjectives'](INIT_OBJECTIVE);
         expect(service.playerOne.objective).toEqual([OBJECTIVE]);
     });
@@ -329,14 +323,12 @@ describe('GameClientService', () => {
         service.secondPlayer.name = 'vincent';
 
         expect(service.playerOne.objective).toEqual(undefined);
-        // eslint-disable-next-line dot-notation
         service['setObjectives'](INIT_OBJECTIVE);
         expect(service.secondPlayer.objective).toEqual([OBJECTIVE]);
     });
 
     it('isTurnFinish should call isTurnFinish', () => {
         const spy = spyOn(service, 'isTurnFinish' as never);
-        // eslint-disable-next-line dot-notation
         service['timerClientUpdateEvent'](TIME);
         expect(spy).toHaveBeenCalled();
     });
@@ -344,7 +336,6 @@ describe('GameClientService', () => {
     it('isTurnFinish() should give the value of the turnFinish variable ', () => {
         service.playerOneTurn = true;
         const spy = spyOn(service.turnFinish, 'next');
-        // eslint-disable-next-line dot-notation
         service['isTurnFinish'](0);
         expect(spy).toHaveBeenCalledWith(true);
     });
@@ -352,7 +343,6 @@ describe('GameClientService', () => {
     it('isTurnFinish() should  not give the value of the turnFinish variable if is not his turn', () => {
         service.playerOneTurn = false;
         const spy = spyOn(service.turnFinish, 'next');
-        // eslint-disable-next-line dot-notation
         service['isTurnFinish'](0);
         expect(spy).not.toHaveBeenCalledWith(true);
     });
@@ -376,7 +366,6 @@ describe('GameClientService', () => {
 
     it('openSnackBar should call the MatSnackBar open method', () => {
         const matSnackBarSpy = spyOn(matSnackBar, 'open').and.stub();
-        // eslint-disable-next-line dot-notation
         service['openSnackBar']('vous avez réussi un objectif');
         expect(matSnackBarSpy.calls.count()).toBe(1);
         const args = matSnackBarSpy.calls.argsFor(0);
@@ -391,7 +380,6 @@ describe('GameClientService', () => {
     it('endGameEvent should call findWinnerByScore when the game is not finish already', () => {
         const spy = spyOn(service, 'findWinnerByScore' as never);
         service.isGameFinish = false;
-        // eslint-disable-next-line dot-notation
         service['gameEndEvent']();
         expect(spy).toHaveBeenCalled();
     });
@@ -401,20 +389,17 @@ describe('GameClientService', () => {
         const messageWinner = "Bravo vous avez gagné la partie, l'adversaire a quitté la partie";
         service.winningMessage = messageWinner;
         service.isGameFinish = true;
-        // eslint-disable-next-line dot-notation
         service['gameEndEvent']();
         expect(spy).not.toHaveBeenCalled();
     });
 
     it('should emit abandonGame to the server if the player Abandon the game', () => {
-        // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocketService'], 'send');
         service.abandonGame();
         expect(spy).toHaveBeenCalledOnceWith('AbandonGame');
     });
 
     it('should emit quitGame to the server if the player quit the game', () => {
-        // eslint-disable-next-line dot-notation
         const spy = spyOn(service['clientSocketService'], 'send');
         service.quitGame();
         expect(spy).toHaveBeenCalledOnceWith('quitGame');
@@ -427,7 +412,6 @@ describe('GameClientService', () => {
         service.secondPlayer.score = 32;
         const messageWinner = 'Égalité! Vous avez le même score que votre adversaire!';
 
-        // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
         expect(service.winningMessage).toEqual(messageWinner);
     });
@@ -439,13 +423,11 @@ describe('GameClientService', () => {
         service.secondPlayer.score = 32;
         const messageWinner = `Victoire à ${service.playerOne.name}! Bravo!`;
 
-        // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
         expect(service.winningMessage).toEqual(messageWinner);
     });
 
     it(' getAllLetterReserve should return the length of the reserve', () => {
-        // eslint-disable-next-line dot-notation
         service['getAllLetterReserve'](LETTER_RESERVE);
         expect(service.letterReserveLength).toEqual(LETTER_RESERVE_LENGTH);
     });
@@ -457,7 +439,6 @@ describe('GameClientService', () => {
         service.secondPlayer.score = 42;
         const messageWinner = `Victoire à ${service.secondPlayer.name}! Bravo!`;
 
-        // eslint-disable-next-line dot-notation
         service['findWinnerByScore']();
         expect(service.winningMessage).toEqual(messageWinner);
     });
@@ -472,7 +453,6 @@ describe('GameClientService', () => {
         const NEW_RACK_3 = [{ value: 'a' }, { value: 'a' }, { value: 'c' }, { value: 'd' }, { value: 'e' }, { value: 'f' }];
 
         service.playerOne = { rack: DUMMY_RACK_1 as Letter[] } as Player;
-        // eslint-disable-next-line dot-notation
         expect(service['updateRack'](NEW_RACK_1 as Letter[])).toEqual([
             { value: 'a' },
             { value: 'f' },
@@ -482,10 +462,8 @@ describe('GameClientService', () => {
             { value: 'j' },
         ] as Letter[]);
         service.playerOne.rack = DUMMY_RACK_2 as Letter[];
-        // eslint-disable-next-line dot-notation
         expect(service['updateRack'](NEW_RACK_2 as Letter[])).toEqual(DUMMY_RACK_2 as Letter[]);
         service.playerOne.rack = DUMMY_RACK_3 as Letter[];
-        // eslint-disable-next-line dot-notation
         expect(service['updateRack'](NEW_RACK_3 as Letter[])).toEqual(NEW_RACK_3 as Letter[]);
     });
 

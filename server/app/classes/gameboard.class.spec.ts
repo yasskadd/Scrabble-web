@@ -106,7 +106,6 @@ describe('gameboard', () => {
             gameboard.placeLetter({ x: 7, y: 7 }, '');
         });
 
-        // TODO: Fix findAnchors() test
         it('findAnchors() should return correct anchors tiles', () => {
             const foundTiles: Coordinate[] = gameboard.findAnchors();
             expect(foundTiles.length).to.be.greaterThan(0);

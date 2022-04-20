@@ -50,7 +50,6 @@ export class HttpHandlerService {
             .pipe(catchError(this.handleError<DictionaryInfo[]>('getDictionaries', [])));
     }
 
-    // TODO : TEST
     getDictionary(title: string): Observable<Dictionary> {
         return this.http.get<Dictionary>(`${this.baseUrl}/dictionary/all/` + title).pipe(catchError(this.handleError<Dictionary>('getDictionaries')));
     }
@@ -80,8 +79,10 @@ export class HttpHandlerService {
     dictionaryIsInDb(title: string): Observable<any> {
         return (
             this.http
+                // Reason: the server does't really return something but just a status code
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .get<any>(`${this.baseUrl}/dictionary/dictionaryisindb/${title}`, { observe: 'response' })
+                // Reason: the server does't really return something but just a status code
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .pipe(catchError(this.handleError<any>('dictionaryIsInDb')))
         );

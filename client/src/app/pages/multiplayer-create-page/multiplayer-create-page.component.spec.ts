@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
-/* eslint-disable max-lines */
+/* eslint-disable max-lines -- all tests are necessary for 100% coverage */
+/* eslint-disable dot-notation -- testing private methods or attributes */
 /* eslint-disable-next-line max-classes-per-file */
 import { Location } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
@@ -12,7 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -30,6 +31,10 @@ import { MultiplayerCreatePageComponent } from './multiplayer-create-page.compon
     template: '',
 })
 export class StubComponent {}
+
+const TEST_ERROR = "Le dictionnaire n'est plus disponible. Veuillez en choisir un autre";
+
+const TIMEOUT = 3000;
 
 const BOT_EXPERT_LIST = [
     {
@@ -85,6 +90,7 @@ const GAME_ROUTE = 'game';
 const DB_DICTIONARY = { _id: '932487fds', title: 'Mon dictionnaire', description: 'Un dictionnaire' };
 
 describe('MultiplayerCreatePageComponent', () => {
+    let matSnackBar: MatSnackBar;
     let component: MultiplayerCreatePageComponent;
     let fixture: ComponentFixture<MultiplayerCreatePageComponent>;
     let location: Location;
@@ -97,6 +103,7 @@ describe('MultiplayerCreatePageComponent', () => {
     let setStyleSpy: unknown;
 
     const mockMatSnackBar = {
+        // Reason : mock needed for test, but it doesn't have to do anything
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         open: () => {},
     };
@@ -127,6 +134,7 @@ describe('MultiplayerCreatePageComponent', () => {
                 HttpClientModule,
                 BrowserAnimationsModule,
                 MatInputModule,
+                MatSnackBarModule,
                 MatFormFieldModule,
                 MatSelectModule,
                 MatOptionModule,
@@ -172,6 +180,7 @@ describe('MultiplayerCreatePageComponent', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
         location = TestBed.inject(Location);
+        matSnackBar = TestBed.inject(MatSnackBar);
         renderer2 = fixture.componentRef.injector.get<Renderer2>(Renderer2 as Type<Renderer2>);
         setStyleSpy = spyOn(renderer2, 'setStyle').and.callThrough();
     });
@@ -290,13 +299,11 @@ describe('MultiplayerCreatePageComponent', () => {
         tick();
         fixture.detectChanges();
         flush();
-        // eslint-disable-next-line dot-notation
         component['createBotName']();
         expect(component.botName).not.toEqual('');
     }));
 
     it('createBotName should assign a name to the Beginner opponent', () => {
-        // eslint-disable-next-line dot-notation
         component['createBotName']();
         expect(component.botName).not.toEqual('');
     });
@@ -374,6 +381,21 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(gameConfigurationServiceSpy.gameInitialization).toHaveBeenCalled();
     }));
 
+    it('openSnackBar should call the MatSnackBar open method', () => {
+        const matSnackBarSpy = spyOn(matSnackBar, 'open').and.stub();
+
+        // eslint-disable-next-line dot-notation
+        component['openSnackBar'](TEST_ERROR);
+        expect(matSnackBarSpy.calls.count()).toBe(1);
+        const args = matSnackBarSpy.calls.argsFor(0);
+        expect(args[0]).toBe(TEST_ERROR);
+        expect(args[1]).toBe('fermer');
+        expect(args[2]).toEqual({
+            duration: TIMEOUT,
+            verticalPosition: 'top',
+        });
+    });
+
     it('createGame should call gameConfiguration.gameInitialization with the good Value', fakeAsync(() => {
         component.playerName = 'Vincent';
         const TEST_PLAYER = {
@@ -426,8 +448,29 @@ describe('MultiplayerCreatePageComponent', () => {
         expect(spy).toHaveBeenCalled();
     }));
 
+    it('createGame should call openSnackBar if the dictionary is not in the dataBase', fakeAsync(() => {
+        httpHandlerSpy.getDictionaries.and.returnValue(of([]));
+        const spy = spyOn(component, 'openSnackBar' as never);
+        component.createGame();
+        tick();
+        flush();
+
+        expect(spy).toHaveBeenCalled();
+    }));
+
+    it('createGame should call openSnackBar if the dictionary is not in the dataBase', fakeAsync(() => {
+        const isDictionarySpy = spyOn(component, 'dictionaryAvailable');
+        isDictionarySpy.and.callFake(() => false);
+        const spy = spyOn(component, 'openSnackBar' as never);
+        component.createGame();
+        tick();
+        flush();
+
+        expect(spy).toHaveBeenCalled();
+    }));
+
     it('createGame should call resetInput', fakeAsync(() => {
-        // Testing private method
+        // Reason : Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const spy = spyOn<any>(component, 'resetInput');
 
@@ -484,7 +527,6 @@ describe('MultiplayerCreatePageComponent', () => {
         const name = 'robert';
         component.playerName = name;
         component.botName = name;
-        // eslint-disable-next-line dot-notation
         component['validateName']();
         expect(component.botName).not.toEqual(name);
     });
@@ -493,7 +535,6 @@ describe('MultiplayerCreatePageComponent', () => {
         const name = 'robert';
         component.playerName = 'Vincent';
         component.botName = name;
-        // eslint-disable-next-line dot-notation
         component['validateName']();
         expect(component.botName).toEqual(name);
     });
@@ -516,9 +557,10 @@ describe('MultiplayerCreatePageComponent', () => {
     it('createGame should do nothing if selected dictionary is no longer in the database', fakeAsync(() => {
         const navigatePageSpy = spyOn(component, 'navigatePage');
         const validateNameSpy = spyOn(component, 'validateName' as never);
+        // Reason : Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const resetInputSpy = spyOn<any>(component, 'resetInput');
-
+        // Reason : Testing private method
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dictionaryIsInDBStub = spyOn<any>(component, 'dictionaryIsInDB');
         dictionaryIsInDBStub.and.resolveTo(false);
@@ -534,8 +576,6 @@ describe('MultiplayerCreatePageComponent', () => {
     it('resetInput() should clear the playerName', () => {
         const VALID_NAME = 'Serge';
         component.playerName = VALID_NAME;
-        // Testing private method
-        // eslint-disable-next-line dot-notation
         component['resetInput']();
         expect(component.playerName).toEqual('');
     });
@@ -543,23 +583,10 @@ describe('MultiplayerCreatePageComponent', () => {
     it('getDictionary() should return selectedFile if a file has been imported', () => {
         const expectedDictionary = {} as Dictionary;
         component.selectedFile = expectedDictionary;
-        // eslint-disable-next-line dot-notation
         expect(component['getDictionary']('title')).toEqual(expectedDictionary);
     });
 
     it('getDictionary() should return the dictionary matching param title if there is no import file', () => {
-        // eslint-disable-next-line dot-notation
         expect(component['getDictionary'](DB_DICTIONARY.title)).toEqual(DB_DICTIONARY);
     });
-
-    it('dictionaryIsInDB() should return error message if file is not in database ', fakeAsync(() => {
-        const updateDictionaryMessageSpy = spyOn(component.importDictionaryComponent, 'updateDictionaryMessage');
-        const title = 'test';
-        // Testing private method
-        // eslint-disable-next-line dot-notation
-        component['dictionaryIsInDB'](title);
-        tick();
-        flush();
-        expect(updateDictionaryMessageSpy).toHaveBeenCalledWith("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
-    }));
 });

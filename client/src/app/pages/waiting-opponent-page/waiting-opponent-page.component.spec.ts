@@ -44,6 +44,7 @@ describe('WaitingOpponentPageComponent', () => {
     let router: Router;
     let matSnackBar: MatSnackBar;
     const mockMatSnackBar = {
+        // Reason : mock that does nothing needed
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         open: () => {},
     };

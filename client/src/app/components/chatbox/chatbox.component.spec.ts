@@ -12,6 +12,7 @@ import { ChatboxComponent } from './chatbox.component';
 const TEST_MESSAGE: ChatboxMessage = { type: 'WorldHello', data: 'WeBigProjectBoisNow' };
 
 const mockMatSnackBar = {
+    // Reason : we need a mock for testing purposes but it doesn<t need to do anything
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     open: () => {},
 };
@@ -45,7 +46,7 @@ describe('ChatboxComponent', () => {
 
     it('ResetInput() should clear input', () => {
         component.input.setValue('Hello Monsieur Chommeur');
-        // Testing private method
+        // Reason : Testing private method
         // eslint-disable-next-line dot-notation
         component['resetInput']();
         expect(component.input.value).toEqual('');
@@ -90,7 +91,6 @@ describe('ChatboxComponent', () => {
         expect(input.focus).toBeTruthy();
     });
 
-    // Stub provider isn't working
     it('All messages should be displayed', () => {
         const messages = fixture.debugElement.nativeElement.querySelectorAll('.message');
         expect(messages.length).toEqual(chatBoxHandlerSpy.messages.length);
@@ -119,6 +119,7 @@ describe('ChatboxComponent', () => {
     });
 
     it('scrollToBottom() should be called after every new message', () => {
+        // Reason : testing private proprety
         // eslint-disable-next-line dot-notation
         component['lastMessage'] = {} as ChatboxMessage;
         const spyOnScrollBottom = spyOn(component, 'scrollToBottom' as never);
@@ -130,6 +131,7 @@ describe('ChatboxComponent', () => {
     });
 
     it('scrollToBottom() should not be called if there is no new message', () => {
+        // Reason : testing private proprety
         // eslint-disable-next-line dot-notation
         component['lastMessage'] = TEST_MESSAGE;
         const spyOnScrollBottom = spyOn(component, 'scrollToBottom' as never);

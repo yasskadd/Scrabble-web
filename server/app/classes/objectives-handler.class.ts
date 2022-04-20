@@ -38,7 +38,6 @@ export class ObjectivesHandler {
     }
 
     attributeObjectives(player1: Player, player2: Player): void {
-        // Set public and private objectives
         const objectivesListCopy: Objective[] = [...ObjectivesInfo.objectivesList];
         const publicObjective1 = objectivesListCopy.splice(Math.floor(Math.random() * objectivesListCopy.length), 1)[0];
         publicObjective1.isPublic = true;

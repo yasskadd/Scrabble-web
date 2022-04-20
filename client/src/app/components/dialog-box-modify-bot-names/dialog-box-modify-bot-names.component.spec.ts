@@ -13,6 +13,7 @@ describe('DialogBoxNewGameComponent', () => {
     let fixture: ComponentFixture<DialogBoxModifyBotNamesComponent>;
 
     const dialogMock = {
+        // Reason : we need a mock for testing purposes but it doesn<t need to do anything
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         close: () => {},
     };
@@ -39,6 +40,7 @@ describe('DialogBoxNewGameComponent', () => {
     });
 
     it('dialog should be closed after onYesClick()', () => {
+        // Reason : testing private attribute
         // eslint-disable-next-line dot-notation
         const spy = spyOn(component['dialogRef'], 'close').and.callThrough();
         component.onNoClick();

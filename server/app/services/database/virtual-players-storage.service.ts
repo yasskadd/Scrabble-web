@@ -47,6 +47,7 @@ export class VirtualPlayersStorageService {
     }
 
     async botIsInDb(username: string): Promise<boolean> {
+        // Reason : no other way to go around this test
         // eslint-disable-next-line object-shorthand
         const document = await this.database.virtualNames.fetchDocuments({ username: username }, { projection: { username: 1 } });
         return document.length ? true : false;

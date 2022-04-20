@@ -16,6 +16,7 @@ describe('HighScoresService', () => {
     let matSnackBar: MatSnackBar;
 
     const mockMatSnackBar = {
+        // Reason : needed a mock that does nothing
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         open: () => {},
     };

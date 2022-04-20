@@ -27,6 +27,7 @@ describe('Word', () => {
             });
 
             it('setAttributes should build word with string abc', () => expect(word.stringFormat).to.eql('abc'));
+            // Reason : testing private attribute
             // eslint-disable-next-line dot-notation
             it('setAttributes should build word with isHorizontal as true', () => expect(word['isHorizontal']).to.be.true);
             it('setAttributes should build word with correct newLetterCoords', () =>
