@@ -42,7 +42,7 @@
         </mat-card-title-group>
         <mat-card-content>
             <div
-                [ngClass]="[this.timer.timerToSecond(this.gameClientService.timer) < 10 ? 'countdown' : 'time']"
+                [ngClass]="[this.gameClientService.timer < 10 ? 'countdown' : 'time']"
                 id="playerTwoTimer"
                 *ngIf="!this.gameClientService.playerOneTurn"
             >
