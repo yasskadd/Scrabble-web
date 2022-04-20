@@ -1,9 +1,9 @@
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
-import { WordSolverService } from '@app/services/word-solver.service';
+import { DictionaryValidation } from '@app/classes/dictionary-validation.class';
+import { LetterPlacement } from '@app/classes/letter-placement.class';
+import { WordSolver } from '@app/classes/word-solver.class';
 
 export interface Behavior {
-    dictionaryValidation: DictionaryValidationService;
-    wordSolver: WordSolverService;
-    letterPlacement: LetterPlacementService;
+    dictionaryValidation: DictionaryValidation;
+    wordSolver: WordSolver;
+    letterPlacement: LetterPlacement;
 }

@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-empty-function*/
 /* eslint-disable dot-notation*/
+import { DictionaryValidation } from '@app/classes/dictionary-validation.class';
 import { Game } from '@app/classes/game.class';
 import { Gameboard } from '@app/classes/gameboard.class';
+import { LetterPlacement } from '@app/classes/letter-placement.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
+import { WordSolver } from '@app/classes/word-solver.class';
 import { DictionaryStorageService } from '@app/services/database/dictionary-storage.service';
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
 import { GamesHandler } from '@app/services/games-management/games-handler.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
@@ -230,16 +230,14 @@ describe('GamesHandler Service', () => {
 
     it('updateDictionary() should set dictionaries with new key', async () => {
         const dictionary = { title: 'dictionary1', description: 'description', words: ['string'] };
-        const dictionaryValidation = sinon.createStubInstance(
-            DictionaryValidationService,
-        ) as sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
-        const wordSolver = sinon.createStubInstance(WordSolverService) as sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
-        const letterPlacement = sinon.createStubInstance(LetterPlacementService) as sinon.SinonStubbedInstance<LetterPlacementService> &
-            LetterPlacementService;
+        const dictionaryValidation = sinon.createStubInstance(DictionaryValidation) as sinon.SinonStubbedInstance<DictionaryValidation> &
+            DictionaryValidation;
+        const wordSolver = sinon.createStubInstance(WordSolver) as sinon.SinonStubbedInstance<WordSolver> & WordSolver;
+        const letterPlacement = sinon.createStubInstance(LetterPlacement) as sinon.SinonStubbedInstance<LetterPlacement> & LetterPlacement;
         const behavior = {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
+            dictionaryValidation: dictionaryValidation as DictionaryValidation,
+            wordSolver: wordSolver as WordSolver,
+            letterPlacement: letterPlacement as LetterPlacement,
         };
         gamesHandler['dictionaries'].set(dictionary.title, behavior);
         await gamesHandler.updateDictionary({
@@ -265,16 +263,14 @@ describe('GamesHandler Service', () => {
 
     it('deleteDictionary() should delete key value of dictionaries', async () => {
         const dictionary = { title: 'dictionary1', description: 'description', words: ['string'] };
-        const dictionaryValidation = sinon.createStubInstance(
-            DictionaryValidationService,
-        ) as sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
-        const wordSolver = sinon.createStubInstance(WordSolverService) as sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
-        const letterPlacement = sinon.createStubInstance(LetterPlacementService) as sinon.SinonStubbedInstance<LetterPlacementService> &
-            LetterPlacementService;
+        const dictionaryValidation = sinon.createStubInstance(DictionaryValidation) as sinon.SinonStubbedInstance<DictionaryValidation> &
+            DictionaryValidation;
+        const wordSolver = sinon.createStubInstance(WordSolver) as sinon.SinonStubbedInstance<WordSolver> & WordSolver;
+        const letterPlacement = sinon.createStubInstance(LetterPlacement) as sinon.SinonStubbedInstance<LetterPlacement> & LetterPlacement;
         const behavior = {
-            dictionaryValidation: dictionaryValidation as DictionaryValidationService,
-            wordSolver: wordSolver as WordSolverService,
-            letterPlacement: letterPlacement as LetterPlacementService,
+            dictionaryValidation: dictionaryValidation as DictionaryValidation,
+            wordSolver: wordSolver as WordSolver,
+            letterPlacement: letterPlacement as LetterPlacement,
         };
         gamesHandler['dictionaries'].set(dictionary.title, behavior);
         await gamesHandler.deleteDictionary('dictionary1');
