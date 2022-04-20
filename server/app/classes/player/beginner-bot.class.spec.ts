@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 /* eslint-disable dot-notation */
+import { DictionaryValidation } from '@app/classes/dictionary-validation.class';
 import { Game } from '@app/classes/game.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Turn } from '@app/classes/turn.class';
+import { WordSolver } from '@app/classes/word-solver.class';
 import { BotInformation } from '@app/interfaces/bot-information';
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
 import { Letter } from '@common/interfaces/letter';
@@ -18,19 +18,19 @@ describe('BotBeginner', () => {
     let botBeginner: BeginnerBot;
     let gameStub: Sinon.SinonStubbedInstance<Game> & Game;
     let botInfo: BotInformation;
-    let wordSolverStub: Sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
-    let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
+    let wordSolverStub: Sinon.SinonStubbedInstance<WordSolver> & WordSolver;
+    let dictionaryValidation: Sinon.SinonStubbedInstance<DictionaryValidation> & DictionaryValidation;
 
     beforeEach(() => {
         gameStub = Sinon.createStubInstance(Game) as Sinon.SinonStubbedInstance<Game> & Game;
         gameStub.turn = { countdown: new ReplaySubject(), endTurn: new ReplaySubject() } as Turn;
-        wordSolverStub = Sinon.createStubInstance(WordSolverService) as Sinon.SinonStubbedInstance<WordSolverService> & WordSolverService;
-        dictionaryValidation = Sinon.createStubInstance(DictionaryValidationService) as Sinon.SinonStubbedInstance<DictionaryValidationService> &
-            DictionaryValidationService;
+        wordSolverStub = Sinon.createStubInstance(WordSolver) as Sinon.SinonStubbedInstance<WordSolver> & WordSolver;
+        dictionaryValidation = Sinon.createStubInstance(DictionaryValidation) as Sinon.SinonStubbedInstance<DictionaryValidation> &
+            DictionaryValidation;
         botInfo = {
             timer: 60,
             roomId: 'testRoom',
-            dictionaryValidation: dictionaryValidation as Sinon.SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService,
+            dictionaryValidation: dictionaryValidation as Sinon.SinonStubbedInstance<DictionaryValidation> & DictionaryValidation,
         };
         botBeginner = new BeginnerBot(true, 'robot', botInfo);
         botBeginner['wordSolver'] = wordSolverStub;

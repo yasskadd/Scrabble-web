@@ -30,20 +30,9 @@ const enum TimeOptions {
 export class MultiplayerCreatePageComponent implements OnInit {
     @ViewChild('info', { static: false }) info: ElementRef;
     @ViewChild('file', { static: false }) file: ElementRef;
-    @ViewChild('fileError', { static: false }) fileError: ElementRef;
+    @ViewChild(ImportDictionaryComponent) importDictionaryComponent: ImportDictionaryComponent;
 
-    timerList = [
-        TimeOptions.ThirtySecond,
-        TimeOptions.OneMinute,
-        TimeOptions.OneMinuteAndThirty,
-        TimeOptions.TwoMinute,
-        TimeOptions.TwoMinuteAndThirty,
-        TimeOptions.ThreeMinute,
-        TimeOptions.ThreeMinuteAndThirty,
-        TimeOptions.FourMinute,
-        TimeOptions.FourMinuteAndThirty,
-        TimeOptions.FiveMinute,
-    ];
+    timerList: number[];
     botName: string;
     playerName: string;
     form: FormGroup;
@@ -61,10 +50,21 @@ export class MultiplayerCreatePageComponent implements OnInit {
         private fb: FormBuilder,
         private readonly httpHandler: HttpHandlerService,
         private renderer: Renderer2,
-        private importDictionaryComponent: ImportDictionaryComponent,
     ) {
         this.gameMode = this.activatedRoute.snapshot.params.id;
         this.playerName = '';
+        this.timerList = [
+            TimeOptions.ThirtySecond,
+            TimeOptions.OneMinute,
+            TimeOptions.OneMinuteAndThirty,
+            TimeOptions.TwoMinute,
+            TimeOptions.TwoMinuteAndThirty,
+            TimeOptions.ThreeMinute,
+            TimeOptions.ThreeMinuteAndThirty,
+            TimeOptions.FourMinute,
+            TimeOptions.FourMinuteAndThirty,
+            TimeOptions.FiveMinute,
+        ];
         this.botName = '';
         this.difficultyList = ['Débutant', 'Expert'];
         this.selectedFile = null;

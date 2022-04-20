@@ -6,23 +6,23 @@ import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { Player } from '@app/classes/player/player.class';
 import { Turn } from '@app/classes/turn.class';
 import { Word } from '@app/classes/word.class';
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
-import { ErrorType, LetterPlacementService } from '@app/services/letter-placement.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Letter } from '@common/interfaces/letter';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { createStubInstance, SinonStubbedInstance, spy } from 'sinon';
+import { DictionaryValidation } from './dictionary-validation.class';
+import { ErrorType, LetterPlacement } from './letter-placement.class';
+import { WordSolver } from './word-solver.class';
 
 describe('Game tests', () => {
     let player1: Player;
     let player2: Player;
     let turn: SinonStubbedInstance<Turn> & Turn;
     let letterReserve: SinonStubbedInstance<LetterReserve> & LetterReserve;
-    let letterPlacementService: SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
-    let dictionaryValidation: SinonStubbedInstance<DictionaryValidationService> & DictionaryValidationService;
-    let wordSolver: SinonStubbedInstance<WordSolverService> & WordSolverService;
+    let letterPlacement: SinonStubbedInstance<LetterPlacement> & LetterPlacement;
+    let dictionaryValidation: SinonStubbedInstance<DictionaryValidation> & DictionaryValidation;
+    let wordSolver: SinonStubbedInstance<WordSolver> & WordSolver;
     let game: Game;
 
     beforeEach(() => {
@@ -32,13 +32,12 @@ describe('Game tests', () => {
         player2.name = 'OriginalName2';
         turn = createStubInstance(Turn) as SinonStubbedInstance<Turn> & Turn;
         letterReserve = createStubInstance(LetterReserve) as SinonStubbedInstance<LetterReserve> & LetterReserve;
-        letterPlacementService = createStubInstance(LetterPlacementService) as SinonStubbedInstance<LetterPlacementService> & LetterPlacementService;
-        dictionaryValidation = createStubInstance(DictionaryValidationService) as SinonStubbedInstance<DictionaryValidationService> &
-            DictionaryValidationService;
-        wordSolver = createStubInstance(WordSolverService) as SinonStubbedInstance<WordSolverService> & WordSolverService;
-        game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation, letterPlacementService, wordSolver);
-        game['dictionaryValidationService'] = dictionaryValidation;
-        game['letterPlacement'] = letterPlacementService;
+        letterPlacement = createStubInstance(LetterPlacement) as SinonStubbedInstance<LetterPlacement> & LetterPlacement;
+        dictionaryValidation = createStubInstance(DictionaryValidation) as SinonStubbedInstance<DictionaryValidation> & DictionaryValidation;
+        wordSolver = createStubInstance(WordSolver) as SinonStubbedInstance<WordSolver> & WordSolver;
+        game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation, letterPlacement, wordSolver);
+        game['dictionaryValidation'] = dictionaryValidation;
+        game['letterPlacement'] = letterPlacement;
         game['wordSolver'] = wordSolver;
     });
 
@@ -102,8 +101,8 @@ describe('Game tests', () => {
             game.gameboard.placeLetter({ x: 10, y: 8 }, 'a');
             const invalidWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([invalidWord, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
+            letterPlacement.globalCommandVerification.returns([invalidWord, null]);
+            letterPlacement.placeLetters.returns({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
             expect(game.play(player1, commandInfo)).to.eql({ hasPassed: false, gameboard: game.gameboard, invalidWords: [invalidWord] });
             expect(turn.resetSkipCounter.called).to.eql(true);
             expect(turn.end.called).to.eql(true);
@@ -112,7 +111,7 @@ describe('Game tests', () => {
         it('play() should return invalid message if the command is invalid and end turn of player2 on play', () => {
             commandInfo.letters = ['a'];
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
+            letterPlacement.globalCommandVerification.returns([{} as Word, 'InvalidMessage' as ErrorType]);
 
             expect(game.play(player2, commandInfo)).to.equal('InvalidMessage');
             expect(turn.resetSkipCounter.called).to.eql(true);
@@ -121,8 +120,8 @@ describe('Game tests', () => {
         it('play() should return the gameboard if the command is valid of player1 on play', () => {
             const validWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([validWord, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
+            letterPlacement.globalCommandVerification.returns([validWord, null]);
+            letterPlacement.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
             game.letterReserve = new LetterReserve();
             expect(game.play(player1, commandInfo)).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
         });
@@ -130,9 +129,9 @@ describe('Game tests', () => {
         it('play() should return the gameboard if the command is valid of player2 on play', () => {
             const validWord = new Word(commandInfo, game.gameboard);
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([validWord, null]);
+            letterPlacement.globalCommandVerification.returns([validWord, null]);
             letterReserve.isEmpty.returns(true);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
+            letterPlacement.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
             expect(game.play(player2, commandInfo)).to.eql({ hasPassed: true, gameboard: game.gameboard, invalidWords: [] as Word[] });
         });
 
@@ -150,8 +149,8 @@ describe('Game tests', () => {
             const endOfGameVerificationStub = sinon.stub(game, 'endOfGameVerification' as never);
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.placeLetters.returns(placeLettersReturnStub);
             letterReserve.totalQuantity.returns(1);
             letterReserve.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
             letterReserve.generateLetters.returns([letterA]);
@@ -163,8 +162,8 @@ describe('Game tests', () => {
         it('giveNewLetterToRack() should call generateLetter of letterReserve and gives everything in the reserve if there is more letter placed than the number of letter in the reserve', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.placeLetters.returns(placeLettersReturnStub);
             letterReserve.totalQuantity.returns(1);
             letterReserve.lettersReserve = [{ value: 'a', quantity: 1, points: 1 }];
             letterReserve.generateLetters.returns([letterA]);
@@ -173,11 +172,11 @@ describe('Game tests', () => {
             expect(letterReserve.generateLetters.calledWith(1)).to.equal(true);
         });
 
-        it('giveNewLetterToRack() should call generateLetter of letterReserve if placeLetters of letterPlacementService return true', () => {
+        it('giveNewLetterToRack() should call generateLetter of letterReserve if placeLetters of letterPlacement return true', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.placeLetters.returns(placeLettersReturnStub);
             letterReserve.isEmpty.returns(false);
             letterReserve.totalQuantity.returns(commandInfo.letters.length);
             game.letterReserve = new LetterReserve();
@@ -188,11 +187,11 @@ describe('Game tests', () => {
 
         it('giveNewLetterToRack() should call generateLetter of letterReserve with the quantity of letter that equals the quantity of letter placed', () => {
             const placeLettersReturnStub = { hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] };
-            game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation, letterPlacementService, wordSolver);
+            game = new Game(player1, player2, turn, letterReserve, true, dictionaryValidation, letterPlacement, wordSolver);
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
             letterReserve.isEmpty.returns(false);
-            letterPlacementService.placeLetters.returns(placeLettersReturnStub);
+            letterPlacement.placeLetters.returns(placeLettersReturnStub);
             letterReserve.totalQuantity.returns(commandInfo.letters.length);
             letterReserve.generateLetters.returns([letterA, letterA]);
 
@@ -203,8 +202,8 @@ describe('Game tests', () => {
         it('endGameVerification() should call end if the rack of the player1 and the letter reserve is empty on play', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserve.isEmpty.returns(true);
             player1.rack = [];
 
@@ -215,8 +214,8 @@ describe('Game tests', () => {
         it('endGameVerification() should call end if the rack of the player2 and the letter reserve is empty on play', () => {
             const endSpy = spy(game, 'end');
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserve.isEmpty.returns(true);
             player1.rack = [];
 
@@ -226,8 +225,8 @@ describe('Game tests', () => {
 
         it('endGameVerification() should call resetSkipCounter and end of turn if the rack of the player1 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             letterReserve.isEmpty.returns(false);
             game.letterReserve = new LetterReserve();
 
@@ -238,8 +237,8 @@ describe('Game tests', () => {
 
         it('endGameVerification() should call resetSkipCounter and end of turn if the rack of the player2 or/and the letter reserve is not empty on play', () => {
             turn.validating.returns(true);
-            letterPlacementService.globalCommandVerification.returns([{} as Word, null]);
-            letterPlacementService.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
+            letterPlacement.globalCommandVerification.returns([{} as Word, null]);
+            letterPlacement.placeLetters.returns({ hasPassed: true, gameboard: game.gameboard, invalidWords: {} as Word[] });
             player2.rack = [];
             game.letterReserve = new LetterReserve();
 

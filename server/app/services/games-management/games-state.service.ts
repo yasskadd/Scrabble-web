@@ -1,4 +1,6 @@
+import { DictionaryValidation } from '@app/classes/dictionary-validation.class';
 import { Game } from '@app/classes/game.class';
+import { LetterPlacement } from '@app/classes/letter-placement.class';
 import { LetterReserve } from '@app/classes/letter-reserve.class';
 import { BeginnerBot } from '@app/classes/player/beginner-bot.class';
 import { Bot } from '@app/classes/player/bot.class';
@@ -6,14 +8,12 @@ import { ExpertBot } from '@app/classes/player/expert-bot.class';
 import { Player } from '@app/classes/player/player.class';
 import { RealPlayer } from '@app/classes/player/real-player.class';
 import { Turn } from '@app/classes/turn.class';
+import { WordSolver } from '@app/classes/word-solver.class';
 import { Behavior } from '@app/interfaces/behavior';
 import { GameScrabbleInformation } from '@app/interfaces/game-scrabble-information';
 import { ScoreStorageService } from '@app/services/database/score-storage.service';
 import { VirtualPlayersStorageService } from '@app/services/database/virtual-players-storage.service';
-import { DictionaryValidationService } from '@app/services/dictionary-validation.service';
-import { LetterPlacementService } from '@app/services/letter-placement.service';
 import { SocketManager } from '@app/services/socket/socket-manager.service';
-import { WordSolverService } from '@app/services/word-solver.service';
 import { SocketEvents } from '@common/constants/socket-events';
 import { Subject } from 'rxjs';
 import { Socket } from 'socket.io';
@@ -135,13 +135,13 @@ export class GamesStateService {
                 newPlayer = new BeginnerBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+                    dictionaryValidation: dictionaryValidation as DictionaryValidation,
                 });
             else
                 newPlayer = new ExpertBot(false, gameInfo.playerName[player], {
                     timer: gameInfo.timer,
                     roomId: gameInfo.roomId,
-                    dictionaryValidation: dictionaryValidation as DictionaryValidationService,
+                    dictionaryValidation: dictionaryValidation as DictionaryValidation,
                 });
         } else {
             newPlayer = new RealPlayer(gameInfo.playerName[player]);
@@ -162,9 +162,9 @@ export class GamesStateService {
             new Turn(gameInfo.timer),
             new LetterReserve(),
             gameInfo.mode === 'classique' ? false : true,
-            (gameBehavior as Behavior).dictionaryValidation as DictionaryValidationService,
-            (gameBehavior as Behavior).letterPlacement as LetterPlacementService,
-            (gameBehavior as Behavior).wordSolver as WordSolverService,
+            (gameBehavior as Behavior).dictionaryValidation as DictionaryValidation,
+            (gameBehavior as Behavior).letterPlacement as LetterPlacement,
+            (gameBehavior as Behavior).wordSolver as WordSolver,
         );
     }
 

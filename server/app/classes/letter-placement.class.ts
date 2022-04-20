@@ -2,11 +2,10 @@ import { Gameboard } from '@app/classes/gameboard.class';
 import { Player } from '@app/classes/player/player.class';
 import { Word } from '@app/classes/word.class';
 import { PlaceLettersReturn } from '@app/interfaces/place-letters-return';
+import { RackService } from '@app/services/rack.service';
 import { CommandInfo } from '@common/interfaces/command-info';
 import { Coordinate } from '@common/interfaces/coordinate';
-import { Service } from 'typedi';
-import { DictionaryValidationService } from './dictionary-validation.service';
-import { RackService } from './rack.service';
+import { DictionaryValidation } from './dictionary-validation.class';
 
 const MIDDLE_X = 8;
 const MIDDLE_Y = 8;
@@ -17,11 +16,10 @@ export enum ErrorType {
     InvalidFirstWordPlacement = "Le mot doit être attaché à un autre mot (ou passer par la case du milieu si c'est le premier tour)",
     InvalidWordBuild = "Le mot ne possède qu'une lettre OU les lettres en commande sortent du plateau",
 }
-@Service()
-export class LetterPlacementService {
-    private dictionaryValidationService: DictionaryValidationService;
-    constructor(dictionaryValidation: DictionaryValidationService, private rackService: RackService) {
-        this.dictionaryValidationService = dictionaryValidation;
+export class LetterPlacement {
+    private dictionaryValidation: DictionaryValidation;
+    constructor(dictionaryValidation: DictionaryValidation, private rackService: RackService) {
+        this.dictionaryValidation = dictionaryValidation;
     }
 
     globalCommandVerification(commandInfo: CommandInfo, gameboard: Gameboard, player: Player): [Word, ErrorType | null] {
@@ -37,7 +35,7 @@ export class LetterPlacementService {
     placeLetters(commandWord: Word, commandInfo: CommandInfo, player: Player, currentGameboard: Gameboard): PlaceLettersReturn {
         this.placeNewLettersOnBoard(commandInfo, commandWord, currentGameboard);
 
-        const validateWordReturn = this.dictionaryValidationService.validateWord(commandWord, currentGameboard);
+        const validateWordReturn = this.dictionaryValidation.validateWord(commandWord, currentGameboard);
         if (!validateWordReturn.points) {
             this.removeLettersFromBoard(commandWord, currentGameboard);
             return { hasPassed: false, gameboard: currentGameboard, invalidWords: validateWordReturn.invalidWords };
