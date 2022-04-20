@@ -1,3 +1,4 @@
+// Reason : information panel calls on a lot od different components
 // eslint-disable-next-line max-classes-per-file
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
@@ -109,6 +110,7 @@ describe('InformationPanelComponent', () => {
     });
 
     it('should open a dialog box if the abandonGame method is called', () => {
+        // Reason : tessting private attribute
         // eslint-disable-next-line dot-notation
         const dialogSpy = spyOn(component['dialog'], 'open');
         component.abandonGame();
@@ -116,6 +118,7 @@ describe('InformationPanelComponent', () => {
     });
 
     it('should open a dialog box if the user needs help method is called', () => {
+        // Reason : tessting private attribute
         // eslint-disable-next-line dot-notation
         const dialogSpy = spyOn(component['dialog'], 'open');
         component.openHelpDialog();

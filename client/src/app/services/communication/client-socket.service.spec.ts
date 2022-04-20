@@ -1,5 +1,4 @@
 /* eslint-disable dot-notation */
-// Pris de l'exemple vu en classe
 import { TestBed } from '@angular/core/testing';
 import { SocketTestEmulator } from '@app/classes/test-classes/socket-test-emulator';
 import { Socket } from 'socket.io-client';
@@ -50,6 +49,7 @@ describe('ClientSocketService', () => {
 
     it('should call socket.on with an event', () => {
         const event = 'helloWorld';
+        // Reason : we want action to do nothing
         // eslint-disable-next-line
         const action = () => {};
         const spy = spyOn(service['socket'], 'on');

@@ -38,6 +38,7 @@ describe('AdminDictionariesComponent', () => {
         dictionaryServiceSpy.deleteDictionary.and.resolveTo();
         dictionaryServiceSpy.resetDictionaries.and.resolveTo();
 
+        // Reason : FileSaver says it<s deprecated when it isn't (import works)
         // eslint-disable-next-line deprecation/deprecation
         saveAsSpy = spyOn(saver, 'saveAs').and.stub();
         await TestBed.configureTestingModule({
@@ -122,6 +123,7 @@ describe('AdminDictionariesComponent', () => {
 
     describe('Modify dictionary tests', () => {
         it('openModifyDictionaryDialog() should open dialog box', () => {
+            // Reason : we want to call private method
             // eslint-disable-next-line dot-notation
             const dialogSpy = spyOn(component['modifyDictionaryDialog'], 'open').and.returnValue({ afterClosed: () => of(true) } as MatDialogRef<
                 typeof component

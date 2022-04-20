@@ -36,6 +36,7 @@ describe('DictionaryController', () => {
     beforeEach(async () => {
         gamesHandler = createStubInstance(GamesHandler);
         const app = Container.get(Application);
+        // Reason : testing private attribute
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['dictionaryController'], 'gamesHandler', { value: gamesHandler });
         expressApp = app.app;

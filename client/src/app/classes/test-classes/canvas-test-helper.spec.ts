@@ -15,7 +15,8 @@ describe('CanvasTestHelper', () => {
     it('createCanvas should create a HTMLCanvasElement with good dimensions', () => {
         const width = 15;
         const height = 25;
-        // eslint-disable-next-line -- createCanvas is private and we need access for the test
+        // Reason : createCanvas is private and we need access for the test
+        // eslint-disable-next-line
         const canvas = CanvasTestHelper.createCanvas(width, height);
         expect(canvas).toBeInstanceOf(HTMLCanvasElement);
         expect(canvas.width).toBe(width);

@@ -38,6 +38,7 @@ export class GridService {
             if (!letterTile.isOccupied) return;
             this.gridContext.fillStyle = '#52B7BE';
             this.fillTile({ x: letterTile.coordinate.x, y: letterTile.coordinate.y });
+            // Reason : underscore indicates private attribute server side
             // eslint-disable-next-line no-underscore-dangle
             this.drawLetter({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, letterTile._letter.toUpperCase());
             this.drawLetterPoints({ x: letterTile.coordinate.x, y: letterTile.coordinate.y }, String(letterTile.points));

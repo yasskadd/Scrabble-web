@@ -39,6 +39,7 @@ describe('HistoryController', () => {
         historyStorage.getHistory.resolves(GAMES_HISTORY);
         historyStorage.clearHistory.resolves();
         const app = Container.get(Application);
+        // Reason : testing private attribute
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['historyController'], 'historyStorage', { value: historyStorage });
         expressApp = app.app;

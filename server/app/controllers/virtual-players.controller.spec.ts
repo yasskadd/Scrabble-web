@@ -63,6 +63,7 @@ describe('VirtualPlayersController', () => {
         virtualPlayerStorage.getBeginnerBot.resolves(BOT_BEGINNER_LIST);
         virtualPlayerStorage.getExpertBot.resolves(BOT_EXPERT_LIST);
         const app = Container.get(Application);
+        // Reason : testing private attribute
         // eslint-disable-next-line dot-notation
         Object.defineProperty(app['virtualPlayerController'], 'virtualPlayerStorage', { value: virtualPlayerStorage });
         expressApp = app.app;

@@ -12,6 +12,7 @@ describe('DialogBoxModifyDictionaryComponent', () => {
     let fixture: ComponentFixture<DialogBoxModifyDictionaryComponent>;
 
     const dialogMock = {
+        // Reason : we need a mock for testing purposes but it doesn<t need to do anything
         // eslint-disable-next-line @typescript-eslint/no-empty-function
         close: () => {},
     };

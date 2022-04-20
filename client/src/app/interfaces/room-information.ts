@@ -1,5 +1,3 @@
-// import { Dictionary } from './dictionary';
-
 export interface RoomInformation {
     playerName: string[];
     roomId: string;
