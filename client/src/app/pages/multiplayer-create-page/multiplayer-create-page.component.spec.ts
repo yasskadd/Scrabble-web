@@ -89,7 +89,6 @@ describe('MultiplayerCreatePageComponent', () => {
     let fixture: ComponentFixture<MultiplayerCreatePageComponent>;
     let location: Location;
     let router: Router;
-    let importDictionaryComponentSpy: jasmine.SpyObj<ImportDictionaryComponent>;
     let gameConfigurationServiceSpy: jasmine.SpyObj<GameConfigurationService>;
     let httpHandlerSpy: jasmine.SpyObj<HttpHandlerService>;
     let dictionaryVerificationSpy: jasmine.SpyObj<DictionaryVerificationService>;
@@ -109,7 +108,6 @@ describe('MultiplayerCreatePageComponent', () => {
             'beginScrabbleGame',
             'importDictionary',
         ]);
-        importDictionaryComponentSpy = jasmine.createSpyObj('DictionaryService', ['uploadDictionary', 'updateDictionaryMessage']);
 
         httpHandlerSpy = jasmine.createSpyObj('HttpHandlerService', ['getDictionaries', 'addDictionary']);
         httpHandlerSpy.getDictionaries.and.returnValue(of([DB_DICTIONARY]));
@@ -145,9 +143,8 @@ describe('MultiplayerCreatePageComponent', () => {
                 ]),
             ],
             schemas: [NO_ERRORS_SCHEMA],
-            declarations: [MultiplayerCreatePageComponent],
+            declarations: [MultiplayerCreatePageComponent, ImportDictionaryComponent],
             providers: [
-                { provide: ImportDictionaryComponent, useValue: importDictionaryComponentSpy },
                 { provide: GameConfigurationService, useValue: gameConfigurationServiceSpy },
                 { provide: MatSnackBar, useValue: mockMatSnackBar },
                 {
@@ -556,15 +553,13 @@ describe('MultiplayerCreatePageComponent', () => {
     });
 
     it('dictionaryIsInDB() should return error message if file is not in database ', fakeAsync(() => {
+        const updateDictionaryMessageSpy = spyOn(component.importDictionaryComponent, 'updateDictionaryMessage');
         const title = 'test';
         // Testing private method
         // eslint-disable-next-line dot-notation
         component['dictionaryIsInDB'](title);
         tick();
         flush();
-        expect(importDictionaryComponentSpy.updateDictionaryMessage).toHaveBeenCalledWith(
-            "Ce dictionnaire n'est plus disponible, veuillez choisir un autre",
-            'red',
-        );
+        expect(updateDictionaryMessageSpy).toHaveBeenCalledWith("Ce dictionnaire n'est plus disponible, veuillez choisir un autre", 'red');
     }));
 });
